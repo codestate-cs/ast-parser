@@ -291,7 +291,10 @@ describe('FileUtils', () => {
   describe('isAbsolute', () => {
     it('should return true for absolute paths', () => {
       expect(FileUtils.isAbsolute('/absolute/path')).toBe(true);
-      expect(FileUtils.isAbsolute('C:\\absolute\\path')).toBe(true);
+      // Test Windows-style absolute path only on Windows
+      if (process.platform === 'win32') {
+        expect(FileUtils.isAbsolute('C:\\absolute\\path')).toBe(true);
+      }
     });
 
     it('should return false for relative paths', () => {
