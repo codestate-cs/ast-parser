@@ -1,0 +1,23 @@
+{
+  "name": "simple-typescript-project",
+  "version": "1.0.0",
+  "description": "A simple TypeScript project for testing",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest",
+    "start": "node dist/index.js"
+  },
+  "keywords": ["typescript", "test"],
+  "author": "Test Author",
+  "license": "MIT",
+  "dependencies": {
+    "typescript": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "jest": "^29.0.0",
+    "ts-jest": "^29.0.0"
+  }
+}
