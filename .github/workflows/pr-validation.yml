@@ -35,13 +35,12 @@ jobs:
     - name: Run linting
       run: npm run lint
       
-    - name: Run tests with coverage
-      run: npm run test:ci
-      
-    - name: Check coverage thresholds
+    - name: Run tests with coverage and check thresholds
       run: |
+        echo "🧪 Running tests with coverage..."
+        npm run test:ci
+        
         echo "🔍 Checking coverage thresholds..."
-        npm test -- --coverage --watchAll=false --passWithNoTests --silent
         
         # Parse coverage and check thresholds
         if [ -f "coverage/coverage-summary.json" ]; then

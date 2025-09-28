@@ -35,14 +35,42 @@ jobs:
       run: npm run type-check
       continue-on-error: true
       
-    - name: Run tests with coverage
-      run: npm test -- --coverage --watchAll=false
-      
-    - name: Check coverage thresholds
+    - name: Run tests with coverage and check thresholds
       run: |
-        echo "Checking if coverage meets thresholds..."
-        npm test -- --coverage --watchAll=false --passWithNoTests --silent
-        echo "✅ All coverage thresholds met!"
+        echo "🧪 Running tests with coverage..."
+        npm test -- --coverage --watchAll=false
+        
+        echo "🔍 Checking coverage thresholds..."
+        if [ -f "coverage/coverage-summary.json" ]; then
+          echo "📊 Coverage Summary:"
+          cat coverage/coverage-summary.json | jq '.total'
+          
+          # Check if all thresholds are met
+          STATEMENTS=$(cat coverage/coverage-summary.json | jq '.total.statements.pct')
+          BRANCHES=$(cat coverage/coverage-summary.json | jq '.total.branches.pct')
+          FUNCTIONS=$(cat coverage/coverage-summary.json | jq '.total.functions.pct')
+          LINES=$(cat coverage/coverage-summary.json | jq '.total.lines.pct')
+          
+          echo "📈 Coverage Results:"
+          echo "  Statements: ${STATEMENTS}% (threshold: 90%)"
+          echo "  Branches: ${BRANCHES}% (threshold: 90%)"
+          echo "  Functions: ${FUNCTIONS}% (threshold: 90%)"
+          echo "  Lines: ${LINES}% (threshold: 90%)"
+          
+          # Check thresholds
+          if (( $(echo "$STATEMENTS >= 90" | bc -l) )) && \
+             (( $(echo "$BRANCHES >= 90" | bc -l) )) && \
+             (( $(echo "$FUNCTIONS >= 90" | bc -l) )) && \
+             (( $(echo "$LINES >= 90" | bc -l) )); then
+            echo "✅ All coverage thresholds met!"
+          else
+            echo "❌ Coverage thresholds not met!"
+            exit 1
+          fi
+        else
+          echo "❌ Coverage report not found!"
+          exit 1
+        fi
         
     - name: Upload coverage reports to Codecov
       uses: codecov/codecov-action@v3
@@ -75,9 +103,6 @@ jobs:
       
     - name: Build project
       run: npm run build
-      
-    - name: Run tests one more time
-      run: npm test -- --coverage --watchAll=false
       
     - name: Publish to npm
       run: npm publish
