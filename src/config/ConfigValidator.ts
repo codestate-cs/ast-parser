@@ -15,7 +15,7 @@ export class ConfigValidator {
    * @param config Configuration object to validate
    * @returns Validation result
    */
-  validate(config: any): ValidationResult {
+  validate(config: unknown): ValidationResult {
     const errors: string[] = [];
     const warnings: string[] = [];
 
@@ -65,7 +65,7 @@ export class ConfigValidator {
    * @param errors Error array to populate
    * @param warnings Warning array to populate
    */
-  private validateAnalyzers(analyzers: any, errors: string[], warnings: string[]): void {
+  private validateAnalyzers(analyzers: Record<string, unknown>, errors: string[], warnings: string[]): void {
     const requiredAnalyzers = ['dependency', 'entryPoint', 'structure', 'complexity'];
 
     requiredAnalyzers.forEach(analyzer => {
@@ -86,7 +86,7 @@ export class ConfigValidator {
    */
   private validateAnalyzerConfig(
     analyzerName: string,
-    config: any,
+    config: Record<string, unknown>,
     errors: string[],
     _warnings: string[]
   ): void {
@@ -144,7 +144,7 @@ export class ConfigValidator {
    * @param errors Error array to populate
    * @param warnings Warning array to populate
    */
-  private validateParsers(parsers: any, errors: string[], warnings: string[]): void {
+  private validateParsers(parsers: Record<string, unknown>, errors: string[], warnings: string[]): void {
     const requiredParsers = ['typescript', 'enhancedTypeScript'];
 
     requiredParsers.forEach(parser => {
@@ -165,7 +165,7 @@ export class ConfigValidator {
    */
   private validateParserConfig(
     parserName: string,
-    config: any,
+    config: Record<string, unknown>,
     errors: string[],
     _warnings: string[]
   ): void {
@@ -208,7 +208,7 @@ export class ConfigValidator {
    * @param errors Error array to populate
    * @param warnings Warning array to populate
    */
-  private validateOutput(output: any, errors: string[], warnings: string[]): void {
+  private validateOutput(output: Record<string, unknown>, errors: string[], warnings: string[]): void {
     if (typeof output !== 'object') {
       errors.push('Output configuration must be an object');
       return;
@@ -235,7 +235,7 @@ export class ConfigValidator {
    * @param errors Error array to populate
    * @param warnings Warning array to populate
    */
-  private validateFormats(formats: any, errors: string[], _warnings: string[]): void {
+  private validateFormats(formats: Record<string, unknown>, errors: string[], _warnings: string[]): void {
     if (typeof formats !== 'object') {
       errors.push('Formats configuration must be an object');
       return;
@@ -260,7 +260,7 @@ export class ConfigValidator {
    * @param errors Error array to populate
    * @param warnings Warning array to populate
    */
-  private validateNaming(naming: any, errors: string[], _warnings: string[]): void {
+  private validateNaming(naming: Record<string, unknown>, errors: string[], _warnings: string[]): void {
     if (typeof naming !== 'object') {
       errors.push('Naming configuration must be an object');
       return;
@@ -285,7 +285,7 @@ export class ConfigValidator {
    * @param errors Error array to populate
    * @param warnings Warning array to populate
    */
-  private validateGlobal(global: any, errors: string[], _warnings: string[]): void {
+  private validateGlobal(global: Record<string, unknown>, errors: string[], _warnings: string[]): void {
     if (typeof global !== 'object') {
       errors.push('Global configuration must be an object');
       return;
@@ -315,7 +315,7 @@ export class ConfigValidator {
    * @param schema Schema object
    * @returns Validation result
    */
-  validateSchema(config: any, schema: any): ValidationResult {
+  validateSchema(config: Record<string, unknown>, schema: Record<string, unknown>): ValidationResult {
     const errors: string[] = [];
     const warnings: string[] = [];
 
@@ -343,8 +343,8 @@ export class ConfigValidator {
    * @param warnings Warning array to populate
    */
   private validateAgainstSchema(
-    obj: any,
-    schema: any,
+    obj: Record<string, unknown>,
+    schema: Record<string, unknown>,
     path: string,
     errors: string[],
     warnings: string[]

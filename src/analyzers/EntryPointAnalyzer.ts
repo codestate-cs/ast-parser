@@ -10,6 +10,16 @@ import { ProjectInfo, EntryPointInfo } from '../types';
 import { EntryPointAnalysisOptions } from '../types/options';
 import { InvalidInputError } from '../utils/error';
 
+interface PackageJson {
+  main?: string | string[];
+  module?: string | string[];
+  types?: string;
+  typings?: string;
+  browser?: string | string[];
+  bin?: string | Record<string, string>;
+  exports?: Record<string, unknown>;
+}
+
 /**
  * Entry point analysis result
  */
@@ -135,7 +145,7 @@ export class EntryPointAnalyzer {
     const entryPoints: EntryPointInfo[] = [];
 
     try {
-      const packageJson = projectInfo.metadata?.['packageJson'] as any;
+      const packageJson = projectInfo.metadata?.['packageJson'] as PackageJson;
 
       if (!packageJson || typeof packageJson !== 'object') {
         return entryPoints;
@@ -215,7 +225,7 @@ export class EntryPointAnalyzer {
         } else if (typeof packageJson.bin === 'object') {
           Object.entries(packageJson.bin).forEach(([name, path]) => {
             entryPoints.push({
-              path: path as string,
+              path,
               type: 'bin',
               description: `Binary executable: ${name}`,
               metadata: {
@@ -284,7 +294,7 @@ export class EntryPointAnalyzer {
     const entryPoints: EntryPointInfo[] = [];
 
     try {
-      const packageJson = projectInfo.metadata?.['packageJson'] as any;
+      const packageJson = projectInfo.metadata?.['packageJson'] as PackageJson;
 
       if (!packageJson?.exports) {
         return entryPoints;
@@ -301,7 +311,10 @@ export class EntryPointAnalyzer {
   /**
    * Extract entry points from exports field
    */
-  private extractExportsEntryPoints(exports: any, entryPoints: EntryPointInfo[]): void {
+  private extractExportsEntryPoints(
+    exports: Record<string, unknown>,
+    entryPoints: EntryPointInfo[]
+  ): void {
     if (typeof exports === 'string') {
       entryPoints.push({
         path: exports,

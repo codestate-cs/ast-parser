@@ -69,7 +69,7 @@ export class ConfigLoader {
     try {
       // In a real implementation, this would read from the file system
       // For now, we'll return a mock configuration
-      const fs = require('fs');
+      const fs = require('fs') as typeof import('fs');
       const content = fs.readFileSync(filePath, 'utf8');
 
       // Parse JSON configuration
@@ -93,7 +93,7 @@ export class ConfigLoader {
    * @returns Loaded configuration
    */
   loadFromEnvironment(prefix: string = 'CODESTATE_'): ConfigOptions {
-    const config: any = {};
+    const config: Partial<ConfigOptions> = {};
 
     // Load analyzer configuration
     config.analyzers = {
@@ -236,7 +236,7 @@ export class ConfigLoader {
    * @param source Source object
    * @returns Merged object
    */
-  private deepMerge(target: any, source: any): any {
+  private deepMerge(target: Record<string, unknown>, source: Record<string, unknown>): Record<string, unknown> {
     const result = { ...target };
 
     for (const key in source) {

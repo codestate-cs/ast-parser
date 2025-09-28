@@ -249,7 +249,7 @@ export class OutputManager {
     // Create readable stream
     const { Readable } = require('stream');
     const stream = new Readable({
-      read() {
+      read(): void {
         this.push(outputData);
         this.push(null); // End stream
       },
