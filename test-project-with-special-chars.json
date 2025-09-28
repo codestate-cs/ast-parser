@@ -1,0 +1,35 @@
+{
+  "name": "test-project-with-special-chars-!@#$%^&*()",
+  "version": "1.0.0",
+  "type": "typescript",
+  "rootPath": "/test/path",
+  "entryPoints": [],
+  "dependencies": [],
+  "devDependencies": [],
+  "structure": {
+    "files": [],
+    "directories": [],
+    "totalFiles": 0,
+    "totalLines": 0,
+    "totalSize": 0
+  },
+  "ast": [],
+  "relations": [],
+  "publicExports": [],
+  "privateExports": [],
+  "complexity": {
+    "cyclomaticComplexity": 0,
+    "cognitiveComplexity": 0,
+    "linesOfCode": 0,
+    "functionCount": 0,
+    "classCount": 0,
+    "interfaceCount": 0
+  },
+  "quality": {
+    "score": 85,
+    "maintainabilityIndex": 80,
+    "technicalDebtRatio": 0.1,
+    "duplicationPercentage": 5,
+    "testCoveragePercentage": 90
+  }
+}
