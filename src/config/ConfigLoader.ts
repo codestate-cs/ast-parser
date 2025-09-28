@@ -239,25 +239,25 @@ export class ConfigLoader {
     if (config['output'] && typeof config['output'] === 'object') {
       const outputConfig = config['output'] as Record<string, unknown>;
       merged['output'] = { ...merged['output'], ...outputConfig };
-      
+
       // Deep merge output.formats.options
       if (outputConfig['formats'] && typeof outputConfig['formats'] === 'object') {
         const formatsConfig = outputConfig['formats'] as Record<string, unknown>;
         if (formatsConfig['options'] && typeof formatsConfig['options'] === 'object') {
-          (merged['output'] as any)['formats']['options'] = {
-            ...(merged['output'] as any)['formats']['options'],
-            ...formatsConfig['options']
+          (merged['output'] as Record<string, unknown>)['formats']['options'] = {
+            ...((merged['output'] as Record<string, unknown>)['formats'] as Record<string, unknown>)['options'],
+            ...formatsConfig['options'],
           };
         }
       }
-      
+
       // Deep merge output.naming.options
       if (outputConfig['naming'] && typeof outputConfig['naming'] === 'object') {
         const namingConfig = outputConfig['naming'] as Record<string, unknown>;
         if (namingConfig['options'] && typeof namingConfig['options'] === 'object') {
-          (merged['output'] as any)['naming']['options'] = {
-            ...(merged['output'] as any)['naming']['options'],
-            ...namingConfig['options']
+          (merged['output'] as Record<string, unknown>)['naming']['options'] = {
+            ...((merged['output'] as Record<string, unknown>)['naming'] as Record<string, unknown>)['options'],
+            ...namingConfig['options'],
           };
         }
       }
