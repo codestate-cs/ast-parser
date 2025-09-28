@@ -537,7 +537,9 @@ export class EnhancedTypeScriptParser extends BaseParser {
    * Check if node is readonly
    */
   private isReadonly(node: ts.Node): boolean {
-    return !!(node as { modifiers?: unknown[] }).modifiers?.some((m: { kind?: unknown }) => m.kind === ts.SyntaxKind.ReadonlyKeyword);
+    return !!(node as { modifiers?: unknown[] }).modifiers?.some(
+      (m: unknown) => (m as { kind?: unknown }).kind === ts.SyntaxKind.ReadonlyKeyword
+    );
   }
 
   /**
