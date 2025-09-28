@@ -1,0 +1,138 @@
+name: Setup Branch Protection
+
+on:
+  repository_dispatch:
+    types: [setup-branch-protection]
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to apply protection to'
+        required: true
+        default: 'main'
+        type: string
+
+jobs:
+  setup-branch-protection:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'repository_dispatch' || github.event_name == 'workflow_dispatch'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Run tests to verify everything works
+      run: npm test -- --coverage --watchAll=false
+      
+    - name: Apply branch protection rules
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const branch = context.payload.inputs?.branch || 'main';
+          
+          try {
+            // Apply branch protection rules
+            await github.rest.repos.updateBranchProtection({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              branch: branch,
+              required_status_checks: {
+                strict: true,
+                contexts: [
+                  'CI/CD Pipeline',
+                  'PR Validation', 
+                  'Build Check'
+                ]
+              },
+              enforce_admins: true,
+              required_pull_request_reviews: {
+                required_approving_review_count: 1,
+                dismiss_stale_reviews: true,
+                require_code_owner_reviews: false,
+                require_last_push_approval: false
+              },
+              restrictions: null,
+              allow_force_pushes: false,
+              allow_deletions: false,
+              required_linear_history: false,
+              allow_squash_merge: true,
+              allow_merge_commit: true,
+              allow_rebase_merge: true,
+              allow_auto_merge: false
+            });
+            
+            console.log(`✅ Branch protection rules applied to ${branch}`);
+            
+            // Also apply to develop branch if it exists
+            if (branch === 'main') {
+              try {
+                await github.rest.repos.updateBranchProtection({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  branch: 'develop',
+                  required_status_checks: {
+                    strict: true,
+                    contexts: [
+                      'CI/CD Pipeline',
+                      'PR Validation',
+                      'Build Check'
+                    ]
+                  },
+                  enforce_admins: true,
+                  required_pull_request_reviews: {
+                    required_approving_review_count: 1,
+                    dismiss_stale_reviews: true,
+                    require_code_owner_reviews: false,
+                    require_last_push_approval: false
+                  },
+                  restrictions: null,
+                  allow_force_pushes: false,
+                  allow_deletions: false,
+                  required_linear_history: false,
+                  allow_squash_merge: true,
+                  allow_merge_commit: true,
+                  allow_rebase_merge: true,
+                  allow_auto_merge: false
+                });
+                
+                console.log('✅ Branch protection rules also applied to develop');
+              } catch (developError) {
+                console.log('⚠️ Could not apply protection to develop branch (may not exist yet)');
+              }
+            }
+            
+          } catch (error) {
+            console.error('❌ Failed to apply branch protection rules:', error);
+            throw error;
+          }
+          
+    - name: Verify branch protection
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const branch = context.payload.inputs?.branch || 'main';
+          
+          try {
+            const protection = await github.rest.repos.getBranchProtection({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              branch: branch
+            });
+            
+            console.log(`✅ Branch protection verified for ${branch}:`);
+            console.log(`  - Required status checks: ${protection.data.required_status_checks?.contexts?.length || 0}`);
+            console.log(`  - Required reviews: ${protection.data.required_pull_request_reviews?.required_approving_review_count || 0}`);
+            console.log(`  - Enforce admins: ${protection.data.enforce_admins}`);
+            console.log(`  - Allow force pushes: ${protection.data.allow_force_pushes}`);
+            
+          } catch (error) {
+            console.error('❌ Failed to verify branch protection:', error);
+            throw error;
+          }
