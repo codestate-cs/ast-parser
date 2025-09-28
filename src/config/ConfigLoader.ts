@@ -243,7 +243,7 @@ export class ConfigLoader {
       // Deep merge output.formats.options
       if (outputConfig['formats'] && typeof outputConfig['formats'] === 'object') {
         const formatsConfig = outputConfig['formats'] as Record<string, unknown>;
-        if (formatsConfig['options'] && typeof formatsConfig['options'] === 'object') {
+        if (formatsConfig['options'] && typeof formatsConfig['options'] === 'object' && Object.keys(formatsConfig['options'] as Record<string, unknown>).length > 0) {
           const mergedOutput = merged['output'] as any;
           mergedOutput['formats']['options'] = {
             ...mergedOutput['formats']['options'],
@@ -255,7 +255,7 @@ export class ConfigLoader {
       // Deep merge output.naming.options
       if (outputConfig['naming'] && typeof outputConfig['naming'] === 'object') {
         const namingConfig = outputConfig['naming'] as Record<string, unknown>;
-        if (namingConfig['options'] && typeof namingConfig['options'] === 'object') {
+        if (namingConfig['options'] && typeof namingConfig['options'] === 'object' && Object.keys(namingConfig['options'] as Record<string, unknown>).length > 0) {
           const mergedOutput = merged['output'] as any;
           mergedOutput['naming']['options'] = {
             ...mergedOutput['naming']['options'],
