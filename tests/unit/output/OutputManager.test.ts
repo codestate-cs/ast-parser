@@ -881,5 +881,102 @@ describe('OutputManager', () => {
       expect(result.success).toBe(true);
       expect(result.data).toBeDefined();
     });
+
+    it('should handle error in catch block with undefined options', async () => {
+      // Create a mock format that throws an error during serialization
+      const mockFormat = {
+        formatName: 'error-format',
+        supportedExtensions: ['.err'],
+        validate: jest.fn().mockResolvedValue(true),
+        serialize: jest.fn().mockRejectedValue(new Error('Serialization failed')),
+        format: jest.fn().mockRejectedValue(new Error('Format failed')),
+        supportsExtension: jest.fn().mockReturnValue(true),
+        getDefaultOptions: jest.fn().mockReturnValue({}),
+      } as any;
+
+      outputManager.registerFormat('error-format', mockFormat);
+
+      const result = await outputManager.generateOutput(mockProjectData, {
+        format: 'error-format' as any,
+        strategy: 'memory'
+      });
+
+      expect(result.success).toBe(false);
+      expect(result.error).toBe('Serialization failed');
+      expect(result.metadata?.format).toBe('error-format');
+      expect(result.metadata?.strategy).toBe('memory');
+    });
+
+    it('should handle error in catch block with no options at all', async () => {
+      // Create a mock format that throws an error during validation
+      const mockFormat = {
+        formatName: 'error-format',
+        supportedExtensions: ['.err'],
+        validate: jest.fn().mockRejectedValue(new Error('Validation failed')),
+        serialize: jest.fn().mockResolvedValue('data'),
+        format: jest.fn().mockResolvedValue('data'),
+        supportsExtension: jest.fn().mockReturnValue(true),
+        getDefaultOptions: jest.fn().mockReturnValue({}),
+      } as any;
+
+      outputManager.registerFormat('error-format', mockFormat);
+
+      const result = await outputManager.generateOutput(mockProjectData, { format: 'error-format' as any });
+
+      expect(result.success).toBe(false);
+      expect(result.error).toBe('Validation failed');
+      expect(result.metadata?.format).toBe('error-format');
+      expect(result.metadata?.strategy).toBe('file');
+    });
+
+    it('should handle nullish coalescing in error metadata with undefined format and strategy', async () => {
+      // This will trigger the catch block and test the nullish coalescing on lines 151-152
+      const result = await outputManager.generateOutput(mockProjectData, { 
+        format: undefined as any,
+        strategy: undefined as any
+      });
+
+      expect(result.success).toBe(false);
+      expect(result.metadata?.format).toBe('json'); // Should use default
+      expect(result.metadata?.strategy).toBe('file'); // Should use default
+    });
+
+    it('should handle includeTimestamp option in generateOutputPath', async () => {
+      const jsonFormat = new JSONFormat();
+      outputManager.registerFormat('json', jsonFormat);
+
+      const result = await outputManager.generateOutput(mockProjectData, {
+        format: 'json',
+        strategy: 'file',
+        includeTimestamp: true,
+        outputDir: '/tmp/test-output'
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.outputPath).toMatch(/-\d{4}-\d{2}-\d{2}\.json$/); // Should include timestamp
+    });
+
+    it('should handle format with supportedExtensions but empty first element', async () => {
+      const mockFormat = {
+        formatName: 'empty-ext-format',
+        supportedExtensions: [undefined], // First element is undefined
+        validate: jest.fn().mockResolvedValue(true),
+        serialize: jest.fn().mockResolvedValue('data'),
+        format: jest.fn().mockResolvedValue('data'),
+        supportsExtension: jest.fn().mockReturnValue(false),
+        getDefaultOptions: jest.fn().mockReturnValue({}),
+      } as any;
+
+      outputManager.registerFormat('empty-ext-format', mockFormat);
+
+      const result = await outputManager.generateOutput(mockProjectData, {
+        format: 'empty-ext-format' as any,
+        strategy: 'file',
+        outputDir: '/tmp/test-output'
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.outputPath).toMatch(/\.txt$/); // Should use default 'txt' extension
+    });
   });
 });

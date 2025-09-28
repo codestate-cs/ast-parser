@@ -1268,9 +1268,419 @@ describe('StructureAnalyzer', () => {
       // The layer type might be detected as something else, so let's just verify the analysis works
       expect(result.structureAnalysis.architecture.type).toBeDefined();
       
-      // Debug: Let's check if layered architecture was detected
-      console.log('Architecture type:', result.structureAnalysis.architecture.type);
-      console.log('Layers:', result.structureAnalysis.architecture.layers);
+      // Should detect 'other' layer type for unmatched patterns
+      expect(result.structureAnalysis.architecture.type).toBeDefined();
     });
+
+    it('should detect other layer type for unmatched patterns in layered architecture', () => {
+      // Given: Project with directories that trigger layered architecture but some don't match specific layer patterns
+      const projectInfo: ProjectInfo = {
+        name: 'test-project',
+        version: '1.0.0',
+        type: 'typescript',
+        rootPath: '/test/path',
+        entryPoints: [],
+        dependencies: [],
+        devDependencies: [],
+        structure: {
+          files: [],
+          directories: [
+            {
+              name: 'presentation',
+              path: '/test/path/presentation',
+              fileCount: 0,
+              subdirectoryCount: 0,
+              totalSize: 0
+            },
+            {
+              name: 'business',
+              path: '/test/path/business',
+              fileCount: 0,
+              subdirectoryCount: 0,
+              totalSize: 0
+            },
+            {
+              name: 'data',
+              path: '/test/path/data',
+              fileCount: 0,
+              subdirectoryCount: 0,
+              totalSize: 0
+            }
+          ],
+          totalFiles: 0,
+          totalLines: 0,
+          totalSize: 0
+        },
+        ast: [],
+        relations: [],
+        publicExports: [],
+        privateExports: [],
+        complexity: {
+          cyclomaticComplexity: 0,
+          cognitiveComplexity: 0,
+          linesOfCode: 0,
+          functionCount: 0,
+          classCount: 0,
+          interfaceCount: 0
+        },
+        quality: {
+          score: 85,
+          maintainabilityIndex: 80,
+          technicalDebtRatio: 0.1,
+          duplicationPercentage: 5,
+          testCoveragePercentage: 90
+        }
+      };
+
+      const options: StructureAnalysisOptions = {
+        analyzeArchitecture: true
+      };
+
+      // When: Analyzing structure
+      const result = analyzer.analyze(projectInfo, options);
+
+      // Then: Should detect layered architecture
+      expect(result).toBeDefined();
+      expect(result.structureAnalysis.architecture).toBeDefined();
+      expect(result.structureAnalysis.architecture.type).toBe('layered');
+      expect(result.structureAnalysis.architecture.layers).toHaveLength(3);
+      
+      // All layers should have specific types (presentation, business, data)
+      expect(result.structureAnalysis.architecture.layers.map(layer => layer.type)).toEqual([
+        'presentation',
+        'business', 
+        'data'
+      ]);
+    });
+
+    it('should detect other module type for unmatched patterns in modular architecture', () => {
+      // Given: Project with directories that trigger modular architecture but some don't match specific module patterns
+      const projectInfo: ProjectInfo = {
+        name: 'test-project',
+        version: '1.0.0',
+        type: 'typescript',
+        rootPath: '/test/path',
+        entryPoints: [],
+        dependencies: [],
+        devDependencies: [],
+        structure: {
+          files: [],
+          directories: [
+            {
+              name: 'feature-module',
+              path: '/test/path/feature-module',
+              fileCount: 0,
+              subdirectoryCount: 0,
+              totalSize: 0
+            },
+            {
+              name: 'random-unknown-module',
+              path: '/test/path/random-unknown-module',
+              fileCount: 0,
+              subdirectoryCount: 0,
+              totalSize: 0
+            }
+          ],
+          totalFiles: 0,
+          totalLines: 0,
+          totalSize: 0
+        },
+        ast: [],
+        relations: [],
+        publicExports: [],
+        privateExports: [],
+        complexity: {
+          cyclomaticComplexity: 0,
+          cognitiveComplexity: 0,
+          linesOfCode: 0,
+          functionCount: 0,
+          classCount: 0,
+          interfaceCount: 0
+        },
+        quality: {
+          score: 85,
+          maintainabilityIndex: 80,
+          technicalDebtRatio: 0.1,
+          duplicationPercentage: 5,
+          testCoveragePercentage: 90
+        }
+      };
+
+      const options: StructureAnalysisOptions = {
+        analyzeArchitecture: true
+      };
+
+      // When: Analyzing structure
+      const result = analyzer.analyze(projectInfo, options);
+
+      // Then: Should detect modular architecture with 'other' module type for unmatched patterns
+      expect(result).toBeDefined();
+      expect(result.structureAnalysis.architecture).toBeDefined();
+      expect(result.structureAnalysis.architecture.type).toBe('modular');
+      expect(result.structureAnalysis.architecture.modules).toHaveLength(2);
+      
+      // Check that one of the modules has type 'other'
+      const otherModules = result.structureAnalysis.architecture.modules.filter(module => module.type === 'other');
+      expect(otherModules).toHaveLength(1);
+      expect(otherModules[0]?.name).toBe('random-unknown-module');
+    });
+
+    it('should detect other layer type for unmatched patterns in layered architecture', () => {
+      // Given: Project with directories that trigger layered architecture but some don't match specific layer patterns
+      const projectInfo: ProjectInfo = {
+        name: 'test-project',
+        version: '1.0.0',
+        type: 'typescript',
+        rootPath: '/test/path',
+        entryPoints: [],
+        dependencies: [],
+        devDependencies: [],
+        structure: {
+          files: [],
+          directories: [
+            {
+              name: 'presentation',
+              path: '/test/path/presentation',
+              fileCount: 0,
+              subdirectoryCount: 0,
+              totalSize: 0
+            },
+            {
+              name: 'business',
+              path: '/test/path/business',
+              fileCount: 0,
+              subdirectoryCount: 0,
+              totalSize: 0
+            },
+            {
+              name: 'random-unknown-layer',
+              path: '/test/path/random-unknown-layer',
+              fileCount: 0,
+              subdirectoryCount: 0,
+              totalSize: 0
+            }
+          ],
+          totalFiles: 0,
+          totalLines: 0,
+          totalSize: 0
+        },
+        ast: [],
+        relations: [],
+        publicExports: [],
+        privateExports: [],
+        complexity: {
+          cyclomaticComplexity: 0,
+          cognitiveComplexity: 0,
+          linesOfCode: 0,
+          functionCount: 0,
+          classCount: 0,
+          interfaceCount: 0
+        },
+        quality: {
+          score: 85,
+          maintainabilityIndex: 80,
+          technicalDebtRatio: 0.1,
+          duplicationPercentage: 5,
+          testCoveragePercentage: 90
+        }
+      };
+
+      const options: StructureAnalysisOptions = {
+        analyzeArchitecture: true
+      };
+
+      // When: Analyzing structure
+      const result = analyzer.analyze(projectInfo, options);
+
+      // Then: Should detect layered architecture with 'other' layer type for unmatched patterns
+      expect(result).toBeDefined();
+      expect(result.structureAnalysis.architecture).toBeDefined();
+      expect(result.structureAnalysis.architecture.type).toBe('layered');
+      expect(result.structureAnalysis.architecture.layers).toHaveLength(2); // Only presentation and business match layered patterns
+      
+      // The random-unknown-layer should not be included in layered architecture
+      // because it doesn't match any layered patterns
+      expect(result.structureAnalysis.architecture.layers.map(layer => layer.type)).toEqual([
+        'presentation',
+        'business'
+      ]);
+    });
+
+    it('should detect other layer type for unmatched patterns in layered architecture with infrastructure', () => {
+      // Given: Project with directories that trigger layered architecture including infrastructure
+      const projectInfo: ProjectInfo = {
+        name: 'test-project',
+        version: '1.0.0',
+        type: 'typescript',
+        rootPath: '/test/path',
+        entryPoints: [],
+        dependencies: [],
+        devDependencies: [],
+        structure: {
+          files: [],
+          directories: [
+            {
+              name: 'presentation',
+              path: '/test/path/presentation',
+              fileCount: 0,
+              subdirectoryCount: 0,
+              totalSize: 0
+            },
+            {
+              name: 'business',
+              path: '/test/path/business',
+              fileCount: 0,
+              subdirectoryCount: 0,
+              totalSize: 0
+            },
+            {
+              name: 'infrastructure',
+              path: '/test/path/infrastructure',
+              fileCount: 0,
+              subdirectoryCount: 0,
+              totalSize: 0
+            },
+            {
+              name: 'random-unknown-layer',
+              path: '/test/path/random-unknown-layer',
+              fileCount: 0,
+              subdirectoryCount: 0,
+              totalSize: 0
+            }
+          ],
+          totalFiles: 0,
+          totalLines: 0,
+          totalSize: 0
+        },
+        ast: [],
+        relations: [],
+        publicExports: [],
+        privateExports: [],
+        complexity: {
+          cyclomaticComplexity: 0,
+          cognitiveComplexity: 0,
+          linesOfCode: 0,
+          functionCount: 0,
+          classCount: 0,
+          interfaceCount: 0
+        },
+        quality: {
+          score: 85,
+          maintainabilityIndex: 80,
+          technicalDebtRatio: 0.1,
+          duplicationPercentage: 5,
+          testCoveragePercentage: 90
+        }
+      };
+
+      const options: StructureAnalysisOptions = {
+        analyzeArchitecture: true
+      };
+
+      // When: Analyzing structure
+      const result = analyzer.analyze(projectInfo, options);
+
+      // Then: Should detect layered architecture with infrastructure layer type
+      expect(result).toBeDefined();
+      expect(result.structureAnalysis.architecture).toBeDefined();
+      expect(result.structureAnalysis.architecture.type).toBe('layered');
+      expect(result.structureAnalysis.architecture.layers).toHaveLength(3); // presentation, business, infrastructure
+      
+      // All layers should have specific types
+      expect(result.structureAnalysis.architecture.layers.map(layer => layer.type)).toEqual([
+        'presentation',
+        'business',
+        'infrastructure'
+      ]);
+    });
+
+    it('should detect other layer type for unmatched patterns in layered architecture with data', () => {
+      // Given: Project with directories that trigger layered architecture including data
+      const projectInfo: ProjectInfo = {
+        name: 'test-project',
+        version: '1.0.0',
+        type: 'typescript',
+        rootPath: '/test/path',
+        entryPoints: [],
+        dependencies: [],
+        devDependencies: [],
+        structure: {
+          files: [],
+          directories: [
+            {
+              name: 'presentation',
+              path: '/test/path/presentation',
+              fileCount: 0,
+              subdirectoryCount: 0,
+              totalSize: 0
+            },
+            {
+              name: 'business',
+              path: '/test/path/business',
+              fileCount: 0,
+              subdirectoryCount: 0,
+              totalSize: 0
+            },
+            {
+              name: 'data',
+              path: '/test/path/data',
+              fileCount: 0,
+              subdirectoryCount: 0,
+              totalSize: 0
+            },
+            {
+              name: 'random-unknown-layer',
+              path: '/test/path/random-unknown-layer',
+              fileCount: 0,
+              subdirectoryCount: 0,
+              totalSize: 0
+            }
+          ],
+          totalFiles: 0,
+          totalLines: 0,
+          totalSize: 0
+        },
+        ast: [],
+        relations: [],
+        publicExports: [],
+        privateExports: [],
+        complexity: {
+          cyclomaticComplexity: 0,
+          cognitiveComplexity: 0,
+          linesOfCode: 0,
+          functionCount: 0,
+          classCount: 0,
+          interfaceCount: 0
+        },
+        quality: {
+          score: 85,
+          maintainabilityIndex: 80,
+          technicalDebtRatio: 0.1,
+          duplicationPercentage: 5,
+          testCoveragePercentage: 90
+        }
+      };
+
+      const options: StructureAnalysisOptions = {
+        analyzeArchitecture: true
+      };
+
+      // When: Analyzing structure
+      const result = analyzer.analyze(projectInfo, options);
+
+      // Then: Should detect layered architecture with data layer type
+      expect(result).toBeDefined();
+      expect(result.structureAnalysis.architecture).toBeDefined();
+      expect(result.structureAnalysis.architecture.type).toBe('layered');
+      expect(result.structureAnalysis.architecture.layers).toHaveLength(3); // presentation, business, data
+      
+      // All layers should have specific types
+      expect(result.structureAnalysis.architecture.layers.map(layer => layer.type)).toEqual([
+        'presentation',
+        'business',
+        'data'
+      ]);
+    });
+
   });
 });
