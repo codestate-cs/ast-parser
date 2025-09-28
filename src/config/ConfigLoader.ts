@@ -228,21 +228,21 @@ export class ConfigLoader {
    */
   private mergeWithDefaults(config: Record<string, unknown>): ConfigOptions {
     const merged = { ...DefaultConfig };
-    
+
     // Deep merge nested objects
-    if (config.analyzers && typeof config.analyzers === 'object') {
-      merged.analyzers = { ...merged.analyzers, ...config.analyzers };
+    if (config['analyzers'] && typeof config['analyzers'] === 'object') {
+      merged['analyzers'] = { ...merged['analyzers'], ...config['analyzers'] };
     }
-    if (config.parsers && typeof config.parsers === 'object') {
-      merged.parsers = { ...merged.parsers, ...config.parsers };
+    if (config['parsers'] && typeof config['parsers'] === 'object') {
+      merged['parsers'] = { ...merged['parsers'], ...config['parsers'] };
     }
-    if (config.output && typeof config.output === 'object') {
-      merged.output = { ...merged.output, ...config.output };
+    if (config['output'] && typeof config['output'] === 'object') {
+      merged['output'] = { ...merged['output'], ...config['output'] };
     }
-    if (config.global && typeof config.global === 'object') {
-      merged.global = { ...merged.global, ...config.global };
+    if (config['global'] && typeof config['global'] === 'object') {
+      merged['global'] = { ...merged['global'], ...config['global'] };
     }
-    
+
     return merged;
   }
 
