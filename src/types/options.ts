@@ -60,6 +60,14 @@ export interface OutputOptions {
   includeSourceMaps?: boolean;
   /** Include metadata */
   includeMetadata?: boolean;
+  /** Pretty print output */
+  prettyPrint?: boolean;
+  /** Output encoding */
+  encoding?: string;
+  /** Output strategy */
+  strategy?: 'file' | 'stream' | 'memory';
+  /** Include timestamp in filename */
+  includeTimestamp?: boolean;
 }
 
 /**
@@ -238,6 +246,82 @@ export interface OptionsValidationResult {
   warnings: string[];
   /** Validated options */
   options: ParsingOptions;
+}
+
+/**
+ * Entry point analysis options
+ */
+export interface EntryPointAnalysisOptions {
+  /** Custom entry point patterns */
+  entryPointPatterns?: string[];
+  /** Include patterns for filtering */
+  includePatterns?: string[];
+  /** Exclude patterns for filtering */
+  excludePatterns?: string[];
+  /** Whether to analyze package.json */
+  analyzePackageJson?: boolean;
+  /** Whether to analyze AST nodes */
+  analyzeASTNodes?: boolean;
+  /** Whether to analyze exports field */
+  analyzeExports?: boolean;
+  /** Whether to deduplicate entry points */
+  deduplicate?: boolean;
+}
+
+/**
+ * Structure analysis options
+ */
+export interface StructureAnalysisOptions {
+  /** Include patterns for filtering */
+  includePatterns?: string[];
+  /** Exclude patterns for filtering */
+  excludePatterns?: string[];
+  /** Whether to analyze project depth */
+  analyzeDepth?: boolean;
+  /** Whether to analyze project breadth */
+  analyzeBreadth?: boolean;
+  /** Whether to analyze project organization */
+  analyzeOrganization?: boolean;
+  /** Whether to analyze project patterns */
+  analyzePatterns?: boolean;
+  /** Whether to analyze project architecture */
+  analyzeArchitecture?: boolean;
+  /** Maximum depth for analysis */
+  maxDepth?: number;
+  /** Whether to include file statistics */
+  includeFileStats?: boolean;
+  /** Whether to include directory statistics */
+  includeDirectoryStats?: boolean;
+}
+
+/**
+ * Complexity analysis options
+ */
+export interface ComplexityAnalysisOptions {
+  /** Include patterns for filtering */
+  includePatterns?: string[];
+  /** Exclude patterns for filtering */
+  excludePatterns?: string[];
+  /** Whether to calculate cyclomatic complexity */
+  calculateCyclomaticComplexity?: boolean;
+  /** Whether to calculate cognitive complexity */
+  calculateCognitiveComplexity?: boolean;
+  /** Whether to count lines of code */
+  countLinesOfCode?: boolean;
+  /** Whether to count functions */
+  countFunctions?: boolean;
+  /** Whether to count classes */
+  countClasses?: boolean;
+  /** Whether to count interfaces */
+  countInterfaces?: boolean;
+  /** Maximum cyclomatic complexity threshold */
+  maxCyclomaticComplexity?: number;
+  /** Maximum cognitive complexity threshold */
+  maxCognitiveComplexity?: number;
+  /** Whether to include detailed metrics per file */
+  includeFileMetrics?: boolean;
+  /** Whether to include aggregated metrics */
+  includeAggregatedMetrics?: boolean;
 }
 
 /**

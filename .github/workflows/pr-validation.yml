@@ -5,6 +5,11 @@ on:
     branches: [ main, develop ]
     types: [opened, synchronize, reopened]
 
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
 jobs:
   validate-pr:
     runs-on: ubuntu-latest
@@ -30,13 +35,12 @@ jobs:
     - name: Run linting
       run: npm run lint
       
-    - name: Run tests with coverage
-      run: npm run test:ci
-      
-    - name: Check coverage thresholds
+    - name: Run tests with coverage and check thresholds
       run: |
+        echo "🧪 Running tests with coverage..."
+        npm run test:ci
+        
         echo "🔍 Checking coverage thresholds..."
-        npm test -- --coverage --watchAll=false --passWithNoTests --silent
         
         # Parse coverage and check thresholds
         if [ -f "coverage/coverage-summary.json" ]; then
@@ -98,15 +102,32 @@ jobs:
                 ? '🎉 **All coverage thresholds met!** This PR is ready for review.' 
                 : '⚠️ **Coverage thresholds not met.** Please improve test coverage before merging.'}`;
               
-              github.rest.issues.createComment({
+              await github.rest.issues.createComment({
                 issue_number: context.issue.number,
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 body: comment
               });
+              
+              console.log('✅ Coverage comment posted successfully');
+            } else {
+              console.log('⚠️ Coverage report not found, skipping comment');
             }
           } catch (error) {
-            console.log('Could not create coverage comment:', error.message);
+            console.log('❌ Could not create coverage comment:', error.message);
+            console.log('Error details:', error);
+            
+            // Try to post a simple comment indicating the issue
+            try {
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: `⚠️ **Coverage Report Unavailable**\n\nCould not generate coverage report due to: ${error.message}\n\nPlease check the workflow logs for more details.`
+              });
+            } catch (fallbackError) {
+              console.log('❌ Could not post fallback comment either:', fallbackError.message);
+            }
           }
           
     - name: Upload coverage reports
