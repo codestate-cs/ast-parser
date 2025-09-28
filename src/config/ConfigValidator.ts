@@ -78,7 +78,12 @@ export class ConfigValidator {
       if (!analyzers[analyzer]) {
         errors.push(`Analyzer configuration for '${analyzer}' is required`);
       } else {
-        this.validateAnalyzerConfig(analyzer, analyzers[analyzer] as Record<string, unknown>, errors, warnings);
+        this.validateAnalyzerConfig(
+          analyzer,
+          analyzers[analyzer] as Record<string, unknown>,
+          errors,
+          warnings
+        );
       }
     });
   }
@@ -138,7 +143,10 @@ export class ConfigValidator {
     const numericProps = ['maxEntryPoints'];
 
     numericProps.forEach(prop => {
-      if (config[prop] !== undefined && (typeof config[prop] !== 'number' || (config[prop] as number) < 0)) {
+      if (
+        config[prop] !== undefined &&
+        (typeof config[prop] !== 'number' || (config[prop] as number) < 0)
+      ) {
         errors.push(`Property '${prop}' for '${analyzerName}' must be a non-negative number`);
       }
     });
@@ -161,7 +169,12 @@ export class ConfigValidator {
       if (!parsers[parser]) {
         errors.push(`Parser configuration for '${parser}' is required`);
       } else {
-        this.validateParserConfig(parser, parsers[parser] as Record<string, unknown>, errors, warnings);
+        this.validateParserConfig(
+          parser,
+          parsers[parser] as Record<string, unknown>,
+          errors,
+          warnings
+        );
       }
     });
   }

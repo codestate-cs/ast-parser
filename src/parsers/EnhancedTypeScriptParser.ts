@@ -530,16 +530,14 @@ export class EnhancedTypeScriptParser extends BaseParser {
    * Check if node is optional
    */
   private isOptional(node: ts.Node): boolean {
-    return 'questionToken' in node && !!(node as any).questionToken;
+    return 'questionToken' in node && !!(node as { questionToken?: unknown }).questionToken;
   }
 
   /**
    * Check if node is readonly
    */
   private isReadonly(node: ts.Node): boolean {
-    return !!(node as any).modifiers?.some(
-      (m: any) => m.kind === ts.SyntaxKind.ReadonlyKeyword
-    );
+    return !!(node as { modifiers?: unknown[] }).modifiers?.some((m: { kind?: unknown }) => m.kind === ts.SyntaxKind.ReadonlyKeyword);
   }
 
   /**
