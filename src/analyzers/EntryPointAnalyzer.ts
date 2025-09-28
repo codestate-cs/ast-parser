@@ -195,22 +195,36 @@ export class EntryPointAnalyzer {
 
       // Types entry point
       if (packageJson.types || packageJson.typings) {
-        entryPoints.push({
-          path: packageJson.types ?? packageJson.typings,
-          type: 'types',
-          description: 'TypeScript definitions',
-          metadata: { source: 'package.json.types' },
-        });
+        const typesPath = packageJson.types ?? packageJson.typings;
+        if (typesPath) {
+          entryPoints.push({
+            path: typesPath,
+            type: 'types',
+            description: 'TypeScript definitions',
+            metadata: { source: 'package.json.types' },
+          });
+        }
       }
 
       // Browser entry point
       if (packageJson.browser) {
-        entryPoints.push({
-          path: packageJson.browser,
-          type: 'browser',
-          description: 'Browser-specific entry point',
-          metadata: { source: 'package.json.browser' },
-        });
+        if (Array.isArray(packageJson.browser)) {
+          packageJson.browser.forEach((path: string) => {
+            entryPoints.push({
+              path,
+              type: 'browser',
+              description: 'Browser-specific entry point',
+              metadata: { source: 'package.json.browser' },
+            });
+          });
+        } else {
+          entryPoints.push({
+            path: packageJson.browser,
+            type: 'browser',
+            description: 'Browser-specific entry point',
+            metadata: { source: 'package.json.browser' },
+          });
+        }
       }
 
       // Binary entry points
@@ -353,7 +367,7 @@ export class EntryPointAnalyzer {
           });
         } else if (typeof value === 'object' && value !== null) {
           // Handle conditional exports
-          this.extractExportsEntryPoints(value, entryPoints);
+          this.extractExportsEntryPoints(value as Record<string, unknown>, entryPoints);
         }
       });
     }

@@ -530,15 +530,15 @@ export class EnhancedTypeScriptParser extends BaseParser {
    * Check if node is optional
    */
   private isOptional(node: ts.Node): boolean {
-    return !!(node as ts.HasQuestionToken).questionToken;
+    return 'questionToken' in node && !!(node as any).questionToken;
   }
 
   /**
    * Check if node is readonly
    */
   private isReadonly(node: ts.Node): boolean {
-    return !!(node as ts.HasModifiers).modifiers?.some(
-      (m: ts.Modifier) => m.kind === ts.SyntaxKind.ReadonlyKeyword
+    return !!(node as any).modifiers?.some(
+      (m: any) => m.kind === ts.SyntaxKind.ReadonlyKeyword
     );
   }
 
@@ -583,8 +583,7 @@ export class EnhancedTypeScriptParser extends BaseParser {
               type: paramTag.typeExpression ? this.getNodeName(paramTag.typeExpression) : 'any',
               description: typeof paramTag.comment === 'string' ? paramTag.comment : '',
               optional: false,
-              defaultValue: undefined,
-            } as JSDocParameter);
+            });
           }
           break;
         }
@@ -595,7 +594,7 @@ export class EnhancedTypeScriptParser extends BaseParser {
             jsdoc.returns = {
               type: returnTag.typeExpression ? this.getNodeName(returnTag.typeExpression) : 'any',
               description: typeof returnTag.comment === 'string' ? returnTag.comment : '',
-            } as JSDocReturn;
+            };
           }
           break;
         }

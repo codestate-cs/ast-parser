@@ -27,31 +27,31 @@ export class ConfigValidator {
     const configObj = config as Record<string, unknown>;
 
     // Validate analyzers configuration
-    if (!configObj.analyzers) {
+    if (!configObj['analyzers']) {
       errors.push('Analyzers configuration is required');
     } else {
-      this.validateAnalyzers(configObj.analyzers, errors, warnings);
+      this.validateAnalyzers(configObj['analyzers'] as Record<string, unknown>, errors, warnings);
     }
 
     // Validate parsers configuration
-    if (!configObj.parsers) {
+    if (!configObj['parsers']) {
       errors.push('Parsers configuration is required');
     } else {
-      this.validateParsers(configObj.parsers, errors, warnings);
+      this.validateParsers(configObj['parsers'] as Record<string, unknown>, errors, warnings);
     }
 
     // Validate output configuration
-    if (!configObj.output) {
+    if (!configObj['output']) {
       errors.push('Output configuration is required');
     } else {
-      this.validateOutput(configObj.output, errors, warnings);
+      this.validateOutput(configObj['output'] as Record<string, unknown>, errors, warnings);
     }
 
     // Validate global configuration
-    if (!configObj.global) {
+    if (!configObj['global']) {
       warnings.push('Global configuration is missing, using defaults');
     } else {
-      this.validateGlobal(configObj.global, errors, warnings);
+      this.validateGlobal(configObj['global'] as Record<string, unknown>, errors, warnings);
     }
 
     return {
@@ -78,7 +78,7 @@ export class ConfigValidator {
       if (!analyzers[analyzer]) {
         errors.push(`Analyzer configuration for '${analyzer}' is required`);
       } else {
-        this.validateAnalyzerConfig(analyzer, analyzers[analyzer], errors, warnings);
+        this.validateAnalyzerConfig(analyzer, analyzers[analyzer] as Record<string, unknown>, errors, warnings);
       }
     });
   }
@@ -103,8 +103,8 @@ export class ConfigValidator {
 
     // Validate common properties
     if (
-      config.maxDepth !== undefined &&
-      (typeof config.maxDepth !== 'number' || config.maxDepth < 0)
+      config['maxDepth'] !== undefined &&
+      (typeof config['maxDepth'] !== 'number' || config['maxDepth'] < 0)
     ) {
       errors.push(`Max depth for '${analyzerName}' must be a non-negative number`);
     }
@@ -138,7 +138,7 @@ export class ConfigValidator {
     const numericProps = ['maxEntryPoints'];
 
     numericProps.forEach(prop => {
-      if (config[prop] !== undefined && (typeof config[prop] !== 'number' || config[prop] < 0)) {
+      if (config[prop] !== undefined && (typeof config[prop] !== 'number' || (config[prop] as number) < 0)) {
         errors.push(`Property '${prop}' for '${analyzerName}' must be a non-negative number`);
       }
     });
@@ -161,7 +161,7 @@ export class ConfigValidator {
       if (!parsers[parser]) {
         errors.push(`Parser configuration for '${parser}' is required`);
       } else {
-        this.validateParserConfig(parser, parsers[parser], errors, warnings);
+        this.validateParserConfig(parser, parsers[parser] as Record<string, unknown>, errors, warnings);
       }
     });
   }
@@ -186,8 +186,8 @@ export class ConfigValidator {
 
     // Validate max depth
     if (
-      config.maxDepth !== undefined &&
-      (typeof config.maxDepth !== 'number' || config.maxDepth < 0)
+      config['maxDepth'] !== undefined &&
+      (typeof config['maxDepth'] !== 'number' || config['maxDepth'] < 0)
     ) {
       errors.push(`Max depth for '${parserName}' must be a non-negative number`);
     }
@@ -229,17 +229,17 @@ export class ConfigValidator {
     }
 
     // Validate formats
-    if (!output.formats) {
+    if (!output['formats']) {
       errors.push('Output formats configuration is required');
     } else {
-      this.validateFormats(output.formats, errors, warnings);
+      this.validateFormats(output['formats'] as Record<string, unknown>, errors, warnings);
     }
 
     // Validate naming
-    if (!output.naming) {
+    if (!output['naming']) {
       errors.push('Output naming configuration is required');
     } else {
-      this.validateNaming(output.naming, errors, warnings);
+      this.validateNaming(output['naming'] as Record<string, unknown>, errors, warnings);
     }
   }
 
@@ -259,15 +259,15 @@ export class ConfigValidator {
       return;
     }
 
-    if (!formats.default || typeof formats.default !== 'string') {
+    if (!formats['default'] || typeof formats['default'] !== 'string') {
       errors.push('Default format must be a string');
     }
 
-    if (!Array.isArray(formats.available)) {
+    if (!Array.isArray(formats['available'])) {
       errors.push('Available formats must be an array');
     }
 
-    if (formats.options && typeof formats.options !== 'object') {
+    if (formats['options'] && typeof formats['options'] !== 'object') {
       errors.push('Format options must be an object');
     }
   }
@@ -288,15 +288,15 @@ export class ConfigValidator {
       return;
     }
 
-    if (!naming.default || typeof naming.default !== 'string') {
+    if (!naming['default'] || typeof naming['default'] !== 'string') {
       errors.push('Default naming strategy must be a string');
     }
 
-    if (!Array.isArray(naming.available)) {
+    if (!Array.isArray(naming['available'])) {
       errors.push('Available naming strategies must be an array');
     }
 
-    if (naming.options && typeof naming.options !== 'object') {
+    if (naming['options'] && typeof naming['options'] !== 'object') {
       errors.push('Naming options must be an object');
     }
   }
@@ -328,8 +328,8 @@ export class ConfigValidator {
 
     // Validate numeric properties
     if (
-      global.maxProcessingTime !== undefined &&
-      (typeof global.maxProcessingTime !== 'number' || global.maxProcessingTime < 0)
+      global['maxProcessingTime'] !== undefined &&
+      (typeof global['maxProcessingTime'] !== 'number' || global['maxProcessingTime'] < 0)
     ) {
       errors.push('Global maxProcessingTime must be a non-negative number');
     }
@@ -379,15 +379,15 @@ export class ConfigValidator {
     warnings: string[]
   ): void {
     if (typeof obj !== 'object' || obj === null) {
-      if (schema.type === 'object') {
+      if (schema['type'] === 'object') {
         errors.push(`Expected object at path '${path}', got ${typeof obj}`);
       }
       return;
     }
 
     // Validate required properties
-    if (schema.required) {
-      (schema.required as string[]).forEach((prop: string) => {
+    if (schema['required']) {
+      (schema['required'] as string[]).forEach((prop: string) => {
         if (!(prop in obj)) {
           errors.push(`Required property '${prop}' missing at path '${path}'`);
         }
@@ -395,20 +395,23 @@ export class ConfigValidator {
     }
 
     // Validate properties
-    if (schema.properties) {
+    if (schema['properties']) {
       Object.keys(obj).forEach(key => {
         const propPath = path ? `${path}.${key}` : key;
-        const propSchema = (schema.properties as Record<string, unknown>)[key];
+        const propSchema = (schema['properties'] as Record<string, unknown>)[key];
 
         if (propSchema) {
-          this.validateAgainstSchema(
-            obj[key] as Record<string, unknown>,
-            propSchema,
-            propPath,
-            errors,
-            warnings
-          );
-        } else if (!schema.additionalProperties) {
+          const objValue = obj[key];
+          if (objValue && typeof objValue === 'object' && objValue !== null) {
+            this.validateAgainstSchema(
+              objValue as Record<string, unknown>,
+              propSchema as Record<string, unknown>,
+              propPath,
+              errors,
+              warnings
+            );
+          }
+        } else if (!schema['additionalProperties']) {
           warnings.push(`Unknown property '${key}' at path '${path}'`);
         }
       });

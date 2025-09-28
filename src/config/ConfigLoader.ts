@@ -47,7 +47,7 @@ export class ConfigLoader {
 
     // Merge with defaults if requested
     if (mergeWithDefaults) {
-      config = this.mergeWithDefaults(config);
+      config = this.mergeWithDefaults(config as unknown as Record<string, unknown>);
     }
 
     // Validate configuration if requested
@@ -227,36 +227,7 @@ export class ConfigLoader {
    * @returns Merged configuration
    */
   private mergeWithDefaults(config: Record<string, unknown>): ConfigOptions {
-    return this.deepMerge(DefaultConfig, config);
-  }
-
-  /**
-   * Deep merges two objects
-   * @param target Target object
-   * @param source Source object
-   * @returns Merged object
-   */
-  private deepMerge(
-    target: Record<string, unknown>,
-    source: Record<string, unknown>
-  ): Record<string, unknown> {
-    const result = { ...target };
-
-    for (const key in source) {
-      if (Object.prototype.hasOwnProperty.call(source, key)) {
-        if (
-          typeof source[key] === 'object' &&
-          source[key] !== null &&
-          !Array.isArray(source[key])
-        ) {
-          result[key] = this.deepMerge(target[key] ?? {}, source[key]);
-        } else {
-          result[key] = source[key];
-        }
-      }
-    }
-
-    return result;
+    return { ...DefaultConfig, ...config } as ConfigOptions;
   }
 
   /**
