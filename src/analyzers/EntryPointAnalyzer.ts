@@ -1,6 +1,6 @@
 /**
  * EntryPointAnalyzer - Analyzes project entry points
- * 
+ *
  * This analyzer identifies and categorizes entry points in a project,
  * including main files, module exports, browser builds, type definitions,
  * and binary executables.
@@ -37,13 +37,13 @@ export class EntryPointAnalyzer {
    * Analyze entry points in a project
    */
   public analyze(
-    projectInfo: ProjectInfo, 
+    projectInfo: ProjectInfo,
     options?: EntryPointAnalysisOptions
   ): EntryPointAnalysisResult {
     const startTime = Date.now();
-    
+
     this.validateInput(projectInfo);
-    
+
     const defaultOptions: Required<EntryPointAnalysisOptions> = {
       entryPointPatterns: ['**/index.ts', '**/index.js', '**/main.ts', '**/main.js'],
       includePatterns: [],
@@ -51,11 +51,11 @@ export class EntryPointAnalyzer {
       analyzePackageJson: true,
       analyzeASTNodes: true,
       analyzeExports: true,
-      deduplicate: true
+      deduplicate: true,
     };
 
     const mergedOptions = { ...defaultOptions, ...options };
-    
+
     const entryPoints: EntryPointInfo[] = [];
     const sourcesAnalyzed: string[] = [];
 
@@ -84,7 +84,7 @@ export class EntryPointAnalyzer {
     const filteredEntryPoints = this.filterEntryPoints(entryPoints, mergedOptions);
 
     // Deduplicate if requested
-    const finalEntryPoints = mergedOptions.deduplicate 
+    const finalEntryPoints = mergedOptions.deduplicate
       ? this.deduplicateEntryPoints(filteredEntryPoints)
       : filteredEntryPoints;
 
@@ -92,10 +92,13 @@ export class EntryPointAnalyzer {
     const analysisDuration = endTime - startTime;
 
     // Calculate metadata
-    const entryPointsByType = finalEntryPoints.reduce((acc, ep) => {
-      acc[ep.type] = (acc[ep.type] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
+    const entryPointsByType = finalEntryPoints.reduce(
+      (acc, ep) => {
+        acc[ep.type] = (acc[ep.type] ?? 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>
+    );
 
     return {
       entryPoints: finalEntryPoints,
@@ -103,8 +106,8 @@ export class EntryPointAnalyzer {
         totalEntryPoints: finalEntryPoints.length,
         entryPointsByType,
         analysisDuration,
-        sourcesAnalyzed
-      }
+        sourcesAnalyzed,
+      },
     };
   }
 
@@ -130,10 +133,10 @@ export class EntryPointAnalyzer {
    */
   private analyzePackageJson(projectInfo: ProjectInfo): EntryPointInfo[] {
     const entryPoints: EntryPointInfo[] = [];
-    
+
     try {
       const packageJson = projectInfo.metadata?.['packageJson'] as any;
-      
+
       if (!packageJson || typeof packageJson !== 'object') {
         return entryPoints;
       }
@@ -143,10 +146,10 @@ export class EntryPointAnalyzer {
         if (Array.isArray(packageJson.main)) {
           packageJson.main.forEach((path: string) => {
             entryPoints.push({
-              path: path,
+              path,
               type: 'main',
               description: 'Main entry point',
-              metadata: { source: 'package.json.main' }
+              metadata: { source: 'package.json.main' },
             });
           });
         } else {
@@ -154,7 +157,7 @@ export class EntryPointAnalyzer {
             path: packageJson.main,
             type: 'main',
             description: 'Main entry point',
-            metadata: { source: 'package.json.main' }
+            metadata: { source: 'package.json.main' },
           });
         }
       }
@@ -164,10 +167,10 @@ export class EntryPointAnalyzer {
         if (Array.isArray(packageJson.module)) {
           packageJson.module.forEach((path: string) => {
             entryPoints.push({
-              path: path,
+              path,
               type: 'module',
               description: 'ES module entry point',
-              metadata: { source: 'package.json.module' }
+              metadata: { source: 'package.json.module' },
             });
           });
         } else {
@@ -175,7 +178,7 @@ export class EntryPointAnalyzer {
             path: packageJson.module,
             type: 'module',
             description: 'ES module entry point',
-            metadata: { source: 'package.json.module' }
+            metadata: { source: 'package.json.module' },
           });
         }
       }
@@ -183,10 +186,10 @@ export class EntryPointAnalyzer {
       // Types entry point
       if (packageJson.types || packageJson.typings) {
         entryPoints.push({
-          path: packageJson.types || packageJson.typings,
+          path: packageJson.types ?? packageJson.typings,
           type: 'types',
           description: 'TypeScript definitions',
-          metadata: { source: 'package.json.types' }
+          metadata: { source: 'package.json.types' },
         });
       }
 
@@ -196,7 +199,7 @@ export class EntryPointAnalyzer {
           path: packageJson.browser,
           type: 'browser',
           description: 'Browser-specific entry point',
-          metadata: { source: 'package.json.browser' }
+          metadata: { source: 'package.json.browser' },
         });
       }
 
@@ -207,7 +210,7 @@ export class EntryPointAnalyzer {
             path: packageJson.bin,
             type: 'bin',
             description: 'Binary executable',
-            metadata: { source: 'package.json.bin' }
+            metadata: { source: 'package.json.bin' },
           });
         } else if (typeof packageJson.bin === 'object') {
           Object.entries(packageJson.bin).forEach(([name, path]) => {
@@ -215,18 +218,17 @@ export class EntryPointAnalyzer {
               path: path as string,
               type: 'bin',
               description: `Binary executable: ${name}`,
-              metadata: { 
+              metadata: {
                 source: 'package.json.bin',
-                binaryName: name
-              }
+                binaryName: name,
+              },
             });
           });
         }
       }
-
-    } catch (error) {
+    } catch {
       // Handle malformed package.json gracefully
-      console.warn('Failed to parse package.json:', error);
+      // console.warn('Failed to parse package.json:', error);
     }
 
     return entryPoints;
@@ -236,7 +238,7 @@ export class EntryPointAnalyzer {
    * Analyze AST nodes for entry points
    */
   private analyzeASTNodes(
-    projectInfo: ProjectInfo, 
+    projectInfo: ProjectInfo,
     options: Required<EntryPointAnalysisOptions>
   ): EntryPointInfo[] {
     const entryPoints: EntryPointInfo[] = [];
@@ -248,11 +250,11 @@ export class EntryPointAnalyzer {
           path: node.filePath,
           type: 'main',
           description: 'AST entry point',
-          metadata: { 
+          metadata: {
             source: 'AST metadata',
             nodeId: node.id,
-            nodeType: node.nodeType
-          }
+            nodeType: node.nodeType,
+          },
         });
         return;
       }
@@ -263,11 +265,11 @@ export class EntryPointAnalyzer {
           path: node.filePath,
           type: 'main',
           description: 'Pattern-based entry point',
-          metadata: { 
+          metadata: {
             source: 'pattern matching',
             nodeId: node.id,
-            nodeType: node.nodeType
-          }
+            nodeType: node.nodeType,
+          },
         });
       }
     });
@@ -280,18 +282,17 @@ export class EntryPointAnalyzer {
    */
   private analyzeExports(projectInfo: ProjectInfo): EntryPointInfo[] {
     const entryPoints: EntryPointInfo[] = [];
-    
+
     try {
       const packageJson = projectInfo.metadata?.['packageJson'] as any;
-      
+
       if (!packageJson?.exports) {
         return entryPoints;
       }
 
       this.extractExportsEntryPoints(packageJson.exports, entryPoints);
-
-    } catch (error) {
-      console.warn('Failed to parse exports field:', error);
+    } catch {
+      // console.warn('Failed to parse exports field:', error);
     }
 
     return entryPoints;
@@ -306,7 +307,7 @@ export class EntryPointAnalyzer {
         path: exports,
         type: 'module',
         description: 'Export entry point',
-        metadata: { source: 'exports' }
+        metadata: { source: 'exports' },
       });
       return;
     }
@@ -318,7 +319,7 @@ export class EntryPointAnalyzer {
             path: exportPath,
             type: 'module',
             description: 'Export entry point',
-            metadata: { source: 'exports' }
+            metadata: { source: 'exports' },
           });
         }
       });
@@ -332,10 +333,10 @@ export class EntryPointAnalyzer {
             path: value,
             type: 'module',
             description: `Export entry point: ${key}`,
-            metadata: { 
+            metadata: {
               source: 'exports',
-              exportKey: key
-            }
+              exportKey: key,
+            },
           });
         } else if (typeof value === 'object' && value !== null) {
           // Handle conditional exports
@@ -363,7 +364,7 @@ export class EntryPointAnalyzer {
       if (parts.length === 2) {
         const before = parts[0];
         const after = parts[1];
-        
+
         if (before && after) {
           // Pattern like "src/**/*.ts"
           if (path.includes(before)) {
@@ -372,15 +373,18 @@ export class EntryPointAnalyzer {
             while ((index = path.indexOf(before, index)) !== -1) {
               const afterIndex = index + before.length;
               const remainingPath = path.substring(afterIndex);
-              
+
               // Convert after pattern to regex (handle * wildcards)
-              const afterRegex = after.replace(/^\//, '').replace(/\*/g, '[^/]*').replace(/\./g, '\\.');
-              const regex = new RegExp('^' + afterRegex + '$');
-              
+              const afterRegex = after
+                .replace(/^\//, '')
+                .replace(/\*/g, '[^/]*')
+                .replace(/\./g, '\\.');
+              const regex = new RegExp(`^${afterRegex}$`);
+
               if (regex.test(remainingPath)) {
                 return true;
               }
-              
+
               index += 1;
             }
           }
@@ -393,7 +397,7 @@ export class EntryPointAnalyzer {
         }
       }
     }
-    
+
     // Fallback to simple string matching for now
     return path.includes(pattern.replace(/\*/g, ''));
   }
@@ -402,13 +406,13 @@ export class EntryPointAnalyzer {
    * Filter entry points based on include/exclude patterns
    */
   private filterEntryPoints(
-    entryPoints: EntryPointInfo[], 
+    entryPoints: EntryPointInfo[],
     options: Required<EntryPointAnalysisOptions>
   ): EntryPointInfo[] {
     return entryPoints.filter(entryPoint => {
       // Check include patterns
       if (options.includePatterns.length > 0) {
-        const matchesInclude = options.includePatterns.some(pattern => 
+        const matchesInclude = options.includePatterns.some(pattern =>
           this.matchesPattern(entryPoint.path, pattern)
         );
         if (!matchesInclude) {
@@ -418,7 +422,7 @@ export class EntryPointAnalyzer {
 
       // Check exclude patterns
       if (options.excludePatterns.length > 0) {
-        const matchesExclude = options.excludePatterns.some(pattern => 
+        const matchesExclude = options.excludePatterns.some(pattern =>
           this.matchesPattern(entryPoint.path, pattern)
         );
         if (matchesExclude) {
@@ -438,7 +442,7 @@ export class EntryPointAnalyzer {
     return entryPoints.filter(entryPoint => {
       // Normalize path for comparison (remove leading ./ and trailing /)
       const normalizedPath = entryPoint.path.replace(/^\.\//, '').replace(/\/$/, '');
-      
+
       if (seen.has(normalizedPath)) {
         return false;
       }

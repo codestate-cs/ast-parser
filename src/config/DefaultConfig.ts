@@ -14,19 +14,19 @@ export const DefaultConfig: ConfigOptions = {
       includeExternal: true,
       includeInternal: true,
       maxDepth: 10,
-      includeCircular: true
+      includeCircular: true,
     },
     entryPoint: {
       includeMain: true,
       includeTypes: true,
       includePatterns: true,
-      maxEntryPoints: 100
+      maxEntryPoints: 100,
     },
     structure: {
       includeFiles: true,
       includeDirectories: true,
       maxDepth: 20,
-      includeSize: true
+      includeSize: true,
     },
     complexity: {
       includeCyclomatic: true,
@@ -34,8 +34,8 @@ export const DefaultConfig: ConfigOptions = {
       includeLinesOfCode: true,
       includeFunctionCount: true,
       includeClassCount: true,
-      includeInterfaceCount: true
-    }
+      includeInterfaceCount: true,
+    },
   },
   parsers: {
     typescript: {
@@ -43,7 +43,7 @@ export const DefaultConfig: ConfigOptions = {
       includeJSDoc: true,
       includeDecorators: true,
       includeGenerics: true,
-      maxDepth: 15
+      maxDepth: 15,
     },
     enhancedTypeScript: {
       includeAdvancedTypes: true,
@@ -51,8 +51,8 @@ export const DefaultConfig: ConfigOptions = {
       includeProperties: true,
       includeParameters: true,
       includeExports: true,
-      maxDepth: 20
-    }
+      maxDepth: 20,
+    },
   },
   output: {
     formats: {
@@ -61,21 +61,21 @@ export const DefaultConfig: ConfigOptions = {
       options: {
         json: {
           prettyPrint: true,
-          minify: false
+          minify: false,
         },
         xml: {
           prettyPrint: true,
-          includeDeclaration: true
+          includeDeclaration: true,
         },
         yaml: {
           prettyPrint: true,
-          indent: 2
+          indent: 2,
         },
         csv: {
           delimiter: ',',
-          includeHeaders: true
-        }
-      }
+          includeHeaders: true,
+        },
+      },
     },
     naming: {
       default: 'project',
@@ -85,33 +85,33 @@ export const DefaultConfig: ConfigOptions = {
           includeTimestamp: false,
           includeVersion: false,
           prefix: '',
-          suffix: ''
+          suffix: '',
         },
         timestamp: {
           includeTimestamp: true,
           includeVersion: false,
           prefix: '',
-          suffix: ''
+          suffix: '',
         },
         version: {
           includeTimestamp: false,
           includeVersion: true,
           prefix: '',
-          suffix: ''
+          suffix: '',
         },
         custom: {
           includeTimestamp: false,
           includeVersion: false,
           prefix: 'analysis-',
-          suffix: '-report'
-        }
-      }
-    }
+          suffix: '-report',
+        },
+      },
+    },
   },
   global: {
     verbose: false,
     debug: false,
     maxProcessingTime: 300000, // 5 minutes
-    parallel: true
-  }
+    parallel: true,
+  },
 };

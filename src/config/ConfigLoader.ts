@@ -31,7 +31,7 @@ export class ConfigLoader {
       configFile,
       envPrefix = 'CODESTATE_',
       mergeWithDefaults = true,
-      validate = true
+      validate = true,
     } = options;
 
     let config: ConfigOptions;
@@ -71,10 +71,10 @@ export class ConfigLoader {
       // For now, we'll return a mock configuration
       const fs = require('fs');
       const content = fs.readFileSync(filePath, 'utf8');
-      
+
       // Parse JSON configuration
       const config = JSON.parse(content);
-      
+
       // Validate the loaded configuration
       const validation = this.validator.validate(config);
       if (!validation.isValid) {
@@ -101,28 +101,52 @@ export class ConfigLoader {
         includeExternal: this.getEnvBoolean(`${prefix}ANALYZERS_DEPENDENCY_INCLUDE_EXTERNAL`, true),
         includeInternal: this.getEnvBoolean(`${prefix}ANALYZERS_DEPENDENCY_INCLUDE_INTERNAL`, true),
         maxDepth: this.getEnvNumber(`${prefix}ANALYZERS_DEPENDENCY_MAX_DEPTH`, 10),
-        includeCircular: this.getEnvBoolean(`${prefix}ANALYZERS_DEPENDENCY_INCLUDE_CIRCULAR`, true)
+        includeCircular: this.getEnvBoolean(`${prefix}ANALYZERS_DEPENDENCY_INCLUDE_CIRCULAR`, true),
       },
       entryPoint: {
         includeMain: this.getEnvBoolean(`${prefix}ANALYZERS_ENTRY_POINT_INCLUDE_MAIN`, true),
         includeTypes: this.getEnvBoolean(`${prefix}ANALYZERS_ENTRY_POINT_INCLUDE_TYPES`, true),
-        includePatterns: this.getEnvBoolean(`${prefix}ANALYZERS_ENTRY_POINT_INCLUDE_PATTERNS`, true),
-        maxEntryPoints: this.getEnvNumber(`${prefix}ANALYZERS_ENTRY_POINT_MAX_ENTRY_POINTS`, 100)
+        includePatterns: this.getEnvBoolean(
+          `${prefix}ANALYZERS_ENTRY_POINT_INCLUDE_PATTERNS`,
+          true
+        ),
+        maxEntryPoints: this.getEnvNumber(`${prefix}ANALYZERS_ENTRY_POINT_MAX_ENTRY_POINTS`, 100),
       },
       structure: {
         includeFiles: this.getEnvBoolean(`${prefix}ANALYZERS_STRUCTURE_INCLUDE_FILES`, true),
-        includeDirectories: this.getEnvBoolean(`${prefix}ANALYZERS_STRUCTURE_INCLUDE_DIRECTORIES`, true),
+        includeDirectories: this.getEnvBoolean(
+          `${prefix}ANALYZERS_STRUCTURE_INCLUDE_DIRECTORIES`,
+          true
+        ),
         maxDepth: this.getEnvNumber(`${prefix}ANALYZERS_STRUCTURE_MAX_DEPTH`, 20),
-        includeSize: this.getEnvBoolean(`${prefix}ANALYZERS_STRUCTURE_INCLUDE_SIZE`, true)
+        includeSize: this.getEnvBoolean(`${prefix}ANALYZERS_STRUCTURE_INCLUDE_SIZE`, true),
       },
       complexity: {
-        includeCyclomatic: this.getEnvBoolean(`${prefix}ANALYZERS_COMPLEXITY_INCLUDE_CYCLOMATIC`, true),
-        includeCognitive: this.getEnvBoolean(`${prefix}ANALYZERS_COMPLEXITY_INCLUDE_COGNITIVE`, true),
-        includeLinesOfCode: this.getEnvBoolean(`${prefix}ANALYZERS_COMPLEXITY_INCLUDE_LINES_OF_CODE`, true),
-        includeFunctionCount: this.getEnvBoolean(`${prefix}ANALYZERS_COMPLEXITY_INCLUDE_FUNCTION_COUNT`, true),
-        includeClassCount: this.getEnvBoolean(`${prefix}ANALYZERS_COMPLEXITY_INCLUDE_CLASS_COUNT`, true),
-        includeInterfaceCount: this.getEnvBoolean(`${prefix}ANALYZERS_COMPLEXITY_INCLUDE_INTERFACE_COUNT`, true)
-      }
+        includeCyclomatic: this.getEnvBoolean(
+          `${prefix}ANALYZERS_COMPLEXITY_INCLUDE_CYCLOMATIC`,
+          true
+        ),
+        includeCognitive: this.getEnvBoolean(
+          `${prefix}ANALYZERS_COMPLEXITY_INCLUDE_COGNITIVE`,
+          true
+        ),
+        includeLinesOfCode: this.getEnvBoolean(
+          `${prefix}ANALYZERS_COMPLEXITY_INCLUDE_LINES_OF_CODE`,
+          true
+        ),
+        includeFunctionCount: this.getEnvBoolean(
+          `${prefix}ANALYZERS_COMPLEXITY_INCLUDE_FUNCTION_COUNT`,
+          true
+        ),
+        includeClassCount: this.getEnvBoolean(
+          `${prefix}ANALYZERS_COMPLEXITY_INCLUDE_CLASS_COUNT`,
+          true
+        ),
+        includeInterfaceCount: this.getEnvBoolean(
+          `${prefix}ANALYZERS_COMPLEXITY_INCLUDE_INTERFACE_COUNT`,
+          true
+        ),
+      },
     };
 
     // Load parser configuration
@@ -130,32 +154,60 @@ export class ConfigLoader {
       typescript: {
         includeTypes: this.getEnvBoolean(`${prefix}PARSERS_TYPESCRIPT_INCLUDE_TYPES`, true),
         includeJSDoc: this.getEnvBoolean(`${prefix}PARSERS_TYPESCRIPT_INCLUDE_JSDOC`, true),
-        includeDecorators: this.getEnvBoolean(`${prefix}PARSERS_TYPESCRIPT_INCLUDE_DECORATORS`, true),
+        includeDecorators: this.getEnvBoolean(
+          `${prefix}PARSERS_TYPESCRIPT_INCLUDE_DECORATORS`,
+          true
+        ),
         includeGenerics: this.getEnvBoolean(`${prefix}PARSERS_TYPESCRIPT_INCLUDE_GENERICS`, true),
-        maxDepth: this.getEnvNumber(`${prefix}PARSERS_TYPESCRIPT_MAX_DEPTH`, 15)
+        maxDepth: this.getEnvNumber(`${prefix}PARSERS_TYPESCRIPT_MAX_DEPTH`, 15),
       },
       enhancedTypeScript: {
-        includeAdvancedTypes: this.getEnvBoolean(`${prefix}PARSERS_ENHANCED_TYPESCRIPT_INCLUDE_ADVANCED_TYPES`, true),
-        includeMethodSignatures: this.getEnvBoolean(`${prefix}PARSERS_ENHANCED_TYPESCRIPT_INCLUDE_METHOD_SIGNATURES`, true),
-        includeProperties: this.getEnvBoolean(`${prefix}PARSERS_ENHANCED_TYPESCRIPT_INCLUDE_PROPERTIES`, true),
-        includeParameters: this.getEnvBoolean(`${prefix}PARSERS_ENHANCED_TYPESCRIPT_INCLUDE_PARAMETERS`, true),
-        includeExports: this.getEnvBoolean(`${prefix}PARSERS_ENHANCED_TYPESCRIPT_INCLUDE_EXPORTS`, true),
-        maxDepth: this.getEnvNumber(`${prefix}PARSERS_ENHANCED_TYPESCRIPT_MAX_DEPTH`, 20)
-      }
+        includeAdvancedTypes: this.getEnvBoolean(
+          `${prefix}PARSERS_ENHANCED_TYPESCRIPT_INCLUDE_ADVANCED_TYPES`,
+          true
+        ),
+        includeMethodSignatures: this.getEnvBoolean(
+          `${prefix}PARSERS_ENHANCED_TYPESCRIPT_INCLUDE_METHOD_SIGNATURES`,
+          true
+        ),
+        includeProperties: this.getEnvBoolean(
+          `${prefix}PARSERS_ENHANCED_TYPESCRIPT_INCLUDE_PROPERTIES`,
+          true
+        ),
+        includeParameters: this.getEnvBoolean(
+          `${prefix}PARSERS_ENHANCED_TYPESCRIPT_INCLUDE_PARAMETERS`,
+          true
+        ),
+        includeExports: this.getEnvBoolean(
+          `${prefix}PARSERS_ENHANCED_TYPESCRIPT_INCLUDE_EXPORTS`,
+          true
+        ),
+        maxDepth: this.getEnvNumber(`${prefix}PARSERS_ENHANCED_TYPESCRIPT_MAX_DEPTH`, 20),
+      },
     };
 
     // Load output configuration
     config.output = {
       formats: {
-        default: process.env[`${prefix}OUTPUT_FORMATS_DEFAULT`] || 'json',
-        available: this.getEnvArray(`${prefix}OUTPUT_FORMATS_AVAILABLE`, ['json', 'xml', 'yaml', 'csv']),
-        options: this.getEnvObject(`${prefix}OUTPUT_FORMATS_OPTIONS`, {})
+        default: process.env[`${prefix}OUTPUT_FORMATS_DEFAULT`] ?? 'json',
+        available: this.getEnvArray(`${prefix}OUTPUT_FORMATS_AVAILABLE`, [
+          'json',
+          'xml',
+          'yaml',
+          'csv',
+        ]),
+        options: this.getEnvObject(`${prefix}OUTPUT_FORMATS_OPTIONS`, {}),
       },
       naming: {
-        default: process.env[`${prefix}OUTPUT_NAMING_DEFAULT`] || 'project',
-        available: this.getEnvArray(`${prefix}OUTPUT_NAMING_AVAILABLE`, ['project', 'timestamp', 'version', 'custom']),
-        options: this.getEnvObject(`${prefix}OUTPUT_NAMING_OPTIONS`, {})
-      }
+        default: process.env[`${prefix}OUTPUT_NAMING_DEFAULT`] ?? 'project',
+        available: this.getEnvArray(`${prefix}OUTPUT_NAMING_AVAILABLE`, [
+          'project',
+          'timestamp',
+          'version',
+          'custom',
+        ]),
+        options: this.getEnvObject(`${prefix}OUTPUT_NAMING_OPTIONS`, {}),
+      },
     };
 
     // Load global configuration
@@ -163,7 +215,7 @@ export class ConfigLoader {
       verbose: this.getEnvBoolean(`${prefix}GLOBAL_VERBOSE`, false),
       debug: this.getEnvBoolean(`${prefix}GLOBAL_DEBUG`, false),
       maxProcessingTime: this.getEnvNumber(`${prefix}GLOBAL_MAX_PROCESSING_TIME`, 300000),
-      parallel: this.getEnvBoolean(`${prefix}GLOBAL_PARALLEL`, true)
+      parallel: this.getEnvBoolean(`${prefix}GLOBAL_PARALLEL`, true),
     };
 
     return config as ConfigOptions;
@@ -189,8 +241,12 @@ export class ConfigLoader {
 
     for (const key in source) {
       if (source.hasOwnProperty(key)) {
-        if (typeof source[key] === 'object' && source[key] !== null && !Array.isArray(source[key])) {
-          result[key] = this.deepMerge(target[key] || {}, source[key]);
+        if (
+          typeof source[key] === 'object' &&
+          source[key] !== null &&
+          !Array.isArray(source[key])
+        ) {
+          result[key] = this.deepMerge(target[key] ?? {}, source[key]);
         } else {
           result[key] = source[key];
         }

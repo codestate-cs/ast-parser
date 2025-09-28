@@ -1,12 +1,12 @@
 /**
  * ComplexityAnalyzer
- * 
+ *
  * Analyzes code complexity metrics including:
  * - Cyclomatic complexity (number of linearly independent paths)
  * - Cognitive complexity (how difficult code is to understand)
  * - Lines of code counting
  * - Function, class, and interface counting
- * 
+ *
  * Supports filtering by include/exclude patterns and configurable thresholds.
  */
 
@@ -32,9 +32,12 @@ export class ComplexityAnalyzer {
   /**
    * Analyze project complexity
    */
-  public analyze(projectInfo: ProjectInfo, options?: ComplexityAnalysisOptions): ComplexityAnalysisResult {
+  public analyze(
+    projectInfo: ProjectInfo,
+    options?: ComplexityAnalysisOptions
+  ): ComplexityAnalysisResult {
     this.validateInput(projectInfo);
-    
+
     const defaultOptions: Required<ComplexityAnalysisOptions> = {
       includePatterns: ['**/*'],
       excludePatterns: ['**/*.test.ts', '**/*.spec.ts', '**/node_modules/**'],
@@ -47,7 +50,7 @@ export class ComplexityAnalyzer {
       maxCyclomaticComplexity: 10,
       maxCognitiveComplexity: 15,
       includeFileMetrics: false,
-      includeAggregatedMetrics: true
+      includeAggregatedMetrics: true,
     };
 
     const mergedOptions = { ...defaultOptions, ...options };
@@ -60,8 +63,8 @@ export class ComplexityAnalyzer {
         linesOfCode: 0,
         functionCount: 0,
         classCount: 0,
-        interfaceCount: 0
-      }
+        interfaceCount: 0,
+      },
     };
 
     if (mergedOptions.includeFileMetrics) {
@@ -99,10 +102,13 @@ export class ComplexityAnalyzer {
   /**
    * Filter AST nodes based on include/exclude patterns
    */
-  private filterNodes(astNodes: ASTNode[], options: Required<ComplexityAnalysisOptions>): ASTNode[] {
+  private filterNodes(
+    astNodes: ASTNode[],
+    options: Required<ComplexityAnalysisOptions>
+  ): ASTNode[] {
     return astNodes.filter(node => {
       const filePath = node.filePath || '';
-      
+
       // Check exclude patterns first
       if (options.excludePatterns.some(pattern => this.matchesPattern(filePath, pattern))) {
         return false;
@@ -121,8 +127,8 @@ export class ComplexityAnalyzer {
    * Calculate aggregated complexity metrics
    */
   private calculateAggregatedMetrics(
-    nodes: ASTNode[], 
-    result: ComplexityAnalysisResult, 
+    nodes: ASTNode[],
+    result: ComplexityAnalysisResult,
     options: Required<ComplexityAnalysisOptions>
   ): void {
     let totalCyclomaticComplexity = 0;
@@ -143,34 +149,36 @@ export class ComplexityAnalyzer {
       // Count entity types
       if (options.countFunctions && this.isFunction(node)) {
         functionCount++;
-        
+
         if (options.calculateCyclomaticComplexity || options.calculateCognitiveComplexity) {
           const complexities = this.calculateNodeComplexity(node, options);
-          
+
           if (options.calculateCyclomaticComplexity) {
             totalCyclomaticComplexity += complexities.cyclomatic;
-            
+
             if (complexities.cyclomatic > options.maxCyclomaticComplexity) {
               highComplexityFunctions.push({
-                name: node.name || 'unnamed',
-                filePath: node.filePath || '',
+                name: node.name ?? 'unnamed',
+                filePath: node.filePath ?? '',
                 cyclomaticComplexity: complexities.cyclomatic,
-                cognitiveComplexity: complexities.cognitive
+                cognitiveComplexity: complexities.cognitive,
               });
             }
           }
-          
+
           if (options.calculateCognitiveComplexity) {
             totalCognitiveComplexity += complexities.cognitive;
-            
+
             if (complexities.cognitive > options.maxCognitiveComplexity) {
-              const existing = highComplexityFunctions.find(f => f.name === node.name && f.filePath === node.filePath);
+              const existing = highComplexityFunctions.find(
+                f => f.name === node.name && f.filePath === node.filePath
+              );
               if (!existing) {
                 highComplexityFunctions.push({
-                  name: node.name || 'unnamed',
-                  filePath: node.filePath || '',
+                  name: node.name ?? 'unnamed',
+                  filePath: node.filePath ?? '',
                   cyclomaticComplexity: complexities.cyclomatic,
-                  cognitiveComplexity: complexities.cognitive
+                  cognitiveComplexity: complexities.cognitive,
                 });
               }
             }
@@ -197,7 +205,7 @@ export class ComplexityAnalyzer {
       linesOfCode: totalLinesOfCode,
       functionCount,
       classCount,
-      interfaceCount
+      interfaceCount,
     };
 
     if (highComplexityFunctions.length > 0) {
@@ -209,21 +217,21 @@ export class ComplexityAnalyzer {
    * Calculate file-level metrics
    */
   private calculateFileMetrics(
-    nodes: ASTNode[], 
-    result: ComplexityAnalysisResult, 
+    nodes: ASTNode[],
+    result: ComplexityAnalysisResult,
     options: Required<ComplexityAnalysisOptions>
   ): void {
     if (!result.fileMetrics) return;
 
     const fileGroups = new Map<string, ASTNode[]>();
-    
+
     // Group nodes by file
     for (const node of nodes) {
-      const filePath = node.filePath || 'unknown';
+      const filePath = node.filePath ?? 'unknown';
       if (!fileGroups.has(filePath)) {
         fileGroups.set(filePath, []);
       }
-      fileGroups.get(filePath)!.push(node);
+      fileGroups.get(filePath)?.push(node);
     }
 
     // Calculate metrics for each file
@@ -234,13 +242,13 @@ export class ComplexityAnalyzer {
         linesOfCode: 0,
         functionCount: 0,
         classCount: 0,
-        interfaceCount: 0
+        interfaceCount: 0,
       };
 
       for (const node of fileNodes) {
         if (options.countFunctions && this.isFunction(node)) {
           fileMetrics.functionCount++;
-          
+
           if (options.calculateCyclomaticComplexity || options.calculateCognitiveComplexity) {
             const complexities = this.calculateNodeComplexity(node, options);
             fileMetrics.cyclomaticComplexity += complexities.cyclomatic;
@@ -261,24 +269,27 @@ export class ComplexityAnalyzer {
         }
       }
 
-      result.fileMetrics!.set(filePath, fileMetrics);
+      result.fileMetrics.set(filePath, fileMetrics);
     }
   }
 
   /**
    * Calculate complexity metrics for a single node
    */
-  private calculateNodeComplexity(node: ASTNode, _options: Required<ComplexityAnalysisOptions>): {
+  private calculateNodeComplexity(
+    node: ASTNode,
+    _options: Required<ComplexityAnalysisOptions>
+  ): {
     cyclomatic: number;
     cognitive: number;
   } {
     let cyclomaticComplexity = 1; // Base complexity
     let cognitiveComplexity = 0;
 
-    this.traverseNode(node, (childNode) => {
+    this.traverseNode(node, childNode => {
       if (this.isControlStructure(childNode)) {
         cyclomaticComplexity++;
-        
+
         // Cognitive complexity increases with nesting
         const nestingLevel = this.getNestingLevel(childNode, node);
         cognitiveComplexity += 1 + nestingLevel;
@@ -293,7 +304,7 @@ export class ComplexityAnalyzer {
 
     return {
       cyclomatic: cyclomaticComplexity,
-      cognitive: cognitiveComplexity
+      cognitive: cognitiveComplexity,
     };
   }
 
@@ -317,10 +328,12 @@ export class ComplexityAnalyzer {
    * Check if a node is a function
    */
   private isFunction(node: ASTNode): boolean {
-    return node.nodeType === 'function' || 
-           node.type === 'function' || 
-           node.type === 'method' ||
-           node.type === 'arrow-function';
+    return (
+      node.nodeType === 'function' ||
+      node.type === 'function' ||
+      node.type === 'method' ||
+      node.type === 'arrow-function'
+    );
   }
 
   /**
@@ -351,30 +364,34 @@ export class ComplexityAnalyzer {
   private getNestingLevel(node: ASTNode, rootNode: ASTNode): number {
     let level = 0;
     let current = node.parent;
-    
+
     while (current && current !== rootNode) {
       if (this.isControlStructure(current)) {
         level++;
       }
       current = current.parent;
     }
-    
+
     return level;
   }
 
   /**
    * Traverse a node and its children
    */
-  private traverseNode(node: ASTNode, callback: (node: ASTNode) => void, visited: Set<string> = new Set()): void {
+  private traverseNode(
+    node: ASTNode,
+    callback: (node: ASTNode) => void,
+    visited: Set<string> = new Set()
+  ): void {
     const nodeId = node.id || `${node.filePath}:${node.start}:${node.end}`;
-    
+
     if (visited.has(nodeId)) {
       return; // Avoid circular references
     }
-    
+
     visited.add(nodeId);
     callback(node);
-    
+
     if (node.children && Array.isArray(node.children)) {
       for (const child of node.children) {
         this.traverseNode(child, callback, visited);
@@ -391,7 +408,7 @@ export class ComplexityAnalyzer {
     // Convert glob pattern to regex
     const regexPattern = this.globToRegex(pattern);
     const regex = new RegExp(regexPattern);
-    
+
     return regex.test(path);
   }
 
@@ -414,9 +431,9 @@ export class ComplexityAnalyzer {
 
     // If pattern doesn't start with /, allow matching anywhere in the path
     if (!pattern.startsWith('/')) {
-      regex = '.*' + regex;
+      regex = `.*${regex}`;
     }
 
-    return '^' + regex + '$';
+    return `^${regex}$`;
   }
 }

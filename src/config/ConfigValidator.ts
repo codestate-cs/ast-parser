@@ -55,7 +55,7 @@ export class ConfigValidator {
     return {
       isValid: errors.length === 0,
       errors,
-      warnings
+      warnings,
     };
   }
 
@@ -67,7 +67,7 @@ export class ConfigValidator {
    */
   private validateAnalyzers(analyzers: any, errors: string[], warnings: string[]): void {
     const requiredAnalyzers = ['dependency', 'entryPoint', 'structure', 'complexity'];
-    
+
     requiredAnalyzers.forEach(analyzer => {
       if (!analyzers[analyzer]) {
         errors.push(`Analyzer configuration for '${analyzer}' is required`);
@@ -84,20 +84,44 @@ export class ConfigValidator {
    * @param errors Error array to populate
    * @param warnings Warning array to populate
    */
-  private validateAnalyzerConfig(analyzerName: string, config: any, errors: string[], _warnings: string[]): void {
+  private validateAnalyzerConfig(
+    analyzerName: string,
+    config: any,
+    errors: string[],
+    _warnings: string[]
+  ): void {
     if (typeof config !== 'object') {
       errors.push(`Analyzer configuration for '${analyzerName}' must be an object`);
       return;
     }
 
     // Validate common properties
-    if (config.maxDepth !== undefined && (typeof config.maxDepth !== 'number' || config.maxDepth < 0)) {
+    if (
+      config.maxDepth !== undefined &&
+      (typeof config.maxDepth !== 'number' || config.maxDepth < 0)
+    ) {
       errors.push(`Max depth for '${analyzerName}' must be a non-negative number`);
     }
 
     // Validate boolean properties
-    const booleanProps = ['includeExternal', 'includeInternal', 'includeCircular', 'includeMain', 'includeTypes', 'includePatterns', 'includeFiles', 'includeDirectories', 'includeSize', 'includeCyclomatic', 'includeCognitive', 'includeLinesOfCode', 'includeFunctionCount', 'includeClassCount', 'includeInterfaceCount'];
-    
+    const booleanProps = [
+      'includeExternal',
+      'includeInternal',
+      'includeCircular',
+      'includeMain',
+      'includeTypes',
+      'includePatterns',
+      'includeFiles',
+      'includeDirectories',
+      'includeSize',
+      'includeCyclomatic',
+      'includeCognitive',
+      'includeLinesOfCode',
+      'includeFunctionCount',
+      'includeClassCount',
+      'includeInterfaceCount',
+    ];
+
     booleanProps.forEach(prop => {
       if (config[prop] !== undefined && typeof config[prop] !== 'boolean') {
         errors.push(`Property '${prop}' for '${analyzerName}' must be a boolean`);
@@ -106,7 +130,7 @@ export class ConfigValidator {
 
     // Validate numeric properties
     const numericProps = ['maxEntryPoints'];
-    
+
     numericProps.forEach(prop => {
       if (config[prop] !== undefined && (typeof config[prop] !== 'number' || config[prop] < 0)) {
         errors.push(`Property '${prop}' for '${analyzerName}' must be a non-negative number`);
@@ -122,7 +146,7 @@ export class ConfigValidator {
    */
   private validateParsers(parsers: any, errors: string[], warnings: string[]): void {
     const requiredParsers = ['typescript', 'enhancedTypeScript'];
-    
+
     requiredParsers.forEach(parser => {
       if (!parsers[parser]) {
         errors.push(`Parser configuration for '${parser}' is required`);
@@ -139,20 +163,38 @@ export class ConfigValidator {
    * @param errors Error array to populate
    * @param warnings Warning array to populate
    */
-  private validateParserConfig(parserName: string, config: any, errors: string[], _warnings: string[]): void {
+  private validateParserConfig(
+    parserName: string,
+    config: any,
+    errors: string[],
+    _warnings: string[]
+  ): void {
     if (typeof config !== 'object') {
       errors.push(`Parser configuration for '${parserName}' must be an object`);
       return;
     }
 
     // Validate max depth
-    if (config.maxDepth !== undefined && (typeof config.maxDepth !== 'number' || config.maxDepth < 0)) {
+    if (
+      config.maxDepth !== undefined &&
+      (typeof config.maxDepth !== 'number' || config.maxDepth < 0)
+    ) {
       errors.push(`Max depth for '${parserName}' must be a non-negative number`);
     }
 
     // Validate boolean properties
-    const booleanProps = ['includeTypes', 'includeJSDoc', 'includeDecorators', 'includeGenerics', 'includeAdvancedTypes', 'includeMethodSignatures', 'includeProperties', 'includeParameters', 'includeExports'];
-    
+    const booleanProps = [
+      'includeTypes',
+      'includeJSDoc',
+      'includeDecorators',
+      'includeGenerics',
+      'includeAdvancedTypes',
+      'includeMethodSignatures',
+      'includeProperties',
+      'includeParameters',
+      'includeExports',
+    ];
+
     booleanProps.forEach(prop => {
       if (config[prop] !== undefined && typeof config[prop] !== 'boolean') {
         errors.push(`Property '${prop}' for '${parserName}' must be a boolean`);
@@ -251,7 +293,7 @@ export class ConfigValidator {
 
     // Validate boolean properties
     const booleanProps = ['verbose', 'debug', 'parallel'];
-    
+
     booleanProps.forEach(prop => {
       if (global[prop] !== undefined && typeof global[prop] !== 'boolean') {
         errors.push(`Global property '${prop}' must be a boolean`);
@@ -259,7 +301,10 @@ export class ConfigValidator {
     });
 
     // Validate numeric properties
-    if (global.maxProcessingTime !== undefined && (typeof global.maxProcessingTime !== 'number' || global.maxProcessingTime < 0)) {
+    if (
+      global.maxProcessingTime !== undefined &&
+      (typeof global.maxProcessingTime !== 'number' || global.maxProcessingTime < 0)
+    ) {
       errors.push('Global maxProcessingTime must be a non-negative number');
     }
   }
@@ -285,7 +330,7 @@ export class ConfigValidator {
     return {
       isValid: errors.length === 0,
       errors,
-      warnings
+      warnings,
     };
   }
 
@@ -297,7 +342,13 @@ export class ConfigValidator {
    * @param errors Error array to populate
    * @param warnings Warning array to populate
    */
-  private validateAgainstSchema(obj: any, schema: any, path: string, errors: string[], warnings: string[]): void {
+  private validateAgainstSchema(
+    obj: any,
+    schema: any,
+    path: string,
+    errors: string[],
+    warnings: string[]
+  ): void {
     if (typeof obj !== 'object' || obj === null) {
       if (schema.type === 'object') {
         errors.push(`Expected object at path '${path}', got ${typeof obj}`);
@@ -319,7 +370,7 @@ export class ConfigValidator {
       Object.keys(obj).forEach(key => {
         const propPath = path ? `${path}.${key}` : key;
         const propSchema = schema.properties[key];
-        
+
         if (propSchema) {
           this.validateAgainstSchema(obj[key], propSchema, propPath, errors, warnings);
         } else if (!schema.additionalProperties) {

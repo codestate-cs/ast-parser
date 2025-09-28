@@ -1,4 +1,11 @@
-import { ProjectInfo, ProjectStructureAnalysis, ProjectPattern, ProjectArchitecture, ArchitectureLayer, ArchitectureModule } from '../types';
+import {
+  ProjectInfo,
+  ProjectStructureAnalysis,
+  ProjectPattern,
+  ProjectArchitecture,
+  ArchitectureLayer,
+  ArchitectureModule,
+} from '../types';
 import { StructureAnalysisOptions } from '../types/options';
 import { InvalidInputError } from '../utils/error';
 
@@ -48,15 +55,15 @@ export class StructureAnalyzer {
       maxDepth: 10,
       includeFileStats: false,
       includeDirectoryStats: false,
-      ...options
+      ...options,
     };
 
-    const structure = projectInfo.structure || {
+    const structure = projectInfo.structure ?? {
       directories: [],
       files: [],
       totalFiles: 0,
       totalLines: 0,
-      totalSize: 0
+      totalSize: 0,
     };
 
     const filteredStructure = this.filterStructure(structure, resolvedOptions);
@@ -64,19 +71,23 @@ export class StructureAnalyzer {
     const structureAnalysis: ProjectStructureAnalysis = {
       depth: resolvedOptions.analyzeDepth ? this.calculateDepth(filteredStructure) : 0,
       breadth: resolvedOptions.analyzeBreadth ? this.calculateBreadth(filteredStructure) : 0,
-      organization: resolvedOptions.analyzeOrganization ? this.detectOrganization(filteredStructure) : 'flat',
+      organization: resolvedOptions.analyzeOrganization
+        ? this.detectOrganization(filteredStructure)
+        : 'flat',
       patterns: resolvedOptions.analyzePatterns ? this.detectPatterns(filteredStructure) : [],
-      architecture: resolvedOptions.analyzeArchitecture ? this.analyzeArchitecture(filteredStructure) : {
-        type: 'monolithic',
-        description: 'Monolithic architecture',
-        layers: [],
-        modules: [],
-        dependencies: []
-      }
+      architecture: resolvedOptions.analyzeArchitecture
+        ? this.analyzeArchitecture(filteredStructure)
+        : {
+            type: 'monolithic',
+            description: 'Monolithic architecture',
+            layers: [],
+            modules: [],
+            dependencies: [],
+          },
     };
 
     const result: StructureAnalysisOutput = {
-      structureAnalysis
+      structureAnalysis,
     };
 
     if (resolvedOptions.includeFileStats) {
@@ -106,12 +117,9 @@ export class StructureAnalyzer {
   /**
    * Filter structure based on include/exclude patterns
    */
-  private filterStructure(
-    structure: any,
-    options: Required<StructureAnalysisOptions>
-  ): any {
-    let filteredDirectories = structure.directories || [];
-    const filteredFiles = structure.files || [];
+  private filterStructure(structure: any, options: Required<StructureAnalysisOptions>): any {
+    let filteredDirectories = structure.directories ?? [];
+    const filteredFiles = structure.files ?? [];
 
     // Filter directories by maxDepth (only if explicitly set)
     if (options.maxDepth !== undefined && options.maxDepth !== 10) {
@@ -121,7 +129,7 @@ export class StructureAnalyzer {
           depth = dir.depth;
         } else {
           // Calculate depth from path by counting directory separators
-          depth = (dir.path || '').split('/').length - 1;
+          depth = (dir.path ?? '').split('/').length - 1;
         }
         return depth <= options.maxDepth;
       });
@@ -130,9 +138,9 @@ export class StructureAnalyzer {
     return {
       directories: filteredDirectories,
       files: filteredFiles,
-      totalFiles: structure.totalFiles || 0,
-      totalLines: structure.totalLines || 0,
-      totalSize: structure.totalSize || 0
+      totalFiles: structure.totalFiles ?? 0,
+      totalLines: structure.totalLines ?? 0,
+      totalSize: structure.totalSize ?? 0,
     };
   }
 
@@ -140,27 +148,29 @@ export class StructureAnalyzer {
    * Calculate project depth
    */
   private calculateDepth(structure: any): number {
-    const directories = structure.directories || [];
+    const directories = structure.directories ?? [];
     if (directories.length === 0) {
       return 0;
     }
 
-    return Math.max(...directories.map((dir: any) => {
-      // Use depth property if available, otherwise calculate from path
-      if (dir.depth !== undefined) {
-        return Math.max(0, dir.depth);
-      }
-      // Calculate depth from path by counting directory separators
-      const pathDepth = (dir.path || '').split('/').length - 1;
-      return Math.max(0, pathDepth);
-    }));
+    return Math.max(
+      ...directories.map((dir: any) => {
+        // Use depth property if available, otherwise calculate from path
+        if (dir.depth !== undefined) {
+          return Math.max(0, dir.depth);
+        }
+        // Calculate depth from path by counting directory separators
+        const pathDepth = (dir.path ?? '').split('/').length - 1;
+        return Math.max(0, pathDepth);
+      })
+    );
   }
 
   /**
    * Calculate project breadth (max directories at any single depth)
    */
   private calculateBreadth(structure: any): number {
-    const directories = structure.directories || [];
+    const directories = structure.directories ?? [];
     if (directories.length === 0) {
       return 0;
     }
@@ -180,9 +190,9 @@ export class StructureAnalyzer {
         depth = Math.max(0, dir.depth);
       } else {
         // Calculate depth from path by counting directory separators
-        depth = Math.max(0, (dir.path || '').split('/').length - 1);
+        depth = Math.max(0, (dir.path ?? '').split('/').length - 1);
       }
-      depthCounts[depth] = (depthCounts[depth] || 0) + 1;
+      depthCounts[depth] = (depthCounts[depth] ?? 0) + 1;
     });
 
     return Math.max(...Object.values(depthCounts));
@@ -192,7 +202,7 @@ export class StructureAnalyzer {
    * Detect project organization pattern
    */
   private detectOrganization(structure: any): 'flat' | 'nested' | 'modular' | 'monorepo' {
-    const directories = structure.directories || [];
+    const directories = structure.directories ?? [];
     if (directories.length === 0) {
       return 'flat';
     }
@@ -201,11 +211,12 @@ export class StructureAnalyzer {
 
     // Check for monorepo pattern (apps/, packages/, tools/ at root level)
     const rootLevelDirs = directories.filter((dir: any) => {
-      const depth = dir.depth !== undefined ? dir.depth : Math.max(0, (dir.path || '').split('/').length - 1);
+      const depth =
+        dir.depth !== undefined ? dir.depth : Math.max(0, (dir.path ?? '').split('/').length - 1);
       return depth === 1;
     });
-    const rootLevelNames = rootLevelDirs.map((dir: any) => dir.name || '');
-    
+    const rootLevelNames = rootLevelDirs.map((dir: any) => dir.name ?? '');
+
     if (rootLevelNames.includes('apps') && rootLevelNames.includes('packages')) {
       return 'monorepo';
     }
@@ -215,8 +226,11 @@ export class StructureAnalyzer {
       const packagesDir = rootLevelDirs.find((dir: any) => dir.name === 'packages');
       if (packagesDir) {
         const packageSubdirs = directories.filter((dir: any) => {
-          const depth = dir.depth !== undefined ? dir.depth : Math.max(0, (dir.path || '').split('/').length - 1);
-          return dir.path && dir.path.startsWith(packagesDir.path + '/') && depth === 2;
+          const depth =
+            dir.depth !== undefined
+              ? dir.depth
+              : Math.max(0, (dir.path ?? '').split('/').length - 1);
+          return dir.path?.startsWith(`${packagesDir.path}/`) && depth === 2;
         });
         if (packageSubdirs.length > 1) {
           return 'modular';
@@ -237,35 +251,43 @@ export class StructureAnalyzer {
    * Detect project patterns
    */
   private detectPatterns(structure: any): ProjectPattern[] {
-    const directories = structure.directories || [];
+    const directories = structure.directories ?? [];
     const patterns: ProjectPattern[] = [];
 
     // Common patterns
     const commonPatterns = [
-      { name: 'components', type: 'structural' as const, description: 'Component-based architecture' },
+      {
+        name: 'components',
+        type: 'structural' as const,
+        description: 'Component-based architecture',
+      },
       { name: 'hooks', type: 'structural' as const, description: 'Custom hooks pattern' },
       { name: 'utils', type: 'structural' as const, description: 'Utility functions' },
       { name: 'services', type: 'structural' as const, description: 'Service layer pattern' },
       { name: 'types', type: 'structural' as const, description: 'Type definitions' },
-      { name: 'constants', type: 'structural' as const, description: 'Constants and configuration' },
+      {
+        name: 'constants',
+        type: 'structural' as const,
+        description: 'Constants and configuration',
+      },
       { name: 'assets', type: 'structural' as const, description: 'Static assets' },
       { name: 'styles', type: 'structural' as const, description: 'Styling files' },
       { name: 'tests', type: 'structural' as const, description: 'Test files' },
-      { name: 'docs', type: 'structural' as const, description: 'Documentation' }
+      { name: 'docs', type: 'structural' as const, description: 'Documentation' },
     ];
 
     commonPatterns.forEach(pattern => {
-      const matchingDirs = directories.filter((dir: any) => 
-        dir.name && dir.name.toLowerCase().includes(pattern.name.toLowerCase())
+      const matchingDirs = directories.filter((dir: any) =>
+        dir.name?.toLowerCase().includes(pattern.name.toLowerCase())
       );
-      
+
       if (matchingDirs.length > 0) {
         patterns.push({
           name: pattern.name,
           type: pattern.type,
           description: pattern.description,
           confidence: Math.min(100, matchingDirs.length * 20),
-          examples: matchingDirs.map((dir: any) => dir.path || '')
+          examples: matchingDirs.map((dir: any) => dir.path ?? ''),
         });
       }
     });
@@ -277,14 +299,12 @@ export class StructureAnalyzer {
    * Analyze project architecture
    */
   private analyzeArchitecture(structure: any): ProjectArchitecture {
-    const directories = structure.directories || [];
-    
+    const directories = structure.directories ?? [];
+
     // Check for layered architecture
     const layeredPatterns = ['presentation', 'business', 'data', 'infrastructure'];
-    const layeredDirs = directories.filter((dir: any) => 
-      layeredPatterns.some(pattern => 
-        dir.name && dir.name.toLowerCase().includes(pattern)
-      )
+    const layeredDirs = directories.filter((dir: any) =>
+      layeredPatterns.some(pattern => dir.name?.toLowerCase().includes(pattern))
     );
 
     if (layeredDirs.length >= 2) {
@@ -293,13 +313,13 @@ export class StructureAnalyzer {
         description: 'Layered architecture with separation of concerns',
         layers: this.buildArchitectureLayers(layeredDirs),
         modules: [],
-        dependencies: []
+        dependencies: [],
       };
     }
 
     // Check for modular architecture
-    const modularDirs = directories.filter((dir: any) => 
-      dir.name && (dir.name.includes('module') || dir.name.includes('feature'))
+    const modularDirs = directories.filter(
+      (dir: any) => dir.name && (dir.name.includes('module') || dir.name.includes('feature'))
     );
 
     if (modularDirs.length > 0) {
@@ -308,7 +328,7 @@ export class StructureAnalyzer {
         description: 'Modular architecture with feature-based organization',
         layers: [],
         modules: this.buildArchitectureModules(modularDirs),
-        dependencies: []
+        dependencies: [],
       };
     }
 
@@ -318,7 +338,7 @@ export class StructureAnalyzer {
       description: 'Monolithic architecture',
       layers: [],
       modules: [],
-      dependencies: []
+      dependencies: [],
     };
   }
 
@@ -327,15 +347,15 @@ export class StructureAnalyzer {
    */
   private buildArchitectureLayers(directories: any[]): ArchitectureLayer[] {
     const layers: ArchitectureLayer[] = [];
-    
+
     directories.forEach(dir => {
       const layerType = this.determineLayerType(dir.name);
       layers.push({
-        name: dir.name || 'unknown',
+        name: dir.name ?? 'unknown',
         type: layerType,
         description: `${layerType} layer`,
         files: [],
-        dependencies: []
+        dependencies: [],
       });
     });
 
@@ -347,16 +367,16 @@ export class StructureAnalyzer {
    */
   private buildArchitectureModules(directories: any[]): ArchitectureModule[] {
     const modules: ArchitectureModule[] = [];
-    
+
     directories.forEach(dir => {
       const moduleType = this.determineModuleType(dir.name);
       modules.push({
-        name: dir.name || 'unknown',
+        name: dir.name ?? 'unknown',
         type: moduleType,
         description: `${moduleType} module`,
         files: [],
         exports: [],
-        imports: []
+        imports: [],
       });
     });
 
@@ -366,31 +386,47 @@ export class StructureAnalyzer {
   /**
    * Determine layer type from directory name
    */
-  private determineLayerType(name: string): 'presentation' | 'business' | 'data' | 'infrastructure' | 'other' {
+  private determineLayerType(
+    name: string
+  ): 'presentation' | 'business' | 'data' | 'infrastructure' | 'other' {
     const lowerName = name.toLowerCase();
-    
-    if (lowerName.includes('presentation') || lowerName.includes('ui') || lowerName.includes('view')) {
+
+    if (
+      lowerName.includes('presentation') ||
+      lowerName.includes('ui') ||
+      lowerName.includes('view')
+    ) {
       return 'presentation';
     }
-    if (lowerName.includes('business') || lowerName.includes('logic') || lowerName.includes('service')) {
+    if (
+      lowerName.includes('business') ||
+      lowerName.includes('logic') ||
+      lowerName.includes('service')
+    ) {
       return 'business';
     }
     if (lowerName.includes('data') || lowerName.includes('model') || lowerName.includes('entity')) {
       return 'data';
     }
-    if (lowerName.includes('infrastructure') || lowerName.includes('config') || lowerName.includes('util')) {
+    if (
+      lowerName.includes('infrastructure') ||
+      lowerName.includes('config') ||
+      lowerName.includes('util')
+    ) {
       return 'infrastructure';
     }
-    
+
     return 'other';
   }
 
   /**
    * Determine module type from directory name
    */
-  private determineModuleType(name: string): 'feature' | 'shared' | 'core' | 'infrastructure' | 'other' {
+  private determineModuleType(
+    name: string
+  ): 'feature' | 'shared' | 'core' | 'infrastructure' | 'other' {
     const lowerName = name.toLowerCase();
-    
+
     if (lowerName.includes('feature') || lowerName.includes('component')) {
       return 'feature';
     }
@@ -403,7 +439,7 @@ export class StructureAnalyzer {
     if (lowerName.includes('infrastructure') || lowerName.includes('config')) {
       return 'infrastructure';
     }
-    
+
     return 'other';
   }
 
@@ -417,17 +453,17 @@ export class StructureAnalyzer {
     averageFileSize: number;
     averageLinesPerFile: number;
   } {
-    const files = structure.files || [];
+    const files = structure.files ?? [];
     const totalFiles = files.length;
-    const totalLines = files.reduce((sum: number, file: any) => sum + (file.lines || 0), 0);
-    const totalSize = files.reduce((sum: number, file: any) => sum + (file.size || 0), 0);
+    const totalLines = files.reduce((sum: number, file: any) => sum + (file.lines ?? 0), 0);
+    const totalSize = files.reduce((sum: number, file: any) => sum + (file.size ?? 0), 0);
 
     return {
       totalFiles,
       totalLines,
       totalSize,
       averageFileSize: totalFiles > 0 ? totalSize / totalFiles : 0,
-      averageLinesPerFile: totalFiles > 0 ? totalLines / totalFiles : 0
+      averageLinesPerFile: totalFiles > 0 ? totalLines / totalFiles : 0,
     };
   }
 
@@ -440,22 +476,22 @@ export class StructureAnalyzer {
     averageDepth: number;
     directoriesByDepth: Record<number, number>;
   } {
-    const directories = structure.directories || [];
+    const directories = structure.directories ?? [];
     const totalDirectories = directories.length;
     const maxDepth = this.calculateDepth(structure);
-    
+
     const depthCounts: Record<number, number> = {};
     let totalDepth = 0;
-    
+
     directories.forEach((dir: any) => {
       let depth: number;
       if (dir.depth !== undefined) {
         depth = Math.max(0, dir.depth);
       } else {
         // Calculate depth from path by counting directory separators
-        depth = Math.max(0, (dir.path || '').split('/').length - 1);
+        depth = Math.max(0, (dir.path ?? '').split('/').length - 1);
       }
-      depthCounts[depth] = (depthCounts[depth] || 0) + 1;
+      depthCounts[depth] = (depthCounts[depth] ?? 0) + 1;
       totalDepth += depth;
     });
 
@@ -463,7 +499,7 @@ export class StructureAnalyzer {
       totalDirectories,
       maxDepth,
       averageDepth: totalDirectories > 0 ? totalDepth / totalDirectories : 0,
-      directoriesByDepth: depthCounts
+      directoriesByDepth: depthCounts,
     };
   }
 }

@@ -34,7 +34,7 @@ export class OutputManager {
     strategy: 'file',
     prettyPrint: true,
     encoding: 'utf8',
-    compression: 'none'
+    compression: 'none',
   };
 
   /**
@@ -91,16 +91,16 @@ export class OutputManager {
           success: false,
           error: 'Invalid project data provided',
           metadata: {
-            format: options?.format || this.defaultOptions.format || 'unknown',
-            strategy: options?.strategy || this.defaultOptions.strategy || 'unknown',
-            timestamp: new Date()
-          }
+            format: options?.format ?? this.defaultOptions.format ?? 'unknown',
+            strategy: options?.strategy ?? this.defaultOptions.strategy ?? 'unknown',
+            timestamp: new Date(),
+          },
         };
       }
 
       // Merge options with defaults
       const mergedOptions = this.mergeOptions(options);
-      
+
       // Get format
       const format = this.getFormat(mergedOptions.format);
       if (!format) {
@@ -109,9 +109,9 @@ export class OutputManager {
           error: `Unsupported format: ${mergedOptions.format}`,
           metadata: {
             format: mergedOptions.format,
-            strategy: mergedOptions.strategy!,
-            timestamp: new Date()
-          }
+            strategy: mergedOptions.strategy ?? 'file',
+            timestamp: new Date(),
+          },
         };
       }
 
@@ -123,35 +123,34 @@ export class OutputManager {
           error: 'Project data validation failed',
           metadata: {
             format: mergedOptions.format,
-            strategy: mergedOptions.strategy!,
-            timestamp: new Date()
-          }
+            strategy: mergedOptions.strategy ?? 'file',
+            timestamp: new Date(),
+          },
         };
       }
 
       // Generate output based on strategy
       const result = await this.executeStrategy(data, format, mergedOptions);
-      
+
       return {
         success: true,
         ...result,
         metadata: {
           format: mergedOptions.format,
           strategy: mergedOptions.strategy!,
-          size: result.data?.length || 0,
-          timestamp: new Date()
-        }
+          size: result.data?.length ?? 0,
+          timestamp: new Date(),
+        },
       };
-
     } catch (error) {
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error occurred',
         metadata: {
-          format: options?.format || this.defaultOptions.format || 'unknown',
-          strategy: options?.strategy || this.defaultOptions.strategy || 'unknown',
-          timestamp: new Date()
-        }
+          format: options?.format ?? this.defaultOptions.format ?? 'unknown',
+          strategy: options?.strategy ?? this.defaultOptions.strategy ?? 'unknown',
+          timestamp: new Date(),
+        },
       };
     }
   }
@@ -175,15 +174,15 @@ export class OutputManager {
    */
   private mergeOptions(options?: Partial<OutputOptions>): OutputOptions {
     const merged = { ...this.defaultOptions, ...options };
-    
+
     // Ensure required fields have defaults and preserve all properties
     return {
       ...merged,
-      format: merged.format || 'json',
-      strategy: merged.strategy || 'file',
+      format: merged.format ?? 'json',
+      strategy: merged.strategy ?? 'file',
       prettyPrint: merged.prettyPrint ?? true,
-      encoding: merged.encoding || 'utf8',
-      compression: merged.compression || 'none'
+      encoding: merged.encoding ?? 'utf8',
+      compression: merged.compression ?? 'none',
     } as OutputOptions;
   }
 
@@ -191,7 +190,7 @@ export class OutputManager {
    * Get format instance
    */
   private getFormat(formatName: string): BaseFormat | null {
-    return this.formats.get(formatName.toLowerCase()) || null;
+    return this.formats.get(formatName.toLowerCase()) ?? null;
   }
 
   /**
@@ -223,17 +222,17 @@ export class OutputManager {
     options: OutputOptions
   ): Promise<{ outputPath: string }> {
     const outputPath = this.generateOutputPath(data, options);
-    
+
     // Ensure output directory exists
     const outputDir = path.dirname(outputPath);
     await fs.mkdir(outputDir, { recursive: true });
-    
+
     // Generate output data
     const outputData = await format.serialize(data, options);
-    
+
     // Write to file
     await fs.writeFile(outputPath, outputData, { encoding: options.encoding as BufferEncoding });
-    
+
     return { outputPath };
   }
 
@@ -246,16 +245,16 @@ export class OutputManager {
     options: OutputOptions
   ): Promise<{ stream: NodeJS.ReadableStream }> {
     const outputData = await format.serialize(data, options);
-    
+
     // Create readable stream
     const { Readable } = require('stream');
     const stream = new Readable({
       read() {
         this.push(outputData);
         this.push(null); // End stream
-      }
+      },
     });
-    
+
     return { stream };
   }
 
@@ -289,16 +288,15 @@ export class OutputManager {
     // Generate filename from project data
     const baseName = this.sanitizeFileName(data.name);
     const extension = this.getFileExtension(options.format);
-    const timestamp = options.includeTimestamp ? 
-      `-${new Date().toISOString().split('T')[0]}` : '';
-    
+    const timestamp = options.includeTimestamp ? `-${new Date().toISOString().split('T')[0]}` : '';
+
     const fileName = `${baseName}${timestamp}.${extension}`;
-    
+
     // Use output directory if provided
     if (options.outputDir) {
       return path.join(options.outputDir, fileName);
     }
-    
+
     // Default to current directory
     return path.resolve(fileName);
   }
@@ -319,18 +317,18 @@ export class OutputManager {
    */
   private getFileExtension(format: string): string {
     const formatInstance = this.getFormat(format);
-    if (formatInstance && formatInstance.supportedExtensions && formatInstance.supportedExtensions.length > 0) {
-      return formatInstance.supportedExtensions[0]!.substring(1); // Remove leading dot
+    if (formatInstance?.supportedExtensions?.length && formatInstance.supportedExtensions.length > 0) {
+      return formatInstance.supportedExtensions[0]?.substring(1) ?? 'txt'; // Remove leading dot
     }
-    
+
     // Default extensions
     const defaultExtensions: Record<string, string> = {
       json: 'json',
       xml: 'xml',
       yaml: 'yaml',
-      csv: 'csv'
+      csv: 'csv',
     };
-    
-    return defaultExtensions[format] || 'txt';
+
+    return defaultExtensions[format] ?? 'txt';
   }
 }

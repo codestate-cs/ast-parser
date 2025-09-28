@@ -1,6 +1,6 @@
 /**
  * DependencyAnalyzer - Analyzes project dependencies and relationships
- * 
+ *
  * This analyzer provides comprehensive dependency analysis including:
  * - Internal and external dependencies
  * - Circular dependency detection
@@ -177,7 +177,7 @@ export class DependencyAnalyzer {
     maxDepth: 10,
     detectCircularDependencies: true,
     includeVersionAnalysis: true,
-    includeUsageStatistics: true
+    includeUsageStatistics: true,
   };
 
   /**
@@ -200,10 +200,7 @@ export class DependencyAnalyzer {
     });
 
     // Filter relations based on include/exclude patterns
-    const filteredRelations = this.filterRelations(
-      projectInfo.relations,
-      mergedOptions
-    );
+    const filteredRelations = this.filterRelations(projectInfo.relations, mergedOptions);
 
     // Analyze internal dependencies
     const internalDependencies = this.analyzeInternalDependencies(
@@ -248,7 +245,7 @@ export class DependencyAnalyzer {
       circularDependencies,
       metrics,
       versionAnalysis,
-      usageStatistics
+      usageStatistics,
     };
   }
 
@@ -287,26 +284,28 @@ export class DependencyAnalyzer {
       }
 
       // If no patterns specified, return all valid relations
-      if (options.includePatterns.length === 0 || 
-          (options.includePatterns.length === 1 && options.includePatterns[0] === '**/*')) {
+      if (
+        options.includePatterns.length === 0 ||
+        (options.includePatterns.length === 1 && options.includePatterns[0] === '**/*')
+      ) {
         // Only apply exclude patterns
-        const matchesExclude = options.excludePatterns.some(pattern =>
-          this.matchesPattern(relation.from, pattern) || 
-          this.matchesPattern(relation.to, pattern)
+        const matchesExclude = options.excludePatterns.some(
+          pattern =>
+            this.matchesPattern(relation.from, pattern) || this.matchesPattern(relation.to, pattern)
         );
         return !matchesExclude;
       }
 
       // Check include patterns
-      const matchesInclude = options.includePatterns.some(pattern =>
-        this.matchesPattern(relation.from, pattern) || 
-        this.matchesPattern(relation.to, pattern)
+      const matchesInclude = options.includePatterns.some(
+        pattern =>
+          this.matchesPattern(relation.from, pattern) || this.matchesPattern(relation.to, pattern)
       );
 
       // Check exclude patterns
-      const matchesExclude = options.excludePatterns.some(pattern =>
-        this.matchesPattern(relation.from, pattern) || 
-        this.matchesPattern(relation.to, pattern)
+      const matchesExclude = options.excludePatterns.some(
+        pattern =>
+          this.matchesPattern(relation.from, pattern) || this.matchesPattern(relation.to, pattern)
       );
 
       return matchesInclude && !matchesExclude;
@@ -321,27 +320,27 @@ export class DependencyAnalyzer {
     if (path.startsWith('external:')) {
       return false;
     }
-    
+
     // For patterns with **, use a more precise approach
     if (pattern.includes('**')) {
       // Handle patterns like **/test/**/*.ts
       if (pattern.startsWith('**/') && pattern.includes('/**/')) {
         // Extract the directory name between **/ and /**
         const match = pattern.match(/^\*\*\/([^/]+)\/\*\*\/(.+)$/);
-        if (match && match[1] && match[2]) {
+        if (match?.[1] && match[2]) {
           const dirName = match[1];
           const afterPattern = match[2];
-          
+
           // Check if the path contains the directory name
-          if (!path.includes(dirName + '/')) {
+          if (!path.includes(`${dirName}/`)) {
             return false;
           }
-          
+
           // Find all occurrences of the directory name
           let index = 0;
-          while ((index = path.indexOf(dirName + '/', index)) !== -1) {
+          while ((index = path.indexOf(`${dirName}/`, index)) !== -1) {
             const afterDir = path.substring(index + dirName.length + 1);
-            
+
             // For patterns like **/test/**/*.ts, check that test/ is followed by any directories and .ts
             if (afterPattern.startsWith('*') && afterPattern.endsWith('.ts')) {
               // The ** means any number of directories, so we need to check if the path ends with .ts
@@ -355,24 +354,24 @@ export class DependencyAnalyzer {
                 }
               }
             }
-            
+
             index += 1;
           }
           return false;
         }
       }
-      
+
       // Fallback to simple regex for other ** patterns
       const parts = pattern.split('**');
       if (parts.length === 2 && parts[0] && parts[1]) {
         const before = parts[0];
         const after = parts[1];
-        
+
         // Check if the path contains the before part
         if (!path.includes(before)) {
           return false;
         }
-        
+
         // Find all occurrences of the before part
         let index = 0;
         while ((index = path.indexOf(before, index)) !== -1) {
@@ -385,25 +384,25 @@ export class DependencyAnalyzer {
               return true;
             }
           }
-          
+
           index += 1;
         }
         return false;
       }
     }
-    
+
     // Convert pattern to regex for simple patterns
     let regexPattern = pattern
-      .replace(/\*/g, '[^/]*')          // * matches any characters except /
-      .replace(/\?/g, '.')              // ? matches any single character
-      .replace(/\./g, '\\.');            // Escape literal dots
-    
+      .replace(/\*/g, '[^/]*') // * matches any characters except /
+      .replace(/\?/g, '.') // ? matches any single character
+      .replace(/\./g, '\\.'); // Escape literal dots
+
     // If pattern doesn't start with /, make it match anywhere in the path
     if (!pattern.startsWith('/')) {
-      regexPattern = '.*' + regexPattern;
+      regexPattern = `.*${regexPattern}`;
     }
-    
-    const regex = new RegExp('^' + regexPattern + '$');
+
+    const regex = new RegExp(`^${regexPattern}$`);
     return regex.test(path);
   }
 
@@ -420,8 +419,8 @@ export class DependencyAnalyzer {
     relations
       .filter(rel => this.isInternalRelation(rel, rootPath))
       .forEach(relation => {
-        const fromPath = nodeIdToFilePathMap.get(relation.from) || relation.from;
-        const toPath = nodeIdToFilePathMap.get(relation.to) || relation.to;
+        const fromPath = nodeIdToFilePathMap.get(relation.from) ?? relation.from;
+        const toPath = nodeIdToFilePathMap.get(relation.to) ?? relation.to;
         const key = `${fromPath}->${toPath}`;
         const existing = dependencyMap.get(key);
 
@@ -429,8 +428,8 @@ export class DependencyAnalyzer {
           existing.usageCount++;
           if (relation.metadata['importedNames']) {
             existing.importedNames = [
-              ...(existing.importedNames || []),
-              ...(relation.metadata['importedNames'] as string[])
+              ...(existing.importedNames ?? []),
+              ...(relation.metadata['importedNames'] as string[]),
             ];
           }
         } else {
@@ -438,16 +437,20 @@ export class DependencyAnalyzer {
             from: fromPath,
             to: toPath,
             type: relation.type,
-            modulePath: (relation.metadata['modulePath'] as string) || '',
-            resolvedPath: this.resolvePath(fromPath, relation.metadata['modulePath'] as string, rootPath),
-            importedNames: (relation.metadata['importedNames'] as string[]) || [],
-            isBarrelExport: (relation.metadata['isBarrelExport'] as boolean) || false,
-            isTypeOnly: (relation.metadata['isTypeOnly'] as boolean) || false,
-            isNamespace: (relation.metadata['isNamespace'] as boolean) || false,
-            isDynamic: (relation.metadata['isDynamic'] as boolean) || false,
+            modulePath: (relation.metadata['modulePath'] as string) ?? '',
+            resolvedPath: this.resolvePath(
+              fromPath,
+              relation.metadata['modulePath'] as string,
+              rootPath
+            ),
+            importedNames: (relation.metadata['importedNames'] as string[]) ?? [],
+            isBarrelExport: (relation.metadata['isBarrelExport'] as boolean) ?? false,
+            isTypeOnly: (relation.metadata['isTypeOnly'] as boolean) ?? false,
+            isNamespace: (relation.metadata['isNamespace'] as boolean) ?? false,
+            isDynamic: (relation.metadata['isDynamic'] as boolean) ?? false,
             condition: relation.metadata['condition'] as string,
             usageCount: 1,
-            metadata: relation.metadata
+            metadata: relation.metadata,
           });
         }
       });
@@ -463,7 +466,7 @@ export class DependencyAnalyzer {
     if (relation.to.startsWith('external:')) {
       return false;
     }
-    
+
     // Internal relations are those between files in the project
     // or those that don't start with external: prefix
     return !relation.to.startsWith('external:');
@@ -481,13 +484,17 @@ export class DependencyAnalyzer {
     if (modulePath.startsWith('./') || modulePath.startsWith('../')) {
       const fromDir = fromPath.substring(0, fromPath.lastIndexOf('/'));
       const resolved = this.resolveRelativePath(fromDir, modulePath);
-      
+
       // Add .ts extension if not present
-      if (!resolved.endsWith('.ts') && !resolved.endsWith('.tsx') && 
-          !resolved.endsWith('.js') && !resolved.endsWith('.jsx')) {
-        return resolved + '.ts';
+      if (
+        !resolved.endsWith('.ts') &&
+        !resolved.endsWith('.tsx') &&
+        !resolved.endsWith('.js') &&
+        !resolved.endsWith('.jsx')
+      ) {
+        return `${resolved}.ts`;
       }
-      
+
       return resolved;
     }
 
@@ -510,14 +517,14 @@ export class DependencyAnalyzer {
       }
     }
 
-    return '/' + parts.join('/');
+    return `/${parts.join('/')}`;
   }
 
   /**
    * Analyze external dependencies
    */
   private analyzeExternalDependencies(
-    relations: Relation[], 
+    relations: Relation[],
     nodeIdToFilePathMap: Map<string, string>
   ): ExternalDependency[] {
     const dependencyMap = new Map<string, ExternalDependency>();
@@ -526,7 +533,7 @@ export class DependencyAnalyzer {
       .filter(rel => rel.to.startsWith('external:'))
       .forEach(relation => {
         const packageName = relation.to.replace('external:', '');
-        const filePath = nodeIdToFilePathMap.get(relation.from) || relation.from;
+        const filePath = nodeIdToFilePathMap.get(relation.from) ?? relation.from;
         const existing = dependencyMap.get(packageName);
 
         if (existing) {
@@ -550,14 +557,16 @@ export class DependencyAnalyzer {
             name: packageName,
             usageCount: 1,
             files: [filePath],
-            importedNames: (relation.metadata['importedNames'] as string[]) || [],
+            importedNames: (relation.metadata['importedNames'] as string[]) ?? [],
             isScoped: packageName.startsWith('@'),
             runtimeImports: relation.metadata['isTypeOnly'] ? 0 : 1,
             typeOnlyImports: relation.metadata['isTypeOnly'] ? 1 : 0,
-            isNamespace: (relation.metadata['isNamespace'] as boolean) || false,
-            isDynamic: (relation.metadata['isDynamic'] as boolean) || false,
-            conditions: relation.metadata['condition'] ? [relation.metadata['condition'] as string] : [],
-            metadata: relation.metadata
+            isNamespace: (relation.metadata['isNamespace'] as boolean) ?? false,
+            isDynamic: (relation.metadata['isDynamic'] as boolean) ?? false,
+            conditions: relation.metadata['condition']
+              ? [relation.metadata['condition'] as string]
+              : [],
+            metadata: relation.metadata,
           });
         }
       });
@@ -615,7 +624,7 @@ export class DependencyAnalyzer {
       visited.add(node);
       recursionStack.add(node);
 
-      const neighbors = graph.get(node) || [];
+      const neighbors = graph.get(node) ?? [];
       neighbors.forEach(neighbor => {
         dfs(neighbor, [...path, node], depth + 1);
       });
@@ -653,7 +662,7 @@ export class DependencyAnalyzer {
       maxDepth,
       averageDepth,
       circularDependencies: circularDependencies.length,
-      dependencyDensity: totalFiles > 0 ? totalDependencies / totalFiles : 0
+      dependencyDensity: totalFiles > 0 ? totalDependencies / totalFiles : 0,
     };
   }
 
@@ -685,22 +694,22 @@ export class DependencyAnalyzer {
       while (queue.length > 0 && iterations < maxIterations) {
         iterations++;
         const { node, depth } = queue.shift()!;
-        
+
         if (localVisited.has(node)) {
           continue;
         }
-        
+
         localVisited.add(node);
         localMaxDepth = Math.max(localMaxDepth, depth);
-        
-        const neighbors = graph.get(node) || [];
+
+        const neighbors = graph.get(node) ?? [];
         neighbors.forEach(neighbor => {
           if (!localVisited.has(neighbor)) {
             queue.push({ node: neighbor, depth: depth + 1 });
           }
         });
       }
-      
+
       return localMaxDepth;
     };
 
@@ -741,8 +750,8 @@ export class DependencyAnalyzer {
 
     const dfs = (node: string, depth: number): void => {
       if (depth > maxDepth) return; // Prevent deep recursion
-      
-      const neighbors = graph.get(node) || [];
+
+      const neighbors = graph.get(node) ?? [];
       neighbors.forEach(neighbor => {
         // Record the depth of each dependency relationship
         depths.push(depth + 1);
@@ -759,7 +768,7 @@ export class DependencyAnalyzer {
           isRoot = false;
         }
       });
-      
+
       if (isRoot) {
         dfs(node, 0);
       }
@@ -776,7 +785,7 @@ export class DependencyAnalyzer {
     devDependencies: DependencyInfo[]
   ): VersionAnalysis {
     const allDeps = [...dependencies, ...devDependencies];
-    
+
     let caretRanges = 0;
     let tildeRanges = 0;
     let exactVersions = 0;
@@ -788,7 +797,12 @@ export class DependencyAnalyzer {
         caretRanges++;
       } else if (version.startsWith('~')) {
         tildeRanges++;
-      } else if (!version.includes(' ') && !version.includes('||') && !version.includes('>') && !version.includes('<')) {
+      } else if (
+        !version.includes(' ') &&
+        !version.includes('||') &&
+        !version.includes('>') &&
+        !version.includes('<')
+      ) {
         exactVersions++;
       } else {
         complexRanges++;
@@ -801,7 +815,7 @@ export class DependencyAnalyzer {
       exactVersions,
       complexRanges,
       outdatedDependencies: [], // Would be populated by external service
-      vulnerableDependencies: [] // Would be populated by external service
+      vulnerableDependencies: [], // Would be populated by external service
     };
   }
 
@@ -814,32 +828,31 @@ export class DependencyAnalyzer {
   ): UsageStatistics {
     const usageCounts = externalDependencies.map(dep => ({
       name: dep.name,
-      count: dep.usageCount
+      count: dep.usageCount,
     }));
 
-    const mostUsed = usageCounts
-      .sort((a, b) => b.count - a.count)
-      .slice(0, 10);
+    const mostUsed = usageCounts.sort((a, b) => b.count - a.count).slice(0, 10);
 
-    const leastUsed = usageCounts
-      .sort((a, b) => a.count - b.count)
-      .slice(0, 10);
+    const leastUsed = usageCounts.sort((a, b) => a.count - b.count).slice(0, 10);
 
     const usedPackageNames = new Set(externalDependencies.map(dep => dep.name));
     const unused = packageDependencies
       .filter(dep => !usedPackageNames.has(dep.name))
       .map(dep => dep.name);
 
-    const usageDistribution = usageCounts.reduce((acc, item) => {
-      acc[item.name] = item.count;
-      return acc;
-    }, {} as Record<string, number>);
+    const usageDistribution = usageCounts.reduce(
+      (acc, item) => {
+        acc[item.name] = item.count;
+        return acc;
+      },
+      {} as Record<string, number>
+    );
 
     return {
       mostUsed,
       leastUsed,
       unused,
-      usageDistribution
+      usageDistribution,
     };
   }
 
@@ -853,7 +866,7 @@ export class DependencyAnalyzer {
       exactVersions: 0,
       complexRanges: 0,
       outdatedDependencies: [],
-      vulnerableDependencies: []
+      vulnerableDependencies: [],
     };
   }
 
@@ -865,7 +878,7 @@ export class DependencyAnalyzer {
       mostUsed: [],
       leastUsed: [],
       unused: [],
-      usageDistribution: {}
+      usageDistribution: {},
     };
   }
 }

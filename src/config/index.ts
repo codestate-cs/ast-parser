@@ -14,5 +14,5 @@ export type {
   OutputConfig,
   ConfigOptions,
   ValidationResult,
-  LoaderOptions
+  LoaderOptions,
 } from './types';

@@ -17,7 +17,7 @@ import {
   PropertyInfo,
   MethodInfo,
   ParameterInfo,
-  JSDocInfo
+  JSDocInfo,
 } from '../types';
 import { ParsingOptions } from '../types/options';
 import { FileUtils } from '../utils/file/FileUtils';
@@ -46,16 +46,16 @@ export class EnhancedTypeScriptParser extends BaseParser {
       logInfo(`Parsing TypeScript file with enhanced analysis: ${file.path}`);
 
       // Read file content
-      const fileContent = content !== undefined ? content : await FileUtils.readFile(file.path);
+      const fileContent = content ?? (await FileUtils.readFile(file.path));
 
       // Create TypeScript program and source file
       this.createProgram(file.path, fileContent);
       const sourceFile = this.program!.getSourceFile(file.path);
-      
+
       if (!sourceFile) {
         throw new Error('Failed to create source file');
       }
-      
+
       this.sourceFile = sourceFile;
 
       this.typeChecker = this.program!.getTypeChecker();
@@ -84,7 +84,9 @@ export class EnhancedTypeScriptParser extends BaseParser {
         },
       };
     } catch (error) {
-      logError(`Enhanced TypeScript parsing failed: ${file.path}`, error as Error, { filePath: file.path });
+      logError(`Enhanced TypeScript parsing failed: ${file.path}`, error as Error, {
+        filePath: file.path,
+      });
       throw error;
     }
   }
@@ -135,7 +137,7 @@ export class EnhancedTypeScriptParser extends BaseParser {
       getCurrentDirectory: () => '/',
       getDirectories: () => [],
       fileExists: (fileName: string) => fileName === filePath,
-      readFile: (fileName: string) => fileName === filePath ? content : undefined,
+      readFile: (fileName: string) => (fileName === filePath ? content : undefined),
       getCanonicalFileName: (fileName: string) => fileName,
       useCaseSensitiveFileNames: () => true,
       getNewLine: () => '\n',
@@ -254,7 +256,7 @@ export class EnhancedTypeScriptParser extends BaseParser {
           isConditional: !!(type.flags & ts.TypeFlags.Conditional),
         },
       } as TypeInfo;
-    } catch (error) {
+    } catch {
       // Fallback to basic type info if enhanced analysis fails
       return this.getBasicTypeInfo(node);
     }
@@ -309,7 +311,11 @@ export class EnhancedTypeScriptParser extends BaseParser {
     if (type.flags & ts.TypeFlags.Object) {
       return 'ObjectType';
     }
-    if (type.flags & ts.TypeFlags.String || type.flags & ts.TypeFlags.Number || type.flags & ts.TypeFlags.Boolean) {
+    if (
+      type.flags & ts.TypeFlags.String ||
+      type.flags & ts.TypeFlags.Number ||
+      type.flags & ts.TypeFlags.Boolean
+    ) {
       return 'PrimitiveType';
     }
     return 'UnknownType';
@@ -368,23 +374,32 @@ export class EnhancedTypeScriptParser extends BaseParser {
       members.forEach(member => {
         const memberType = this.typeChecker!.getTypeOfSymbolAtLocation(member, node);
         const declarations = member.getDeclarations();
-        
+
         if (declarations && declarations.length > 0) {
           const declaration = declarations[0];
-          if (declaration && (ts.isPropertyDeclaration(declaration) || ts.isPropertySignature(declaration))) {
+          if (
+            declaration &&
+            (ts.isPropertyDeclaration(declaration) || ts.isPropertySignature(declaration))
+          ) {
             properties.push({
               name: member.name,
               type: this.typeChecker!.typeToString(memberType, node),
               optional: !!declaration.questionToken,
-              readonly: !!declaration.modifiers?.some(m => m.kind === ts.SyntaxKind.ReadonlyKeyword),
+              readonly: !!declaration.modifiers?.some(
+                m => m.kind === ts.SyntaxKind.ReadonlyKeyword
+              ),
               static: !!declaration.modifiers?.some(m => m.kind === ts.SyntaxKind.StaticKeyword),
-              public: !declaration.modifiers?.some(m => 
-                m.kind === ts.SyntaxKind.PrivateKeyword || m.kind === ts.SyntaxKind.ProtectedKeyword
+              public: !declaration.modifiers?.some(
+                m =>
+                  m.kind === ts.SyntaxKind.PrivateKeyword ||
+                  m.kind === ts.SyntaxKind.ProtectedKeyword
               ),
               private: !!declaration.modifiers?.some(m => m.kind === ts.SyntaxKind.PrivateKeyword),
-              protected: !!declaration.modifiers?.some(m => m.kind === ts.SyntaxKind.ProtectedKeyword),
-              defaultValue: this.getDefaultValue(declaration) || undefined,
-              documentation: this.extractJSDocForMember(declaration)?.summary || undefined,
+              protected: !!declaration.modifiers?.some(
+                m => m.kind === ts.SyntaxKind.ProtectedKeyword
+              ),
+              defaultValue: this.getDefaultValue(declaration) ?? undefined,
+              documentation: this.extractJSDocForMember(declaration)?.summary ?? undefined,
             } as PropertyInfo);
           }
         }
@@ -405,13 +420,18 @@ export class EnhancedTypeScriptParser extends BaseParser {
       members.forEach(member => {
         const memberType = this.typeChecker!.getTypeOfSymbolAtLocation(member, node);
         const declarations = member.getDeclarations();
-        
+
         if (declarations && declarations.length > 0) {
           const declaration = declarations[0];
-          if (declaration && (ts.isMethodDeclaration(declaration) || ts.isMethodSignature(declaration))) {
+          if (
+            declaration &&
+            (ts.isMethodDeclaration(declaration) || ts.isMethodSignature(declaration))
+          ) {
             const signature = memberType.getCallSignatures()[0];
-            const returnType = signature ? this.typeChecker!.typeToString(signature.getReturnType(), node) : 'void';
-            
+            const returnType = signature
+              ? this.typeChecker!.typeToString(signature.getReturnType(), node)
+              : 'void';
+
             methods.push({
               name: member.name,
               returnType,
@@ -419,13 +439,19 @@ export class EnhancedTypeScriptParser extends BaseParser {
               async: !!declaration.modifiers?.some(m => m.kind === ts.SyntaxKind.AsyncKeyword),
               generator: false, // Simplified for now
               static: !!declaration.modifiers?.some(m => m.kind === ts.SyntaxKind.StaticKeyword),
-              public: !declaration.modifiers?.some(m => 
-                m.kind === ts.SyntaxKind.PrivateKeyword || m.kind === ts.SyntaxKind.ProtectedKeyword
+              public: !declaration.modifiers?.some(
+                m =>
+                  m.kind === ts.SyntaxKind.PrivateKeyword ||
+                  m.kind === ts.SyntaxKind.ProtectedKeyword
               ),
               private: !!declaration.modifiers?.some(m => m.kind === ts.SyntaxKind.PrivateKeyword),
-              protected: !!declaration.modifiers?.some(m => m.kind === ts.SyntaxKind.ProtectedKeyword),
-              abstract: !!declaration.modifiers?.some(m => m.kind === ts.SyntaxKind.AbstractKeyword),
-              documentation: this.extractJSDocForMember(declaration)?.summary || undefined,
+              protected: !!declaration.modifiers?.some(
+                m => m.kind === ts.SyntaxKind.ProtectedKeyword
+              ),
+              abstract: !!declaration.modifiers?.some(
+                m => m.kind === ts.SyntaxKind.AbstractKeyword
+              ),
+              documentation: this.extractJSDocForMember(declaration)?.summary ?? undefined,
             } as MethodInfo);
           }
         }
@@ -438,21 +464,23 @@ export class EnhancedTypeScriptParser extends BaseParser {
   /**
    * Get method parameters
    */
-  private getMethodParameters(declaration: ts.MethodDeclaration | ts.MethodSignature): ParameterInfo[] {
+  private getMethodParameters(
+    declaration: ts.MethodDeclaration | ts.MethodSignature
+  ): ParameterInfo[] {
     const parameters: ParameterInfo[] = [];
 
     if (declaration.parameters) {
       declaration.parameters.forEach(param => {
         const paramType = this.typeChecker!.getTypeAtLocation(param);
         const typeString = this.typeChecker!.typeToString(paramType, param);
-        
+
         parameters.push({
           name: param.name && ts.isIdentifier(param.name) ? param.name.text : 'unknown',
           type: typeString,
           optional: !!param.questionToken,
           defaultValue: param.initializer ? this.getNodeName(param.initializer) : undefined,
           rest: !!param.dotDotDotToken,
-          documentation: this.extractJSDocForMember(param)?.summary || undefined,
+          documentation: this.extractJSDocForMember(param)?.summary ?? undefined,
         } as ParameterInfo);
       });
     }
@@ -509,7 +537,9 @@ export class EnhancedTypeScriptParser extends BaseParser {
    * Check if node is readonly
    */
   private isReadonly(node: ts.Node): boolean {
-    return !!(node as any).modifiers?.some((m: ts.Modifier) => m.kind === ts.SyntaxKind.ReadonlyKeyword);
+    return !!(node as any).modifiers?.some(
+      (m: ts.Modifier) => m.kind === ts.SyntaxKind.ReadonlyKeyword
+    );
   }
 
   /**
@@ -544,7 +574,7 @@ export class EnhancedTypeScriptParser extends BaseParser {
 
     jsdocTags.forEach(tag => {
       switch (tag.tagName.text) {
-        case 'param':
+        case 'param': {
           const paramTag = tag as ts.JSDocParameterTag;
           if (paramTag.name && paramTag.comment) {
             const name = ts.isIdentifier(paramTag.name) ? paramTag.name.text : 'unknown';
@@ -557,8 +587,9 @@ export class EnhancedTypeScriptParser extends BaseParser {
             } as any);
           }
           break;
+        }
         case 'returns':
-        case 'return':
+        case 'return': {
           const returnTag = tag as ts.JSDocReturnTag;
           if (returnTag.comment) {
             jsdoc.returns = {
@@ -567,6 +598,7 @@ export class EnhancedTypeScriptParser extends BaseParser {
             } as any;
           }
           break;
+        }
         case 'example':
           if (tag.comment) {
             jsdoc.examples.push(typeof tag.comment === 'string' ? tag.comment : '');
@@ -613,8 +645,13 @@ export class EnhancedTypeScriptParser extends BaseParser {
       }
     }
 
-    return jsdoc.parameters.length > 0 || jsdoc.returns || jsdoc.examples.length > 0 || 
-           Object.keys(jsdoc.tags).length > 0 || jsdoc.deprecated ? jsdoc : undefined;
+    return jsdoc.parameters.length > 0 ||
+      jsdoc.returns ||
+      jsdoc.examples.length > 0 ||
+      Object.keys(jsdoc.tags).length > 0 ||
+      jsdoc.deprecated
+      ? jsdoc
+      : undefined;
   }
 
   /**
