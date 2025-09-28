@@ -244,8 +244,9 @@ export class ConfigLoader {
       if (outputConfig['formats'] && typeof outputConfig['formats'] === 'object') {
         const formatsConfig = outputConfig['formats'] as Record<string, unknown>;
         if (formatsConfig['options'] && typeof formatsConfig['options'] === 'object') {
-          (merged['output'] as Record<string, unknown>)['formats']['options'] = {
-            ...((merged['output'] as Record<string, unknown>)['formats'] as Record<string, unknown>)['options'],
+          const mergedOutput = merged['output'] as any;
+          mergedOutput['formats']['options'] = {
+            ...mergedOutput['formats']['options'],
             ...formatsConfig['options'],
           };
         }
@@ -255,8 +256,9 @@ export class ConfigLoader {
       if (outputConfig['naming'] && typeof outputConfig['naming'] === 'object') {
         const namingConfig = outputConfig['naming'] as Record<string, unknown>;
         if (namingConfig['options'] && typeof namingConfig['options'] === 'object') {
-          (merged['output'] as Record<string, unknown>)['naming']['options'] = {
-            ...((merged['output'] as Record<string, unknown>)['naming'] as Record<string, unknown>)['options'],
+          const mergedOutput = merged['output'] as any;
+          mergedOutput['naming']['options'] = {
+            ...mergedOutput['naming']['options'],
             ...namingConfig['options'],
           };
         }
