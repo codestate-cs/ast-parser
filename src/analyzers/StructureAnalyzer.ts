@@ -478,10 +478,7 @@ export class StructureAnalyzer {
   } {
     const files = structure.files ?? [];
     const totalFiles = files.length;
-    const totalLines = files.reduce(
-      (sum: number, file: FileInfo) => sum + (file.lines ?? 0),
-      0
-    );
+    const totalLines = files.reduce((sum: number, file: FileInfo) => sum + (file.lines ?? 0), 0);
     const totalSize = files.reduce((sum: number, file: FileInfo) => sum + (file.size ?? 0), 0);
 
     return {

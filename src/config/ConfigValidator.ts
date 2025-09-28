@@ -24,32 +24,34 @@ export class ConfigValidator {
       return { isValid: false, errors, warnings };
     }
 
+    const configObj = config as Record<string, unknown>;
+
     // Validate analyzers configuration
-    if (!config.analyzers) {
+    if (!configObj.analyzers) {
       errors.push('Analyzers configuration is required');
     } else {
-      this.validateAnalyzers(config.analyzers, errors, warnings);
+      this.validateAnalyzers(configObj.analyzers, errors, warnings);
     }
 
     // Validate parsers configuration
-    if (!config.parsers) {
+    if (!configObj.parsers) {
       errors.push('Parsers configuration is required');
     } else {
-      this.validateParsers(config.parsers, errors, warnings);
+      this.validateParsers(configObj.parsers, errors, warnings);
     }
 
     // Validate output configuration
-    if (!config.output) {
+    if (!configObj.output) {
       errors.push('Output configuration is required');
     } else {
-      this.validateOutput(config.output, errors, warnings);
+      this.validateOutput(configObj.output, errors, warnings);
     }
 
     // Validate global configuration
-    if (!config.global) {
+    if (!configObj.global) {
       warnings.push('Global configuration is missing, using defaults');
     } else {
-      this.validateGlobal(config.global, errors, warnings);
+      this.validateGlobal(configObj.global, errors, warnings);
     }
 
     return {
@@ -65,7 +67,11 @@ export class ConfigValidator {
    * @param errors Error array to populate
    * @param warnings Warning array to populate
    */
-  private validateAnalyzers(analyzers: Record<string, unknown>, errors: string[], warnings: string[]): void {
+  private validateAnalyzers(
+    analyzers: Record<string, unknown>,
+    errors: string[],
+    warnings: string[]
+  ): void {
     const requiredAnalyzers = ['dependency', 'entryPoint', 'structure', 'complexity'];
 
     requiredAnalyzers.forEach(analyzer => {
@@ -144,7 +150,11 @@ export class ConfigValidator {
    * @param errors Error array to populate
    * @param warnings Warning array to populate
    */
-  private validateParsers(parsers: Record<string, unknown>, errors: string[], warnings: string[]): void {
+  private validateParsers(
+    parsers: Record<string, unknown>,
+    errors: string[],
+    warnings: string[]
+  ): void {
     const requiredParsers = ['typescript', 'enhancedTypeScript'];
 
     requiredParsers.forEach(parser => {
@@ -208,7 +218,11 @@ export class ConfigValidator {
    * @param errors Error array to populate
    * @param warnings Warning array to populate
    */
-  private validateOutput(output: Record<string, unknown>, errors: string[], warnings: string[]): void {
+  private validateOutput(
+    output: Record<string, unknown>,
+    errors: string[],
+    warnings: string[]
+  ): void {
     if (typeof output !== 'object') {
       errors.push('Output configuration must be an object');
       return;
@@ -235,7 +249,11 @@ export class ConfigValidator {
    * @param errors Error array to populate
    * @param warnings Warning array to populate
    */
-  private validateFormats(formats: Record<string, unknown>, errors: string[], _warnings: string[]): void {
+  private validateFormats(
+    formats: Record<string, unknown>,
+    errors: string[],
+    _warnings: string[]
+  ): void {
     if (typeof formats !== 'object') {
       errors.push('Formats configuration must be an object');
       return;
@@ -260,7 +278,11 @@ export class ConfigValidator {
    * @param errors Error array to populate
    * @param warnings Warning array to populate
    */
-  private validateNaming(naming: Record<string, unknown>, errors: string[], _warnings: string[]): void {
+  private validateNaming(
+    naming: Record<string, unknown>,
+    errors: string[],
+    _warnings: string[]
+  ): void {
     if (typeof naming !== 'object') {
       errors.push('Naming configuration must be an object');
       return;
@@ -285,7 +307,11 @@ export class ConfigValidator {
    * @param errors Error array to populate
    * @param warnings Warning array to populate
    */
-  private validateGlobal(global: Record<string, unknown>, errors: string[], _warnings: string[]): void {
+  private validateGlobal(
+    global: Record<string, unknown>,
+    errors: string[],
+    _warnings: string[]
+  ): void {
     if (typeof global !== 'object') {
       errors.push('Global configuration must be an object');
       return;
@@ -315,7 +341,10 @@ export class ConfigValidator {
    * @param schema Schema object
    * @returns Validation result
    */
-  validateSchema(config: Record<string, unknown>, schema: Record<string, unknown>): ValidationResult {
+  validateSchema(
+    config: Record<string, unknown>,
+    schema: Record<string, unknown>
+  ): ValidationResult {
     const errors: string[] = [];
     const warnings: string[] = [];
 
@@ -358,7 +387,7 @@ export class ConfigValidator {
 
     // Validate required properties
     if (schema.required) {
-      schema.required.forEach((prop: string) => {
+      (schema.required as string[]).forEach((prop: string) => {
         if (!(prop in obj)) {
           errors.push(`Required property '${prop}' missing at path '${path}'`);
         }
@@ -369,10 +398,16 @@ export class ConfigValidator {
     if (schema.properties) {
       Object.keys(obj).forEach(key => {
         const propPath = path ? `${path}.${key}` : key;
-        const propSchema = schema.properties[key];
+        const propSchema = (schema.properties as Record<string, unknown>)[key];
 
         if (propSchema) {
-          this.validateAgainstSchema(obj[key], propSchema, propPath, errors, warnings);
+          this.validateAgainstSchema(
+            obj[key] as Record<string, unknown>,
+            propSchema,
+            propPath,
+            errors,
+            warnings
+          );
         } else if (!schema.additionalProperties) {
           warnings.push(`Unknown property '${key}' at path '${path}'`);
         }

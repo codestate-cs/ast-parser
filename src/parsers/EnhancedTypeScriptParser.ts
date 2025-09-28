@@ -595,7 +595,7 @@ export class EnhancedTypeScriptParser extends BaseParser {
             jsdoc.returns = {
               type: returnTag.typeExpression ? this.getNodeName(returnTag.typeExpression) : 'any',
               description: typeof returnTag.comment === 'string' ? returnTag.comment : '',
-            } as JSDocReturn);
+            } as JSDocReturn;
           }
           break;
         }

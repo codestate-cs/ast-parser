@@ -6,6 +6,7 @@
 import { ConfigOptions, LoaderOptions } from './types';
 import { DefaultConfig } from './DefaultConfig';
 import { ConfigValidator } from './ConfigValidator';
+import * as fs from 'fs';
 
 /**
  * Configuration loader class
@@ -69,11 +70,10 @@ export class ConfigLoader {
     try {
       // In a real implementation, this would read from the file system
       // For now, we'll return a mock configuration
-      const fs = require('fs') as typeof import('fs');
       const content = fs.readFileSync(filePath, 'utf8');
 
       // Parse JSON configuration
-      const config = JSON.parse(content);
+      const config = JSON.parse(content) as ConfigOptions;
 
       // Validate the loaded configuration
       const validation = this.validator.validate(config);
@@ -81,9 +81,9 @@ export class ConfigLoader {
         throw new Error(`Configuration file validation failed: ${validation.errors.join(', ')}`);
       }
 
-      return config as ConfigOptions;
+      return config;
     } catch (error) {
-      throw new Error(`Failed to load configuration from file '${filePath}': ${error}`);
+      throw new Error(`Failed to load configuration from file '${filePath}': ${String(error)}`);
     }
   }
 
@@ -226,7 +226,7 @@ export class ConfigLoader {
    * @param config Configuration to merge
    * @returns Merged configuration
    */
-  private mergeWithDefaults(config: any): ConfigOptions {
+  private mergeWithDefaults(config: Record<string, unknown>): ConfigOptions {
     return this.deepMerge(DefaultConfig, config);
   }
 
@@ -236,11 +236,14 @@ export class ConfigLoader {
    * @param source Source object
    * @returns Merged object
    */
-  private deepMerge(target: Record<string, unknown>, source: Record<string, unknown>): Record<string, unknown> {
+  private deepMerge(
+    target: Record<string, unknown>,
+    source: Record<string, unknown>
+  ): Record<string, unknown> {
     const result = { ...target };
 
     for (const key in source) {
-      if (source.hasOwnProperty(key)) {
+      if (Object.prototype.hasOwnProperty.call(source, key)) {
         if (
           typeof source[key] === 'object' &&
           source[key] !== null &&
@@ -297,7 +300,7 @@ export class ConfigLoader {
       return defaultValue;
     }
     try {
-      return JSON.parse(value);
+      return JSON.parse(value) as string[];
     } catch {
       return value.split(',').map(item => item.trim());
     }
@@ -309,13 +312,16 @@ export class ConfigLoader {
    * @param defaultValue Default value
    * @returns Object value
    */
-  private getEnvObject(key: string, defaultValue: any): any {
+  private getEnvObject(
+    key: string,
+    defaultValue: Record<string, unknown>
+  ): Record<string, unknown> {
     const value = process.env[key];
     if (value === undefined || value === null) {
       return defaultValue;
     }
     try {
-      return JSON.parse(value);
+      return JSON.parse(value) as Record<string, unknown>;
     } catch {
       return defaultValue;
     }

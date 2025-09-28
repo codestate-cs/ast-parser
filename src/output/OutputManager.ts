@@ -6,6 +6,7 @@ import { ProjectInfo, OutputOptions } from '../types';
 import { BaseFormat } from './formats/BaseFormat';
 import * as fs from 'fs/promises';
 import * as path from 'path';
+import { Readable } from 'stream';
 
 /**
  * Output generation result
@@ -247,7 +248,6 @@ export class OutputManager {
     const outputData = await format.serialize(data, options);
 
     // Create readable stream
-    const { Readable } = require('stream');
     const stream = new Readable({
       read(): void {
         this.push(outputData);
@@ -317,7 +317,10 @@ export class OutputManager {
    */
   private getFileExtension(format: string): string {
     const formatInstance = this.getFormat(format);
-    if (formatInstance?.supportedExtensions?.length && formatInstance.supportedExtensions.length > 0) {
+    if (
+      formatInstance?.supportedExtensions?.length &&
+      formatInstance.supportedExtensions.length > 0
+    ) {
       return formatInstance.supportedExtensions[0]?.substring(1) ?? 'txt'; // Remove leading dot
     }
 
