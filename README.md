@@ -79,6 +79,34 @@ This library is being built incrementally following a comprehensive development 
 
 This project is currently in active development. Phase 2 Enhanced Analysis is complete with excellent test coverage. Contributions are welcome for Phase 3 and beyond!
 
+### Branch Protection
+
+This repository uses branch protection rules to ensure code quality:
+
+- ✅ **Required Status Checks**: All CI/CD checks must pass before merging
+- ✅ **Required Reviews**: At least 1 code review approval required
+- ✅ **No Direct Pushes**: All changes must go through pull requests
+- ✅ **Quality Gates**: 90%+ test coverage required
+
+#### Setting up Branch Protection
+
+To apply branch protection rules to your repository:
+
+```bash
+# Using the provided script (requires GitHub CLI)
+./scripts/setup-branch-protection.sh
+
+# Or manually via GitHub web interface:
+# Go to Settings > Branches > Add rule
+```
+
+#### Required Status Checks
+
+The following checks must pass before merging:
+- **CI/CD Pipeline**: Main pipeline with tests, linting, type checking
+- **PR Validation**: Pull request validation with coverage checks  
+- **Build Check**: Build verification and artifact checking
+
 ## License
 
 MIT License - see [LICENSE](LICENSE) file for details.
