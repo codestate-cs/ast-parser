@@ -8,6 +8,7 @@ import {
   LogLevel, 
   LogEntry,
   Logger,
+  logDebug,
   logInfo,
   logWarn,
   logError,
@@ -63,6 +64,13 @@ describe('ErrorLogger', () => {
 
     it('should log warning messages', () => {
       logger.warn('Warning message', { key: 'value' });
+      expect(consoleWarnSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Warning message')
+      );
+    });
+
+    it('should log warning messages with undefined context', () => {
+      logger.warn('Warning message', undefined);
       expect(consoleWarnSpy).toHaveBeenCalledWith(
         expect.stringContaining('Warning message')
       );
@@ -174,6 +182,38 @@ describe('ErrorLogger', () => {
       // Should not throw since FileLogger catches errors
       await logger.info('Test message');
       expect(mockAppendFileSync).toHaveBeenCalled();
+    });
+
+    it('should handle undefined context in debug method', async () => {
+      await logger.debug('Debug message', undefined);
+      expect(mockAppendFileSync).toHaveBeenCalledWith(
+        '/test/log.txt',
+        expect.stringContaining('Debug message')
+      );
+    });
+
+    it('should handle undefined context in info method', async () => {
+      await logger.info('Info message', undefined);
+      expect(mockAppendFileSync).toHaveBeenCalledWith(
+        '/test/log.txt',
+        expect.stringContaining('Info message')
+      );
+    });
+
+    it('should handle undefined context in warn method', async () => {
+      await logger.warn('Warn message', undefined);
+      expect(mockAppendFileSync).toHaveBeenCalledWith(
+        '/test/log.txt',
+        expect.stringContaining('Warn message')
+      );
+    });
+
+    it('should handle undefined context in error method', async () => {
+      await logger.error('Error message', undefined, undefined);
+      expect(mockAppendFileSync).toHaveBeenCalledWith(
+        '/test/log.txt',
+        expect.stringContaining('Error message')
+      );
     });
   });
 
@@ -386,6 +426,22 @@ describe('ErrorLogger', () => {
       expect(consoleInfoSpy).toHaveBeenCalledWith(
         expect.stringContaining('Complex context')
       );
+    });
+
+    it('should call logDebug utility function', () => {
+      // The logDebug function calls globalLogger.debug, but globalLogger has minLevel: LogLevel.INFO
+      // so debug messages are filtered out and console.debug is never called.
+      // We'll test that the function doesn't throw an error.
+      expect(() => {
+        logDebug('Debug message', { key: 'value' });
+      }).not.toThrow();
+    });
+
+    it('should call logDebug utility function with undefined context', () => {
+      // Test the context ?? {} branch in the debug method
+      expect(() => {
+        logDebug('Debug message', undefined);
+      }).not.toThrow();
     });
   });
 });

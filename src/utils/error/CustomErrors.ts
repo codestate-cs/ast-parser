@@ -73,6 +73,16 @@ export class ValidationError extends CodestateASTError {
 }
 
 /**
+ * Invalid input errors
+ */
+export class InvalidInputError extends CodestateASTError {
+  constructor(message: string, context?: Record<string, unknown>) {
+    super(message, 'INVALID_INPUT_ERROR', context);
+    this.name = 'InvalidInputError';
+  }
+}
+
+/**
  * Cache errors
  */
 export class CacheError extends CodestateASTError {
@@ -111,6 +121,7 @@ export enum ErrorCodes {
   CONFIGURATION_ERROR = 'CONFIGURATION_ERROR',
   PARSER_ERROR = 'PARSER_ERROR',
   VALIDATION_ERROR = 'VALIDATION_ERROR',
+  INVALID_INPUT_ERROR = 'INVALID_INPUT_ERROR',
   CACHE_ERROR = 'CACHE_ERROR',
   OUTPUT_ERROR = 'OUTPUT_ERROR',
   DOCUMENTATION_ERROR = 'DOCUMENTATION_ERROR',

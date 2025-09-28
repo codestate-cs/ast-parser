@@ -614,5 +614,43 @@ describe('PathUtils', () => {
         expect(PathUtils.matchesPatterns('/path/to/file.ts', ['*/*.ts'])).toBe(false);
       });
     });
+
+    describe('Coverage improvement tests', () => {
+      it('should handle getProjectRoot when tsconfig.json is found (line 155)', async () => {
+        // Mock FileUtils.exists to return true for tsconfig.json
+        const originalExists = FileUtils.exists;
+        FileUtils.exists = jest.fn().mockImplementation((path: string) => {
+          if (path.includes('tsconfig.json')) {
+            return Promise.resolve(true);
+          }
+          return Promise.resolve(false);
+        });
+
+        try {
+          const result = await PathUtils.getProjectRoot('/test/path/subdir');
+          expect(result).toBe('/test/path/subdir');
+        } finally {
+          FileUtils.exists = originalExists;
+        }
+      });
+
+      it('should handle getDepth with various path formats (lines 183-191)', () => {
+        expect(PathUtils.getDepth('/path/to/file.ts')).toBe(3);
+        expect(PathUtils.getDepth('path/to/file.ts')).toBe(2);
+        expect(PathUtils.getDepth('file.ts')).toBe(0);
+        expect(PathUtils.getDepth('/')).toBe(1);
+        expect(PathUtils.getDepth('')).toBe(0);
+      });
+
+      it('should handle getCommonPrefix with root separator only (line 222)', () => {
+        expect(PathUtils.getCommonPrefix(['/path1/file1.ts', '/path2/file2.ts'])).toBe('');
+        expect(PathUtils.getCommonPrefix(['/a/file1.ts', '/b/file2.ts'])).toBe('');
+      });
+
+      it('should handle getImportPath with relative paths starting with ./ (line 289)', () => {
+        expect(PathUtils.getImportPath('/path/to/file1.ts', '/path/to/file2.ts', '/path')).toBe('./file2');
+        expect(PathUtils.getImportPath('/path/to/file1.ts', '/path/to/subdir/file2.ts', '/path')).toBe('./subdir/file2');
+      });
+    });
   });
 });

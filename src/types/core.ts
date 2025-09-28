@@ -278,4 +278,6 @@ export interface ProjectInfo {
   complexity: ComplexityMetrics;
   /** Quality metrics */
   quality: QualityMetrics;
+  /** Additional metadata */
+  metadata?: Record<string, unknown>;
 }
