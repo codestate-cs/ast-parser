@@ -102,7 +102,7 @@ export interface OutputConfig {
     /** Available formats */
     available: string[];
     /** Format-specific options */
-    options: Record<string, any>;
+    options: Record<string, unknown>;
   };
   /** Naming configuration */
   naming: {
@@ -111,7 +111,7 @@ export interface OutputConfig {
     /** Available strategies */
     available: string[];
     /** Strategy-specific options */
-    options: Record<string, any>;
+    options: Record<string, unknown>;
   };
 }
 

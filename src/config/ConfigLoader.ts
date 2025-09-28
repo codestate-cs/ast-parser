@@ -238,39 +238,65 @@ export class ConfigLoader {
     }
     if (config['output'] && typeof config['output'] === 'object') {
       const outputConfig = config['output'] as Record<string, unknown>;
-      merged['output'] = { ...merged['output'], ...outputConfig };
 
-      // Deep merge output.formats.options
+      // Deep merge output.formats.options first
       if (outputConfig['formats'] && typeof outputConfig['formats'] === 'object') {
         const formatsConfig = outputConfig['formats'] as Record<string, unknown>;
+        const mergedOutput = merged['output'] as unknown as Record<string, unknown>;
+        const mergedFormats = mergedOutput['formats'] as Record<string, unknown>;
+
         if (
           formatsConfig['options'] &&
           typeof formatsConfig['options'] === 'object' &&
           Object.keys(formatsConfig['options'] as Record<string, unknown>).length > 0
         ) {
-          const mergedOutput = merged['output'] as any;
-          mergedOutput['formats']['options'] = {
-            ...mergedOutput['formats']['options'],
-            ...formatsConfig['options'],
+          mergedFormats['options'] = {
+            ...(mergedFormats['options'] as Record<string, unknown>),
+            ...(formatsConfig['options'] as Record<string, unknown>),
           };
         }
+        // If no options provided or empty options, keep the default options
       }
 
-      // Deep merge output.naming.options
+      // Deep merge output.naming.options first
       if (outputConfig['naming'] && typeof outputConfig['naming'] === 'object') {
         const namingConfig = outputConfig['naming'] as Record<string, unknown>;
+        const mergedOutput = merged['output'] as unknown as Record<string, unknown>;
+        const mergedNaming = mergedOutput['naming'] as Record<string, unknown>;
+
         if (
           namingConfig['options'] &&
           typeof namingConfig['options'] === 'object' &&
           Object.keys(namingConfig['options'] as Record<string, unknown>).length > 0
         ) {
-          const mergedOutput = merged['output'] as any;
-          mergedOutput['naming']['options'] = {
-            ...mergedOutput['naming']['options'],
-            ...namingConfig['options'],
+          mergedNaming['options'] = {
+            ...(mergedNaming['options'] as Record<string, unknown>),
+            ...(namingConfig['options'] as Record<string, unknown>),
           };
         }
+        // If no options provided or empty options, keep the default options
       }
+
+      // Now do the shallow merge for other output properties (excluding options)
+      const formatsConfig = (outputConfig['formats'] as Record<string, unknown>) || {};
+      const namingConfig = (outputConfig['naming'] as Record<string, unknown>) || {};
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { options: _, ...formatsWithoutOptions } = formatsConfig;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { options: __, ...namingWithoutOptions } = namingConfig;
+
+      merged['output'] = {
+        ...merged['output'],
+        ...outputConfig,
+        formats: {
+          ...merged['output']['formats'],
+          ...formatsWithoutOptions,
+        },
+        naming: {
+          ...merged['output']['naming'],
+          ...namingWithoutOptions,
+        },
+      };
     }
     if (config['global'] && typeof config['global'] === 'object') {
       merged['global'] = { ...merged['global'], ...config['global'] };
