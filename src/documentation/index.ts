@@ -1,6 +1,6 @@
 /**
  * Documentation Module Index
- * 
+ *
  * Centralized exports for all documentation-related components.
  * This module provides a clean API for importing documentation functionality.
  */
@@ -42,31 +42,31 @@ export { OverviewTemplate } from './templates/OverviewTemplate';
 export { APITemplate } from './templates/APITemplate';
 
 // Type Exports - Main Interfaces
-export type { 
+export type {
   DocumentationGeneratorOptions,
   DocumentationResult,
   ExtractionResult,
   QualityAnalysisResult,
-  ProjectValidationResult
+  ProjectValidationResult,
 } from './DocumentationGenerator';
 
 export type {
   QualityMetricsOptions,
   QualityMetricsResult,
-  QualityMetrics as QualityMetricsType
+  QualityMetrics as QualityMetricsType,
 } from './quality/QualityMetrics';
 
 export type {
   CoverageAnalyzerOptions,
   CoverageAnalysisResult,
   CoverageReportResult,
-  CoverageValidationResult
+  CoverageValidationResult,
 } from './quality/CoverageAnalyzer';
 
 export type {
   SuggestionGeneratorOptions,
   SuggestionGenerationResult,
-  Suggestion
+  Suggestion,
 } from './quality/SuggestionGenerator';
 
 // Type Exports - Extractors
@@ -75,19 +75,19 @@ export type {
   JSDocComment,
   JSDocTag,
   JSDocExtractionResult,
-  JSDocTagType
+  JSDocTagType,
 } from './extractors/JSDocExtractor';
 
 export type {
   TypeExtractionOptions,
   TypeInfo,
-  TypeExtractionResult
+  TypeExtractionResult,
 } from './extractors/TypeExtractor';
 
 export type {
   ExampleExtractionOptions,
   ExampleInfo,
-  ExampleExtractionResult
+  ExampleExtractionResult,
 } from './extractors/ExampleExtractor';
 
 // Default export for convenience
@@ -104,5 +104,5 @@ export default {
   HTMLGenerator,
   BaseTemplate,
   OverviewTemplate,
-  APITemplate
+  APITemplate,
 };
