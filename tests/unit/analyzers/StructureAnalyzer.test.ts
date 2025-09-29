@@ -1682,5 +1682,99 @@ describe('StructureAnalyzer', () => {
       ]);
     });
 
+    it('should return other module type for unmatched directory names', () => {
+      // Given: Project with directories that don't match any module type patterns
+      const projectInfo: ProjectInfo = {
+        name: 'test-project',
+        version: '1.0.0',
+        type: 'typescript',
+        rootPath: '/test/path',
+        entryPoints: [],
+        dependencies: [],
+        devDependencies: [],
+        structure: {
+          files: [],
+          directories: [
+            {
+              name: 'feature-module',
+              path: '/test/path/feature-module',
+              fileCount: 0,
+              subdirectoryCount: 0,
+              totalSize: 0
+            },
+            {
+              name: 'unknown-module',
+              path: '/test/path/unknown-module',
+              fileCount: 0,
+              subdirectoryCount: 0,
+              totalSize: 0
+            }
+          ],
+          totalFiles: 0,
+          totalLines: 0,
+          totalSize: 0
+        },
+        ast: [],
+        relations: [],
+        publicExports: [],
+        privateExports: [],
+        complexity: {
+          cyclomaticComplexity: 0,
+          cognitiveComplexity: 0,
+          linesOfCode: 0,
+          functionCount: 0,
+          classCount: 0,
+          interfaceCount: 0
+        },
+        quality: {
+          score: 85,
+          maintainabilityIndex: 80,
+          technicalDebtRatio: 10,
+          duplicationPercentage: 5,
+          testCoveragePercentage: 90
+        }
+      };
+
+      const options: StructureAnalysisOptions = {
+        analyzeDepth: true,
+        analyzeBreadth: true,
+        analyzePatterns: true,
+        analyzeArchitecture: true,
+        maxDepth: 10,
+        includePatterns: ['**/*'],
+        excludePatterns: []
+      };
+
+      // When: Analyzing structure
+      const result = analyzer.analyze(projectInfo, options);
+
+      // Then: Should detect modular architecture with 'other' module type for unmatched patterns
+      expect(result).toBeDefined();
+      expect(result.structureAnalysis.architecture).toBeDefined();
+      expect(result.structureAnalysis.architecture.type).toBe('modular');
+      expect(result.structureAnalysis.architecture.modules).toHaveLength(2);
+      
+      // Check that one module has type 'feature' and one has type 'other'
+      const featureModules = result.structureAnalysis.architecture.modules.filter(module => module.type === 'feature');
+      const otherModules = result.structureAnalysis.architecture.modules.filter(module => module.type === 'other');
+      expect(featureModules).toHaveLength(1);
+      expect(otherModules).toHaveLength(1);
+      expect(featureModules[0]?.name).toBe('feature-module');
+      expect(otherModules[0]?.name).toBe('unknown-module');
+    });
+
+    it('should return other layer type for unmatched directory names', () => {
+      // Test the determineLayerType method directly to cover the 'other' return
+      const analyzer = new StructureAnalyzer();
+      
+      // Use reflection to access the private method
+      const determineLayerType = (analyzer as any).determineLayerType.bind(analyzer);
+      
+      // Test with a name that doesn't match any layer patterns
+      const result = determineLayerType('random-folder');
+      
+      expect(result).toBe('other');
+    });
+
   });
 });
