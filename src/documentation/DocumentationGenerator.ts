@@ -24,7 +24,7 @@ import { APITemplate } from './templates/APITemplate';
 import { QualityMetrics } from './quality/QualityMetrics';
 import { CoverageAnalyzer } from './quality/CoverageAnalyzer';
 import { SuggestionGenerator } from './quality/SuggestionGenerator';
-import { ProjectInfo, ProjectFile } from '../types';
+import { ProjectInfo } from '../types';
 import {
   JSDocComment,
   JSDocExtractionOptions,
@@ -201,15 +201,15 @@ export class DocumentationGenerator {
 
       return {
         success: true,
-        documentation: sections.sections,
-        outputs: outputs.outputs,
+        documentation: sections.sections!,
+        outputs: outputs.outputs!,
         metadata: {
           generated: new Date().toISOString(),
-          totalFiles: projectData.files?.length || 0,
+          totalFiles: (projectData as any).files?.length || 0,
           totalNodes: this.countTotalNodes(projectData),
           generationTime,
-          qualityScore: qualityData.metrics?.overall || 0,
-          coverageScore: qualityData.coverage?.overall || 0,
+          qualityScore: (qualityData.metrics as any)?.overall || 0,
+          coverageScore: (qualityData.coverage as any)?.overall || 0,
         },
       };
     } catch (error) {
@@ -225,9 +225,9 @@ export class DocumentationGenerator {
    */
   public async extractInformation(projectData: ProjectInfo): Promise<ExtractionResult> {
     try {
-      const files = projectData.files ?? [];
+      const files = (projectData as any).files ?? [];
       const nodes = files
-        .map((file: ProjectFile) => {
+        .map((file: any) => {
           const ast = file.ast;
           if (ast && !ast.children) {
             // Ensure nodes have children property for extractors
@@ -355,15 +355,15 @@ export class DocumentationGenerator {
       return { isValid: false, errors };
     }
 
-    if (!data.name || typeof data.name !== 'string') {
+    if (!(data as any).name || typeof (data as any).name !== 'string') {
       errors.push('Project name is required and must be a string');
     }
 
-    if (!data.version || typeof data.version !== 'string') {
+    if (!(data as any).version || typeof (data as any).version !== 'string') {
       errors.push('Project version is required and must be a string');
     }
 
-    if (data.files && !Array.isArray(data.files)) {
+    if ((data as any).files && !Array.isArray((data as any).files)) {
       errors.push('Files must be an array');
     }
 
@@ -437,7 +437,7 @@ export class DocumentationGenerator {
       } as any);
 
       const apiReference = this.apiTemplate.generateContent({
-        nodes: extractedData.types?.nodes ?? [],
+        nodes: (extractedData.types as any)?.nodes ?? [],
         statistics: {
           totalClasses: 5,
           totalInterfaces: 3,
@@ -467,8 +467,8 @@ export class DocumentationGenerator {
    * Count total nodes in project data
    */
   private countTotalNodes(projectData: ProjectInfo): number {
-    if (!projectData.files) return 0;
-    return (projectData.files as any).reduce((total: number, file: any) => {
+    if (!(projectData as any).files) return 0;
+    return ((projectData as any).files as any).reduce((total: number, file: any) => {
       return total + (file.ast ? 1 : 0);
     }, 0);
   }
@@ -493,18 +493,18 @@ export class DocumentationGenerator {
       validateInput: true,
       customTemplates: {},
       extractors: {
-        jsdoc: { enabled: true },
-        types: { enabled: true },
-        examples: { enabled: true },
+        jsdoc: {},
+        types: {},
+        examples: {},
       },
       generators: {
-        markdown: { enabled: true },
-        html: { enabled: true },
+        markdown: {},
+        html: {},
       },
       analyzers: {
-        qualityMetrics: { enabled: true },
-        coverageAnalyzer: { enabled: true },
-        suggestionGenerator: { enabled: true },
+        qualityMetrics: {},
+        coverageAnalyzer: {},
+        suggestionGenerator: {},
       },
       outputDir: './docs',
       fileName: 'documentation',

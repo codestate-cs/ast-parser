@@ -90,6 +90,15 @@ export type {
   ExampleExtractionResult,
 } from './extractors/ExampleExtractor';
 
+// Generator Options
+export type {
+  MarkdownGeneratorOptions,
+} from './generators/MarkdownGenerator';
+
+export type {
+  HTMLGeneratorOptions,
+} from './generators/HTMLGenerator';
+
 // Default export for convenience
 export default {
   DocumentationGenerator,
