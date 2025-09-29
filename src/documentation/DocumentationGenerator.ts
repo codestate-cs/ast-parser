@@ -468,7 +468,7 @@ export class DocumentationGenerator {
    */
   private countTotalNodes(projectData: ProjectInfo): number {
     if (!(projectData as any).files) return 0;
-    return ((projectData as any).files as any).reduce((total: number, file: any) => {
+    return (projectData as any).files.reduce((total: number, file: any) => {
       return total + (file.ast ? 1 : 0);
     }, 0);
   }
