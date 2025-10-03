@@ -40,14 +40,20 @@ export class ProjectParser {
       cleanupInterval: 300000,
       defaultTTL: (this.options.cache?.cacheExpiration ?? 1) * 3600000,
     });
-    
+
     // Initialize performance components if enabled
-    if (this.options.performance?.enablePerformanceMonitoring && this.options.performance?.performanceMonitor) {
-      this.performanceMonitor = this.options.performance.performanceMonitor;
+    if (
+      this.options.performance?.enablePerformanceMonitoring &&
+      this.options.performance?.performanceMonitor
+    ) {
+      this.performanceMonitor = this.options.performance.performanceMonitor as PerformanceMonitor;
     }
-    
-    if (this.options.performance?.enableMemoryManagement && this.options.performance?.memoryManager) {
-      this.memoryManager = this.options.performance.memoryManager;
+
+    if (
+      this.options.performance?.enableMemoryManagement &&
+      this.options.performance?.memoryManager
+    ) {
+      this.memoryManager = this.options.performance.memoryManager as MemoryManager;
     }
   }
 
@@ -56,8 +62,8 @@ export class ProjectParser {
    */
   async parseProject(projectPath: string): Promise<ProjectInfo> {
     let operationId: string | undefined;
-    const timeout = this.options.performance?.timeout || 300000; // 5 minutes default
-    
+    const timeout = this.options.performance?.timeout ?? 300000; // 5 minutes default
+
     try {
       // Set overall timeout for the entire parsing operation
       const timeoutPromise = new Promise<never>((_, reject) => {
@@ -69,7 +75,7 @@ export class ProjectParser {
       // Execute parsing with timeout
       return await Promise.race([
         this.parseProjectInternal(projectPath, operationId),
-        timeoutPromise
+        timeoutPromise,
       ]);
     } catch (error) {
       // End performance monitoring on error
@@ -77,7 +83,9 @@ export class ProjectParser {
         try {
           this.performanceMonitor.endOperation(operationId);
         } catch (endError) {
-          logWarn('Performance monitoring end failed on error', { error: (endError as Error).message });
+          logWarn('Performance monitoring end failed on error', {
+            error: (endError as Error).message,
+          });
         }
       }
 
@@ -89,34 +97,41 @@ export class ProjectParser {
   /**
    * Internal project parsing logic
    */
-  private async parseProjectInternal(projectPath: string, operationId?: string): Promise<ProjectInfo> {
+  private async parseProjectInternal(
+    projectPath: string,
+    operationId?: string
+  ): Promise<ProjectInfo> {
     try {
       // Start performance monitoring
       if (this.performanceMonitor) {
         try {
           operationId = this.performanceMonitor.startOperation('parseProject', projectPath, {
-            projectName: projectPath.split('/').pop() || 'unknown'
+            projectName: projectPath.split('/').pop() ?? 'unknown',
           });
         } catch (error) {
-          logWarn('Performance monitoring start failed, continuing without monitoring', { error: (error as Error).message });
+          logWarn('Performance monitoring start failed, continuing without monitoring', {
+            error: (error as Error).message,
+          });
         }
       }
-      
+
       // Start memory monitoring
       if (this.memoryManager) {
         try {
           this.memoryManager.startMonitoring();
-          
+
           // Check memory pressure and optimize if needed
           const memoryPressure = this.memoryManager.checkMemoryPressure();
           if (memoryPressure.level === 'high') {
             this.memoryManager.optimizeMemory();
           }
         } catch (error) {
-          logWarn('Memory management start failed, continuing without memory monitoring', { error: (error as Error).message });
+          logWarn('Memory management start failed, continuing without memory monitoring', {
+            error: (error as Error).message,
+          });
         }
       }
-      
+
       logInfo(`Starting project parsing: ${projectPath}`);
 
       // Detect project type
@@ -130,10 +145,13 @@ export class ProjectParser {
       // Discover files
       const files = await this.discoverFiles(projectRoot);
       logInfo(`Discovered ${files.length} files`);
-      
+
       // Record file processing
       if (this.performanceMonitor) {
-        this.performanceMonitor.recordFileProcessed('project', files.reduce((sum, file) => sum + (file.size || 0), 0));
+        this.performanceMonitor.recordFileProcessed(
+          'project',
+          files.reduce((sum, file) => sum + (file.size || 0), 0)
+        );
       }
 
       // Parse files
@@ -186,7 +204,7 @@ export class ProjectParser {
       if (this.performanceMonitor) {
         const performanceReport = this.performanceMonitor.generateReport();
         projectInfo.performance = performanceReport;
-        
+
         // Add cache statistics
         if (projectInfo.performance) {
           projectInfo.performance.cache = {
@@ -195,23 +213,23 @@ export class ProjectParser {
               hits: 0,
               misses: 0,
               totalOperations: 0,
-              hitRate: 0
-            }
+              hitRate: 0,
+            },
           };
         }
       }
-      
+
       // Generate memory report
       if (this.memoryManager) {
         const memoryReport = this.memoryManager.generateMemoryReport();
         if (projectInfo.performance) {
           projectInfo.performance.memory = {
             usage: this.memoryManager.getMemoryUsage(),
-            report: memoryReport
+            report: memoryReport,
           };
         }
       }
-      
+
       // End performance monitoring
       if (this.performanceMonitor && operationId) {
         try {
@@ -220,7 +238,7 @@ export class ProjectParser {
           logWarn('Performance monitoring end failed', { error: (error as Error).message });
         }
       }
-      
+
       logInfo(`Project parsing completed: ${projectInfo.name}`);
       return projectInfo;
     } catch (error) {
@@ -229,10 +247,12 @@ export class ProjectParser {
         try {
           this.performanceMonitor.endOperation(operationId);
         } catch (endError) {
-          logWarn('Performance monitoring end failed on error', { error: (endError as Error).message });
+          logWarn('Performance monitoring end failed on error', {
+            error: (endError as Error).message,
+          });
         }
       }
-      
+
       logError(`Failed to parse project: ${projectPath}`, error as Error, { projectPath });
       throw error;
     }
@@ -339,18 +359,20 @@ export class ProjectParser {
    */
   private async parseFiles(files: FileInfo[]): Promise<ASTNode[]> {
     const astNodes: ASTNode[] = [];
-    const maxConcurrentFiles = this.options.performance?.maxConcurrentFiles || 10;
-    const timeout = this.options.performance?.timeout || 300000; // 5 minutes default
-    const enableProgress = this.options.performance?.enableProgress || false;
-    const progressInterval = this.options.performance?.progressInterval || 1000;
+    const maxConcurrentFiles = this.options.performance?.maxConcurrentFiles ?? 10;
+    const timeout = this.options.performance?.timeout ?? 300000; // 5 minutes default
+    const enableProgress = this.options.performance?.enableProgress ?? false;
+    const progressInterval = this.options.performance?.progressInterval ?? 1000;
 
     // Filter files to parse
-    const filesToParse = files.filter(file => 
-      PathUtils.isTypeScriptFile(file.path) || PathUtils.isJavaScriptFile(file.path)
+    const filesToParse = files.filter(
+      file => PathUtils.isTypeScriptFile(file.path) || PathUtils.isJavaScriptFile(file.path)
     );
 
     if (enableProgress) {
-      logInfo(`Starting to parse ${filesToParse.length} files with concurrency limit: ${maxConcurrentFiles}`);
+      logInfo(
+        `Starting to parse ${filesToParse.length} files with concurrency limit: ${maxConcurrentFiles}`
+      );
     }
 
     // Process files in batches with concurrency control
@@ -373,18 +395,18 @@ export class ProjectParser {
       }
 
       // Process batch with timeout
-      const batchPromises = batch.map(file => 
+      const batchPromises = batch.map(file =>
         Promise.race([
           this.parseFileWithTimeout(file, timeout),
-          new Promise<ASTNode[]>((_, reject) => 
+          new Promise<ASTNode[]>((_, reject) =>
             setTimeout(() => reject(new Error(`File parsing timeout: ${file.path}`)), timeout)
-          )
+          ),
         ])
       );
 
       try {
         const batchResults = await Promise.allSettled(batchPromises);
-        
+
         // Process results
         for (const result of batchResults) {
           if (result.status === 'fulfilled') {
@@ -402,7 +424,6 @@ export class ProjectParser {
           logInfo(`Progress: ${processedFiles}/${filesToParse.length} files (${progress}%)`);
           lastProgressTime = Date.now();
         }
-
       } catch (error) {
         logError('Batch processing failed', error as Error);
         throw error;
@@ -420,7 +441,7 @@ export class ProjectParser {
    * Parse file with timeout and memory limit enforcement
    */
   private async parseFileWithTimeout(file: FileInfo, timeout: number): Promise<ASTNode[]> {
-    const memoryLimit = this.options.performance?.memoryLimit || 1024; // MB
+    const memoryLimit = this.options.performance?.memoryLimit ?? 1024; // MB
 
     return new Promise<ASTNode[]>((resolve, reject) => {
       const timer = setTimeout(() => {
@@ -430,18 +451,20 @@ export class ProjectParser {
       this.parseFile(file)
         .then(result => {
           clearTimeout(timer);
-          
+
           // Check memory usage after parsing
           if (this.memoryManager) {
             const memoryUsage = this.memoryManager.getMemoryUsage();
             const memoryUsageMB = memoryUsage.heapUsed / (1024 * 1024); // Convert to MB
             if (memoryUsageMB > memoryLimit) {
-              logWarn(`Memory usage (${memoryUsageMB.toFixed(2)}MB) exceeds limit (${memoryLimit}MB) for file: ${file.path}`);
+              logWarn(
+                `Memory usage (${memoryUsageMB.toFixed(2)}MB) exceeds limit (${memoryLimit}MB) for file: ${file.path}`
+              );
               // Trigger memory optimization
               this.memoryManager.optimizeMemory();
             }
           }
-          
+
           resolve(result);
         })
         .catch(error => {
@@ -686,8 +709,8 @@ export class ProjectParser {
    */
   async parseProjectIncremental(projectPath: string): Promise<ProjectInfo> {
     let operationId: string | undefined;
-    const timeout = this.options.performance?.timeout || 300000; // 5 minutes default
-    
+    const timeout = this.options.performance?.timeout ?? 300000; // 5 minutes default
+
     try {
       // Set overall timeout for the entire incremental parsing operation
       const timeoutPromise = new Promise<never>((_, reject) => {
@@ -699,7 +722,7 @@ export class ProjectParser {
       // Execute incremental parsing with timeout
       return await Promise.race([
         this.parseProjectIncrementalInternal(projectPath, operationId),
-        timeoutPromise
+        timeoutPromise,
       ]);
     } catch (error) {
       // End performance monitoring on error
@@ -707,7 +730,9 @@ export class ProjectParser {
         try {
           this.performanceMonitor.endOperation(operationId);
         } catch (endError) {
-          logWarn('Performance monitoring end failed on error', { error: (endError as Error).message });
+          logWarn('Performance monitoring end failed on error', {
+            error: (endError as Error).message,
+          });
         }
       }
 
@@ -720,28 +745,39 @@ export class ProjectParser {
   /**
    * Internal incremental project parsing logic
    */
-  private async parseProjectIncrementalInternal(projectPath: string, operationId?: string): Promise<ProjectInfo> {
+  private async parseProjectIncrementalInternal(
+    projectPath: string,
+    operationId?: string
+  ): Promise<ProjectInfo> {
     try {
       // Start performance monitoring
       if (this.performanceMonitor) {
         try {
-          operationId = this.performanceMonitor.startOperation('parseProjectIncremental', projectPath, {
-            projectName: projectPath.split('/').pop() || 'unknown'
-          });
+          operationId = this.performanceMonitor.startOperation(
+            'parseProjectIncremental',
+            projectPath,
+            {
+              projectName: projectPath.split('/').pop() ?? 'unknown',
+            }
+          );
         } catch (error) {
-          logWarn('Performance monitoring start failed, continuing without monitoring', { error: (error as Error).message });
+          logWarn('Performance monitoring start failed, continuing without monitoring', {
+            error: (error as Error).message,
+          });
         }
       }
-      
+
       // Start memory monitoring
       if (this.memoryManager) {
         try {
           this.memoryManager.startMonitoring();
         } catch (error) {
-          logWarn('Memory management start failed, continuing without memory monitoring', { error: (error as Error).message });
+          logWarn('Memory management start failed, continuing without memory monitoring', {
+            error: (error as Error).message,
+          });
         }
       }
-      
+
       logInfo(`Starting incremental project parsing: ${projectPath}`);
 
       // Load cache
@@ -768,7 +804,7 @@ export class ProjectParser {
 
       for (const file of files) {
         const filePath = FileUtils.relative(projectRoot, file.path);
-        
+
         try {
           // Check if file is cached and valid
           const hasCache = await this.cacheManager.hasCache(filePath);
@@ -811,13 +847,13 @@ export class ProjectParser {
             const fileASTs = await this.parseFile(file);
             if (fileASTs && fileASTs.length > 0) {
               astNodes.push(...fileASTs);
-              
+
               // Extract dependencies from all AST nodes
               const dependencies: string[] = [];
               for (const ast of fileASTs) {
                 dependencies.push(...this.extractDependencies(ast));
               }
-              
+
               // Cache the result (use first AST node as representative)
               if (fileASTs[0]) {
                 await this.cacheManager.setCache(filePath, {
@@ -825,7 +861,7 @@ export class ProjectParser {
                   lastModified: file.lastModified.toISOString(),
                   ast: fileASTs[0], // Use first AST node as representative
                   relations: [],
-                  dependencies: [...new Set(dependencies)] // Remove duplicates
+                  dependencies: [...new Set(dependencies)], // Remove duplicates
                 });
               }
 
@@ -883,7 +919,7 @@ export class ProjectParser {
       if (this.performanceMonitor) {
         const performanceReport = this.performanceMonitor.generateReport();
         projectInfo.performance = performanceReport;
-        
+
         // Add cache statistics
         if (projectInfo.performance) {
           projectInfo.performance.cache = {
@@ -892,23 +928,23 @@ export class ProjectParser {
               hits: cacheHits,
               misses: cacheMisses,
               totalOperations: cacheHits + cacheMisses,
-              hitRate: cacheHits / (cacheHits + cacheMisses) || 0
-            }
+              hitRate: cacheHits / (cacheHits + cacheMisses) || 0,
+            },
           };
         }
       }
-      
+
       // Generate memory report
       if (this.memoryManager) {
         const memoryReport = this.memoryManager.generateMemoryReport();
         if (projectInfo.performance) {
           projectInfo.performance.memory = {
             usage: this.memoryManager.getMemoryUsage(),
-            report: memoryReport
+            report: memoryReport,
           };
         }
       }
-      
+
       // End performance monitoring
       if (this.performanceMonitor && operationId) {
         try {
@@ -917,11 +953,13 @@ export class ProjectParser {
           logWarn('Performance monitoring end failed', { error: (error as Error).message });
         }
       }
-      
+
       // Persist cache
       await this.cacheManager.persistCache();
 
-      logInfo(`Incremental parsing completed. Changed files: ${changedFiles.length}, Cache hits: ${cacheHits}, Cache misses: ${cacheMisses}`);
+      logInfo(
+        `Incremental parsing completed. Changed files: ${changedFiles.length}, Cache hits: ${cacheHits}, Cache misses: ${cacheMisses}`
+      );
       return projectInfo;
     } catch (error) {
       // End performance monitoring on error
@@ -929,10 +967,12 @@ export class ProjectParser {
         try {
           this.performanceMonitor.endOperation(operationId);
         } catch (endError) {
-          logWarn('Performance monitoring end failed on error', { error: (endError as Error).message });
+          logWarn('Performance monitoring end failed on error', {
+            error: (endError as Error).message,
+          });
         }
       }
-      
+
       logError(`Incremental parsing failed: ${projectPath}`, error as Error);
       // Fall back to full parsing
       return this.parseProject(projectPath);
@@ -961,7 +1001,7 @@ export class ProjectParser {
       if (cached) {
         await this.cacheManager.setCache(filePath, {
           ...cached,
-          dependencies
+          dependencies,
         });
       }
     } catch (error) {
@@ -986,7 +1026,7 @@ export class ProjectParser {
    */
   private extractDependencies(node: ASTNode): string[] {
     const dependencies: string[] = [];
-    
+
     // Extract imports from metadata
     if (node.metadata && node.metadata['imports']) {
       const imports = node.metadata['imports'] as string[];

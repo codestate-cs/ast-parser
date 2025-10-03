@@ -236,7 +236,7 @@ export class CacheManager {
       const data = await fs.readFile(this.options.cacheFile, 'utf-8');
       const cacheData: CacheData = this.options.compressionEnabled
         ? this.decompressData(data)
-        : JSON.parse(data);
+        : (JSON.parse(data) as CacheData);
 
       if (!this.validateCacheData(cacheData)) {
         logWarn('Invalid cache file format, starting with empty cache');
@@ -301,8 +301,7 @@ export class CacheManager {
         .map(([path, entry]) => ({ path, entry }))
         .sort(
           (a, b) =>
-            new Date(a.entry.lastModified).getTime() -
-            new Date(b.entry.lastModified).getTime(),
+            new Date(a.entry.lastModified).getTime() - new Date(b.entry.lastModified).getTime()
         );
 
       // Remove oldest entries until we're under the limit
@@ -334,7 +333,7 @@ export class CacheManager {
 
       if (entries.length > 0) {
         const sortedEntries = entries.sort(
-          (a, b) => new Date(a[1].lastModified).getTime() - new Date(b[1].lastModified).getTime(),
+          (a, b) => new Date(a[1].lastModified).getTime() - new Date(b[1].lastModified).getTime()
         );
 
         oldestEntry = sortedEntries[0]?.[1]?.lastModified ?? '';
@@ -360,7 +359,7 @@ export class CacheManager {
         hitRate: 0,
         lastCleanup: new Date().toISOString(),
         oldestEntry: '',
-        newestEntry: ''
+        newestEntry: '',
       };
     }
   }
@@ -368,7 +367,7 @@ export class CacheManager {
   /**
    * Invalidate dependent files
    */
-  async invalidateDependents(filePath: string): Promise<void> {
+  invalidateDependents(filePath: string): void {
     try {
       if (!filePath) {
         return;
@@ -397,7 +396,7 @@ export class CacheManager {
       }
 
       const dependents: string[] = [];
-      
+
       for (const [cachedPath, entry] of this.cache.entries()) {
         if (entry.dependencies.includes(filePath)) {
           dependents.push(cachedPath);
@@ -465,7 +464,7 @@ export class CacheManager {
    */
   private mergeOptions(
     defaults: Required<CacheManagerOptions>,
-    options: CacheManagerOptions,
+    options: CacheManagerOptions
   ): Required<CacheManagerOptions> {
     return {
       cacheFile: options.cacheFile ?? defaults.cacheFile,
@@ -501,15 +500,18 @@ export class CacheManager {
    */
   private validateCacheData(data: unknown): data is CacheData {
     try {
+      if (!data || typeof data !== 'object') {
+        return false;
+      }
+      
+      const obj = data as Record<string, unknown>;
       return !!(
-        data &&
-        typeof data === 'object' &&
-        'version' in data &&
-        'timestamp' in data &&
-        'entries' in data &&
-        typeof (data as any).version === 'string' &&
-        typeof (data as any).timestamp === 'string' &&
-        typeof (data as any).entries === 'object'
+        'version' in obj &&
+        'timestamp' in obj &&
+        'entries' in obj &&
+        typeof obj['version'] === 'string' &&
+        typeof obj['timestamp'] === 'string' &&
+        typeof obj['entries'] === 'object'
       );
     } catch {
       return false;
@@ -531,7 +533,7 @@ export class CacheManager {
   private decompressData(data: string): CacheData {
     // In a real implementation, you would use decompression libraries like zlib
     // For now, we'll just parse the data as JSON
-    return JSON.parse(data);
+    return JSON.parse(data) as CacheData;
   }
 
   /**
