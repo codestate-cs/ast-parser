@@ -114,6 +114,24 @@ describe('EnhancedTypeScriptParser', () => {
       expect(genericNode).toBeDefined();
     });
 
+
+    it('should parse generic types', async () => {
+      const mockFileInfoCopy = {...mockFileInfo, name: 'testfile.ts', path: '/Users/karthik/codestate/ast-parser/tests/unit/parsers/testfile.ts'};
+      
+      // When: Parsing the file
+      const result = await parser.parseFile(mockFileInfoCopy);
+
+      console.log(result);
+
+      // Then: Should parse successfully
+      expect(result).toBeDefined();
+      expect(result.nodes.length).toBeGreaterThan(0);
+      
+      // Should have the generic interface node
+      const genericNode = result.nodes.find(n => n.name === 'GenericInterface');
+      expect(genericNode).toBeDefined();
+    });
+
     it('should parse inheritance', async () => {
       // Given: Class inheritance
       const content = `

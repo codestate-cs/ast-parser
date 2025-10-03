@@ -345,7 +345,7 @@ describe('CacheManager', () => {
 
     it('should handle cache file read errors gracefully', async () => {
       const manager = new CacheManager({
-        cacheFile: '/invalid/path/cache.json'
+        cacheFile: '/invalid/path/cache2.json'
       });
 
       await expect(manager.loadCache()).resolves.not.toThrow();
@@ -409,14 +409,14 @@ describe('CacheManager', () => {
   });
 
   describe('edge cases', () => {
-    it('should handle empty file paths', async () => {
-      await expect(cacheManager.setCache('', {
+    it('should handle empty file paths', () => {
+      expect(() => cacheManager.setCache('', {
         hash: 'test',
         lastModified: new Date().toISOString(),
         ast: mockASTNode,
         relations: [],
         dependencies: []
-      })).resolves.not.toThrow();
+      })).not.toThrow();
     });
 
     it('should handle special characters in file paths', async () => {
@@ -463,13 +463,13 @@ describe('CacheManager', () => {
         throw new Error('Cache set error');
       });
 
-      await expect(cacheManager.setCache('./src/test.ts', {
+      expect(() => cacheManager.setCache('./src/test.ts', {
         hash: 'test',
         lastModified: new Date().toISOString(),
         ast: mockASTNode,
         relations: [],
         dependencies: []
-      })).resolves.not.toThrow();
+      })).not.toThrow();
 
       // Restore original method
       cacheManager['cache'].set = originalSet;
@@ -510,7 +510,7 @@ describe('CacheManager', () => {
         throw new Error('Cache delete error');
       });
 
-      await expect(cacheManager.invalidateCache('./src/test.ts')).resolves.not.toThrow();
+      expect(() => cacheManager.invalidateCache('./src/test.ts')).not.toThrow();
 
       // Restore original method
       cacheManager['cache'].delete = originalDelete;
@@ -557,7 +557,7 @@ describe('CacheManager', () => {
         throw new Error('Cache forEach error');
       });
 
-      await expect(cacheManager.cleanupExpiredEntries()).resolves.not.toThrow();
+      expect(() => cacheManager.cleanupExpiredEntries()).not.toThrow();
 
       // Restore original method
       cacheManager['cache'].forEach = originalForEach;
@@ -570,7 +570,7 @@ describe('CacheManager', () => {
         throw new Error('Cache forEach error');
       });
 
-      await expect(cacheManager.cleanupBySize()).resolves.not.toThrow();
+      expect(() => cacheManager.cleanupBySize()).not.toThrow();
 
       // Restore original method
       cacheManager['cache'].forEach = originalForEach;
@@ -607,9 +607,11 @@ describe('CacheManager', () => {
     it('should handle invalidateDependents errors gracefully', async () => {
       // Mock findDependents to throw an error
       const originalFindDependents = cacheManager.findDependents;
-      cacheManager.findDependents = jest.fn().mockRejectedValue(new Error('Find dependents error'));
+      cacheManager.findDependents = jest.fn().mockImplementation(() => {
+        throw new Error('Find dependents error');
+      });
 
-      await expect(cacheManager.invalidateDependents('./src/test.ts')).resolves.not.toThrow();
+      expect(() => cacheManager.invalidateDependents('./src/test.ts')).not.toThrow();
 
       // Restore original method
       cacheManager.findDependents = originalFindDependents;
@@ -622,7 +624,7 @@ describe('CacheManager', () => {
         throw new Error('Cache clear error');
       });
 
-      await expect(cacheManager.clearCache()).resolves.not.toThrow();
+      expect(() => cacheManager.clearCache()).not.toThrow();
 
       // Restore original method
       cacheManager['cache'].clear = originalClear;
@@ -699,32 +701,32 @@ describe('CacheManager', () => {
       expect(result).toBe(false);
     });
 
-    it('should handle invalidateCache with empty file path', async () => {
-      await expect(cacheManager.invalidateCache('')).resolves.not.toThrow();
+    it('should handle invalidateCache with empty file path', () => {
+      expect(() => cacheManager.invalidateCache('')).not.toThrow();
     });
 
-    it('should handle invalidateCache with null file path', async () => {
-      await expect(cacheManager.invalidateCache(null as any)).resolves.not.toThrow();
+    it('should handle invalidateCache with null file path', () => {
+      expect(() => cacheManager.invalidateCache(null as any)).not.toThrow();
     });
 
-    it('should handle setCache with empty file path', async () => {
-      await expect(cacheManager.setCache('', {
+    it('should handle setCache with empty file path', () => {
+      expect(() => cacheManager.setCache('', {
         hash: 'test',
         lastModified: new Date().toISOString(),
         ast: mockASTNode,
         relations: [],
         dependencies: []
-      })).resolves.not.toThrow();
+      })).not.toThrow();
     });
 
-    it('should handle setCache with null file path', async () => {
-      await expect(cacheManager.setCache(null as any, {
+    it('should handle setCache with null file path', () => {
+      expect(() => cacheManager.setCache(null as any, {
         hash: 'test',
         lastModified: new Date().toISOString(),
         ast: mockASTNode,
         relations: [],
         dependencies: []
-      })).resolves.not.toThrow();
+      })).not.toThrow();
     });
 
     it('should handle validateFileHash with empty file path', async () => {
@@ -747,12 +749,12 @@ describe('CacheManager', () => {
       expect(result).toEqual([]);
     });
 
-    it('should handle invalidateDependents with empty file path', async () => {
-      await expect(cacheManager.invalidateDependents('')).resolves.not.toThrow();
+    it('should handle invalidateDependents with empty file path', () => {
+      expect(() => cacheManager.invalidateDependents('')).not.toThrow();
     });
 
-    it('should handle invalidateDependents with null file path', async () => {
-      await expect(cacheManager.invalidateDependents(null as any)).resolves.not.toThrow();
+    it('should handle invalidateDependents with null file path', () => {
+      expect(() => cacheManager.invalidateDependents(null as any)).not.toThrow();
     });
 
     it('should handle cache hit and miss counting', async () => {

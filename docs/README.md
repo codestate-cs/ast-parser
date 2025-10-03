@@ -1,49 +1,28 @@
-Custom: # Project Documentation
+# Project Documentation
 
 ## Table of Contents
 
 - [Overview](#overview)
 - [API Reference](#api-reference)
+- [Examples](#examples)
 
 
 ## Overview
 
-# test
+This documentation provides comprehensive information about the project.
 
-Automatically generated documentation for the project.
+### Statistics
 
-## Project Statistics
+- **Total JSDoc Comments**: 0
+- **Total Types**: 0
+- **Total Examples**: 0
 
-- **Total Files**: 1
-- **Total Functions**: 1
-- **Total Classes**: 0
-- **Total Interfaces**: 0
-
-## Quick Start
-
-This documentation provides comprehensive information about the project's API, usage examples, and implementation details.
-
-## API Reference
-
-# API Reference
-
-## Functions
-
-### TestNode
-
-No description available for TestNode.
-
-**File**: `test.ts`
-**Type**: Function
-**Position**: 0-50
-
----
 
 
 ## Metadata
 
-- **Generated**: 2025-10-03T14:34:48.926Z
+- **Generated**: 2025-10-03T18:20:16.291Z
 - **Markdown Flavor**: github
 - **Syntax Highlighting**: Enabled
-- **Total Nodes**: 1
+- **Total Items**: 0
 

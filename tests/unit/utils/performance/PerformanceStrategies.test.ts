@@ -380,7 +380,7 @@ describe('PerformanceStrategies', () => {
   describe('throttle strategy', () => {
     it('should throttle operations', async () => {
       let callCount = 0;
-      const operation = async () => {
+      const operation = async (): Promise<string> => {
         callCount++;
         return `result-${callCount}`;
       };
@@ -392,7 +392,7 @@ describe('PerformanceStrategies', () => {
 
       // Execute operations - the third one should be delayed due to throttling
       const startTime = Date.now();
-      const results = [];
+      const results: string[] = [];
       results.push(await strategy.execute(operation));
       results.push(await strategy.execute(operation));
       results.push(await strategy.execute(operation));

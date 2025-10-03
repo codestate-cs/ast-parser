@@ -3,6 +3,9 @@
  */
 
 import { ParsingMode, OutputFormat, CompressionType } from './core';
+import { PerformanceMonitor } from '../utils/performance/PerformanceMonitor';
+import { MemoryManager } from '../utils/performance/MemoryManager';
+import { CacheManager } from '../core/CacheManager';
 
 /**
  * Main parsing options
@@ -111,11 +114,11 @@ export interface PerformanceOptions {
   /** Enable caching */
   enableCaching?: boolean;
   /** Performance monitor instance */
-  performanceMonitor?: any;
+  performanceMonitor?: PerformanceMonitor;
   /** Memory manager instance */
-  memoryManager?: any;
+  memoryManager?: MemoryManager;
   /** Cache manager instance */
-  cacheManager?: any;
+  cacheManager?: CacheManager;
 }
 
 /**

@@ -5,11 +5,41 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 
-import { DocumentationGenerator } from '../../../src/documentation/DocumentationGenerator';
+import { DocumentationGenerator, ExtractionResult, QualityAnalysisResult } from '../../../src/documentation/DocumentationGenerator';
 
 describe('DocumentationGenerator', () => {
   let documentationGenerator: DocumentationGenerator;
   let mockProjectData: any;
+
+  // Helper function to mock extractors
+  const mockExtractors = () => {
+    const originalJsdocExtractor = (documentationGenerator as any).jsdocExtractor;
+    const originalTypeExtractor = (documentationGenerator as any).typeExtractor;
+    const originalExampleExtractor = (documentationGenerator as any).exampleExtractor;
+    
+    (documentationGenerator as any).jsdocExtractor = {
+      extractFromNodes: jest.fn().mockReturnValue({ jsdoc: [] })
+    };
+    (documentationGenerator as any).typeExtractor = {
+      extractFromNodes: jest.fn().mockReturnValue({ types: [] })
+    };
+    (documentationGenerator as any).exampleExtractor = {
+      extractFromNodes: jest.fn().mockReturnValue({ examples: [] })
+    };
+    
+    return {
+      originalJsdocExtractor,
+      originalTypeExtractor,
+      originalExampleExtractor
+    };
+  };
+
+  // Helper function to restore extractors
+  const restoreExtractors = (originals: any) => {
+    (documentationGenerator as any).jsdocExtractor = originals.originalJsdocExtractor;
+    (documentationGenerator as any).typeExtractor = originals.originalTypeExtractor;
+    (documentationGenerator as any).exampleExtractor = originals.originalExampleExtractor;
+  };
 
   beforeEach(() => {
     documentationGenerator = new DocumentationGenerator();
@@ -176,6 +206,15 @@ describe('DocumentationGenerator', () => {
       expect(result.success).toBe(true);
       expect(result.outputs).toBeDefined();
       expect(result.outputs?.markdown).toBeDefined();
+    });
+
+    it('should generate output in specified format', async () => {
+      const result = await documentationGenerator.generateOutput({
+        success: true,
+      } as ExtractionResult, { } as QualityAnalysisResult, 'both');
+
+      expect(result.success).toBe(false);
+      expect(result.outputs).not.toBeDefined();
     });
 
     it('should handle multiple output formats', async () => {
@@ -834,6 +873,701 @@ describe('DocumentationGenerator', () => {
           expect(result.jsdoc).toBeDefined();
           expect(result.types).toBeDefined();
           expect(result.examples).toBeDefined();
+        });
+
+        // Comprehensive tests for extractInformation else case scenarios
+        it('should handle files with ast that has children property in extractInformation', async () => {
+          const originals = mockExtractors();
+          
+          const projectDataWithChildren = {
+            ...mockProjectData,
+            files: [
+              {
+                path: 'src/utils.ts',
+                content: 'export function test() { return "test"; }',
+                ast: {
+                  name: 'test',
+                  type: 'FunctionDeclaration',
+                  children: [
+                    {
+                      name: 'child1',
+                      type: 'VariableDeclaration',
+                      documentation: 'Child node documentation'
+                    },
+                    {
+                      name: 'child2',
+                      type: 'ExpressionStatement',
+                      documentation: 'Another child node'
+                    }
+                  ]
+                }
+              }
+            ]
+          };
+          
+          const result = await documentationGenerator.extractInformation(projectDataWithChildren);
+          
+          expect(result.success).toBe(true);
+          expect(result.jsdoc).toBeDefined();
+          expect(result.types).toBeDefined();
+          expect(result.examples).toBeDefined();
+          
+          restoreExtractors(originals);
+        });
+
+        it('should handle files with ast that has empty children array in extractInformation', async () => {
+          const originals = mockExtractors();
+          
+          const projectDataWithEmptyChildren = {
+            ...mockProjectData,
+            files: [
+              {
+                path: 'src/utils.ts',
+                content: 'export function test() { return "test"; }',
+                ast: {
+                  name: 'test',
+                  type: 'FunctionDeclaration',
+                  children: []
+                }
+              }
+            ]
+          };
+          
+          const result = await documentationGenerator.extractInformation(projectDataWithEmptyChildren);
+          
+          expect(result.success).toBe(true);
+          expect(result.jsdoc).toBeDefined();
+          expect(result.types).toBeDefined();
+          expect(result.examples).toBeDefined();
+          
+          restoreExtractors(originals);
+        });
+
+        it('should handle files with ast that has null children in extractInformation', async () => {
+          const originals = mockExtractors();
+          
+          const projectDataWithNullChildren = {
+            ...mockProjectData,
+            files: [
+              {
+                path: 'src/utils.ts',
+                content: 'export function test() { return "test"; }',
+                ast: {
+                  name: 'test',
+                  type: 'FunctionDeclaration',
+                  children: null
+                }
+              }
+            ]
+          };
+          
+          const result = await documentationGenerator.extractInformation(projectDataWithNullChildren);
+          
+          expect(result.success).toBe(true);
+          expect(result.jsdoc).toBeDefined();
+          expect(result.types).toBeDefined();
+          expect(result.examples).toBeDefined();
+          
+          restoreExtractors(originals);
+        });
+
+        it('should handle files with ast that has undefined children in extractInformation', async () => {
+          const originals = mockExtractors();
+          
+          const projectDataWithUndefinedChildren = {
+            ...mockProjectData,
+            files: [
+              {
+                path: 'src/utils.ts',
+                content: 'export function test() { return "test"; }',
+                ast: {
+                  name: 'test',
+                  type: 'FunctionDeclaration',
+                  children: undefined
+                }
+              }
+            ]
+          };
+          
+          const result = await documentationGenerator.extractInformation(projectDataWithUndefinedChildren);
+          
+          expect(result.success).toBe(true);
+          expect(result.jsdoc).toBeDefined();
+          expect(result.types).toBeDefined();
+          expect(result.examples).toBeDefined();
+          
+          restoreExtractors(originals);
+        });
+
+        it('should handle files with ast that has non-array children in extractInformation', async () => {
+          const originals = mockExtractors();
+          
+          const projectDataWithNonArrayChildren = {
+            ...mockProjectData,
+            files: [
+              {
+                path: 'src/utils.ts',
+                content: 'export function test() { return "test"; }',
+                ast: {
+                  name: 'test',
+                  type: 'FunctionDeclaration',
+                  children: 'not-an-array'
+                }
+              }
+            ]
+          };
+          
+          const result = await documentationGenerator.extractInformation(projectDataWithNonArrayChildren);
+          
+          expect(result.success).toBe(true);
+          expect(result.jsdoc).toBeDefined();
+          expect(result.types).toBeDefined();
+          expect(result.examples).toBeDefined();
+          
+          restoreExtractors(originals);
+        });
+
+        it('should handle files with ast that has children with complex nested structure in extractInformation', async () => {
+          const originals = mockExtractors();
+          
+          const projectDataWithComplexChildren = {
+            ...mockProjectData,
+            files: [
+              {
+                path: 'src/utils.ts',
+                content: 'export function test() { return "test"; }',
+                ast: {
+                  name: 'test',
+                  type: 'FunctionDeclaration',
+                  children: [
+                    {
+                      name: 'nestedChild',
+                      type: 'BlockStatement',
+                      children: [
+                        {
+                          name: 'deepChild',
+                          type: 'ReturnStatement',
+                          documentation: 'Deep nested child'
+                        }
+                      ]
+                    },
+                    {
+                      name: 'anotherChild',
+                      type: 'VariableDeclaration',
+                      children: [
+                        {
+                          name: 'assignment',
+                          type: 'AssignmentExpression',
+                          documentation: 'Assignment expression'
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            ]
+          };
+          
+          const result = await documentationGenerator.extractInformation(projectDataWithComplexChildren);
+          
+          expect(result.success).toBe(true);
+          expect(result.jsdoc).toBeDefined();
+          expect(result.types).toBeDefined();
+          expect(result.examples).toBeDefined();
+          
+          restoreExtractors(originals);
+        });
+
+        it('should handle files with ast that has children with different node types in extractInformation', async () => {
+          const originals = mockExtractors();
+          
+          const projectDataWithDifferentNodeTypes = {
+            ...mockProjectData,
+            files: [
+              {
+                path: 'src/utils.ts',
+                content: 'export function test() { return "test"; }',
+                ast: {
+                  name: 'test',
+                  type: 'FunctionDeclaration',
+                  children: [
+                    {
+                      name: 'classNode',
+                      type: 'ClassDeclaration',
+                      documentation: 'Class documentation',
+                      children: [
+                        {
+                          name: 'methodNode',
+                          type: 'MethodDeclaration',
+                          documentation: 'Method documentation'
+                        }
+                      ]
+                    },
+                    {
+                      name: 'interfaceNode',
+                      type: 'InterfaceDeclaration',
+                      documentation: 'Interface documentation',
+                      children: [
+                        {
+                          name: 'propertyNode',
+                          type: 'PropertySignature',
+                          documentation: 'Property documentation'
+                        }
+                      ]
+                    },
+                    {
+                      name: 'enumNode',
+                      type: 'EnumDeclaration',
+                      documentation: 'Enum documentation',
+                      children: [
+                        {
+                          name: 'enumMember',
+                          type: 'EnumMember',
+                          documentation: 'Enum member documentation'
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            ]
+          };
+          
+          const result = await documentationGenerator.extractInformation(projectDataWithDifferentNodeTypes);
+          
+          expect(result.success).toBe(true);
+          expect(result.jsdoc).toBeDefined();
+          expect(result.types).toBeDefined();
+          expect(result.examples).toBeDefined();
+          
+          restoreExtractors(originals);
+        });
+
+        it('should handle files with ast that has children with special characters in extractInformation', async () => {
+          const originals = mockExtractors();
+          
+          const projectDataWithSpecialCharacters = {
+            ...mockProjectData,
+            files: [
+              {
+                path: 'src/utils.ts',
+                content: 'export function test() { return "test"; }',
+                ast: {
+                  name: 'test',
+                  type: 'FunctionDeclaration',
+                  children: [
+                    {
+                      name: 'special@node#with$chars',
+                      type: 'VariableDeclaration',
+                      documentation: 'Special characters in name'
+                    },
+                    {
+                      name: 'node-with-dashes',
+                      type: 'ExpressionStatement',
+                      documentation: 'Node with dashes'
+                    },
+                    {
+                      name: 'node_with_underscores',
+                      type: 'ReturnStatement',
+                      documentation: 'Node with underscores'
+                    }
+                  ]
+                }
+              }
+            ]
+          };
+          
+          const result = await documentationGenerator.extractInformation(projectDataWithSpecialCharacters);
+          
+          expect(result.success).toBe(true);
+          expect(result.jsdoc).toBeDefined();
+          expect(result.types).toBeDefined();
+          expect(result.examples).toBeDefined();
+          
+          restoreExtractors(originals);
+        });
+
+        it('should handle files with ast that has children with unicode characters in extractInformation', async () => {
+          const originals = mockExtractors();
+          
+          const projectDataWithUnicodeCharacters = {
+            ...mockProjectData,
+            files: [
+              {
+                path: 'src/utils.ts',
+                content: 'export function test() { return "test"; }',
+                ast: {
+                  name: 'test',
+                  type: 'FunctionDeclaration',
+                  children: [
+                    {
+                      name: '测试节点',
+                      type: 'VariableDeclaration',
+                      documentation: '测试文档'
+                    },
+                    {
+                      name: 'ノード名',
+                      type: 'ExpressionStatement',
+                      documentation: '日本語ドキュメント'
+                    },
+                    {
+                      name: '노드이름',
+                      type: 'ReturnStatement',
+                      documentation: '한국어 문서'
+                    }
+                  ]
+                }
+              }
+            ]
+          };
+          
+          const result = await documentationGenerator.extractInformation(projectDataWithUnicodeCharacters);
+          
+          expect(result.success).toBe(true);
+          expect(result.jsdoc).toBeDefined();
+          expect(result.types).toBeDefined();
+          expect(result.examples).toBeDefined();
+          
+          restoreExtractors(originals);
+        });
+
+        it('should handle files with ast that has children with very long names in extractInformation', async () => {
+          const originals = mockExtractors();
+          
+          const longName = 'a'.repeat(1000);
+          const projectDataWithLongNames = {
+            ...mockProjectData,
+            files: [
+              {
+                path: 'src/utils.ts',
+                content: 'export function test() { return "test"; }',
+                ast: {
+                  name: 'test',
+                  type: 'FunctionDeclaration',
+                  children: [
+                    {
+                      name: longName,
+                      type: 'VariableDeclaration',
+                      documentation: 'Node with very long name'
+                    },
+                    {
+                      name: 'normalNode',
+                      type: 'ExpressionStatement',
+                      documentation: 'Normal node name'
+                    }
+                  ]
+                }
+              }
+            ]
+          };
+          
+          const result = await documentationGenerator.extractInformation(projectDataWithLongNames);
+          
+          expect(result.success).toBe(true);
+          expect(result.jsdoc).toBeDefined();
+          expect(result.types).toBeDefined();
+          expect(result.examples).toBeDefined();
+          
+          restoreExtractors(originals);
+        });
+
+        it('should handle files with ast that has children with missing properties in extractInformation', async () => {
+          const originals = mockExtractors();
+          
+          const projectDataWithMissingProperties = {
+            ...mockProjectData,
+            files: [
+              {
+                path: 'src/utils.ts',
+                content: 'export function test() { return "test"; }',
+                ast: {
+                  name: 'test',
+                  type: 'FunctionDeclaration',
+                  children: [
+                    {
+                      // Missing name property
+                      type: 'VariableDeclaration',
+                      documentation: 'Node without name'
+                    },
+                    {
+                      name: 'nodeWithoutType',
+                      // Missing type property
+                      documentation: 'Node without type'
+                    },
+                    {
+                      name: 'nodeWithoutDoc',
+                      type: 'ExpressionStatement'
+                      // Missing documentation property
+                    },
+                    {
+                      // Missing all properties except children
+                      children: [
+                        {
+                          name: 'nestedNode',
+                          type: 'ReturnStatement',
+                          documentation: 'Nested node'
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            ]
+          };
+          
+          const result = await documentationGenerator.extractInformation(projectDataWithMissingProperties);
+          
+          expect(result.success).toBe(true);
+          expect(result.jsdoc).toBeDefined();
+          expect(result.types).toBeDefined();
+          expect(result.examples).toBeDefined();
+          
+          restoreExtractors(originals);
+        });
+
+        it('should handle files with ast that has children with invalid data types in extractInformation', async () => {
+          const originals = mockExtractors();
+          
+          const projectDataWithInvalidTypes = {
+            ...mockProjectData,
+            files: [
+              {
+                path: 'src/utils.ts',
+                content: 'export function test() { return "test"; }',
+                ast: {
+                  name: 'test',
+                  type: 'FunctionDeclaration',
+                  children: [
+                    {
+                      name: 123, // Invalid: number instead of string
+                      type: 'VariableDeclaration',
+                      documentation: 'Node with numeric name'
+                    },
+                    {
+                      name: 'nodeWithNumericType',
+                      type: 456, // Invalid: number instead of string
+                      documentation: 'Node with numeric type'
+                    },
+                    {
+                      name: 'nodeWithNumericDoc',
+                      type: 'ExpressionStatement',
+                      documentation: 789 // Invalid: number instead of string
+                    },
+                    {
+                      name: null, // Invalid: null instead of string
+                      type: 'ReturnStatement',
+                      documentation: 'Node with null name'
+                    },
+                    {
+                      name: 'nodeWithNullType',
+                      type: null, // Invalid: null instead of string
+                      documentation: 'Node with null type'
+                    },
+                    {
+                      name: 'nodeWithNullDoc',
+                      type: 'ReturnStatement',
+                      documentation: null // Invalid: null instead of string
+                    }
+                  ]
+                }
+              }
+            ]
+          };
+          
+          const result = await documentationGenerator.extractInformation(projectDataWithInvalidTypes);
+          
+          expect(result.success).toBe(true);
+          expect(result.jsdoc).toBeDefined();
+          expect(result.types).toBeDefined();
+          expect(result.examples).toBeDefined();
+          
+          restoreExtractors(originals);
+        });
+
+        it('should handle files with ast that has children with circular references in extractInformation', async () => {
+          const originals = mockExtractors();
+          
+          const circularNode = {
+            name: 'circularNode',
+            type: 'VariableDeclaration',
+            documentation: 'Node with circular reference'
+          };
+          
+          // Create circular reference
+          (circularNode as any).self = circularNode;
+          
+          const projectDataWithCircularReferences = {
+            ...mockProjectData,
+            files: [
+              {
+                path: 'src/utils.ts',
+                content: 'export function test() { return "test"; }',
+                ast: {
+                  name: 'test',
+                  type: 'FunctionDeclaration',
+                  children: [
+                    circularNode,
+                    {
+                      name: 'normalNode',
+                      type: 'ExpressionStatement',
+                      documentation: 'Normal node'
+                    }
+                  ]
+                }
+              }
+            ]
+          };
+          
+          const result = await documentationGenerator.extractInformation(projectDataWithCircularReferences);
+          
+          expect(result.success).toBe(true);
+          expect(result.jsdoc).toBeDefined();
+          expect(result.types).toBeDefined();
+          expect(result.examples).toBeDefined();
+          
+          restoreExtractors(originals);
+        });
+
+        it('should handle files with ast that has children with function properties in extractInformation', async () => {
+          const originals = mockExtractors();
+          
+          const projectDataWithFunctionProperties = {
+            ...mockProjectData,
+            files: [
+              {
+                path: 'src/utils.ts',
+                content: 'export function test() { return "test"; }',
+                ast: {
+                  name: 'test',
+                  type: 'FunctionDeclaration',
+                  children: [
+                    {
+                      name: 'nodeWithFunction',
+                      type: 'VariableDeclaration',
+                      documentation: 'Node with function property',
+                      customFunction: () => 'test function'
+                    },
+                    {
+                      name: 'nodeWithMethod',
+                      type: 'ExpressionStatement',
+                      documentation: 'Node with method property',
+                      customMethod: {
+                        execute: () => 'executed'
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          };
+          
+          const result = await documentationGenerator.extractInformation(projectDataWithFunctionProperties);
+          
+          expect(result.success).toBe(true);
+          expect(result.jsdoc).toBeDefined();
+          expect(result.types).toBeDefined();
+          expect(result.examples).toBeDefined();
+          
+          restoreExtractors(originals);
+        });
+
+        it('should handle files with ast that has children with array properties in extractInformation', async () => {
+          const originals = mockExtractors();
+          
+          const projectDataWithArrayProperties = {
+            ...mockProjectData,
+            files: [
+              {
+                path: 'src/utils.ts',
+                content: 'export function test() { return "test"; }',
+                ast: {
+                  name: 'test',
+                  type: 'FunctionDeclaration',
+                  children: [
+                    {
+                      name: 'nodeWithArray',
+                      type: 'VariableDeclaration',
+                      documentation: 'Node with array property',
+                      tags: ['tag1', 'tag2', 'tag3']
+                    },
+                    {
+                      name: 'nodeWithNestedArray',
+                      type: 'ExpressionStatement',
+                      documentation: 'Node with nested array property',
+                      metadata: [
+                        { key: 'value1' },
+                        { key: 'value2' },
+                        { key: 'value3' }
+                      ]
+                    }
+                  ]
+                }
+              }
+            ]
+          };
+          
+          const result = await documentationGenerator.extractInformation(projectDataWithArrayProperties);
+          
+          expect(result.success).toBe(true);
+          expect(result.jsdoc).toBeDefined();
+          expect(result.types).toBeDefined();
+          expect(result.examples).toBeDefined();
+          
+          restoreExtractors(originals);
+        });
+
+        it('should handle files with ast that has children with object properties in extractInformation', async () => {
+          const originals = mockExtractors();
+          
+          const projectDataWithObjectProperties = {
+            ...mockProjectData,
+            files: [
+              {
+                path: 'src/utils.ts',
+                content: 'export function test() { return "test"; }',
+                ast: {
+                  name: 'test',
+                  type: 'FunctionDeclaration',
+                  children: [
+                    {
+                      name: 'nodeWithObject',
+                      type: 'VariableDeclaration',
+                      documentation: 'Node with object property',
+                      config: {
+                        enabled: true,
+                        timeout: 5000,
+                        retries: 3
+                      }
+                    },
+                    {
+                      name: 'nodeWithNestedObject',
+                      type: 'ExpressionStatement',
+                      documentation: 'Node with nested object property',
+                      settings: {
+                        database: {
+                          host: 'localhost',
+                          port: 5432,
+                          credentials: {
+                            username: 'user',
+                            password: 'pass'
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          };
+          
+          const result = await documentationGenerator.extractInformation(projectDataWithObjectProperties);
+          
+          expect(result.success).toBe(true);
+          expect(result.jsdoc).toBeDefined();
+          expect(result.types).toBeDefined();
+          expect(result.examples).toBeDefined();
+          
+          restoreExtractors(originals);
         });
 
         it('should handle countTotalNodes with no files', async () => {

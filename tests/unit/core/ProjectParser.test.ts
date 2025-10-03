@@ -714,12 +714,12 @@ describe('ProjectParser', () => {
 
         // Mock cache responses
         mockCacheManager.hasCache.mockImplementation((path) => {
-          return Promise.resolve(path === 'src/index.ts'); // Only index.ts is cached
+          return path === 'src/index.ts'; // Only index.ts is cached
         });
 
         mockCacheManager.getCache.mockImplementation((path) => {
           if (path === 'src/index.ts') {
-            return Promise.resolve({
+            return {
               hash: 'hash1',
               lastModified: new Date().toISOString(),
               ast: {
@@ -736,13 +736,13 @@ describe('ProjectParser', () => {
               },
               relations: [],
               dependencies: []
-            });
+            };
           }
-          return Promise.resolve(null);
+          return null;
         });
 
         mockCacheManager.validateFileHash.mockImplementation((path, hash) => {
-          return Promise.resolve(path === 'src/index.ts' && hash === 'hash1');
+          return path === 'src/index.ts' && hash === 'hash1';
         });
 
         // Mock parsing for non-cached files
@@ -814,15 +814,15 @@ describe('ProjectParser', () => {
         ]);
 
         // File is cached but hash validation fails
-        mockCacheManager.hasCache.mockResolvedValue(true);
-        mockCacheManager.getCache.mockResolvedValue({
+        mockCacheManager.hasCache.mockReturnValue(true);
+        mockCacheManager.getCache.mockReturnValue({
           hash: 'old-hash',
           lastModified: new Date().toISOString(),
           ast: { id: 'node-1', type: 'class', name: 'TestClass', filePath: 'src/index.ts', start: 0, end: 100, children: [], nodeType: 'class', properties: {}, metadata: {} },
           relations: [],
           dependencies: []
         });
-        mockCacheManager.validateFileHash.mockResolvedValue(false); // Hash mismatch
+        mockCacheManager.validateFileHash.mockReturnValue(false); // Hash mismatch
 
         jest.spyOn(parser as any, 'parseFile').mockResolvedValue([
           { id: 'node-1', type: 'class', name: 'TestClass', filePath: 'src/index.ts', start: 0, end: 100, children: [], nodeType: 'class', properties: {}, metadata: {} }
@@ -877,34 +877,34 @@ describe('ProjectParser', () => {
 
         // index.ts has changed, utils.ts depends on it
         mockCacheManager.hasCache.mockImplementation((path) => {
-          return Promise.resolve(path === 'src/utils.ts' || path === 'src/index.ts');
+          return path === 'src/utils.ts' || path === 'src/index.ts';
         });
 
         mockCacheManager.getCache.mockImplementation((path) => {
           if (path === 'src/utils.ts') {
-            return Promise.resolve({
+            return {
               hash: 'hash2',
               lastModified: new Date().toISOString(),
               ast: { id: 'node-2', type: 'function', name: 'testFunction', filePath: 'src/utils.ts', start: 0, end: 50, children: [], nodeType: 'function', properties: {}, metadata: {} },
               relations: [],
               dependencies: ['src/index.ts'] // utils.ts depends on index.ts
-            });
+            };
           }
           if (path === 'src/index.ts') {
-            return Promise.resolve({
+            return {
               hash: 'old-hash', // old hash, different from current 'new-hash'
               lastModified: new Date().toISOString(),
               ast: { id: 'node-1', type: 'class', name: 'TestClass', filePath: 'src/index.ts', start: 0, end: 100, children: [], nodeType: 'class', properties: {}, metadata: {} },
               relations: [],
               dependencies: []
-            });
+            };
           }
-          return Promise.resolve(null);
+          return null;
         });
 
-        mockCacheManager.findDependents.mockResolvedValue(['src/utils.ts']);
+        mockCacheManager.findDependents.mockReturnValue(['src/utils.ts']);
         mockCacheManager.validateFileHash.mockImplementation((path, hash) => {
-          return Promise.resolve(path === 'src/utils.ts' && hash === 'hash2');
+          return path === 'src/utils.ts' && hash === 'hash2';
         });
 
         jest.spyOn(parser as any, 'parseFile').mockResolvedValue([
@@ -957,7 +957,7 @@ describe('ProjectParser', () => {
         ]);
 
         // Cache manager throws error
-        mockCacheManager.hasCache.mockRejectedValue(new Error('Cache error'));
+        mockCacheManager.hasCache.mockImplementation(() => { throw new Error('Cache error'); });
         mockCacheManager.loadCache.mockRejectedValue(new Error('Cache load error'));
 
         jest.spyOn(parser as any, 'parseFiles').mockResolvedValue([
@@ -996,7 +996,7 @@ describe('ProjectParser', () => {
         const filePath = 'src/test.ts';
         const newHash = 'new-hash';
 
-        mockCacheManager.validateFileHash.mockResolvedValue(false);
+        mockCacheManager.validateFileHash.mockReturnValue(false);
 
         const hasChanged = await (parser as any).hasFileChanged(filePath, newHash);
         
@@ -1008,7 +1008,7 @@ describe('ProjectParser', () => {
         const filePath = 'src/test.ts';
         const hash = 'same-hash';
 
-        mockCacheManager.validateFileHash.mockResolvedValue(true);
+        mockCacheManager.validateFileHash.mockReturnValue(true);
 
         const hasChanged = await (parser as any).hasFileChanged(filePath, hash);
         
@@ -1022,7 +1022,7 @@ describe('ProjectParser', () => {
         const dependencies = ['src/utils.ts', 'src/types.ts'];
 
         // Mock getCache to return a cached entry
-        mockCacheManager.getCache.mockResolvedValue({
+        mockCacheManager.getCache.mockReturnValue({
           hash: 'hash1',
           lastModified: new Date().toISOString(),
           ast: { id: 'node-1', type: 'class', name: 'TestClass', filePath, start: 0, end: 100, children: [], nodeType: 'class', properties: {}, metadata: {} },
@@ -1044,7 +1044,7 @@ describe('ProjectParser', () => {
         const filePath = 'src/utils.ts';
         const dependents = ['src/main.ts', 'src/helper.ts'];
 
-        mockCacheManager.findDependents.mockResolvedValue(dependents);
+        mockCacheManager.findDependents.mockReturnValue(dependents);
 
         const result = await (parser as any).findDependentFiles(filePath);
 

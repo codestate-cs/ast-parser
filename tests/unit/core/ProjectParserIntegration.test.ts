@@ -149,8 +149,8 @@ describe('ProjectParser Integration', () => {
       const persistCacheSpy = jest.spyOn(cacheManager, 'persistCache').mockResolvedValue();
       
       // Mock cache check to return false (no cache)
-      jest.spyOn(cacheManager, 'hasCache').mockResolvedValue(false);
-      jest.spyOn(cacheManager, 'setCache').mockResolvedValue();
+      jest.spyOn(cacheManager, 'hasCache').mockReturnValue(false);
+      jest.spyOn(cacheManager, 'setCache').mockReturnValue(undefined);
       
       // Mock the parseFile method to return a mock AST
       jest.spyOn(projectParser as any, 'parseFile').mockResolvedValue({
@@ -199,10 +199,10 @@ describe('ProjectParser Integration', () => {
       
       // Mock cache methods to simulate cache invalidation
       jest.spyOn(cacheManager, 'loadCache').mockResolvedValue();
-      jest.spyOn(cacheManager, 'hasCache').mockResolvedValue(true);
-      jest.spyOn(cacheManager, 'validateFileHash').mockResolvedValue(false);
-      const invalidateSpy = jest.spyOn(cacheManager, 'invalidateDependents').mockResolvedValue();
-      jest.spyOn(cacheManager, 'setCache').mockResolvedValue();
+      jest.spyOn(cacheManager, 'hasCache').mockReturnValue(true);
+      jest.spyOn(cacheManager, 'validateFileHash').mockReturnValue(false);
+      const invalidateSpy = jest.spyOn(cacheManager, 'invalidateDependents').mockReturnValue(undefined);
+      jest.spyOn(cacheManager, 'setCache').mockReturnValue(undefined);
       jest.spyOn(cacheManager, 'persistCache').mockResolvedValue();
       
       // Mock the parseFile method to return a mock AST
@@ -251,8 +251,8 @@ describe('ProjectParser Integration', () => {
       
       // Mock cache methods to simulate cache misses
       jest.spyOn(cacheManager, 'loadCache').mockResolvedValue();
-      jest.spyOn(cacheManager, 'hasCache').mockResolvedValue(false);
-      jest.spyOn(cacheManager, 'setCache').mockResolvedValue();
+      jest.spyOn(cacheManager, 'hasCache').mockReturnValue(false);
+      jest.spyOn(cacheManager, 'setCache').mockReturnValue(undefined);
       jest.spyOn(cacheManager, 'persistCache').mockResolvedValue();
       
       // Mock the parseFile method to return a mock AST

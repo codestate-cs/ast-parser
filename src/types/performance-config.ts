@@ -1,3 +1,14 @@
+import { PerformanceMonitor } from '../utils/performance/PerformanceMonitor';
+import { MemoryManager } from '../utils/performance/MemoryManager';
+import { CacheManager } from '../core/CacheManager';
+import {
+  PerformanceMetrics,
+  PerformanceSummary,
+  PerformanceRecommendation,
+  CacheStatistics,
+} from './performance';
+import { MemoryUsageInfo, MemoryReport } from './memory';
+
 export interface PerformanceConfig {
   enablePerformanceMonitoring: boolean;
   enableMemoryTracking: boolean;
@@ -50,22 +61,22 @@ export interface PerformanceIntegrationOptions {
   enablePerformanceMonitoring?: boolean;
   enableMemoryManagement?: boolean;
   enableCaching?: boolean;
-  performanceMonitor?: any;
-  memoryManager?: any;
-  cacheManager?: any;
+  performanceMonitor?: PerformanceMonitor;
+  memoryManager?: MemoryManager;
+  cacheManager?: CacheManager;
 }
 
 export interface PerformanceReport {
-  metrics: any;
-  report: any;
-  recommendations: any[];
+  metrics: PerformanceMetrics;
+  report: PerformanceSummary;
+  recommendations: PerformanceRecommendation[];
   memory?: {
-    usage: any;
-    report: any;
+    usage: MemoryUsageInfo;
+    report: MemoryReport;
   };
   cache?: {
     hitRate: number;
-    statistics: any;
+    statistics: CacheStatistics;
   };
 }
 

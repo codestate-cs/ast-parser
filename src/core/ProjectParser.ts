@@ -46,14 +46,14 @@ export class ProjectParser {
       this.options.performance?.enablePerformanceMonitoring &&
       this.options.performance?.performanceMonitor
     ) {
-      this.performanceMonitor = this.options.performance.performanceMonitor as PerformanceMonitor;
+      this.performanceMonitor = this.options.performance.performanceMonitor;
     }
 
     if (
       this.options.performance?.enableMemoryManagement &&
       this.options.performance?.memoryManager
     ) {
-      this.memoryManager = this.options.performance.memoryManager as MemoryManager;
+      this.memoryManager = this.options.performance.memoryManager;
     }
   }
 
@@ -469,7 +469,7 @@ export class ProjectParser {
         })
         .catch(error => {
           clearTimeout(timer);
-          reject(error);
+          reject(error as Error);
         });
     });
   }
@@ -807,14 +807,14 @@ export class ProjectParser {
 
         try {
           // Check if file is cached and valid
-          const hasCache = await this.cacheManager.hasCache(filePath);
+          const hasCache = this.cacheManager.hasCache(filePath);
           let useCache = false;
 
           if (hasCache) {
-            const isValid = await this.cacheManager.validateFileHash(filePath, file.hash);
+            const isValid = this.cacheManager.validateFileHash(filePath, file.hash);
             if (isValid) {
               // Use cached data
-              const cached = await this.cacheManager.getCache(filePath);
+              const cached = this.cacheManager.getCache(filePath);
               if (cached) {
                 astNodes.push(cached.ast);
                 relations.push(...cached.relations);
@@ -827,7 +827,7 @@ export class ProjectParser {
               }
             } else {
               // File has changed, invalidate dependents
-              await this.cacheManager.invalidateDependents(filePath);
+              this.cacheManager.invalidateDependents(filePath);
               changedFiles.push(filePath);
               cacheMisses++;
               if (this.performanceMonitor) {
@@ -856,7 +856,7 @@ export class ProjectParser {
 
               // Cache the result (use first AST node as representative)
               if (fileASTs[0]) {
-                await this.cacheManager.setCache(filePath, {
+                this.cacheManager.setCache(filePath, {
                   hash: file.hash,
                   lastModified: file.lastModified.toISOString(),
                   ast: fileASTs[0], // Use first AST node as representative
@@ -982,9 +982,9 @@ export class ProjectParser {
   /**
    * Check if a file has changed
    */
-  async hasFileChanged(filePath: string, currentHash: string): Promise<boolean> {
+  hasFileChanged(filePath: string, currentHash: string): boolean {
     try {
-      const isValid = await this.cacheManager.validateFileHash(filePath, currentHash);
+      const isValid = this.cacheManager.validateFileHash(filePath, currentHash);
       return !isValid;
     } catch (error) {
       logError(`Failed to check file change: ${filePath}`, error as Error);
@@ -995,11 +995,11 @@ export class ProjectParser {
   /**
    * Update file dependencies in cache
    */
-  async updateFileDependencies(filePath: string, dependencies: string[]): Promise<void> {
+  updateFileDependencies(filePath: string, dependencies: string[]): void {
     try {
-      const cached = await this.cacheManager.getCache(filePath);
+      const cached = this.cacheManager.getCache(filePath);
       if (cached) {
-        await this.cacheManager.setCache(filePath, {
+        this.cacheManager.setCache(filePath, {
           ...cached,
           dependencies,
         });
@@ -1012,9 +1012,9 @@ export class ProjectParser {
   /**
    * Find files that depend on a given file
    */
-  async findDependentFiles(filePath: string): Promise<string[]> {
+  findDependentFiles(filePath: string): string[] {
     try {
-      return await this.cacheManager.findDependents(filePath);
+      return this.cacheManager.findDependents(filePath);
     } catch (error) {
       logError(`Failed to find dependents: ${filePath}`, error as Error);
       return [];
@@ -1028,7 +1028,7 @@ export class ProjectParser {
     const dependencies: string[] = [];
 
     // Extract imports from metadata
-    if (node.metadata && node.metadata['imports']) {
+    if (node.metadata?.['imports']) {
       const imports = node.metadata['imports'] as string[];
       dependencies.push(...imports);
     }

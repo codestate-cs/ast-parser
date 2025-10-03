@@ -320,7 +320,7 @@ export class PerformanceMonitor {
       enableMemoryTracking: options.enableMemoryTracking ?? true,
       enableCpuTracking: options.enableCpuTracking ?? true,
       enableDiskIOTracking: options.enableDiskIOTracking ?? false,
-      maxMetricsHistory: options.maxMetricsHistory ?? 1000,
+      maxMetricsHistory: options.maxMetricsHistory !== undefined ? options.maxMetricsHistory : 1000,
       reportInterval: options.reportInterval ?? 30000, // 30 seconds
       enableAutoReporting: options.enableAutoReporting ?? false,
       thresholds: options.thresholds ?? {
@@ -372,6 +372,10 @@ export class PerformanceMonitor {
   private getMemoryUsagePercentage(): number {
     try {
       const usage = process.memoryUsage();
+      // Handle division by zero case
+      if (usage.heapTotal === 0) {
+        return 0;
+      }
       return (usage.heapUsed / usage.heapTotal) * 100;
     } catch (error) {
       return 0;

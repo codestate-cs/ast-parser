@@ -50,7 +50,7 @@ export class EnhancedTypeScriptParser extends BaseParser {
 
       // Create TypeScript program and source file
       this.createProgram(file.path, fileContent);
-      const sourceFile = this.program!.getSourceFile(file.path);
+      const sourceFile = this.program?.getSourceFile(file.path);
 
       if (!sourceFile) {
         throw new Error('Failed to create source file');
@@ -58,7 +58,7 @@ export class EnhancedTypeScriptParser extends BaseParser {
 
       this.sourceFile = sourceFile;
 
-      this.typeChecker = this.program!.getTypeChecker();
+      this.typeChecker = this.program?.getTypeChecker() ?? null;
 
       // Parse AST nodes with enhanced analysis
       const nodes = this.parseASTNodes(file, fileContent);
@@ -371,8 +371,10 @@ export class EnhancedTypeScriptParser extends BaseParser {
 
     if (ts.isClassDeclaration(node) || ts.isInterfaceDeclaration(node)) {
       const members = type.getProperties();
-      members.forEach(member => {
-        const memberType = this.typeChecker!.getTypeOfSymbolAtLocation(member, node);
+      for (const member of members) {
+        const memberType = this.typeChecker?.getTypeOfSymbolAtLocation(member, node);
+        if (!memberType) continue;
+
         const declarations = member.getDeclarations();
 
         if (declarations && declarations.length > 0) {
@@ -383,7 +385,7 @@ export class EnhancedTypeScriptParser extends BaseParser {
           ) {
             properties.push({
               name: member.name,
-              type: this.typeChecker!.typeToString(memberType, node),
+              type: this.typeChecker?.typeToString(memberType, node) ?? 'unknown',
               optional: !!declaration.questionToken,
               readonly: !!declaration.modifiers?.some(
                 m => m.kind === ts.SyntaxKind.ReadonlyKeyword
@@ -403,7 +405,7 @@ export class EnhancedTypeScriptParser extends BaseParser {
             } as PropertyInfo);
           }
         }
-      });
+      }
     }
 
     return properties;
@@ -418,7 +420,9 @@ export class EnhancedTypeScriptParser extends BaseParser {
     if (ts.isClassDeclaration(node) || ts.isInterfaceDeclaration(node)) {
       const members = type.getProperties();
       members.forEach(member => {
-        const memberType = this.typeChecker!.getTypeOfSymbolAtLocation(member, node);
+        const memberType = this.typeChecker?.getTypeOfSymbolAtLocation(member, node);
+        if (!memberType) return;
+
         const declarations = member.getDeclarations();
 
         if (declarations && declarations.length > 0) {
@@ -429,7 +433,7 @@ export class EnhancedTypeScriptParser extends BaseParser {
           ) {
             const signature = memberType.getCallSignatures()[0];
             const returnType = signature
-              ? this.typeChecker!.typeToString(signature.getReturnType(), node)
+              ? (this.typeChecker?.typeToString(signature.getReturnType(), node) ?? 'unknown')
               : 'void';
 
             methods.push({
@@ -471,8 +475,10 @@ export class EnhancedTypeScriptParser extends BaseParser {
 
     if (declaration.parameters) {
       declaration.parameters.forEach(param => {
-        const paramType = this.typeChecker!.getTypeAtLocation(param);
-        const typeString = this.typeChecker!.typeToString(paramType, param);
+        const paramType = this.typeChecker?.getTypeAtLocation(param);
+        if (!paramType) return;
+
+        const typeString = this.typeChecker?.typeToString(paramType, param) ?? 'unknown';
 
         parameters.push({
           name: param.name && ts.isIdentifier(param.name) ? param.name.text : 'unknown',

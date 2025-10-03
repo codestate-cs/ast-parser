@@ -439,10 +439,10 @@ export class CacheManager {
       return;
     }
 
-    this.cleanupTimer = setInterval(async () => {
+    this.cleanupTimer = setInterval(() => {
       try {
-        await this.cleanupExpiredEntries();
-        await this.cleanupBySize();
+        this.cleanupExpiredEntries();
+        this.cleanupBySize();
       } catch (error) {
         logError('Auto cleanup failed', error as Error);
       }
@@ -503,7 +503,7 @@ export class CacheManager {
       if (!data || typeof data !== 'object') {
         return false;
       }
-      
+
       const obj = data as Record<string, unknown>;
       return !!(
         'version' in obj &&
