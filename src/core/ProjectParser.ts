@@ -33,12 +33,12 @@ export class ProjectParser {
   constructor(options: Partial<ParsingOptions> = {}) {
     this.options = this.mergeOptions(DEFAULT_PARSING_OPTIONS, options);
     this.cacheManager = new CacheManager({
-      cacheFile: this.options.cache?.cacheFile || './.ast-cache.json',
+      cacheFile: this.options.cache?.cacheFile ?? './.ast-cache.json',
       maxCacheSize: 10000,
-      compressionEnabled: this.options.cache?.cacheCompression || false,
+      compressionEnabled: this.options.cache?.cacheCompression ?? false,
       autoCleanup: true,
       cleanupInterval: 300000,
-      defaultTTL: (this.options.cache?.cacheExpiration || 1) * 3600000
+      defaultTTL: (this.options.cache?.cacheExpiration ?? 1) * 3600000,
     });
     
     // Initialize performance components if enabled

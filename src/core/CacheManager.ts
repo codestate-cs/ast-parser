@@ -9,6 +9,20 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 
 /**
+ * Cache data interface for file persistence
+ */
+interface CacheData {
+  version: string;
+  timestamp: string;
+  entries: Record<string, CacheEntry>;
+  statistics?: {
+    hitCount: number;
+    missCount: number;
+    lastCleanup: string;
+  };
+}
+
+/**
  * Cache entry interface
  */
 export interface CacheEntry {
@@ -197,8 +211,8 @@ export class CacheManager {
       const cacheDir = path.dirname(this.options.cacheFile);
       await FileUtils.ensureDirectory(cacheDir);
 
-      const data = this.options.compressionEnabled 
-        ? await this.compressData(JSON.stringify(cacheData))
+      const data = this.options.compressionEnabled
+        ? this.compressData(JSON.stringify(cacheData))
         : JSON.stringify(cacheData, null, 2);
 
       await fs.writeFile(this.options.cacheFile, data);
@@ -220,8 +234,8 @@ export class CacheManager {
       }
 
       const data = await fs.readFile(this.options.cacheFile, 'utf-8');
-      const cacheData: any = this.options.compressionEnabled
-        ? await this.decompressData(data)
+      const cacheData: CacheData = this.options.compressionEnabled
+        ? this.decompressData(data)
         : JSON.parse(data);
 
       if (!this.validateCacheData(cacheData)) {
@@ -322,10 +336,10 @@ export class CacheManager {
         const sortedEntries = entries.sort(
           (a, b) => new Date(a[1].lastModified).getTime() - new Date(b[1].lastModified).getTime(),
         );
-        
+
         oldestEntry = sortedEntries[0]?.[1]?.lastModified ?? '';
         newestEntry = sortedEntries[sortedEntries.length - 1]?.[1]?.lastModified ?? '';
-        
+
         // Calculate approximate cache size
         cacheSize = JSON.stringify(Object.fromEntries(this.cache)).length;
       }
@@ -336,7 +350,7 @@ export class CacheManager {
         hitRate,
         lastCleanup: this.lastCleanup.toISOString(),
         oldestEntry,
-        newestEntry
+        newestEntry,
       };
     } catch (error) {
       logError('Failed to get cache statistics', error as Error);
@@ -360,9 +374,9 @@ export class CacheManager {
         return;
       }
 
-      const dependents = await this.findDependents(filePath);
+      const dependents = this.findDependents(filePath);
       for (const dependent of dependents) {
-        await this.invalidateCache(dependent);
+        this.invalidateCache(dependent);
       }
 
       if (dependents.length > 0) {
@@ -376,7 +390,7 @@ export class CacheManager {
   /**
    * Find files that depend on a given file
    */
-  async findDependents(filePath: string): Promise<string[]> {
+  findDependents(filePath: string): string[] {
     try {
       if (!filePath) {
         return [];
@@ -400,14 +414,14 @@ export class CacheManager {
   /**
    * Get all cache entries
    */
-  async getAllCacheEntries(): Promise<Map<string, CacheEntry>> {
+  getAllCacheEntries(): Map<string, CacheEntry> {
     return new Map(this.cache);
   }
 
   /**
    * Clear all cache entries
    */
-  async clearCache(): Promise<void> {
+  clearCache(): void {
     try {
       this.cache.clear();
       this.hitCount = 0;
@@ -449,14 +463,17 @@ export class CacheManager {
   /**
    * Merge options with defaults
    */
-  private mergeOptions(defaults: Required<CacheManagerOptions>, options: CacheManagerOptions): Required<CacheManagerOptions> {
+  private mergeOptions(
+    defaults: Required<CacheManagerOptions>,
+    options: CacheManagerOptions,
+  ): Required<CacheManagerOptions> {
     return {
       cacheFile: options.cacheFile ?? defaults.cacheFile,
       maxCacheSize: options.maxCacheSize ?? defaults.maxCacheSize,
       compressionEnabled: options.compressionEnabled ?? defaults.compressionEnabled,
       autoCleanup: options.autoCleanup ?? defaults.autoCleanup,
       cleanupInterval: options.cleanupInterval ?? defaults.cleanupInterval,
-      defaultTTL: options.defaultTTL ?? defaults.defaultTTL
+      defaultTTL: options.defaultTTL ?? defaults.defaultTTL,
     };
   }
 
@@ -482,14 +499,17 @@ export class CacheManager {
   /**
    * Validate cache data structure
    */
-  private validateCacheData(data: any): boolean {
+  private validateCacheData(data: unknown): data is CacheData {
     try {
       return !!(
         data &&
         typeof data === 'object' &&
-        typeof data.version === 'string' &&
-        typeof data.timestamp === 'string' &&
-        typeof data.entries === 'object'
+        'version' in data &&
+        'timestamp' in data &&
+        'entries' in data &&
+        typeof (data as any).version === 'string' &&
+        typeof (data as any).timestamp === 'string' &&
+        typeof (data as any).entries === 'object'
       );
     } catch {
       return false;
@@ -499,7 +519,7 @@ export class CacheManager {
   /**
    * Compress data (placeholder implementation)
    */
-  private async compressData(data: string): Promise<string> {
+  private compressData(data: string): string {
     // In a real implementation, you would use compression libraries like zlib
     // For now, we'll just return the data as-is
     return data;
@@ -508,7 +528,7 @@ export class CacheManager {
   /**
    * Decompress data (placeholder implementation)
    */
-  private async decompressData(data: string): Promise<any> {
+  private decompressData(data: string): CacheData {
     // In a real implementation, you would use decompression libraries like zlib
     // For now, we'll just parse the data as JSON
     return JSON.parse(data);
