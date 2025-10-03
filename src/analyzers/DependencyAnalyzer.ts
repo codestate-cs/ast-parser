@@ -586,7 +586,10 @@ export class DependencyAnalyzer {
       if (!graph.has(relation.from)) {
         graph.set(relation.from, []);
       }
-      graph.get(relation.from)!.push(relation.to);
+      const dependencies = graph.get(relation.from);
+      if (dependencies) {
+        dependencies.push(relation.to);
+      }
     });
 
     // Detect cycles using DFS with recursion limit
@@ -677,7 +680,10 @@ export class DependencyAnalyzer {
       if (!graph.has(dep.from)) {
         graph.set(dep.from, []);
       }
-      graph.get(dep.from)!.push(dep.to);
+      const deps = graph.get(dep.from);
+      if (deps) {
+        deps.push(dep.to);
+      }
     });
 
     let maxDepth = 0;
@@ -693,7 +699,9 @@ export class DependencyAnalyzer {
 
       while (queue.length > 0 && iterations < maxIterations) {
         iterations++;
-        const { node, depth } = queue.shift()!;
+        const item = queue.shift();
+        if (!item) break;
+        const { node, depth } = item;
 
         if (localVisited.has(node)) {
           continue;
@@ -742,7 +750,10 @@ export class DependencyAnalyzer {
       if (!graph.has(dep.from)) {
         graph.set(dep.from, []);
       }
-      graph.get(dep.from)!.push(dep.to);
+      const deps = graph.get(dep.from);
+      if (deps) {
+        deps.push(dep.to);
+      }
     });
 
     const depths: number[] = [];

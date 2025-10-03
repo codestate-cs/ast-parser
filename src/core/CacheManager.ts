@@ -52,7 +52,7 @@ const DEFAULT_CACHE_OPTIONS: Required<CacheManagerOptions> = {
   compressionEnabled: false,
   autoCleanup: true,
   cleanupInterval: 300000, // 5 minutes
-  defaultTTL: 3600000 // 1 hour
+  defaultTTL: 3600000, // 1 hour
 };
 
 /**
@@ -74,7 +74,7 @@ export class CacheManager {
   /**
    * Set cache entry for a file
    */
-  async setCache(filePath: string, entry: CacheEntry): Promise<void> {
+  setCache(filePath: string, entry: CacheEntry): void {
     try {
       if (!filePath || !entry) {
         logWarn('Invalid cache entry data', { filePath, entry });
@@ -97,7 +97,7 @@ export class CacheManager {
   /**
    * Get cache entry for a file
    */
-  async getCache(filePath: string): Promise<CacheEntry | null> {
+  getCache(filePath: string): CacheEntry | null {
     try {
       if (!filePath) {
         return null;
@@ -122,7 +122,7 @@ export class CacheManager {
   /**
    * Check if cache entry exists for a file
    */
-  async hasCache(filePath: string): Promise<boolean> {
+  hasCache(filePath: string): boolean {
     try {
       if (!filePath) {
         return false;
@@ -137,7 +137,7 @@ export class CacheManager {
   /**
    * Invalidate cache entry for a file
    */
-  async invalidateCache(filePath: string): Promise<void> {
+  invalidateCache(filePath: string): void {
     try {
       if (!filePath) {
         return;
@@ -155,7 +155,7 @@ export class CacheManager {
   /**
    * Validate file hash against cache
    */
-  async validateFileHash(filePath: string, currentHash: string): Promise<boolean> {
+  validateFileHash(filePath: string, currentHash: string): boolean {
     try {
       if (!filePath || !currentHash) {
         return false;
@@ -190,8 +190,8 @@ export class CacheManager {
         statistics: {
           hitCount: this.hitCount,
           missCount: this.missCount,
-          lastCleanup: this.lastCleanup.toISOString()
-        }
+          lastCleanup: this.lastCleanup.toISOString(),
+        },
       };
 
       const cacheDir = path.dirname(this.options.cacheFile);
@@ -220,7 +220,7 @@ export class CacheManager {
       }
 
       const data = await fs.readFile(this.options.cacheFile, 'utf-8');
-      const cacheData = this.options.compressionEnabled 
+      const cacheData: any = this.options.compressionEnabled
         ? await this.decompressData(data)
         : JSON.parse(data);
 
@@ -229,12 +229,12 @@ export class CacheManager {
         return;
       }
 
-      this.cache = new Map(Object.entries(cacheData.entries || {}));
-      
+      this.cache = new Map(Object.entries(cacheData.entries ?? {}));
+
       if (cacheData.statistics) {
-        this.hitCount = cacheData.statistics.hitCount || 0;
-        this.missCount = cacheData.statistics.missCount || 0;
-        this.lastCleanup = new Date(cacheData.statistics.lastCleanup || Date.now());
+        this.hitCount = cacheData.statistics.hitCount ?? 0;
+        this.missCount = cacheData.statistics.missCount ?? 0;
+        this.lastCleanup = new Date(cacheData.statistics.lastCleanup ?? Date.now());
       }
 
       logInfo(`Loaded cache with ${this.cache.size} entries from: ${this.options.cacheFile}`);
@@ -247,7 +247,7 @@ export class CacheManager {
   /**
    * Clean up expired cache entries
    */
-  async cleanupExpiredEntries(ttl: number = this.options.defaultTTL): Promise<void> {
+  cleanupExpiredEntries(ttl: number = this.options.defaultTTL): void {
     try {
       const now = Date.now();
       const expiredFiles: string[] = [];
@@ -276,7 +276,7 @@ export class CacheManager {
   /**
    * Clean up cache by size limit
    */
-  async cleanupBySize(): Promise<void> {
+  cleanupBySize(): void {
     try {
       if (this.cache.size <= this.options.maxCacheSize) {
         return;
@@ -285,9 +285,10 @@ export class CacheManager {
       // Convert to array and sort by lastModified (oldest first)
       const entries = Array.from(this.cache.entries())
         .map(([path, entry]) => ({ path, entry }))
-        .sort((a, b) => 
-          new Date(a.entry.lastModified).getTime() - 
-          new Date(b.entry.lastModified).getTime()
+        .sort(
+          (a, b) =>
+            new Date(a.entry.lastModified).getTime() -
+            new Date(b.entry.lastModified).getTime(),
         );
 
       // Remove oldest entries until we're under the limit
@@ -307,7 +308,7 @@ export class CacheManager {
   /**
    * Get cache statistics
    */
-  async getCacheStatistics(): Promise<CacheStatistics> {
+  getCacheStatistics(): CacheStatistics {
     try {
       const entries = Array.from(this.cache.entries());
       const totalRequests = this.hitCount + this.missCount;
@@ -318,13 +319,12 @@ export class CacheManager {
       let cacheSize = 0;
 
       if (entries.length > 0) {
-        const sortedEntries = entries.sort((a, b) => 
-          new Date(a[1].lastModified).getTime() - 
-          new Date(b[1].lastModified).getTime()
+        const sortedEntries = entries.sort(
+          (a, b) => new Date(a[1].lastModified).getTime() - new Date(b[1].lastModified).getTime(),
         );
         
-        oldestEntry = sortedEntries[0]?.[1]?.lastModified || '';
-        newestEntry = sortedEntries[sortedEntries.length - 1]?.[1]?.lastModified || '';
+        oldestEntry = sortedEntries[0]?.[1]?.lastModified ?? '';
+        newestEntry = sortedEntries[sortedEntries.length - 1]?.[1]?.lastModified ?? '';
         
         // Calculate approximate cache size
         cacheSize = JSON.stringify(Object.fromEntries(this.cache)).length;
