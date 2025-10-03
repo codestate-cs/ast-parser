@@ -2,13 +2,19 @@
  * Tests for ProjectParser class
  */
 
-import { ProjectParser, ProjectDetector } from '../../../src/core';
+import { ProjectParser, ProjectDetector, CacheManager } from '../../../src/core';
 import { ParsingOptions } from '../../../src/types';
 import { FileUtils, PathUtils } from '../../../src/utils';
 
 // Mock dependencies
 jest.mock('../../../src/core/ProjectDetector');
-jest.mock('../../../src/utils/file/FileUtils');
+jest.mock('../../../src/utils/file/FileUtils', () => ({
+  ...jest.requireActual('../../../src/utils/file/FileUtils'),
+  relative: jest.fn((from: string, to: string) => {
+    const path = require('path');
+    return path.relative(from, to);
+  })
+}));
 
 describe('ProjectParser', () => {
   let parser: ProjectParser;
@@ -652,6 +658,398 @@ describe('ProjectParser', () => {
         
         const result = await (parser as any).countLines('/test/file.ts');
         expect(result).toBe(0);
+      });
+    });
+  });
+
+  describe('incremental parsing', () => {
+    let mockCacheManager: jest.Mocked<CacheManager>;
+
+    beforeEach(() => {
+      mockCacheManager = {
+        hasCache: jest.fn(),
+        getCache: jest.fn(),
+        setCache: jest.fn(),
+        invalidateCache: jest.fn(),
+        invalidateDependents: jest.fn(),
+        findDependents: jest.fn(),
+        validateFileHash: jest.fn(),
+        persistCache: jest.fn(),
+        loadCache: jest.fn(),
+        getAllCacheEntries: jest.fn(),
+        getCacheStatistics: jest.fn(),
+        clearCache: jest.fn(),
+        dispose: jest.fn()
+      } as any;
+
+      // Mock the parser to use our mock cache manager
+      (parser as any).cacheManager = mockCacheManager;
+      
+      // Reset all mocks
+      jest.clearAllMocks();
+    });
+
+    describe('parseProjectIncremental', () => {
+      it('should parse project incrementally using cache', async () => {
+        const mockDetection = {
+          type: 'typescript' as const,
+          language: 'typescript' as const,
+          confidence: 0.9,
+          metadata: {
+            config: { name: 'test-project', version: '1.0.0' },
+            files: ['src/index.ts', 'src/utils.ts'],
+            dependencies: {}
+          }
+        };
+
+        (ProjectDetector.detectProjectType as jest.Mock).mockResolvedValue(mockDetection);
+        (ProjectDetector.getProjectRoot as jest.Mock).mockResolvedValue('/test/project');
+
+        // Mock file discovery
+        const mockFiles = [
+          { path: '/test/project/src/index.ts', name: 'index.ts', extension: '.ts', size: 100, lines: 10, lastModified: new Date(), hash: 'hash1' },
+          { path: '/test/project/src/utils.ts', name: 'utils.ts', extension: '.ts', size: 200, lines: 20, lastModified: new Date(), hash: 'hash2' }
+        ];
+        jest.spyOn(parser as any, 'discoverFiles').mockResolvedValue(mockFiles);
+
+        // Mock cache responses
+        mockCacheManager.hasCache.mockImplementation((path) => {
+          return Promise.resolve(path === 'src/index.ts'); // Only index.ts is cached
+        });
+
+        mockCacheManager.getCache.mockImplementation((path) => {
+          if (path === 'src/index.ts') {
+            return Promise.resolve({
+              hash: 'hash1',
+              lastModified: new Date().toISOString(),
+              ast: {
+                id: 'node-1',
+                type: 'class',
+                name: 'TestClass',
+                filePath: 'src/index.ts',
+                start: 0,
+                end: 100,
+                children: [],
+                nodeType: 'class',
+                properties: {},
+                metadata: {}
+              },
+              relations: [],
+              dependencies: []
+            });
+          }
+          return Promise.resolve(null);
+        });
+
+        mockCacheManager.validateFileHash.mockImplementation((path, hash) => {
+          return Promise.resolve(path === 'src/index.ts' && hash === 'hash1');
+        });
+
+        // Mock parsing for non-cached files
+        jest.spyOn(parser as any, 'parseFile').mockImplementation(async (file: any) => {
+          if (file.path === '/test/project/src/utils.ts') {
+            return [{
+              id: 'node-2',
+              type: 'function',
+              name: 'testFunction',
+              filePath: 'src/utils.ts',
+              start: 0,
+              end: 50,
+              children: [],
+              nodeType: 'function',
+              properties: {},
+              metadata: {}
+            }];
+          }
+          return [];
+        });
+
+        jest.spyOn(parser as any, 'buildRelations').mockReturnValue([]);
+        jest.spyOn(parser as any, 'analyzeStructure').mockReturnValue({
+          files: [],
+          directories: [],
+          totalFiles: 2,
+          totalLines: 30,
+          totalSize: 300
+        });
+        jest.spyOn(parser as any, 'calculateComplexity').mockReturnValue({
+          cyclomaticComplexity: 1,
+          cognitiveComplexity: 1,
+          linesOfCode: 30,
+          maintainabilityIndex: 100
+        });
+        jest.spyOn(parser as any, 'calculateQuality').mockReturnValue({
+          overall: 100,
+          maintainability: 100,
+          reliability: 100,
+          security: 100
+        });
+
+        const result = await (parser as any).parseProjectIncremental('/test/project');
+
+        expect(result).toBeDefined();
+        expect(result.type).toBe('typescript');
+        expect(mockCacheManager.hasCache).toHaveBeenCalledTimes(2);
+        expect(mockCacheManager.getCache).toHaveBeenCalledWith('src/index.ts');
+        expect(mockCacheManager.setCache).toHaveBeenCalledWith('src/utils.ts', expect.any(Object));
+      });
+
+      it('should handle cache validation failures', async () => {
+        const mockDetection = {
+          type: 'typescript' as const,
+          language: 'typescript' as const,
+          confidence: 0.9,
+          metadata: {
+            config: { name: 'test-project', version: '1.0.0' },
+            files: ['src/index.ts'],
+            dependencies: {}
+          }
+        };
+
+        (ProjectDetector.detectProjectType as jest.Mock).mockResolvedValue(mockDetection);
+        (ProjectDetector.getProjectRoot as jest.Mock).mockResolvedValue('/test/project');
+
+        jest.spyOn(parser as any, 'discoverFiles').mockResolvedValue([
+          { path: '/test/project/src/index.ts', name: 'index.ts', extension: '.ts', size: 100, lines: 10, lastModified: new Date(), hash: 'new-hash' }
+        ]);
+
+        // File is cached but hash validation fails
+        mockCacheManager.hasCache.mockResolvedValue(true);
+        mockCacheManager.getCache.mockResolvedValue({
+          hash: 'old-hash',
+          lastModified: new Date().toISOString(),
+          ast: { id: 'node-1', type: 'class', name: 'TestClass', filePath: 'src/index.ts', start: 0, end: 100, children: [], nodeType: 'class', properties: {}, metadata: {} },
+          relations: [],
+          dependencies: []
+        });
+        mockCacheManager.validateFileHash.mockResolvedValue(false); // Hash mismatch
+
+        jest.spyOn(parser as any, 'parseFile').mockResolvedValue([
+          { id: 'node-1', type: 'class', name: 'TestClass', filePath: 'src/index.ts', start: 0, end: 100, children: [], nodeType: 'class', properties: {}, metadata: {} }
+        ]);
+        jest.spyOn(parser as any, 'buildRelations').mockReturnValue([]);
+        jest.spyOn(parser as any, 'analyzeStructure').mockReturnValue({
+          files: [],
+          directories: [],
+          totalFiles: 1,
+          totalLines: 10,
+          totalSize: 100
+        });
+        jest.spyOn(parser as any, 'calculateComplexity').mockReturnValue({
+          cyclomaticComplexity: 1,
+          cognitiveComplexity: 1,
+          linesOfCode: 10,
+          maintainabilityIndex: 100
+        });
+        jest.spyOn(parser as any, 'calculateQuality').mockReturnValue({
+          overall: 100,
+          maintainability: 100,
+          reliability: 100,
+          security: 100
+        });
+
+        const result = await (parser as any).parseProjectIncremental('/test/project');
+
+        expect(result).toBeDefined();
+        expect(mockCacheManager.validateFileHash).toHaveBeenCalledWith('src/index.ts', 'new-hash');
+        expect(mockCacheManager.setCache).toHaveBeenCalledWith('src/index.ts', expect.any(Object));
+      });
+
+      it('should invalidate dependents when files change', async () => {
+        const mockDetection = {
+          type: 'typescript' as const,
+          language: 'typescript' as const,
+          confidence: 0.9,
+          metadata: {
+            config: { name: 'test-project', version: '1.0.0' },
+            files: ['src/index.ts', 'src/utils.ts'],
+            dependencies: {}
+          }
+        };
+
+        (ProjectDetector.detectProjectType as jest.Mock).mockResolvedValue(mockDetection);
+        (ProjectDetector.getProjectRoot as jest.Mock).mockResolvedValue('/test/project');
+
+        jest.spyOn(parser as any, 'discoverFiles').mockResolvedValue([
+          { path: '/test/project/src/index.ts', name: 'index.ts', extension: '.ts', size: 100, lines: 10, lastModified: new Date(), hash: 'new-hash' },
+          { path: '/test/project/src/utils.ts', name: 'utils.ts', extension: '.ts', size: 200, lines: 20, lastModified: new Date(), hash: 'hash2' }
+        ]);
+
+        // index.ts has changed, utils.ts depends on it
+        mockCacheManager.hasCache.mockImplementation((path) => {
+          return Promise.resolve(path === 'src/utils.ts' || path === 'src/index.ts');
+        });
+
+        mockCacheManager.getCache.mockImplementation((path) => {
+          if (path === 'src/utils.ts') {
+            return Promise.resolve({
+              hash: 'hash2',
+              lastModified: new Date().toISOString(),
+              ast: { id: 'node-2', type: 'function', name: 'testFunction', filePath: 'src/utils.ts', start: 0, end: 50, children: [], nodeType: 'function', properties: {}, metadata: {} },
+              relations: [],
+              dependencies: ['src/index.ts'] // utils.ts depends on index.ts
+            });
+          }
+          if (path === 'src/index.ts') {
+            return Promise.resolve({
+              hash: 'old-hash', // old hash, different from current 'new-hash'
+              lastModified: new Date().toISOString(),
+              ast: { id: 'node-1', type: 'class', name: 'TestClass', filePath: 'src/index.ts', start: 0, end: 100, children: [], nodeType: 'class', properties: {}, metadata: {} },
+              relations: [],
+              dependencies: []
+            });
+          }
+          return Promise.resolve(null);
+        });
+
+        mockCacheManager.findDependents.mockResolvedValue(['src/utils.ts']);
+        mockCacheManager.validateFileHash.mockImplementation((path, hash) => {
+          return Promise.resolve(path === 'src/utils.ts' && hash === 'hash2');
+        });
+
+        jest.spyOn(parser as any, 'parseFile').mockResolvedValue([
+          { id: 'node-1', type: 'class', name: 'TestClass', filePath: 'src/index.ts', start: 0, end: 100, children: [], nodeType: 'class', properties: {}, metadata: {} }
+        ]);
+        jest.spyOn(parser as any, 'buildRelations').mockReturnValue([]);
+        jest.spyOn(parser as any, 'analyzeStructure').mockReturnValue({
+          files: [],
+          directories: [],
+          totalFiles: 2,
+          totalLines: 30,
+          totalSize: 300
+        });
+        jest.spyOn(parser as any, 'calculateComplexity').mockReturnValue({
+          cyclomaticComplexity: 1,
+          cognitiveComplexity: 1,
+          linesOfCode: 30,
+          maintainabilityIndex: 100
+        });
+        jest.spyOn(parser as any, 'calculateQuality').mockReturnValue({
+          overall: 100,
+          maintainability: 100,
+          reliability: 100,
+          security: 100
+        });
+
+        const result = await (parser as any).parseProjectIncremental('/test/project');
+
+        expect(result).toBeDefined();
+        expect(mockCacheManager.invalidateDependents).toHaveBeenCalledWith('src/index.ts');
+      });
+
+      it('should handle cache loading errors gracefully', async () => {
+        const mockDetection = {
+          type: 'typescript' as const,
+          language: 'typescript' as const,
+          confidence: 0.9,
+          metadata: {
+            config: { name: 'test-project', version: '1.0.0' },
+            files: ['src/index.ts'],
+            dependencies: {}
+          }
+        };
+
+        (ProjectDetector.detectProjectType as jest.Mock).mockResolvedValue(mockDetection);
+        (ProjectDetector.getProjectRoot as jest.Mock).mockResolvedValue('/test/project');
+
+        jest.spyOn(parser as any, 'discoverFiles').mockResolvedValue([
+          { path: 'src/index.ts', name: 'index.ts', extension: '.ts', size: 100, lines: 10, lastModified: new Date(), hash: 'hash1' }
+        ]);
+
+        // Cache manager throws error
+        mockCacheManager.hasCache.mockRejectedValue(new Error('Cache error'));
+        mockCacheManager.loadCache.mockRejectedValue(new Error('Cache load error'));
+
+        jest.spyOn(parser as any, 'parseFiles').mockResolvedValue([
+          { id: 'node-1', type: 'class', name: 'TestClass', filePath: 'src/index.ts', start: 0, end: 100, children: [], nodeType: 'class', properties: {}, metadata: {} }
+        ]);
+        jest.spyOn(parser as any, 'buildRelations').mockReturnValue([]);
+        jest.spyOn(parser as any, 'analyzeStructure').mockReturnValue({
+          files: [],
+          directories: [],
+          totalFiles: 1,
+          totalLines: 10,
+          totalSize: 100
+        });
+        jest.spyOn(parser as any, 'calculateComplexity').mockReturnValue({
+          cyclomaticComplexity: 1,
+          cognitiveComplexity: 1,
+          linesOfCode: 10,
+          maintainabilityIndex: 100
+        });
+        jest.spyOn(parser as any, 'calculateQuality').mockReturnValue({
+          overall: 100,
+          maintainability: 100,
+          reliability: 100,
+          security: 100
+        });
+
+        const result = await (parser as any).parseProjectIncremental('/test/project');
+
+        expect(result).toBeDefined();
+        // Should fall back to full parsing when cache fails
+      });
+    });
+
+    describe('change detection', () => {
+      it('should detect file changes using hash comparison', async () => {
+        const filePath = 'src/test.ts';
+        const newHash = 'new-hash';
+
+        mockCacheManager.validateFileHash.mockResolvedValue(false);
+
+        const hasChanged = await (parser as any).hasFileChanged(filePath, newHash);
+        
+        expect(hasChanged).toBe(true);
+        expect(mockCacheManager.validateFileHash).toHaveBeenCalledWith(filePath, newHash);
+      });
+
+      it('should detect unchanged files', async () => {
+        const filePath = 'src/test.ts';
+        const hash = 'same-hash';
+
+        mockCacheManager.validateFileHash.mockResolvedValue(true);
+
+        const hasChanged = await (parser as any).hasFileChanged(filePath, hash);
+        
+        expect(hasChanged).toBe(false);
+      });
+    });
+
+    describe('dependency tracking', () => {
+      it('should track file dependencies', async () => {
+        const filePath = 'src/main.ts';
+        const dependencies = ['src/utils.ts', 'src/types.ts'];
+
+        // Mock getCache to return a cached entry
+        mockCacheManager.getCache.mockResolvedValue({
+          hash: 'hash1',
+          lastModified: new Date().toISOString(),
+          ast: { id: 'node-1', type: 'class', name: 'TestClass', filePath, start: 0, end: 100, children: [], nodeType: 'class', properties: {}, metadata: {} },
+          relations: [],
+          dependencies: []
+        });
+
+        await (parser as any).updateFileDependencies(filePath, dependencies);
+
+        expect(mockCacheManager.setCache).toHaveBeenCalledWith(
+          filePath,
+          expect.objectContaining({
+            dependencies: dependencies
+          })
+        );
+      });
+
+      it('should find dependent files', async () => {
+        const filePath = 'src/utils.ts';
+        const dependents = ['src/main.ts', 'src/helper.ts'];
+
+        mockCacheManager.findDependents.mockResolvedValue(dependents);
+
+        const result = await (parser as any).findDependentFiles(filePath);
+
+        expect(result).toEqual(dependents);
+        expect(mockCacheManager.findDependents).toHaveBeenCalledWith(filePath);
       });
     });
   });

@@ -104,6 +104,18 @@ export interface PerformanceOptions {
   enableProgress?: boolean;
   /** Progress update interval */
   progressInterval?: number;
+  /** Enable performance monitoring */
+  enablePerformanceMonitoring?: boolean;
+  /** Enable memory management */
+  enableMemoryManagement?: boolean;
+  /** Enable caching */
+  enableCaching?: boolean;
+  /** Performance monitor instance */
+  performanceMonitor?: any;
+  /** Memory manager instance */
+  memoryManager?: any;
+  /** Cache manager instance */
+  cacheManager?: any;
 }
 
 /**
@@ -221,10 +233,13 @@ export const DEFAULT_PARSING_OPTIONS: ParsingOptions = {
   },
   performance: {
     maxConcurrentFiles: 10,
-    memoryLimit: 1024,
+    memoryLimit: 1024, // MB
     timeout: 300000, // 5 minutes
     enableProgress: true,
-    progressInterval: 1000,
+    progressInterval: 1000, // 1 second
+    enablePerformanceMonitoring: false,
+    enableMemoryManagement: false,
+    enableCaching: false,
   },
   cache: {
     enableCache: false,

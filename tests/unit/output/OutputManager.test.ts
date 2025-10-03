@@ -978,5 +978,17 @@ describe('OutputManager', () => {
       expect(result.success).toBe(true);
       expect(result.outputPath).toMatch(/\.txt$/); // Should use default 'txt' extension
     });
+
+    it('should handle empty project data', async () => {
+      const result = await outputManager.generateOutput(null as any);
+      expect(result.success).toBe(false);
+      expect(result.error).toBe('Invalid project data provided');
+      expect(result.metadata?.format).toBe('json');
+      expect(result.metadata?.strategy).toBe('file');
+      expect(result.metadata?.timestamp).toBeDefined();
+    })
+
   });
+
+
 });

@@ -665,6 +665,204 @@ describe('DocumentationGenerator', () => {
           // Restore original method
           (documentationGenerator as any).overviewTemplate = originalOverviewTemplate;
         });
+
+        it('should handle non-Error exceptions in generateDocumentation', async () => {
+          // Mock extractInformation to throw a non-Error object
+          const originalExtractInformation = documentationGenerator.extractInformation;
+          documentationGenerator.extractInformation = jest.fn().mockImplementation(() => {
+            throw 'String error';
+          });
+          
+          const result = await documentationGenerator.generateDocumentation(mockProjectData);
+          
+          expect(result.success).toBe(false);
+          expect(result.error).toBe('Unknown documentation generation error');
+          
+          // Restore original method
+          documentationGenerator.extractInformation = originalExtractInformation;
+        });
+
+        it('should handle non-Error exceptions in extractInformation', async () => {
+          // Mock jsdocExtractor.extractFromNodes to throw a non-Error object
+          const originalJsdocExtractor = (documentationGenerator as any).jsdocExtractor;
+          (documentationGenerator as any).jsdocExtractor = {
+            extractFromNodes: jest.fn().mockImplementation(() => {
+              throw 'String error';
+            })
+          };
+          
+          const result = await documentationGenerator.extractInformation(mockProjectData);
+          
+          expect(result.success).toBe(false);
+          expect(result.error).toBe('Unknown extraction error');
+          
+          // Restore original method
+          (documentationGenerator as any).jsdocExtractor = originalJsdocExtractor;
+        });
+
+        it('should handle non-Error exceptions in analyzeQuality', async () => {
+          // Mock qualityMetrics.calculateQualityMetrics to throw a non-Error object
+          const originalQualityMetrics = (documentationGenerator as any).qualityMetrics;
+          (documentationGenerator as any).qualityMetrics = {
+            calculateQualityMetrics: jest.fn().mockImplementation(() => {
+              throw 'String error';
+            })
+          };
+          
+          const result = await documentationGenerator.analyzeQuality(mockProjectData);
+          
+          expect(result.success).toBe(false);
+          expect(result.error).toBe('Unknown quality analysis error');
+          
+          // Restore original method
+          (documentationGenerator as any).qualityMetrics = originalQualityMetrics;
+        });
+
+        it('should handle non-Error exceptions in generateOutput', async () => {
+          // Mock markdownGenerator.generateFromExtracted to throw a non-Error object
+          const originalMarkdownGenerator = (documentationGenerator as any).markdownGenerator;
+          (documentationGenerator as any).markdownGenerator = {
+            generateFromExtracted: jest.fn().mockImplementation(() => {
+              throw 'String error';
+            })
+          };
+          
+          const extractedData = {
+            success: true,
+            jsdoc: [],
+            types: [],
+            examples: []
+          };
+          
+          const qualityData = {
+            success: true,
+            metrics: { success: true },
+            coverage: { success: true },
+            suggestions: { success: true }
+          };
+          
+          const result = await documentationGenerator.generateOutput(extractedData, qualityData, 'markdown');
+          
+          expect(result.success).toBe(false);
+          expect(result.error).toBe('Unknown output generation error');
+          
+          // Restore original method
+          (documentationGenerator as any).markdownGenerator = originalMarkdownGenerator;
+        });
+
+        it('should handle format array in generateOutput', async () => {
+          const extractedData = {
+            success: true,
+            jsdoc: [],
+            types: [],
+            examples: []
+          };
+          
+          const qualityData = {
+            success: true,
+            metrics: { success: true },
+            coverage: { success: true },
+            suggestions: { success: true }
+          };
+          
+          const result = await documentationGenerator.generateOutput(extractedData, qualityData, ['markdown', 'html']);
+          
+          expect(result.success).toBe(true);
+          expect(result.outputs).toBeDefined();
+        });
+
+        it('should handle format "both" in generateOutput', async () => {
+          const extractedData = {
+            success: true,
+            jsdoc: [],
+            types: [],
+            examples: []
+          };
+          
+          const qualityData = {
+            success: true,
+            metrics: { success: true },
+            coverage: { success: true },
+            suggestions: { success: true }
+          };
+          
+          const result = await documentationGenerator.generateOutput(extractedData, qualityData, 'both');
+          
+          expect(result.success).toBe(true);
+          expect(result.outputs).toBeDefined();
+        });
+
+        it('should handle files without ast in extractInformation', async () => {
+          const projectDataWithoutAst = {
+            ...mockProjectData,
+            files: [
+              {
+                path: 'src/utils.ts',
+                content: 'export function test() { return "test"; }'
+                // No ast property
+              }
+            ]
+          };
+          
+          const result = await documentationGenerator.extractInformation(projectDataWithoutAst);
+          
+          expect(result.success).toBe(true);
+          expect(result.jsdoc).toBeDefined();
+          expect(result.types).toBeDefined();
+          expect(result.examples).toBeDefined();
+        });
+
+        it('should handle files with ast but no children in extractInformation', async () => {
+          const projectDataWithoutChildren = {
+            ...mockProjectData,
+            files: [
+              {
+                path: 'src/utils.ts',
+                content: 'export function test() { return "test"; }',
+                ast: {
+                  name: 'test',
+                  type: 'FunctionDeclaration'
+                  // No children property
+                }
+              }
+            ]
+          };
+          
+          const result = await documentationGenerator.extractInformation(projectDataWithoutChildren);
+          
+          expect(result.success).toBe(true);
+          expect(result.jsdoc).toBeDefined();
+          expect(result.types).toBeDefined();
+          expect(result.examples).toBeDefined();
+        });
+
+        it('should handle countTotalNodes with no files', async () => {
+          const projectDataWithoutFiles = {
+            ...mockProjectData,
+            files: undefined
+          };
+          
+          const result = (documentationGenerator as any).countTotalNodes(projectDataWithoutFiles);
+          
+          expect(result).toBe(0);
+        });
+
+        it('should handle countTotalNodes with files without ast', async () => {
+          const projectDataWithoutAst = {
+            ...mockProjectData,
+            files: [
+              {
+                path: 'src/utils.ts',
+                content: 'export function test() { return "test"; }'
+                // No ast property
+              }
+            ]
+          };
+          
+          const result = (documentationGenerator as any).countTotalNodes(projectDataWithoutAst);
+          
+          expect(result).toBe(0);
+        });
       });
     });
   });

@@ -114,4 +114,44 @@ export const DefaultConfig: ConfigOptions = {
     maxProcessingTime: 300000, // 5 minutes
     parallel: true,
   },
+  performance: {
+    enablePerformanceMonitoring: true,
+    enableMemoryManagement: true,
+    enableCaching: true,
+    maxConcurrentFiles: 10,
+    memoryLimit: 512, // MB
+    timeout: 300000, // 5 minutes
+    enableProgress: true,
+    progressInterval: 1000, // 1 second
+    performanceMonitor: {
+      enableMemoryTracking: true,
+      enableCpuTracking: true,
+      enableAutoReporting: false,
+      reportInterval: 30000, // 30 seconds
+      memoryThreshold: 100, // MB
+      cpuThreshold: 80, // percentage
+      enableProfiling: false,
+      maxOperationHistory: 1000,
+      enableDetailedMetrics: true,
+    },
+    memoryManager: {
+      enableMonitoring: true,
+      enableAutoGC: true,
+      memoryThreshold: 100, // MB
+      gcThreshold: 0.8, // 80%
+      monitoringInterval: 5000, // 5 seconds
+      enableLeakDetection: true,
+      maxMemoryHistory: 100,
+      enableOptimization: true,
+    },
+    cacheManager: {
+      cacheFile: './.ast-cache.json',
+      maxCacheSize: 10000,
+      defaultTTL: 3600000, // 1 hour
+      enablePersistence: true,
+      enableCompression: false,
+      enableAutoCleanup: true,
+      cleanupInterval: 300000, // 5 minutes
+    },
+  },
 };

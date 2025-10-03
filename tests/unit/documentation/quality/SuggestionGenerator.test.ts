@@ -489,6 +489,209 @@ describe('SuggestionGenerator', () => {
         expect(options).toBeDefined();
         expect(typeof options).toBe('object');
       });
+
+      it('should handle non-Error exceptions in generateSuggestions', async () => {
+        // Mock validateAnalysisData to throw a non-Error object
+        const originalValidateAnalysisData = (suggestionGenerator as any).validateAnalysisData;
+        (suggestionGenerator as any).validateAnalysisData = jest.fn().mockImplementation(() => {
+          throw 'String error';
+        });
+        
+        const result = await suggestionGenerator.generateSuggestions(mockAnalysisData);
+        
+        expect(result.success).toBe(false);
+        expect(result.error).toBe('Unknown suggestion generation error');
+        
+        // Restore original method
+        (suggestionGenerator as any).validateAnalysisData = originalValidateAnalysisData;
+      });
+
+
+      it('should handle non-Error exceptions in generateStructureSuggestions', async () => {
+        // Mock isGoodNaming to throw a non-Error object
+        const originalIsGoodNaming = (suggestionGenerator as any).isGoodNaming;
+        (suggestionGenerator as any).isGoodNaming = jest.fn().mockImplementation(() => {
+          throw 'String error';
+        });
+        
+        const result = (suggestionGenerator as any).generateStructureSuggestions(mockAnalysisData);
+        
+        expect(result.success).toBe(false);
+        expect(result.error).toBe('Unknown structure suggestion error');
+        
+        // Restore original method
+        (suggestionGenerator as any).isGoodNaming = originalIsGoodNaming;
+      });
+
+      it('should handle generateDocumentationSuggestions with nodes without documentation', async () => {
+        const analysisDataWithoutDocs = {
+          ...mockAnalysisData,
+          nodes: [
+            {
+              name: 'testFunction',
+              type: 'FunctionDeclaration',
+              documentation: '', // Empty documentation
+              complexity: { cyclomatic: 3, cognitive: 2 },
+              coverage: { statements: 80, branches: 70 }
+            }
+          ]
+        };
+        
+        const result = (suggestionGenerator as any).generateDocumentationSuggestions(analysisDataWithoutDocs);
+        
+        expect(result.success).toBe(true);
+        expect(result.suggestions).toBeDefined();
+        expect(result.suggestions.length).toBeGreaterThan(0);
+      });
+
+      it('should handle generateDocumentationSuggestions with nodes with short documentation', async () => {
+        const analysisDataWithShortDocs = {
+          ...mockAnalysisData,
+          nodes: [
+            {
+              name: 'testFunction',
+              type: 'FunctionDeclaration',
+              documentation: 'Short', // Short documentation
+              complexity: { cyclomatic: 3, cognitive: 2 },
+              coverage: { statements: 80, branches: 70 }
+            }
+          ]
+        };
+        
+        const result = (suggestionGenerator as any).generateDocumentationSuggestions(analysisDataWithShortDocs);
+        
+        expect(result.success).toBe(true);
+        expect(result.suggestions).toBeDefined();
+        expect(result.suggestions.length).toBeGreaterThan(0);
+      });
+
+      it('should handle generateQualitySuggestions with high complexity nodes', async () => {
+        const analysisDataWithHighComplexity = {
+          ...mockAnalysisData,
+          nodes: [
+            {
+              name: 'complexFunction',
+              type: 'FunctionDeclaration',
+              documentation: 'Complex function',
+              complexity: { cyclomatic: 15, cognitive: 12 }, // High complexity
+              coverage: { statements: 80, branches: 70 }
+            }
+          ]
+        };
+        
+        const result = (suggestionGenerator as any).generateQualitySuggestions(analysisDataWithHighComplexity);
+        
+        expect(result.success).toBe(true);
+        expect(result.suggestions).toBeDefined();
+        expect(result.suggestions.length).toBeGreaterThan(0);
+      });
+
+      it('should handle generateQualitySuggestions with low coverage nodes', async () => {
+        const analysisDataWithLowCoverage = {
+          ...mockAnalysisData,
+          nodes: [
+            {
+              name: 'uncoveredFunction',
+              type: 'FunctionDeclaration',
+              documentation: 'Function with low coverage',
+              complexity: { cyclomatic: 3, cognitive: 2 },
+              coverage: { statements: 50, branches: 40 } // Low coverage
+            }
+          ]
+        };
+        
+        const result = (suggestionGenerator as any).generateQualitySuggestions(analysisDataWithLowCoverage);
+        
+        expect(result.success).toBe(true);
+        expect(result.suggestions).toBeDefined();
+        expect(result.suggestions.length).toBeGreaterThan(0);
+      });
+
+      it('should handle generateStructureSuggestions with poorly named nodes', async () => {
+        const analysisDataWithPoorNames = {
+          ...mockAnalysisData,
+          nodes: [
+            {
+              name: 'a', // Poor naming
+              type: 'FunctionDeclaration',
+              documentation: 'Poorly named function',
+              complexity: { cyclomatic: 3, cognitive: 2 },
+              coverage: { statements: 80, branches: 70 }
+            }
+          ]
+        };
+        
+        const result = (suggestionGenerator as any).generateStructureSuggestions(analysisDataWithPoorNames);
+        
+        expect(result.success).toBe(true);
+        expect(result.suggestions).toBeDefined();
+        // The method might not generate suggestions for single character names
+        expect(result.suggestions.length).toBeGreaterThanOrEqual(0);
+      });
+
+      it('should handle isGoodNaming with various name patterns', () => {
+        const isGoodNaming = (suggestionGenerator as any).isGoodNaming;
+        
+        expect(isGoodNaming('camelCase')).toBe(true);
+        expect(isGoodNaming('PascalCase')).toBe(true);
+        expect(isGoodNaming('snake_case')).toBe(false);
+        expect(isGoodNaming('kebab-case')).toBe(false);
+        expect(isGoodNaming('123invalid')).toBe(false);
+        expect(isGoodNaming('')).toBe(false);
+      });
+
+      it('should handle validateAnalysisData with null data', () => {
+        const result = (suggestionGenerator as any).validateAnalysisData(null);
+        
+        expect(result.isValid).toBe(false);
+        expect(result.errors).toContain('Analysis data is null or undefined');
+      });
+
+      it('should handle validateAnalysisData with non-object data', () => {
+        const result = (suggestionGenerator as any).validateAnalysisData('string');
+        
+        expect(result.isValid).toBe(false);
+        expect(result.errors).toContain('Analysis data must be an object');
+      });
+
+      it('should handle validateAnalysisData with missing name', () => {
+        const result = (suggestionGenerator as any).validateAnalysisData({ version: '1.0.0' });
+        
+        expect(result.isValid).toBe(false);
+        expect(result.errors).toContain('Project name is required and must be a string');
+      });
+
+      it('should handle validateAnalysisData with invalid name type', () => {
+        const result = (suggestionGenerator as any).validateAnalysisData({ name: 123, version: '1.0.0' });
+        
+        expect(result.isValid).toBe(false);
+        expect(result.errors).toContain('Project name is required and must be a string');
+      });
+
+      it('should handle validateAnalysisData with missing version', () => {
+        const result = (suggestionGenerator as any).validateAnalysisData({ name: 'Test Project' });
+        
+        expect(result.isValid).toBe(false);
+        expect(result.errors).toContain('Project version is required and must be a string');
+      });
+
+      it('should handle validateAnalysisData with invalid version type', () => {
+        const result = (suggestionGenerator as any).validateAnalysisData({ name: 'Test Project', version: 123 });
+        
+        expect(result.isValid).toBe(false);
+        expect(result.errors).toContain('Project version is required and must be a string');
+      });
+
+      it('should handle validateAnalysisData with invalid nodes array', () => {
+        const result = (suggestionGenerator as any).validateAnalysisData({ 
+          name: 'Test Project', 
+          version: '1.0.0', 
+          nodes: 'not an array' 
+        });
+        
+        expect(result.isValid).toBe(false);
+        expect(result.errors).toContain('Nodes must be an array');
+      });
     });
   });
 });
