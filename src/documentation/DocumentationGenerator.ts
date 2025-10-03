@@ -201,8 +201,14 @@ export class DocumentationGenerator {
 
       return {
         success: true,
-        documentation: sections.sections!,
-        outputs: outputs.outputs!,
+        documentation: sections.sections || {
+          overview: '',
+          apiReference: '',
+          examples: '',
+          qualityMetrics: '',
+          suggestions: '',
+        },
+        outputs: outputs.outputs || {},
         metadata: {
           generated: new Date().toISOString(),
           totalFiles: (projectData as any).files?.length || 0,

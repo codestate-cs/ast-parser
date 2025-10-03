@@ -586,6 +586,168 @@ describe('ProjectNaming', () => {
       expect(fileName).toContain('test-project');
     });
 
+    // Comprehensive tests for getProjectType method
+    it('should handle getProjectType with valid typescript type', () => {
+      const projectWithTypeScript = { ...mockProjectInfo, type: 'typescript' as const };
+      const fileName = projectNaming.generateFileName(projectWithTypeScript);
+      
+      expect(fileName).toContain('test-project');
+    });
+
+    it('should handle getProjectType with valid javascript type', () => {
+      const projectWithJavaScript = { ...mockProjectInfo, type: 'javascript' as const };
+      const fileName = projectNaming.generateFileName(projectWithJavaScript);
+      
+      expect(fileName).toContain('test-project');
+    });
+
+    it('should handle getProjectType with valid node type', () => {
+      const projectWithNode = { ...mockProjectInfo, type: 'node' as const };
+      const fileName = projectNaming.generateFileName(projectWithNode);
+      
+      expect(fileName).toContain('test-project');
+    });
+
+    it('should handle getProjectType with valid react type', () => {
+      const projectWithReact = { ...mockProjectInfo, type: 'react' as const };
+      const fileName = projectNaming.generateFileName(projectWithReact);
+      
+      expect(fileName).toContain('test-project');
+    });
+
+    it('should handle getProjectType with valid unknown type', () => {
+      const projectWithUnknown = { ...mockProjectInfo, type: 'unknown' as const };
+      const fileName = projectNaming.generateFileName(projectWithUnknown);
+      
+      expect(fileName).toContain('test-project');
+    });
+
+    it('should handle getProjectType with valid unknown type (angular)', () => {
+      const projectWithAngular = { ...mockProjectInfo, type: 'unknown' as const };
+      const fileName = projectNaming.generateFileName(projectWithAngular);
+      
+      expect(fileName).toContain('test-project');
+    });
+
+    it('should handle getProjectType with null type', () => {
+      const projectWithNullType = { ...mockProjectInfo, type: null as any };
+      const fileName = projectNaming.generateFileName(projectWithNullType);
+      
+      expect(fileName).toContain('test-project');
+    });
+
+    it('should handle getProjectType with empty string type', () => {
+      const projectWithEmptyStringType = { ...mockProjectInfo, type: '' as any };
+      const fileName = projectNaming.generateFileName(projectWithEmptyStringType);
+      
+      expect(fileName).toContain('test-project');
+    });
+
+    it('should handle getProjectType with whitespace-only type', () => {
+      const projectWithWhitespaceType = { ...mockProjectInfo, type: '   ' as any };
+      const fileName = projectNaming.generateFileName(projectWithWhitespaceType);
+      
+      expect(fileName).toContain('test-project');
+    });
+
+    it('should handle getProjectType with numeric type', () => {
+      const projectWithNumericType = { ...mockProjectInfo, type: 123 as any };
+      const fileName = projectNaming.generateFileName(projectWithNumericType);
+      
+      expect(fileName).toContain('test-project');
+    });
+
+    it('should handle getProjectType with boolean type', () => {
+      const projectWithBooleanType = { ...mockProjectInfo, type: true as any };
+      const fileName = projectNaming.generateFileName(projectWithBooleanType);
+      
+      expect(fileName).toContain('test-project');
+    });
+
+    it('should handle getProjectType with object type', () => {
+      const projectWithObjectType = { ...mockProjectInfo, type: {} as any };
+      const fileName = projectNaming.generateFileName(projectWithObjectType);
+      
+      expect(fileName).toContain('test-project');
+    });
+
+    it('should handle getProjectType with array type', () => {
+      const projectWithArrayType = { ...mockProjectInfo, type: [] as any };
+      const fileName = projectNaming.generateFileName(projectWithArrayType);
+      
+      expect(fileName).toContain('test-project');
+    });
+
+    it('should handle getProjectType with function type', () => {
+      const projectWithFunctionType = { ...mockProjectInfo, type: (() => {}) as any };
+      const fileName = projectNaming.generateFileName(projectWithFunctionType);
+      
+      expect(fileName).toContain('test-project');
+    });
+
+    it('should handle getProjectType with custom string type', () => {
+      const projectWithCustomType = { ...mockProjectInfo, type: 'custom-framework' as any };
+      const fileName = projectNaming.generateFileName(projectWithCustomType);
+      
+      expect(fileName).toContain('test-project');
+    });
+
+    it('should handle getProjectType with special characters in type', () => {
+      const projectWithSpecialType = { ...mockProjectInfo, type: 'type@with#special$chars' as any };
+      const fileName = projectNaming.generateFileName(projectWithSpecialType);
+      
+      expect(fileName).toContain('test-project');
+    });
+
+    it('should handle getProjectType with unicode characters in type', () => {
+      const projectWithUnicodeType = { ...mockProjectInfo, type: '类型-测试-中文' as any };
+      const fileName = projectNaming.generateFileName(projectWithUnicodeType);
+      
+      expect(fileName).toContain('test-project');
+    });
+
+    it('should handle getProjectType with very long type string', () => {
+      const longType = 'a'.repeat(1000);
+      const projectWithLongType = { ...mockProjectInfo, type: longType as any };
+      const fileName = projectNaming.generateFileName(projectWithLongType);
+      
+      expect(fileName).toContain('test-project');
+    });
+
+    it('should handle getProjectType method directly', () => {
+      // Test the protected method directly by accessing it through the instance
+      const projectWithValidType = { ...mockProjectInfo, type: 'typescript' as const };
+      const projectType = (projectNaming as any).getProjectType(projectWithValidType);
+      
+      expect(projectType).toBe('typescript');
+    });
+
+    it('should handle getProjectType method with undefined project info', () => {
+      const projectType = (projectNaming as any).getProjectType(undefined);
+      
+      expect(projectType).toBe('unknown');
+    });
+
+    it('should handle getProjectType method with null project info', () => {
+      const projectType = (projectNaming as any).getProjectType(null);
+      
+      expect(projectType).toBe('unknown');
+    });
+
+    it('should handle getProjectType method with empty project info', () => {
+      const projectType = (projectNaming as any).getProjectType({});
+      
+      expect(projectType).toBe('unknown');
+    });
+
+    it('should handle getProjectType method with project info missing type property', () => {
+      const projectWithoutType = { ...mockProjectInfo };
+      delete (projectWithoutType as any).type;
+      const projectType = (projectNaming as any).getProjectType(projectWithoutType);
+      
+      expect(projectType).toBe('unknown');
+    });
+
     it('should handle generateFileName with file extension logic', () => {
       const namingWithoutSuffix = new ProjectNaming({ suffix: '' });
       const fileName = namingWithoutSuffix.generateFileName(mockProjectInfo);

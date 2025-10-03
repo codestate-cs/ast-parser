@@ -258,6 +258,9 @@ export class ProjectNaming extends NamingStrategy {
    * @returns Project type or 'unknown'
    */
   protected override getProjectType(projectInfo: ProjectInfo): string {
+    if (!projectInfo) {
+      return 'unknown';
+    }
     return projectInfo.type || 'unknown';
   }
 }

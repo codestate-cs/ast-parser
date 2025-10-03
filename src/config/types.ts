@@ -118,6 +118,85 @@ export interface OutputConfig {
 /**
  * Main configuration options
  */
+/**
+ * Configuration for performance monitoring and optimization
+ */
+export interface PerformanceConfig {
+  /** Enable performance monitoring */
+  enablePerformanceMonitoring: boolean;
+  /** Enable memory management */
+  enableMemoryManagement: boolean;
+  /** Enable caching */
+  enableCaching: boolean;
+  /** Maximum concurrent files */
+  maxConcurrentFiles: number;
+  /** Memory limit in MB */
+  memoryLimit: number;
+  /** Timeout in milliseconds */
+  timeout: number;
+  /** Enable progress reporting */
+  enableProgress: boolean;
+  /** Progress update interval */
+  progressInterval: number;
+  /** Performance monitor configuration */
+  performanceMonitor: {
+    /** Enable memory tracking */
+    enableMemoryTracking: boolean;
+    /** Enable CPU tracking */
+    enableCpuTracking: boolean;
+    /** Enable auto reporting */
+    enableAutoReporting: boolean;
+    /** Report interval in milliseconds */
+    reportInterval: number;
+    /** Memory threshold in MB */
+    memoryThreshold: number;
+    /** CPU threshold percentage */
+    cpuThreshold: number;
+    /** Enable profiling */
+    enableProfiling: boolean;
+    /** Maximum operation history */
+    maxOperationHistory: number;
+    /** Enable detailed metrics */
+    enableDetailedMetrics: boolean;
+  };
+  /** Memory manager configuration */
+  memoryManager: {
+    /** Enable monitoring */
+    enableMonitoring: boolean;
+    /** Enable auto garbage collection */
+    enableAutoGC: boolean;
+    /** Memory threshold in MB */
+    memoryThreshold: number;
+    /** Garbage collection threshold */
+    gcThreshold: number;
+    /** Monitoring interval in milliseconds */
+    monitoringInterval: number;
+    /** Enable leak detection */
+    enableLeakDetection: boolean;
+    /** Maximum memory history */
+    maxMemoryHistory: number;
+    /** Enable optimization */
+    enableOptimization: boolean;
+  };
+  /** Cache manager configuration */
+  cacheManager: {
+    /** Cache file path */
+    cacheFile: string;
+    /** Maximum cache size */
+    maxCacheSize: number;
+    /** Default TTL in milliseconds */
+    defaultTTL: number;
+    /** Enable persistence */
+    enablePersistence: boolean;
+    /** Enable compression */
+    enableCompression: boolean;
+    /** Enable auto cleanup */
+    enableAutoCleanup: boolean;
+    /** Cleanup interval in milliseconds */
+    cleanupInterval: number;
+  };
+}
+
 export interface ConfigOptions {
   /** Analyzer configurations */
   analyzers: AnalyzerConfig;
@@ -136,6 +215,8 @@ export interface ConfigOptions {
     /** Enable parallel processing */
     parallel: boolean;
   };
+  /** Performance configurations */
+  performance: PerformanceConfig;
 }
 
 /**

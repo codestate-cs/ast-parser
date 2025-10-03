@@ -3,6 +3,9 @@
  */
 
 import { ParsingMode, OutputFormat, CompressionType } from './core';
+import { PerformanceMonitor } from '../utils/performance/PerformanceMonitor';
+import { MemoryManager } from '../utils/performance/MemoryManager';
+import { CacheManager } from '../core/CacheManager';
 
 /**
  * Main parsing options
@@ -104,6 +107,18 @@ export interface PerformanceOptions {
   enableProgress?: boolean;
   /** Progress update interval */
   progressInterval?: number;
+  /** Enable performance monitoring */
+  enablePerformanceMonitoring?: boolean;
+  /** Enable memory management */
+  enableMemoryManagement?: boolean;
+  /** Enable caching */
+  enableCaching?: boolean;
+  /** Performance monitor instance */
+  performanceMonitor?: PerformanceMonitor;
+  /** Memory manager instance */
+  memoryManager?: MemoryManager;
+  /** Cache manager instance */
+  cacheManager?: CacheManager;
 }
 
 /**
@@ -221,10 +236,13 @@ export const DEFAULT_PARSING_OPTIONS: ParsingOptions = {
   },
   performance: {
     maxConcurrentFiles: 10,
-    memoryLimit: 1024,
+    memoryLimit: 1024, // MB
     timeout: 300000, // 5 minutes
     enableProgress: true,
-    progressInterval: 1000,
+    progressInterval: 1000, // 1 second
+    enablePerformanceMonitoring: false,
+    enableMemoryManagement: false,
+    enableCaching: false,
   },
   cache: {
     enableCache: false,
