@@ -115,13 +115,18 @@ describe('EnhancedTypeScriptParser', () => {
     });
 
 
-    it('should parse generic types', async () => {
+    it('should parse generic types from file content', async () => {
+      // Given: A generic interface content
+      const content = `
+        interface GenericInterface<T> {
+          value: T;
+        }
+      `;
+      
       const mockFileInfoCopy = {...mockFileInfo, name: 'testfile.ts', path: '/Users/karthik/codestate/ast-parser/tests/unit/parsers/testfile.ts'};
       
-      // When: Parsing the file
-      const result = await parser.parseFile(mockFileInfoCopy);
-
-      console.log(result);
+      // When: Parsing the file with content
+      const result = await parser.parseFile(mockFileInfoCopy, content);
 
       // Then: Should parse successfully
       expect(result).toBeDefined();
