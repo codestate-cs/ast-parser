@@ -16,3 +16,12 @@ export * from './options';
 
 // Package.json types
 export * from './package';
+
+// Performance monitoring types
+export * from './performance';
+
+// Memory management types
+export * from './memory';
+
+// Performance configuration types
+// export * from './performance-config'; // Commented out due to naming conflicts

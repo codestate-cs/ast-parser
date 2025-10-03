@@ -16,6 +16,9 @@ import {
 } from '../types';
 import { ParsingOptions, DEFAULT_PARSING_OPTIONS } from '../types/options';
 import { ProjectDetector } from './ProjectDetector';
+import { CacheManager } from './CacheManager';
+import { PerformanceMonitor } from '../utils/performance/PerformanceMonitor';
+import { MemoryManager } from '../utils/performance/MemoryManager';
 import { logInfo, logWarn, logError } from '../utils/error/ErrorLogger';
 
 /**
@@ -23,16 +26,112 @@ import { logInfo, logWarn, logError } from '../utils/error/ErrorLogger';
  */
 export class ProjectParser {
   private options: ParsingOptions;
+  private cacheManager: CacheManager;
+  private performanceMonitor?: PerformanceMonitor;
+  private memoryManager?: MemoryManager;
 
   constructor(options: Partial<ParsingOptions> = {}) {
     this.options = this.mergeOptions(DEFAULT_PARSING_OPTIONS, options);
+    this.cacheManager = new CacheManager({
+      cacheFile: this.options.cache?.cacheFile ?? './.ast-cache.json',
+      maxCacheSize: 10000,
+      compressionEnabled: this.options.cache?.cacheCompression ?? false,
+      autoCleanup: true,
+      cleanupInterval: 300000,
+      defaultTTL: (this.options.cache?.cacheExpiration ?? 1) * 3600000,
+    });
+
+    // Initialize performance components if enabled
+    if (
+      this.options.performance?.enablePerformanceMonitoring &&
+      this.options.performance?.performanceMonitor
+    ) {
+      this.performanceMonitor = this.options.performance.performanceMonitor;
+    }
+
+    if (
+      this.options.performance?.enableMemoryManagement &&
+      this.options.performance?.memoryManager
+    ) {
+      this.memoryManager = this.options.performance.memoryManager;
+    }
   }
 
   /**
    * Parse project from path
    */
   async parseProject(projectPath: string): Promise<ProjectInfo> {
+    let operationId: string | undefined;
+    const timeout = this.options.performance?.timeout ?? 300000; // 5 minutes default
+
     try {
+      // Set overall timeout for the entire parsing operation
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        setTimeout(() => {
+          reject(new Error(`Project parsing timeout: ${projectPath}`));
+        }, timeout);
+      });
+
+      // Execute parsing with timeout
+      return await Promise.race([
+        this.parseProjectInternal(projectPath, operationId),
+        timeoutPromise,
+      ]);
+    } catch (error) {
+      // End performance monitoring on error
+      if (this.performanceMonitor && operationId) {
+        try {
+          this.performanceMonitor.endOperation(operationId);
+        } catch (endError) {
+          logWarn('Performance monitoring end failed on error', {
+            error: (endError as Error).message,
+          });
+        }
+      }
+
+      logError(`Failed to parse project: ${projectPath}`, error as Error, { projectPath });
+      throw error;
+    }
+  }
+
+  /**
+   * Internal project parsing logic
+   */
+  private async parseProjectInternal(
+    projectPath: string,
+    operationId?: string
+  ): Promise<ProjectInfo> {
+    try {
+      // Start performance monitoring
+      if (this.performanceMonitor) {
+        try {
+          operationId = this.performanceMonitor.startOperation('parseProject', projectPath, {
+            projectName: projectPath.split('/').pop() ?? 'unknown',
+          });
+        } catch (error) {
+          logWarn('Performance monitoring start failed, continuing without monitoring', {
+            error: (error as Error).message,
+          });
+        }
+      }
+
+      // Start memory monitoring
+      if (this.memoryManager) {
+        try {
+          this.memoryManager.startMonitoring();
+
+          // Check memory pressure and optimize if needed
+          const memoryPressure = this.memoryManager.checkMemoryPressure();
+          if (memoryPressure.level === 'high') {
+            this.memoryManager.optimizeMemory();
+          }
+        } catch (error) {
+          logWarn('Memory management start failed, continuing without memory monitoring', {
+            error: (error as Error).message,
+          });
+        }
+      }
+
       logInfo(`Starting project parsing: ${projectPath}`);
 
       // Detect project type
@@ -46,6 +145,14 @@ export class ProjectParser {
       // Discover files
       const files = await this.discoverFiles(projectRoot);
       logInfo(`Discovered ${files.length} files`);
+
+      // Record file processing
+      if (this.performanceMonitor) {
+        this.performanceMonitor.recordFileProcessed(
+          'project',
+          files.reduce((sum, file) => sum + (file.size || 0), 0)
+        );
+      }
 
       // Parse files
       const astNodes = await this.parseFiles(files);
@@ -93,9 +200,59 @@ export class ProjectParser {
         projectInfo.repository = config.repository;
       }
 
+      // Generate performance report
+      if (this.performanceMonitor) {
+        const performanceReport = this.performanceMonitor.generateReport();
+        projectInfo.performance = performanceReport;
+
+        // Add cache statistics
+        if (projectInfo.performance) {
+          projectInfo.performance.cache = {
+            hitRate: 0,
+            statistics: {
+              hits: 0,
+              misses: 0,
+              totalOperations: 0,
+              hitRate: 0,
+            },
+          };
+        }
+      }
+
+      // Generate memory report
+      if (this.memoryManager) {
+        const memoryReport = this.memoryManager.generateMemoryReport();
+        if (projectInfo.performance) {
+          projectInfo.performance.memory = {
+            usage: this.memoryManager.getMemoryUsage(),
+            report: memoryReport,
+          };
+        }
+      }
+
+      // End performance monitoring
+      if (this.performanceMonitor && operationId) {
+        try {
+          this.performanceMonitor.endOperation(operationId);
+        } catch (error) {
+          logWarn('Performance monitoring end failed', { error: (error as Error).message });
+        }
+      }
+
       logInfo(`Project parsing completed: ${projectInfo.name}`);
       return projectInfo;
     } catch (error) {
+      // End performance monitoring on error
+      if (this.performanceMonitor && operationId) {
+        try {
+          this.performanceMonitor.endOperation(operationId);
+        } catch (endError) {
+          logWarn('Performance monitoring end failed on error', {
+            error: (endError as Error).message,
+          });
+        }
+      }
+
       logError(`Failed to parse project: ${projectPath}`, error as Error, { projectPath });
       throw error;
     }
@@ -202,19 +359,119 @@ export class ProjectParser {
    */
   private async parseFiles(files: FileInfo[]): Promise<ASTNode[]> {
     const astNodes: ASTNode[] = [];
+    const maxConcurrentFiles = this.options.performance?.maxConcurrentFiles ?? 10;
+    const timeout = this.options.performance?.timeout ?? 300000; // 5 minutes default
+    const enableProgress = this.options.performance?.enableProgress ?? false;
+    const progressInterval = this.options.performance?.progressInterval ?? 1000;
 
-    for (const file of files) {
+    // Filter files to parse
+    const filesToParse = files.filter(
+      file => PathUtils.isTypeScriptFile(file.path) || PathUtils.isJavaScriptFile(file.path)
+    );
+
+    if (enableProgress) {
+      logInfo(
+        `Starting to parse ${filesToParse.length} files with concurrency limit: ${maxConcurrentFiles}`
+      );
+    }
+
+    // Process files in batches with concurrency control
+    const batches: FileInfo[][] = [];
+    for (let i = 0; i < filesToParse.length; i += maxConcurrentFiles) {
+      batches.push(filesToParse.slice(i, i + maxConcurrentFiles));
+    }
+
+    let processedFiles = 0;
+    let lastProgressTime = Date.now();
+
+    for (const batch of batches) {
+      // Check memory pressure before processing batch
+      if (this.memoryManager) {
+        const memoryPressure = this.memoryManager.checkMemoryPressure();
+        if (memoryPressure.level === 'high') {
+          logWarn('High memory pressure detected, optimizing memory before processing batch');
+          this.memoryManager.optimizeMemory();
+        }
+      }
+
+      // Process batch with timeout
+      const batchPromises = batch.map(file =>
+        Promise.race([
+          this.parseFileWithTimeout(file, timeout),
+          new Promise<ASTNode[]>((_, reject) =>
+            setTimeout(() => reject(new Error(`File parsing timeout: ${file.path}`)), timeout)
+          ),
+        ])
+      );
+
       try {
-        if (PathUtils.isTypeScriptFile(file.path) || PathUtils.isJavaScriptFile(file.path)) {
-          const nodes = await this.parseFile(file);
-          astNodes.push(...nodes);
+        const batchResults = await Promise.allSettled(batchPromises);
+
+        // Process results
+        for (const result of batchResults) {
+          if (result.status === 'fulfilled') {
+            astNodes.push(...result.value);
+          } else {
+            logWarn(`Failed to parse file in batch: ${result.reason}`);
+          }
+        }
+
+        processedFiles += batch.length;
+
+        // Progress reporting
+        if (enableProgress && Date.now() - lastProgressTime >= progressInterval) {
+          const progress = Math.round((processedFiles / filesToParse.length) * 100);
+          logInfo(`Progress: ${processedFiles}/${filesToParse.length} files (${progress}%)`);
+          lastProgressTime = Date.now();
         }
       } catch (error) {
-        logWarn(`Failed to parse file: ${file.path}`, { error: (error as Error).message });
+        logError('Batch processing failed', error as Error);
+        throw error;
       }
     }
 
+    if (enableProgress) {
+      logInfo(`Completed parsing ${filesToParse.length} files`);
+    }
+
     return astNodes;
+  }
+
+  /**
+   * Parse file with timeout and memory limit enforcement
+   */
+  private async parseFileWithTimeout(file: FileInfo, timeout: number): Promise<ASTNode[]> {
+    const memoryLimit = this.options.performance?.memoryLimit ?? 1024; // MB
+
+    return new Promise<ASTNode[]>((resolve, reject) => {
+      const timer = setTimeout(() => {
+        reject(new Error(`File parsing timeout: ${file.path}`));
+      }, timeout);
+
+      this.parseFile(file)
+        .then(result => {
+          clearTimeout(timer);
+
+          // Check memory usage after parsing
+          if (this.memoryManager) {
+            const memoryUsage = this.memoryManager.getMemoryUsage();
+            const memoryUsageMB = memoryUsage.heapUsed / (1024 * 1024); // Convert to MB
+            if (memoryUsageMB > memoryLimit) {
+              logWarn(
+                `Memory usage (${memoryUsageMB.toFixed(2)}MB) exceeds limit (${memoryLimit}MB) for file: ${file.path}`
+              );
+              // Trigger memory optimization
+              this.memoryManager.optimizeMemory();
+            }
+          }
+
+          resolve(result);
+        })
+        .catch(error => {
+          clearTimeout(timer);
+          reject(error as Error);
+        });
+    });
   }
 
   /**
@@ -445,6 +702,350 @@ export class ProjectParser {
     } catch {
       return 0;
     }
+  }
+
+  /**
+   * Parse project incrementally using cache
+   */
+  async parseProjectIncremental(projectPath: string): Promise<ProjectInfo> {
+    let operationId: string | undefined;
+    const timeout = this.options.performance?.timeout ?? 300000; // 5 minutes default
+
+    try {
+      // Set overall timeout for the entire incremental parsing operation
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        setTimeout(() => {
+          reject(new Error(`Incremental parsing timeout: ${projectPath}`));
+        }, timeout);
+      });
+
+      // Execute incremental parsing with timeout
+      return await Promise.race([
+        this.parseProjectIncrementalInternal(projectPath, operationId),
+        timeoutPromise,
+      ]);
+    } catch (error) {
+      // End performance monitoring on error
+      if (this.performanceMonitor && operationId) {
+        try {
+          this.performanceMonitor.endOperation(operationId);
+        } catch (endError) {
+          logWarn('Performance monitoring end failed on error', {
+            error: (endError as Error).message,
+          });
+        }
+      }
+
+      logError(`Incremental parsing failed: ${projectPath}`, error as Error);
+      // Fall back to full parsing
+      return this.parseProject(projectPath);
+    }
+  }
+
+  /**
+   * Internal incremental project parsing logic
+   */
+  private async parseProjectIncrementalInternal(
+    projectPath: string,
+    operationId?: string
+  ): Promise<ProjectInfo> {
+    try {
+      // Start performance monitoring
+      if (this.performanceMonitor) {
+        try {
+          operationId = this.performanceMonitor.startOperation(
+            'parseProjectIncremental',
+            projectPath,
+            {
+              projectName: projectPath.split('/').pop() ?? 'unknown',
+            }
+          );
+        } catch (error) {
+          logWarn('Performance monitoring start failed, continuing without monitoring', {
+            error: (error as Error).message,
+          });
+        }
+      }
+
+      // Start memory monitoring
+      if (this.memoryManager) {
+        try {
+          this.memoryManager.startMonitoring();
+        } catch (error) {
+          logWarn('Memory management start failed, continuing without memory monitoring', {
+            error: (error as Error).message,
+          });
+        }
+      }
+
+      logInfo(`Starting incremental project parsing: ${projectPath}`);
+
+      // Load cache
+      await this.cacheManager.loadCache();
+
+      // Detect project type
+      const detection = await ProjectDetector.detectProjectType(projectPath);
+      logInfo(`Project detected: ${detection.type} (${detection.language})`);
+
+      // Get project root
+      const projectRoot = await ProjectDetector.getProjectRoot(projectPath);
+      logInfo(`Project root: ${projectRoot}`);
+
+      // Discover files
+      const files = await this.discoverFiles(projectRoot);
+      logInfo(`Discovered ${files.length} files`);
+
+      // Process files incrementally
+      const astNodes: ASTNode[] = [];
+      const relations: Relation[] = [];
+      const changedFiles: string[] = [];
+      let cacheHits = 0;
+      let cacheMisses = 0;
+
+      for (const file of files) {
+        const filePath = FileUtils.relative(projectRoot, file.path);
+
+        try {
+          // Check if file is cached and valid
+          const hasCache = this.cacheManager.hasCache(filePath);
+          let useCache = false;
+
+          if (hasCache) {
+            const isValid = this.cacheManager.validateFileHash(filePath, file.hash);
+            if (isValid) {
+              // Use cached data
+              const cached = this.cacheManager.getCache(filePath);
+              if (cached) {
+                astNodes.push(cached.ast);
+                relations.push(...cached.relations);
+                useCache = true;
+                cacheHits++;
+                if (this.performanceMonitor) {
+                  this.performanceMonitor.recordCacheHit(filePath);
+                }
+                logInfo(`Using cached data for: ${filePath}`);
+              }
+            } else {
+              // File has changed, invalidate dependents
+              this.cacheManager.invalidateDependents(filePath);
+              changedFiles.push(filePath);
+              cacheMisses++;
+              if (this.performanceMonitor) {
+                this.performanceMonitor.recordCacheMiss(filePath);
+              }
+              logInfo(`File changed, invalidating dependents: ${filePath}`);
+            }
+          } else {
+            cacheMisses++;
+            if (this.performanceMonitor) {
+              this.performanceMonitor.recordCacheMiss(filePath);
+            }
+          }
+
+          if (!useCache) {
+            // Parse file fresh
+            const fileASTs = await this.parseFile(file);
+            if (fileASTs && fileASTs.length > 0) {
+              astNodes.push(...fileASTs);
+
+              // Extract dependencies from all AST nodes
+              const dependencies: string[] = [];
+              for (const ast of fileASTs) {
+                dependencies.push(...this.extractDependencies(ast));
+              }
+
+              // Cache the result (use first AST node as representative)
+              if (fileASTs[0]) {
+                this.cacheManager.setCache(filePath, {
+                  hash: file.hash,
+                  lastModified: file.lastModified.toISOString(),
+                  ast: fileASTs[0], // Use first AST node as representative
+                  relations: [],
+                  dependencies: [...new Set(dependencies)], // Remove duplicates
+                });
+              }
+
+              logInfo(`Parsed and cached: ${filePath}`);
+            }
+          }
+        } catch (error) {
+          logError(`Failed to process file: ${filePath}`, error as Error);
+        }
+      }
+
+      // Build relationships
+      const allRelations = this.buildRelations(astNodes);
+      logInfo(`Built ${allRelations.length} relationships`);
+
+      // Analyze structure
+      const structure = this.analyzeStructure(files, projectRoot);
+      logInfo(`Analyzed project structure`);
+
+      // Calculate metrics
+      const complexity = this.calculateComplexity(astNodes);
+      const quality = this.calculateQuality(astNodes, structure);
+
+      // Build project info
+      const config = detection.metadata['config'] as PackageConfig;
+      const projectInfo: ProjectInfo = {
+        type: detection.type,
+        rootPath: projectRoot,
+        name: config?.name ?? FileUtils.getBaseName(projectRoot),
+        version: config?.version ?? '1.0.0',
+        entryPoints: config?.entryPoints ?? [],
+        dependencies: config?.dependencies ?? [],
+        devDependencies: config?.devDependencies ?? [],
+        structure,
+        ast: astNodes,
+        relations: allRelations,
+        publicExports: [],
+        privateExports: [],
+        complexity,
+        quality,
+      };
+
+      // Add optional fields conditionally
+      if (config?.description) {
+        projectInfo.description = config.description;
+      }
+      if (config?.author) {
+        projectInfo.author = config.author;
+      }
+      if (config?.repository) {
+        projectInfo.repository = config.repository;
+      }
+
+      // Generate performance report
+      if (this.performanceMonitor) {
+        const performanceReport = this.performanceMonitor.generateReport();
+        projectInfo.performance = performanceReport;
+
+        // Add cache statistics
+        if (projectInfo.performance) {
+          projectInfo.performance.cache = {
+            hitRate: cacheHits / (cacheHits + cacheMisses) || 0,
+            statistics: {
+              hits: cacheHits,
+              misses: cacheMisses,
+              totalOperations: cacheHits + cacheMisses,
+              hitRate: cacheHits / (cacheHits + cacheMisses) || 0,
+            },
+          };
+        }
+      }
+
+      // Generate memory report
+      if (this.memoryManager) {
+        const memoryReport = this.memoryManager.generateMemoryReport();
+        if (projectInfo.performance) {
+          projectInfo.performance.memory = {
+            usage: this.memoryManager.getMemoryUsage(),
+            report: memoryReport,
+          };
+        }
+      }
+
+      // End performance monitoring
+      if (this.performanceMonitor && operationId) {
+        try {
+          this.performanceMonitor.endOperation(operationId);
+        } catch (error) {
+          logWarn('Performance monitoring end failed', { error: (error as Error).message });
+        }
+      }
+
+      // Persist cache
+      await this.cacheManager.persistCache();
+
+      logInfo(
+        `Incremental parsing completed. Changed files: ${changedFiles.length}, Cache hits: ${cacheHits}, Cache misses: ${cacheMisses}`
+      );
+      return projectInfo;
+    } catch (error) {
+      // End performance monitoring on error
+      if (this.performanceMonitor && operationId) {
+        try {
+          this.performanceMonitor.endOperation(operationId);
+        } catch (endError) {
+          logWarn('Performance monitoring end failed on error', {
+            error: (endError as Error).message,
+          });
+        }
+      }
+
+      logError(`Incremental parsing failed: ${projectPath}`, error as Error);
+      // Fall back to full parsing
+      return this.parseProject(projectPath);
+    }
+  }
+
+  /**
+   * Check if a file has changed
+   */
+  hasFileChanged(filePath: string, currentHash: string): boolean {
+    try {
+      const isValid = this.cacheManager.validateFileHash(filePath, currentHash);
+      return !isValid;
+    } catch (error) {
+      logError(`Failed to check file change: ${filePath}`, error as Error);
+      return true; // Assume changed if we can't determine
+    }
+  }
+
+  /**
+   * Update file dependencies in cache
+   */
+  updateFileDependencies(filePath: string, dependencies: string[]): void {
+    try {
+      const cached = this.cacheManager.getCache(filePath);
+      if (cached) {
+        this.cacheManager.setCache(filePath, {
+          ...cached,
+          dependencies,
+        });
+      }
+    } catch (error) {
+      logError(`Failed to update dependencies: ${filePath}`, error as Error);
+    }
+  }
+
+  /**
+   * Find files that depend on a given file
+   */
+  findDependentFiles(filePath: string): string[] {
+    try {
+      return this.cacheManager.findDependents(filePath);
+    } catch (error) {
+      logError(`Failed to find dependents: ${filePath}`, error as Error);
+      return [];
+    }
+  }
+
+  /**
+   * Extract dependencies from AST node
+   */
+  private extractDependencies(node: ASTNode): string[] {
+    const dependencies: string[] = [];
+
+    // Extract imports from metadata
+    if (node.metadata?.['imports']) {
+      const imports = node.metadata['imports'] as string[];
+      dependencies.push(...imports);
+    }
+
+    // Extract dependencies from children
+    for (const child of node.children) {
+      dependencies.push(...this.extractDependencies(child));
+    }
+
+    return [...new Set(dependencies)]; // Remove duplicates
+  }
+
+  /**
+   * Get cache manager instance
+   */
+  getCacheManager(): CacheManager {
+    return this.cacheManager;
   }
 
   /**

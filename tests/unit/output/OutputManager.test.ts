@@ -978,5 +978,58 @@ describe('OutputManager', () => {
       expect(result.success).toBe(true);
       expect(result.outputPath).toMatch(/\.txt$/); // Should use default 'txt' extension
     });
+
+    it('should handle empty project data', async () => {
+      const outputManager = new OutputManager();
+      const result = await outputManager.generateOutput(null as any, null as any);
+      expect(result.success).toBe(false);
+      expect(result.error).toBe('Invalid project data provided');
+      expect(result.metadata?.format).toBe('json');
+      expect(result.metadata?.strategy).toBe('file');
+      expect(result.metadata?.timestamp).toBeDefined();
+    });
+
+    it('should handle undefined options', async () => {
+      const outputManager = new OutputManager();
+      outputManager.setDefaultOptions({
+        format: undefined,
+        strategy: undefined,
+        prettyPrint: undefined,
+        encoding: undefined,
+        compression: undefined
+      } as any);
+      const result = await outputManager.generateOutput(mockProjectData, undefined as any);
+      expect(result.success).toBe(false);
+      expect(result.metadata?.format).toBe('json');
+      expect(result.metadata?.strategy).toBe('file');
+    });
+
+    it('should handle undefined options', async () => {
+      const outputManager = new OutputManager();
+      outputManager.setDefaultOptions({
+        format: undefined,
+        strategy: undefined,
+        prettyPrint: undefined,
+        encoding: undefined,
+        compression: undefined
+      } as any);
+      const result = await outputManager.generateOutput(undefined as any, undefined as any);
+      expect(result.success).toBe(false);
+      expect(result.metadata?.format).toBe('unknown');
+      expect(result.metadata?.strategy).toBe('unknown');
+    });
+
+    it('should handle undefined options', async () => {
+      const outputManager = new OutputManager();
+      const result = await outputManager.generateOutput(mockProjectData, {
+        strategy: undefined
+      } as any);
+      expect(result.success).toBe(false);
+      expect(result.metadata?.format).toBe('json');
+      expect(result.metadata?.strategy).toBe('file');
+    });
+
   });
+
+
 });

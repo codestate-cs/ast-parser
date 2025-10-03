@@ -740,4 +740,29 @@ describe('NamingStrategy', () => {
       });
     });
   });
+
+  describe('Error Scenarios', () => {
+    it('it should add options and give back the options', () => {
+      const options = {
+        prefix: 'custom'
+      };
+      const namingStrategy = new TestNamingStrategy();
+      namingStrategy.setOptions(options);
+      expect(namingStrategy.getOptions().prefix).toEqual(options.prefix);
+      expect(namingStrategy.validateName("name_1234")).toEqual(true);
+    });
+
+    it('it should add options and give back the options', () => {
+      const options = {
+        prefix: 'custom',
+        format: undefined,
+        type: 'typescript'
+      };
+      const namingStrategy = new TestNamingStrategy({...options});
+      expect(namingStrategy.getOptions().prefix).toEqual(options.prefix);
+      expect(namingStrategy.validateName("name_1234")).toEqual(true);
+    })
+  });
+
+  
 });

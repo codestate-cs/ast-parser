@@ -110,7 +110,7 @@ export class OutputManager {
           error: `Unsupported format: ${mergedOptions.format}`,
           metadata: {
             format: mergedOptions.format,
-            strategy: mergedOptions.strategy ?? 'file',
+            strategy: mergedOptions.strategy as string,
             timestamp: new Date(),
           },
         };
@@ -124,7 +124,7 @@ export class OutputManager {
           error: 'Project data validation failed',
           metadata: {
             format: mergedOptions.format,
-            strategy: mergedOptions.strategy ?? 'file',
+            strategy: mergedOptions.strategy as string,
             timestamp: new Date(),
           },
         };
@@ -138,7 +138,7 @@ export class OutputManager {
         ...result,
         metadata: {
           format: mergedOptions.format,
-          strategy: mergedOptions.strategy!,
+          strategy: mergedOptions.strategy as string,
           size: result.data?.length ?? 0,
           timestamp: new Date(),
         },

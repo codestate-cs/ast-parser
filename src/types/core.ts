@@ -278,6 +278,8 @@ export interface ProjectInfo {
   complexity: ComplexityMetrics;
   /** Quality metrics */
   quality: QualityMetrics;
+  /** Performance metrics and reports */
+  performance?: import('./performance').PerformanceReport;
   /** Additional metadata */
   metadata?: Record<string, unknown>;
 }
