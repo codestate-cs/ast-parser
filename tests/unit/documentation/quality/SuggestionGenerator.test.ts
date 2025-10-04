@@ -692,6 +692,50 @@ describe('SuggestionGenerator', () => {
         expect(result.isValid).toBe(false);
         expect(result.errors).toContain('Nodes must be an array');
       });
+
+      it('should handle generateDocumentationSuggestions error path (line 191)', () => {
+        // Create a mock data that will cause an error in the method
+        const problematicData = {
+          ...mockAnalysisData,
+          nodes: new Proxy([], {
+            get(target, prop) {
+              if (prop === 'forEach') {
+                return () => {
+                  throw new Error('Test error');
+                };
+              }
+              return target[prop as keyof typeof target];
+            }
+          })
+        };
+        
+        const result = suggestionGenerator.generateDocumentationSuggestions(problematicData);
+        
+        expect(result.success).toBe(false);
+        expect(result.error).toBe('Test error');
+      });
+
+      it('should handle generateQualitySuggestions error path (line 263)', () => {
+        // Create a mock data that will cause an error in the method
+        const problematicData = {
+          ...mockAnalysisData,
+          nodes: new Proxy([], {
+            get(target, prop) {
+              if (prop === 'forEach') {
+                return () => {
+                  throw new Error('Test error');
+                };
+              }
+              return target[prop as keyof typeof target];
+            }
+          })
+        };
+        
+        const result = suggestionGenerator.generateQualitySuggestions(problematicData);
+        
+        expect(result.success).toBe(false);
+        expect(result.error).toBe('Test error');
+      });
     });
   });
 });

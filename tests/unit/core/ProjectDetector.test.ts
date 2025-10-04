@@ -306,4 +306,94 @@ describe('ProjectDetector', () => {
       expect(result.type).toBeDefined();
     });
   });
+
+  describe('branch coverage improvements', () => {
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    it('should detect React project type', async () => {
+      const FileUtils = require('../../../src/utils/file/FileUtils').FileUtils;
+      jest.spyOn(FileUtils, 'exists')
+        .mockResolvedValueOnce(true) // package.json exists
+        .mockResolvedValueOnce(false) // tsconfig.json doesn't exist (analyzeProjectType)
+        .mockResolvedValueOnce(false) // babel.config.js doesn't exist (analyzeProjectType)
+        .mockResolvedValueOnce(false) // tsconfig.json doesn't exist (detectLanguage)
+        .mockResolvedValueOnce(false); // requirements.txt doesn't exist (detectLanguage)
+
+      jest.spyOn(FileUtils, 'readFile').mockResolvedValue(JSON.stringify({
+        dependencies: {
+          'react': '^18.0.0',
+          'react-dom': '^18.0.0'
+        }
+      }));
+
+      const result = await ProjectDetector.detectProjectType(__dirname);
+      
+      expect(result.type).toBe('react');
+      expect(result.language).toBe('javascript');
+    });
+
+    it('should detect JavaScript project with Babel', async () => {
+      const FileUtils = require('../../../src/utils/file/FileUtils').FileUtils;
+      jest.spyOn(FileUtils, 'exists')
+        .mockResolvedValueOnce(true) // package.json exists
+        .mockResolvedValueOnce(true) // babel.config.js exists
+        .mockResolvedValueOnce(false); // requirements.txt doesn't exist
+
+      jest.spyOn(FileUtils, 'readFile').mockResolvedValue(JSON.stringify({
+        dependencies: {
+          'babel': '^7.0.0'
+        }
+      }));
+
+      const result = await ProjectDetector.detectProjectType(__dirname);
+      
+      expect(result.type).toBe('javascript');
+      expect(result.language).toBe('javascript');
+    });
+
+    it('should detect Python project', async () => {
+      const FileUtils = require('../../../src/utils/file/FileUtils').FileUtils;
+      jest.spyOn(FileUtils, 'exists').mockImplementation((path: unknown) => {
+        const pathStr = String(path);
+        if (pathStr.includes('tsconfig.json')) {
+          return Promise.resolve(false);
+        }
+        if (pathStr.includes('requirements.txt')) {
+          return Promise.resolve(true);
+        }
+        if (pathStr.includes('package.json')) {
+          return Promise.resolve(true);
+        }
+        return Promise.resolve(false);
+      });
+
+      jest.spyOn(FileUtils, 'readFile').mockResolvedValue(JSON.stringify({
+        dependencies: {
+          'python': '^3.8.0'
+        }
+      }));
+
+      const result = await ProjectDetector.detectProjectType(__dirname);
+      
+      expect(result.type).toBe('unknown'); // Python is not a supported project type in analyzeProjectType
+      expect(result.language).toBe('python');
+    });
+
+    it('should detect module entry point', async () => {
+      const FileUtils = require('../../../src/utils/file/FileUtils').FileUtils;
+      jest.spyOn(FileUtils, 'exists').mockResolvedValue(true);
+      jest.spyOn(FileUtils, 'readFile').mockResolvedValue(JSON.stringify({
+        name: 'test-project',
+        main: 'index.js',
+        module: 'index.mjs'
+      }));
+
+      const result = await ProjectDetector.detectProjectType(__dirname);
+      
+      expect(result).toBeDefined();
+      expect(result.type).toBeDefined();
+    });
+  });
 });
