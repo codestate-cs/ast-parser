@@ -449,6 +449,158 @@ describe('StructureAnalyzer', () => {
       expect(result.structureAnalysis.patterns).toHaveLength(0); // Should not match special characters
     });
 
+    it('should handle directories without depth property', () => {
+      const directories = [
+        { name: 'dir1', path: '/test/project/dir1', fileCount: 0, subdirectoryCount: 0, totalSize: 0 },
+        { name: 'dir2', path: '/test/project/dir2/subdir', fileCount: 0, subdirectoryCount: 0, totalSize: 0 }
+      ];
+
+      mockProjectInfo.structure = {
+        directories,
+        files: [],
+        totalFiles: 0,
+        totalLines: 0,
+        totalSize: 0
+      };
+
+      const result = analyzer.analyze(mockProjectInfo);
+
+      expect(result.structureAnalysis.depth).toBeGreaterThan(0);
+    });
+
+    it('should handle directories with undefined depth', () => {
+      const directories = [
+        { name: 'dir1', path: '/test/project/dir1', depth: undefined, fileCount: 0, subdirectoryCount: 0, totalSize: 0 },
+        { name: 'dir2', path: '/test/project/dir2/subdir', depth: undefined, fileCount: 0, subdirectoryCount: 0, totalSize: 0 }
+      ];
+
+      mockProjectInfo.structure = {
+        directories,
+        files: [],
+        totalFiles: 0,
+        totalLines: 0,
+        totalSize: 0
+      };
+
+      const result = analyzer.analyze(mockProjectInfo);
+
+      expect(result.structureAnalysis.depth).toBeGreaterThan(0);
+    });
+
+    it('should handle directories with null path', () => {
+      const directories = [
+        { name: 'dir1', path: null as any, depth: 1, fileCount: 0, subdirectoryCount: 0, totalSize: 0 },
+        { name: 'dir2', path: '/test/project/dir2', depth: 1, fileCount: 0, subdirectoryCount: 0, totalSize: 0 }
+      ];
+
+      mockProjectInfo.structure = {
+        directories,
+        files: [],
+        totalFiles: 0,
+        totalLines: 0,
+        totalSize: 0
+      };
+
+      const result = analyzer.analyze(mockProjectInfo);
+
+      expect(result.structureAnalysis.depth).toBeGreaterThanOrEqual(0);
+    });
+
+    it('should handle directories with empty path', () => {
+      const directories = [
+        { name: 'dir1', path: '', depth: 1, fileCount: 0, subdirectoryCount: 0, totalSize: 0 },
+        { name: 'dir2', path: '/test/project/dir2', depth: 1, fileCount: 0, subdirectoryCount: 0, totalSize: 0 }
+      ];
+
+      mockProjectInfo.structure = {
+        directories,
+        files: [],
+        totalFiles: 0,
+        totalLines: 0,
+        totalSize: 0
+      };
+
+      const result = analyzer.analyze(mockProjectInfo);
+
+      expect(result.structureAnalysis.depth).toBeGreaterThanOrEqual(0);
+    });
+
+    it('should handle directories with zero depth', () => {
+      const directories = [
+        { name: 'dir1', path: '/test/project', depth: 0, fileCount: 0, subdirectoryCount: 0, totalSize: 0 },
+        { name: 'dir2', path: '/test/project/dir2', depth: 1, fileCount: 0, subdirectoryCount: 0, totalSize: 0 }
+      ];
+
+      mockProjectInfo.structure = {
+        directories,
+        files: [],
+        totalFiles: 0,
+        totalLines: 0,
+        totalSize: 0
+      };
+
+      const result = analyzer.analyze(mockProjectInfo);
+
+      expect(result.structureAnalysis.depth).toBe(1);
+    });
+
+    it('should handle directories with negative depth in calculateDepth', () => {
+      const directories = [
+        { name: 'dir1', path: '/test/project/dir1', depth: -1, fileCount: 0, subdirectoryCount: 0, totalSize: 0 },
+        { name: 'dir2', path: '/test/project/dir2', depth: 0, fileCount: 0, subdirectoryCount: 0, totalSize: 0 }
+      ];
+
+      mockProjectInfo.structure = {
+        directories,
+        files: [],
+        totalFiles: 0,
+        totalLines: 0,
+        totalSize: 0
+      };
+
+      const result = analyzer.analyze(mockProjectInfo);
+
+      expect(result.structureAnalysis.depth).toBe(0); // Should normalize negative depths
+    });
+
+    it('should handle directories with undefined depth in calculateDepth', () => {
+      const directories = [
+        { name: 'dir1', path: '/test/project/dir1', depth: undefined, fileCount: 0, subdirectoryCount: 0, totalSize: 0 },
+        { name: 'dir2', path: '/test/project/dir2/subdir', depth: undefined, fileCount: 0, subdirectoryCount: 0, totalSize: 0 }
+      ];
+
+      mockProjectInfo.structure = {
+        directories,
+        files: [],
+        totalFiles: 0,
+        totalLines: 0,
+        totalSize: 0
+      };
+
+      const result = analyzer.analyze(mockProjectInfo);
+
+      expect(result.structureAnalysis.depth).toBeGreaterThan(0);
+    });
+
+    it('should handle directories with null path in calculateDepth', () => {
+      const directories = [
+        { name: 'dir1', path: null as any, depth: undefined, fileCount: 0, subdirectoryCount: 0, totalSize: 0 },
+        { name: 'dir2', path: '/test/project/dir2', depth: undefined, fileCount: 0, subdirectoryCount: 0, totalSize: 0 }
+      ];
+
+      mockProjectInfo.structure = {
+        directories,
+        files: [],
+        totalFiles: 0,
+        totalLines: 0,
+        totalSize: 0
+      };
+
+      const result = analyzer.analyze(mockProjectInfo);
+
+      expect(result.structureAnalysis.depth).toBeGreaterThanOrEqual(0);
+    });
+
     it('should handle case-insensitive pattern matching', () => {
       const directories = [
         createMockDirectory('Components', '/test/project/Components', 1),

@@ -23,5 +23,8 @@ export * from './performance';
 // Memory management types
 export * from './memory';
 
+// Versioning system types
+export * from './versioning';
+
 // Performance configuration types
 // export * from './performance-config'; // Commented out due to naming conflicts

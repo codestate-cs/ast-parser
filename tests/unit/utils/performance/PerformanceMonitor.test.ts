@@ -1512,6 +1512,178 @@ describe('PerformanceMonitor', () => {
       expect(Array.isArray(recommendations)).toBe(true);
     });
 
+    it('should generate memory recommendations for high memory usage', () => {
+      const recommendations = (performanceMonitor as any).generateRecommendations({
+        totalOperations: 10,
+        totalDuration: 1000,
+        averageDuration: 100,
+        operationsPerSecond: 10,
+        cacheHitRate: 0.8,
+        fileProcessingRate: 5,
+        memoryPeak: 100,
+        memoryCurrent: 1200, // Above default threshold of 1024MB
+        memoryGrowth: 50,
+        resourceUsage: {
+          cpuUsage: 50,
+          memoryUsage: 60,
+          diskIO: 10
+        }
+      });
+      
+      expect(Array.isArray(recommendations)).toBe(true);
+      const memoryRecommendations = recommendations.filter((r: any) => r.type === 'memory');
+      expect(memoryRecommendations.length).toBeGreaterThan(0);
+      expect(memoryRecommendations.some((r: any) => r.description.includes('High memory usage'))).toBe(true);
+    });
+
+    it('should generate memory recommendations for high memory growth', () => {
+      const recommendations = (performanceMonitor as any).generateRecommendations({
+        totalOperations: 10,
+        totalDuration: 1000,
+        averageDuration: 100,
+        operationsPerSecond: 10,
+        cacheHitRate: 0.8,
+        fileProcessingRate: 5,
+        memoryPeak: 100,
+        memoryCurrent: 200,
+        memoryGrowth: 150, // Above default threshold of 100MB
+        resourceUsage: {
+          cpuUsage: 50,
+          memoryUsage: 60,
+          diskIO: 10
+        }
+      });
+      
+      expect(Array.isArray(recommendations)).toBe(true);
+      const memoryRecommendations = recommendations.filter((r: any) => r.type === 'memory');
+      expect(memoryRecommendations.length).toBeGreaterThan(0);
+      expect(memoryRecommendations.some((r: any) => r.description.includes('Significant memory growth'))).toBe(true);
+    });
+
+    it('should generate performance recommendations for slow operations', () => {
+      const recommendations = (performanceMonitor as any).generateRecommendations({
+        totalOperations: 10,
+        totalDuration: 10000,
+        averageDuration: 6000, // Above default threshold of 5000ms
+        operationsPerSecond: 10,
+        cacheHitRate: 0.8,
+        fileProcessingRate: 5,
+        memoryPeak: 100,
+        memoryCurrent: 200,
+        memoryGrowth: 50,
+        resourceUsage: {
+          cpuUsage: 50,
+          memoryUsage: 60,
+          diskIO: 10
+        }
+      });
+      
+      expect(Array.isArray(recommendations)).toBe(true);
+      const performanceRecommendations = recommendations.filter((r: any) => r.type === 'general');
+      expect(performanceRecommendations.length).toBeGreaterThan(0);
+      expect(performanceRecommendations.some((r: any) => r.description.includes('Slow operation performance'))).toBe(true);
+    });
+
+    it('should generate cache recommendations for low cache hit rate', () => {
+      const recommendations = (performanceMonitor as any).generateRecommendations({
+        totalOperations: 10,
+        totalDuration: 1000,
+        averageDuration: 100,
+        operationsPerSecond: 10,
+        cacheHitRate: 0.5, // Below default threshold of 0.8
+        fileProcessingRate: 5,
+        memoryPeak: 100,
+        memoryCurrent: 200,
+        memoryGrowth: 50,
+        resourceUsage: {
+          cpuUsage: 50,
+          memoryUsage: 60,
+          diskIO: 10
+        }
+      });
+      
+      expect(Array.isArray(recommendations)).toBe(true);
+      const cacheRecommendations = recommendations.filter((r: any) => r.type === 'cache');
+      expect(cacheRecommendations.length).toBeGreaterThan(0);
+      expect(cacheRecommendations.some((r: any) => r.description.includes('Low cache hit rate'))).toBe(true);
+    });
+
+    it('should generate throughput recommendations for low operations per second', () => {
+      const recommendations = (performanceMonitor as any).generateRecommendations({
+        totalOperations: 10,
+        totalDuration: 1000,
+        averageDuration: 100,
+        operationsPerSecond: 0.5, // Below threshold of 1
+        cacheHitRate: 0.8,
+        fileProcessingRate: 5,
+        memoryPeak: 100,
+        memoryCurrent: 200,
+        memoryGrowth: 50,
+        resourceUsage: {
+          cpuUsage: 50,
+          memoryUsage: 60,
+          diskIO: 10
+        }
+      });
+      
+      expect(Array.isArray(recommendations)).toBe(true);
+      const throughputRecommendations = recommendations.filter((r: any) => r.type === 'general');
+      expect(throughputRecommendations.length).toBeGreaterThan(0);
+      expect(throughputRecommendations.some((r: any) => r.description.includes('Low operation throughput'))).toBe(true);
+    });
+
+    it('should generate multiple recommendations when multiple thresholds are exceeded', () => {
+      const recommendations = (performanceMonitor as any).generateRecommendations({
+        totalOperations: 10,
+        totalDuration: 10000,
+        averageDuration: 6000, // Slow operations
+        operationsPerSecond: 0.5, // Low throughput
+        cacheHitRate: 0.3, // Low cache hit rate
+        fileProcessingRate: 5,
+        memoryPeak: 100,
+        memoryCurrent: 1200, // High memory usage
+        memoryGrowth: 150, // High memory growth
+        resourceUsage: {
+          cpuUsage: 50,
+          memoryUsage: 60,
+          diskIO: 10
+        }
+      });
+      
+      expect(Array.isArray(recommendations)).toBe(true);
+      expect(recommendations.length).toBeGreaterThan(3); // Should have multiple recommendations
+      
+      const memoryRecommendations = recommendations.filter((r: any) => r.type === 'memory');
+      const cacheRecommendations = recommendations.filter((r: any) => r.type === 'cache');
+      const generalRecommendations = recommendations.filter((r: any) => r.type === 'general');
+      
+      expect(memoryRecommendations.length).toBeGreaterThan(0);
+      expect(cacheRecommendations.length).toBeGreaterThan(0);
+      expect(generalRecommendations.length).toBeGreaterThan(0);
+    });
+
+    it('should not generate recommendations when all metrics are within thresholds', () => {
+      const recommendations = (performanceMonitor as any).generateRecommendations({
+        totalOperations: 100,
+        totalDuration: 1000,
+        averageDuration: 100, // Below threshold
+        operationsPerSecond: 10, // Above threshold
+        cacheHitRate: 0.9, // Above threshold
+        fileProcessingRate: 50,
+        memoryPeak: 100,
+        memoryCurrent: 200, // Below threshold
+        memoryGrowth: 50, // Below threshold
+        resourceUsage: {
+          cpuUsage: 50,
+          memoryUsage: 60,
+          diskIO: 10
+        }
+      });
+      
+      expect(Array.isArray(recommendations)).toBe(true);
+      expect(recommendations.length).toBe(0); // Should have no recommendations
+    });
+
     it('should handle calculateInsights method', () => {
       // Test insights calculation through generateReport
       const report = performanceMonitor.generateReport();
@@ -1767,5 +1939,19 @@ describe('PerformanceMonitor', () => {
       expect(metrics.totalOperations).toBe(1);
       monitor.dispose();
     });
+  });
+
+  it('should handle empty options', () => {
+    const monitor = new PerformanceMonitor({
+      thresholds: {
+        maxOperationDuration: undefined,
+        maxMemoryUsage: undefined,
+        minCacheHitRate: undefined,
+        maxMemoryGrowth: undefined
+      } as any
+    } as any);
+    const report = monitor.generateReport();
+    expect(report).toBeDefined();
+    expect(report.summary).toBeDefined();
   });
 });

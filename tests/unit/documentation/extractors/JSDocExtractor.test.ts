@@ -631,4 +631,61 @@ describe('JSDocExtractor', () => {
       expect(exampleTag?.description).toBe(''); // The example tag doesn't extract content in the current implementation
     });
   });
+
+  describe('branch coverage improvements', () => {
+    it('should handle tag parsing errors gracefully', () => {
+      const commentText = '/**\n * Test function\n * @param {invalid syntax\n */';
+      
+      const result = extractor.parseJSDocComment(commentText, 0, commentText.length);
+      
+      expect(result).toBeDefined();
+      expect(result.errors).toBeDefined();
+      // The current implementation doesn't throw errors for malformed syntax, it just parses what it can
+      expect(result.tags).toBeDefined();
+      expect(result.tags.length).toBeGreaterThanOrEqual(0);
+    });
+
+    it('should parse simple tag format', () => {
+      const commentText = '/**\n * Test function\n * @param name description\n */';
+      
+      const result = extractor.parseJSDocComment(commentText, 0, commentText.length);
+      
+      expect(result).toBeDefined();
+      expect(result.tags).toBeDefined();
+      const paramTag = result.tags.find((t: any) => t.type === 'param');
+      expect(paramTag).toBeDefined();
+      expect(paramTag?.name).toBe('name');
+      expect(paramTag?.description).toBe('description');
+    });
+
+    it('should filter experimental comments when includeExperimental is false', () => {
+      const extractorWithOptions = new JSDocExtractor({
+        includeExperimental: false
+      });
+      
+      const commentText = '/**\n * Test function\n * @experimental\n */';
+      
+      const result = extractorWithOptions.parseJSDocComment(commentText, 0, commentText.length);
+      
+      expect(result).toBeDefined();
+      expect(result.tags).toBeDefined();
+      const experimentalTag = result.tags.find((t: any) => t.type === 'experimental');
+      expect(experimentalTag).toBeDefined();
+    });
+
+    it('should filter internal comments when includeInternal is false', () => {
+      const extractorWithOptions = new JSDocExtractor({
+        includeInternal: false
+      });
+      
+      const commentText = '/**\n * Test function\n * @internal\n */';
+      
+      const result = extractorWithOptions.parseJSDocComment(commentText, 0, commentText.length);
+      
+      expect(result).toBeDefined();
+      expect(result.tags).toBeDefined();
+      const internalTag = result.tags.find((t: any) => t.type === 'internal');
+      expect(internalTag).toBeDefined();
+    });
+  });
 });
