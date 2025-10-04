@@ -57,6 +57,116 @@ describe('PerformanceStrategies', () => {
       expect(callCount).toBe(2);
     });
 
+    it('should switch from fast mode to slow mode when duration exceeds slowThreshold', async () => {
+      let callCount = 0;
+      const operation = async () => {
+        callCount++;
+        // First call is fast, second call is slow to trigger mode switch
+        if (callCount === 2) {
+          await new Promise(resolve => setTimeout(resolve, 600)); // Exceeds slowThreshold
+        }
+        return `result-${callCount}`;
+      };
+
+      const strategy = performanceStrategies.createAdaptiveStrategy({
+        fastThreshold: 100,
+        slowThreshold: 500
+      });
+
+      // First call - should be fast
+      const result1 = await strategy.execute(operation);
+      expect(result1).toBe('result-1');
+      
+      // Second call - should trigger switch to slow mode
+      const result2 = await strategy.execute(operation);
+      expect(result2).toBe('result-2');
+      
+      expect(callCount).toBe(2);
+    });
+
+    it('should switch from slow mode to fast mode when duration is below fastThreshold', async () => {
+      let callCount = 0;
+      const operation = async () => {
+        callCount++;
+        // First call is slow to switch to slow mode, second call is fast to switch back
+        if (callCount === 1) {
+          await new Promise(resolve => setTimeout(resolve, 600)); // Exceeds slowThreshold
+        } else if (callCount === 2) {
+          await new Promise(resolve => setTimeout(resolve, 50)); // Below fastThreshold
+        }
+        return `result-${callCount}`;
+      };
+
+      const strategy = performanceStrategies.createAdaptiveStrategy({
+        fastThreshold: 100,
+        slowThreshold: 500
+      });
+
+      // First call - should trigger switch to slow mode
+      const result1 = await strategy.execute(operation);
+      expect(result1).toBe('result-1');
+      
+      // Second call - should trigger switch back to fast mode
+      const result2 = await strategy.execute(operation);
+      expect(result2).toBe('result-2');
+      
+      expect(callCount).toBe(2);
+    });
+
+    it('should handle multiple mode switches', async () => {
+      let callCount = 0;
+      const operation = async () => {
+        callCount++;
+        // Pattern: fast -> slow -> fast -> slow
+        if (callCount === 2) {
+          await new Promise(resolve => setTimeout(resolve, 600)); // Switch to slow
+        } else if (callCount === 3) {
+          await new Promise(resolve => setTimeout(resolve, 50)); // Switch to fast
+        } else if (callCount === 4) {
+          await new Promise(resolve => setTimeout(resolve, 600)); // Switch to slow
+        }
+        return `result-${callCount}`;
+      };
+
+      const strategy = performanceStrategies.createAdaptiveStrategy({
+        fastThreshold: 100,
+        slowThreshold: 500
+      });
+
+      // Execute multiple operations to trigger mode switches
+      const results = [];
+      for (let i = 0; i < 4; i++) {
+        results.push(await strategy.execute(operation));
+      }
+      
+      expect(results).toEqual(['result-1', 'result-2', 'result-3', 'result-4']);
+      expect(callCount).toBe(4);
+    });
+
+    it('should not switch modes when duration is between thresholds', async () => {
+      let callCount = 0;
+      const operation = async () => {
+        callCount++;
+        // Duration between fastThreshold and slowThreshold should not trigger switches
+        await new Promise(resolve => setTimeout(resolve, 300)); // Between 100 and 500
+        return `result-${callCount}`;
+      };
+
+      const strategy = performanceStrategies.createAdaptiveStrategy({
+        fastThreshold: 100,
+        slowThreshold: 500
+      });
+
+      // Execute multiple operations - should not trigger mode switches
+      const results = [];
+      for (let i = 0; i < 3; i++) {
+        results.push(await strategy.execute(operation));
+      }
+      
+      expect(results).toEqual(['result-1', 'result-2', 'result-3']);
+      expect(callCount).toBe(3);
+    });
+
     it('should handle adaptive strategy errors', async () => {
       const errorOperation = async () => {
         throw new Error('Adaptive strategy error');
@@ -69,6 +179,51 @@ describe('PerformanceStrategies', () => {
 
       await expect(strategy.execute(errorOperation))
         .rejects.toThrow('Adaptive strategy error');
+    });
+
+    it('should handle adaptive strategy with edge case thresholds', async () => {
+      const operation = async () => {
+        await new Promise(resolve => setTimeout(resolve, 50)); // Exactly at fastThreshold
+        return 'result';
+      };
+
+      const strategy = performanceStrategies.createAdaptiveStrategy({
+        fastThreshold: 50,
+        slowThreshold: 50 // Same as fastThreshold
+      });
+
+      const result = await strategy.execute(operation);
+      expect(result).toBe('result');
+    });
+
+    it('should handle adaptive strategy with very small thresholds', async () => {
+      const operation = async () => {
+        await new Promise(resolve => setTimeout(resolve, 10)); // Very fast
+        return 'result';
+      };
+
+      const strategy = performanceStrategies.createAdaptiveStrategy({
+        fastThreshold: 5,
+        slowThreshold: 15
+      });
+
+      const result = await strategy.execute(operation);
+      expect(result).toBe('result');
+    });
+
+    it('should handle adaptive strategy with very large thresholds', async () => {
+      const operation = async () => {
+        await new Promise(resolve => setTimeout(resolve, 1000)); // Very slow
+        return 'result';
+      };
+
+      const strategy = performanceStrategies.createAdaptiveStrategy({
+        fastThreshold: 500,
+        slowThreshold: 2000
+      });
+
+      const result = await strategy.execute(operation);
+      expect(result).toBe('result');
     });
   });
 

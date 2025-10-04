@@ -764,5 +764,18 @@ describe('NamingStrategy', () => {
     })
   });
 
+  it('it should add undefined options and give back the options', () => {
+    const options = {
+      prefix: 'custom',
+      format: undefined,
+      type: 'typescript',
+      maxLength: undefined,
+      separator: undefined
+    };
+    const namingStrategy = new TestNamingStrategy(options as any);
+    expect(namingStrategy.getOptions().prefix).toEqual(options.prefix);
+    expect(namingStrategy.sanitizeName("PKsxGOOkPFTYThozSyN31flX3AV99bOgxBmmJlf2CUZG12GKbE4u6NE2gYQj1Q9aiueTFqVxgpFBmG0TFMBx24mxJ5YNIUMY8Ue8eaPaOdDRRHrDkVuERIwwq2dMYs3HDp9qI3mKyfHN6Sgc6XuzrpV90ZI7R9MY5RnXit3nDijoVIMIyM2AtTmMtTreYMZGsEmn2DOGQhvLX7lvN2Mj5IXxzTOWgENbr3VhtOVu4LO39Q2jW7DLz7fQhWpwQrLvABC<>")).toEqual("PKsxGOOkPFTYThozSyN31flX3AV99bOgxBmmJlf2CUZG12GKbE4u6NE2gYQj1Q9aiueTFqVxgpFBmG0TFMBx24mxJ5YNIUMY8Ue8eaPaOdDRRHrDkVuERIwwq2dMYs3HDp9qI3mKyfHN6Sgc6XuzrpV90ZI7R9MY5RnXit3nDijoVIMIyM2AtTmMtTreYMZGsEmn2DOGQhvLX7lvN2Mj5IXxzTOWgENbr3VhtOVu4LO39Q2jW7DLz7fQhWpwQrLvABC--");
+  });
+
   
 });

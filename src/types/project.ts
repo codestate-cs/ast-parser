@@ -294,3 +294,130 @@ export interface ProjectMetadata {
   /** Project documentation coverage */
   documentationCoverage: number;
 }
+
+/**
+ * Main project analysis output structure
+ */
+export interface ProjectAnalysisOutput {
+  /** Project information */
+  project: {
+    name: string;
+    version: string;
+    type: ProjectType;
+    rootPath: string;
+    entryPoints: string[];
+    dependencies: DependencyInfo[];
+    devDependencies: DependencyInfo[];
+  };
+  /** Project structure */
+  structure: {
+    files: Array<{
+      path: string;
+      size: number;
+      lines: number;
+      lastModified: string;
+    }>;
+    directories: Array<{
+      path: string;
+      name: string;
+    }>;
+    totalFiles: number;
+    totalLines: number;
+    totalSize: number;
+  };
+  /** AST analysis results */
+  ast: {
+    nodes: Array<{
+      id: string;
+      type: string;
+      name: string;
+      filePath: string;
+      start: number;
+      end: number;
+      children: unknown[];
+      metadata: Record<string, unknown>;
+    }>;
+    relations: Array<{
+      id: string;
+      type: string;
+      from: string;
+      to: string;
+      metadata: Record<string, unknown>;
+    }>;
+    entryPoints: Array<{
+      path: string;
+      type: string;
+      description?: string;
+      metadata: Record<string, unknown>;
+    }>;
+    publicExports: Array<{
+      name: string;
+      type: string;
+      file: string;
+      isDefault: boolean;
+      documentation?: Record<string, unknown>;
+      usage: unknown[];
+      signature?: string;
+      metadata?: Record<string, unknown>;
+    }>;
+    privateExports: Array<{
+      name: string;
+      type: string;
+      file: string;
+      isDefault: boolean;
+      documentation?: Record<string, unknown>;
+      usage: unknown[];
+      metadata?: Record<string, unknown>;
+    }>;
+  };
+  /** Analysis results */
+  analysis: {
+    complexity: {
+      cyclomatic: number;
+      cognitive: number;
+      maintainability: number;
+    };
+    patterns: Array<{
+      name: string;
+      type: string;
+      description: string;
+      confidence: number;
+      examples: string[];
+    }>;
+    architecture: {
+      layers: Array<{
+        name: string;
+        type: string;
+        description: string;
+        files: string[];
+        dependencies: string[];
+      }>;
+      modules: Array<{
+        name: string;
+        type: string;
+        description: string;
+        files: string[];
+        exports: string[];
+        imports: string[];
+      }>;
+    };
+    quality: {
+      score: number;
+      issues: Array<{
+        type: string;
+        message: string;
+        file: string;
+        line: number;
+        severity: string;
+      }>;
+    };
+  };
+  /** Analysis metadata */
+  metadata: {
+    generatedAt: string;
+    parserVersion: string;
+    processingTime: number;
+    cacheUsed: boolean;
+    filesProcessed: number;
+  };
+}

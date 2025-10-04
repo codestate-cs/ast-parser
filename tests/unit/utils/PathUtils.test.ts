@@ -651,6 +651,30 @@ describe('PathUtils', () => {
         expect(PathUtils.getImportPath('/path/to/file1.ts', '/path/to/file2.ts', '/path')).toBe('./file2');
         expect(PathUtils.getImportPath('/path/to/file1.ts', '/path/to/subdir/file2.ts', '/path')).toBe('./subdir/file2');
       });
+
+      it('should handle isWithinDepth method (line 191)', () => {
+        // Test the specific condition in isWithinDepth
+        expect(PathUtils.isWithinDepth('/path/to/file.ts', 3)).toBe(true);
+        expect(PathUtils.isWithinDepth('/path/to/file.ts', 2)).toBe(false);
+        expect(PathUtils.isWithinDepth('/path/to/file.ts', 4)).toBe(true);
+      });
+
+      it('should handle getImportPath else branch for paths not starting with ../ or ./ (line 289)', () => {
+        // This should trigger the else branch: return `./${withoutExt}`;
+        // Test with a path that doesn't start with ../ or ./
+        const result = PathUtils.getImportPath('/path/to/file1.ts', '/path/to/file2.ts', '/path');
+        expect(result).toBe('./file2');
+      });
+
+      it('should handle getImportPath with paths starting with ./ (line 289)', () => {
+        // Mock FileUtils.relative to return a path starting with ./
+        (FileUtils.relative as jest.Mock).mockImplementationOnce((_from: string, _to: string) => {
+          return './file2';
+        });
+        
+        const result = PathUtils.getImportPath('/path/to/file1.ts', '/path/to/file2.ts', '/path');
+        expect(result).toBe('./file2');
+      });
     });
   });
 });
