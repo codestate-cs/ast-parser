@@ -1,6 +1,6 @@
 /**
  * SuggestionGenerator - Generates intelligent suggestions for improving code documentation and quality
- * 
+ *
  * This class analyzes code patterns and generates actionable suggestions
  * for improving documentation, quality, and maintainability.
  */
@@ -87,7 +87,7 @@ export class SuggestionGenerator {
         if (!validation.isValid) {
           return {
             success: false,
-            error: `Validation failed: ${validation.errors.join(', ')}`
+            error: `Validation failed: ${validation.errors.join(', ')}`,
           };
         }
       }
@@ -126,19 +126,19 @@ export class SuggestionGenerator {
           byType: {
             documentation: limitedSuggestions.filter(s => s.type === 'documentation').length,
             quality: limitedSuggestions.filter(s => s.type === 'quality').length,
-            structure: limitedSuggestions.filter(s => s.type === 'structure').length
+            structure: limitedSuggestions.filter(s => s.type === 'structure').length,
           },
           byPriority: {
             high: limitedSuggestions.filter(s => s.priority === 'high').length,
             medium: limitedSuggestions.filter(s => s.priority === 'medium').length,
-            low: limitedSuggestions.filter(s => s.priority === 'low').length
-          }
-        }
+            low: limitedSuggestions.filter(s => s.priority === 'low').length,
+          },
+        },
       };
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown suggestion generation error'
+        error: error instanceof Error ? error.message : 'Unknown suggestion generation error',
       };
     }
   }
@@ -160,11 +160,12 @@ export class SuggestionGenerator {
             priority: 'high',
             title: 'Missing Documentation',
             description: `Function "${node.name}" lacks documentation`,
-            recommendation: 'Add JSDoc comments to describe the function\'s purpose, parameters, and return value',
+            recommendation:
+              "Add JSDoc comments to describe the function's purpose, parameters, and return value",
             impact: 8,
             effort: 'medium',
             file: node.file,
-            line: node.line
+            line: node.line,
           });
         } else if (node.documentation.length < 50) {
           suggestions.push({
@@ -174,23 +175,24 @@ export class SuggestionGenerator {
             priority: 'medium',
             title: 'Incomplete Documentation',
             description: `Function "${node.name}" has minimal documentation`,
-            recommendation: 'Expand documentation to include detailed parameter descriptions and usage examples',
+            recommendation:
+              'Expand documentation to include detailed parameter descriptions and usage examples',
             impact: 6,
             effort: 'low',
             file: node.file,
-            line: node.line
+            line: node.line,
           });
         }
       });
 
       return {
         success: true,
-        suggestions
+        suggestions,
       };
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown documentation suggestion error'
+        error: error instanceof Error ? error.message : 'Unknown documentation suggestion error',
       };
     }
   }
@@ -213,11 +215,12 @@ export class SuggestionGenerator {
               priority: 'high',
               title: 'High Cyclomatic Complexity',
               description: `Function "${node.name}" has high cyclomatic complexity (${node.complexity.cyclomatic})`,
-              recommendation: 'Consider breaking down the function into smaller, more focused functions',
+              recommendation:
+                'Consider breaking down the function into smaller, more focused functions',
               impact: 9,
               effort: 'high',
               file: node.file,
-              line: node.line
+              line: node.line,
             });
           }
 
@@ -233,7 +236,7 @@ export class SuggestionGenerator {
               impact: 7,
               effort: 'medium',
               file: node.file,
-              line: node.line
+              line: node.line,
             });
           }
         }
@@ -250,19 +253,19 @@ export class SuggestionGenerator {
             impact: 6,
             effort: 'medium',
             file: node.file,
-            line: node.line
+            line: node.line,
           });
         }
       });
 
       return {
         success: true,
-        suggestions
+        suggestions,
       };
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown quality suggestion error'
+        error: error instanceof Error ? error.message : 'Unknown quality suggestion error',
       };
     }
   }
@@ -276,9 +279,7 @@ export class SuggestionGenerator {
       const nodes = analysisData.nodes || [];
 
       // Analyze naming patterns
-      const namingIssues = nodes.filter((node: any) => 
-        node.name && !this.isGoodNaming(node.name)
-      );
+      const namingIssues = nodes.filter((node: any) => node.name && !this.isGoodNaming(node.name));
 
       namingIssues.forEach((node: any, index: number) => {
         suggestions.push({
@@ -288,22 +289,22 @@ export class SuggestionGenerator {
           priority: 'low',
           title: 'Poor Naming Convention',
           description: `Function "${node.name}" doesn't follow naming conventions`,
-          recommendation: 'Use descriptive names that clearly indicate the function\'s purpose',
+          recommendation: "Use descriptive names that clearly indicate the function's purpose",
           impact: 4,
           effort: 'low',
           file: node.file,
-          line: node.line
+          line: node.line,
         });
       });
 
       return {
         success: true,
-        suggestions
+        suggestions,
       };
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown structure suggestion error'
+        error: error instanceof Error ? error.message : 'Unknown structure suggestion error',
       };
     }
   }
@@ -339,7 +340,7 @@ export class SuggestionGenerator {
     return {
       isValid: errors.length === 0,
       errors,
-      data
+      data,
     };
   }
 
@@ -364,10 +365,10 @@ export class SuggestionGenerator {
     return suggestions.sort((a, b) => {
       const priorityWeightA = this.options.priorityWeights[a.priority];
       const priorityWeightB = this.options.priorityWeights[b.priority];
-      
+
       const scoreA = priorityWeightA * a.impact;
       const scoreB = priorityWeightB * b.impact;
-      
+
       return scoreB - scoreA;
     });
   }
@@ -377,11 +378,11 @@ export class SuggestionGenerator {
    */
   private isGoodNaming(name: string): boolean {
     if (!name) return false;
-    
+
     // Check for camelCase or PascalCase
     const camelCase = /^[a-z][a-zA-Z0-9]*$/;
     const pascalCase = /^[A-Z][a-zA-Z0-9]*$/;
-    
+
     return camelCase.test(name) || pascalCase.test(name);
   }
 
@@ -399,8 +400,8 @@ export class SuggestionGenerator {
       priorityWeights: {
         high: 3,
         medium: 2,
-        low: 1
-      }
+        low: 1,
+      },
     };
   }
 }

@@ -1,10 +1,13 @@
 /**
  * Tests for TypeExtractor
- * 
+ *
  * Following TDD approach - tests define expected behavior
  */
 
-import { TypeExtractor, TypeExtractionOptions } from '../../../../src/documentation/extractors/TypeExtractor';
+import {
+  TypeExtractor,
+  TypeExtractionOptions,
+} from '../../../../src/documentation/extractors/TypeExtractor';
 import { ASTNode, ASTNodeType } from '../../../../src/types/core';
 
 describe('TypeExtractor', () => {
@@ -20,7 +23,7 @@ describe('TypeExtractor', () => {
       extractMetadata: true,
       extractDependencies: true,
       includeBuiltIn: false,
-      customTypeKinds: []
+      customTypeKinds: [],
     };
     extractor = new TypeExtractor();
   });
@@ -34,13 +37,13 @@ describe('TypeExtractor', () => {
       const customOptions = {
         includePrivate: true,
         extractDocumentation: false,
-        customTypeKinds: ['custom']
+        customTypeKinds: ['custom'],
       };
       const customExtractor = new TypeExtractor(customOptions);
-      
+
       expect(customExtractor.getOptions()).toEqual({
         ...defaultOptions,
-        ...customOptions
+        ...customOptions,
       });
     });
   });
@@ -67,14 +70,14 @@ describe('TypeExtractor', () => {
                 type: 'string',
                 optional: false,
                 readonly: false,
-                documentation: 'The name property'
-              }
+                documentation: 'The name property',
+              },
             ],
             methods: [],
-            documentation: 'Test interface for demonstration'
-          }
+            documentation: 'Test interface for demonstration',
+          },
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -107,8 +110,8 @@ describe('TypeExtractor', () => {
                 name: 'name',
                 type: 'string',
                 optional: false,
-                readonly: false
-              }
+                readonly: false,
+              },
             ],
             methods: [
               {
@@ -119,13 +122,13 @@ describe('TypeExtractor', () => {
                 optional: false,
                 static: false,
                 abstract: false,
-                documentation: 'Get the name'
-              }
+                documentation: 'Get the name',
+              },
             ],
-            documentation: 'Test class for demonstration'
-          }
+            documentation: 'Test class for demonstration',
+          },
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -155,10 +158,10 @@ describe('TypeExtractor', () => {
             definition: 'enum TestEnum { VALUE1 = "value1", VALUE2 = "value2" }',
             properties: [],
             methods: [],
-            documentation: 'Test enum for demonstration'
-          }
+            documentation: 'Test enum for demonstration',
+          },
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -188,22 +191,22 @@ describe('TypeExtractor', () => {
                 name: 'T',
                 constraint: 'object',
                 defaultType: undefined,
-                documentation: 'Generic type parameter'
-              }
+                documentation: 'Generic type parameter',
+              },
             ],
             properties: [
               {
                 name: 'value',
                 type: 'T',
                 optional: false,
-                readonly: false
-              }
+                readonly: false,
+              },
             ],
             methods: [],
-            documentation: 'Test generic type for demonstration'
-          }
+            documentation: 'Test generic type for demonstration',
+          },
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -227,7 +230,7 @@ describe('TypeExtractor', () => {
         end: 100,
         children: [],
         properties: {},
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -251,10 +254,10 @@ describe('TypeExtractor', () => {
             kind: 'interface',
             definition: 'interface ChildInterface { }',
             properties: [],
-            methods: []
-          }
+            methods: [],
+          },
         },
-        metadata: {}
+        metadata: {},
       };
 
       const parentNode: ASTNode = {
@@ -272,10 +275,10 @@ describe('TypeExtractor', () => {
             kind: 'class',
             definition: 'class ParentClass { }',
             properties: [],
-            methods: []
-          }
+            methods: [],
+          },
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(parentNode);
@@ -304,10 +307,10 @@ describe('TypeExtractor', () => {
               kind: 'interface',
               definition: 'interface Interface1 { }',
               properties: [],
-              methods: []
-            }
+              methods: [],
+            },
           },
-          metadata: {}
+          metadata: {},
         },
         {
           id: 'node2',
@@ -324,11 +327,11 @@ describe('TypeExtractor', () => {
               kind: 'class',
               definition: 'class Class1 { }',
               properties: [],
-              methods: []
-            }
+              methods: [],
+            },
           },
-          metadata: {}
-        }
+          metadata: {},
+        },
       ];
 
       const result = extractor.extractFromNodes(nodes);
@@ -358,11 +361,11 @@ describe('TypeExtractor', () => {
               kind: 'interface',
               definition: 'interface TestType { }',
               properties: [],
-              methods: []
-            }
+              methods: [],
+            },
           },
-          metadata: {}
-        }
+          metadata: {},
+        },
       ];
 
       const result = extractor.extractFromNodes(nodes);
@@ -376,7 +379,7 @@ describe('TypeExtractor', () => {
   describe('filtering options', () => {
     it('should filter out private types when includePrivate is false', () => {
       const privateExtractor = new TypeExtractor({ includePrivate: false });
-      
+
       const node: ASTNode = {
         id: 'private-interface',
         name: 'PrivateInterface',
@@ -393,10 +396,10 @@ describe('TypeExtractor', () => {
             definition: 'interface PrivateInterface { }',
             properties: [],
             methods: [],
-            isPublic: false
-          }
+            isPublic: false,
+          },
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = privateExtractor.extractFromNode(node);
@@ -406,7 +409,7 @@ describe('TypeExtractor', () => {
 
     it('should include private types when includePrivate is true', () => {
       const privateExtractor = new TypeExtractor({ includePrivate: true });
-      
+
       const node: ASTNode = {
         id: 'private-interface',
         name: 'PrivateInterface',
@@ -423,10 +426,10 @@ describe('TypeExtractor', () => {
             definition: 'interface PrivateInterface { }',
             properties: [],
             methods: [],
-            isPublic: false
-          }
+            isPublic: false,
+          },
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = privateExtractor.extractFromNode(node);
@@ -436,7 +439,7 @@ describe('TypeExtractor', () => {
 
     it('should filter out built-in types when includeBuiltIn is false', () => {
       const builtInExtractor = new TypeExtractor({ includeBuiltIn: false });
-      
+
       const node: ASTNode = {
         id: 'string-type',
         name: 'string',
@@ -452,10 +455,10 @@ describe('TypeExtractor', () => {
             kind: 'string',
             definition: 'string',
             properties: [],
-            methods: []
-          }
+            methods: [],
+          },
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = builtInExtractor.extractFromNode(node);
@@ -465,7 +468,7 @@ describe('TypeExtractor', () => {
 
     it('should include built-in types when includeBuiltIn is true', () => {
       const builtInExtractor = new TypeExtractor({ includeBuiltIn: true });
-      
+
       const node: ASTNode = {
         id: 'string-type',
         name: 'string',
@@ -481,10 +484,10 @@ describe('TypeExtractor', () => {
             kind: 'string',
             definition: 'string',
             properties: [],
-            methods: []
-          }
+            methods: [],
+          },
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = builtInExtractor.extractFromNode(node);
@@ -497,7 +500,7 @@ describe('TypeExtractor', () => {
     it('should update options correctly', () => {
       const newOptions = {
         includePrivate: true,
-        extractDocumentation: false
+        extractDocumentation: false,
       };
 
       extractor.updateOptions(newOptions);
@@ -525,10 +528,10 @@ describe('TypeExtractor', () => {
             kind: 'generic',
             definition: 'type EmptyType = {}',
             properties: [],
-            methods: []
-          }
+            methods: [],
+          },
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -559,11 +562,11 @@ describe('TypeExtractor', () => {
               isExported: true,
               isStatic: false,
               isAbstract: true,
-              customProperty: 'customValue'
-            }
-          }
+              customProperty: 'customValue',
+            },
+          },
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -593,10 +596,10 @@ describe('TypeExtractor', () => {
             methods: [],
             dependencies: ['BaseType', 'UtilityType'],
             imports: ['ExternalType'],
-            extends: ['BaseInterface']
-          }
+            extends: ['BaseInterface'],
+          },
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -623,10 +626,10 @@ describe('TypeExtractor', () => {
         properties: {
           typeInfo: {
             name: 'TestInterface',
-            definition: 'interface TestInterface { }'
-          }
+            definition: 'interface TestInterface { }',
+          },
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -648,10 +651,10 @@ describe('TypeExtractor', () => {
         properties: {
           typeInfo: {
             name: 'TestClass',
-            definition: 'class TestClass { }'
-          }
+            definition: 'class TestClass { }',
+          },
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -673,10 +676,10 @@ describe('TypeExtractor', () => {
         properties: {
           typeInfo: {
             name: 'TestEnum',
-            definition: 'enum TestEnum { }'
-          }
+            definition: 'enum TestEnum { }',
+          },
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -698,10 +701,10 @@ describe('TypeExtractor', () => {
         properties: {
           typeInfo: {
             name: 'TestType',
-            definition: 'type TestType = string'
-          }
+            definition: 'type TestType = string',
+          },
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -724,10 +727,10 @@ describe('TypeExtractor', () => {
           typeInfo: {
             name: 'TestUnion',
             definition: 'type TestUnion = string | number',
-            isUnion: true
-          }
+            isUnion: true,
+          },
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -750,10 +753,10 @@ describe('TypeExtractor', () => {
           typeInfo: {
             name: 'TestIntersection',
             definition: 'type TestIntersection = A & B',
-            isIntersection: true
-          }
+            isIntersection: true,
+          },
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -776,10 +779,10 @@ describe('TypeExtractor', () => {
           typeInfo: {
             name: 'TestLiteral',
             definition: 'type TestLiteral = "hello"',
-            isLiteral: true
-          }
+            isLiteral: true,
+          },
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -802,10 +805,10 @@ describe('TypeExtractor', () => {
           typeInfo: {
             name: 'TestFunction',
             definition: 'type TestFunction = () => void',
-            isFunction: true
-          }
+            isFunction: true,
+          },
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -828,10 +831,10 @@ describe('TypeExtractor', () => {
           typeInfo: {
             name: 'TestArray',
             definition: 'type TestArray = string[]',
-            isArray: true
-          }
+            isArray: true,
+          },
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -854,10 +857,10 @@ describe('TypeExtractor', () => {
           typeInfo: {
             name: 'TestObject',
             definition: 'type TestObject = { }',
-            isObject: true
-          }
+            isObject: true,
+          },
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -879,10 +882,10 @@ describe('TypeExtractor', () => {
         properties: {
           typeInfo: {
             name: 'TestUnknown',
-            definition: 'unknown type'
-          }
+            definition: 'unknown type',
+          },
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -906,10 +909,10 @@ describe('TypeExtractor', () => {
         properties: {
           typeInfo: {
             name: 'TestDef',
-            definition: 'interface TestDef { }'
-          }
+            definition: 'interface TestDef { }',
+          },
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -931,10 +934,10 @@ describe('TypeExtractor', () => {
         properties: {
           typeInfo: {
             name: 'TestText',
-            text: 'interface TestText { }'
-          }
+            text: 'interface TestText { }',
+          },
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -956,10 +959,10 @@ describe('TypeExtractor', () => {
         properties: {
           typeInfo: {
             name: 'TestTypeDef',
-            type: 'interface TestTypeDef { }'
-          }
+            type: 'interface TestTypeDef { }',
+          },
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -980,10 +983,10 @@ describe('TypeExtractor', () => {
         children: [],
         properties: {
           typeInfo: {
-            name: 'TestNoDef'
-          }
+            name: 'TestNoDef',
+          },
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -1005,9 +1008,9 @@ describe('TypeExtractor', () => {
         end: 50,
         children: [],
         properties: {
-          typeInfo: null
+          typeInfo: null,
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -1026,9 +1029,9 @@ describe('TypeExtractor', () => {
         end: 50,
         children: [],
         properties: {
-          typeInfo: undefined
+          typeInfo: undefined,
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -1047,9 +1050,9 @@ describe('TypeExtractor', () => {
         end: 50,
         children: [],
         properties: {
-          typeInfo: 'not an object'
+          typeInfo: 'not an object',
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -1069,10 +1072,10 @@ describe('TypeExtractor', () => {
         children: [],
         properties: {
           typeInfo: {
-            definition: 'interface { }'
-          }
+            definition: 'interface { }',
+          },
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -1094,10 +1097,10 @@ describe('TypeExtractor', () => {
         properties: {
           typeInfo: {
             definition: 'interface { }',
-            isPublic: true // Make it public so it passes filtering
-          }
+            isPublic: true, // Make it public so it passes filtering
+          },
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -1120,10 +1123,10 @@ describe('TypeExtractor', () => {
           typeInfo: {
             name: 'TestType',
             kind: 'interface',
-            definition: 'interface TestType { }'
-          }
+            definition: 'interface TestType { }',
+          },
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -1145,10 +1148,10 @@ describe('TypeExtractor', () => {
           typeInfo: {
             name: 'TestType',
             kind: 'interface',
-            definition: 'interface TestType { }'
-          }
+            definition: 'interface TestType { }',
+          },
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -1170,11 +1173,11 @@ describe('TypeExtractor', () => {
           typeInfo: {
             name: 'TestType',
             kind: 'interface',
-            definition: 'interface TestType { }'
+            definition: 'interface TestType { }',
           },
-          exported: true
+          exported: true,
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -1199,10 +1202,10 @@ describe('TypeExtractor', () => {
             definition: 'interface TestType { }',
             documentation: 'Main documentation',
             comment: 'Comment documentation',
-            description: 'Description documentation'
-          }
+            description: 'Description documentation',
+          },
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -1225,10 +1228,10 @@ describe('TypeExtractor', () => {
             name: 'TestType',
             kind: 'interface',
             definition: 'interface TestType { }',
-            comment: 'Comment documentation'
-          }
+            comment: 'Comment documentation',
+          },
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -1251,10 +1254,10 @@ describe('TypeExtractor', () => {
             name: 'TestType',
             kind: 'interface',
             definition: 'interface TestType { }',
-            description: 'Description documentation'
-          }
+            description: 'Description documentation',
+          },
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -1265,7 +1268,7 @@ describe('TypeExtractor', () => {
     it('should handle type with dependencies extraction disabled', () => {
       const customExtractor = new TypeExtractor({
         ...defaultOptions,
-        extractDependencies: false
+        extractDependencies: false,
       });
 
       const node: ASTNode = {
@@ -1285,10 +1288,10 @@ describe('TypeExtractor', () => {
             dependencies: ['dep1', 'dep2'],
             imports: ['import1'],
             extends: ['base1'],
-            implements: ['interface1']
-          }
+            implements: ['interface1'],
+          },
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = customExtractor.extractFromNode(node);
@@ -1314,10 +1317,10 @@ describe('TypeExtractor', () => {
             dependencies: ['dep1', 'dep2'],
             imports: ['import1'],
             extends: ['base1'],
-            implements: ['interface1']
-          }
+            implements: ['interface1'],
+          },
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -1340,11 +1343,11 @@ describe('TypeExtractor', () => {
             name: 'TestType',
             kind: 'interface',
             definition: 'interface TestType { }',
-            isExported: undefined
+            isExported: undefined,
           },
-          exported: true
+          exported: true,
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -1368,10 +1371,10 @@ describe('TypeExtractor', () => {
             kind: 'interface',
             definition: 'interface TestType { }',
             isPublic: undefined,
-            isPrivate: true
-          }
+            isPrivate: true,
+          },
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -1394,10 +1397,10 @@ describe('TypeExtractor', () => {
             kind: 'interface',
             definition: 'interface TestType { }',
             isPublic: undefined,
-            isProtected: true
-          }
+            isProtected: true,
+          },
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -1419,10 +1422,10 @@ describe('TypeExtractor', () => {
             name: 'TestType',
             kind: 'interface',
             definition: 'interface TestType { }',
-            isPublic: true
-          }
+            isPublic: true,
+          },
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -1446,11 +1449,11 @@ describe('TypeExtractor', () => {
             kind: 'interface',
             definition: 'interface TestType { }',
             metadata: {
-              isInternal: true
-            }
-          }
+              isInternal: true,
+            },
+          },
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -1473,11 +1476,11 @@ describe('TypeExtractor', () => {
             kind: 'interface',
             definition: 'interface TestType { }',
             metadata: {
-              isDeprecated: true
-            }
-          }
+              isDeprecated: true,
+            },
+          },
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -1488,7 +1491,7 @@ describe('TypeExtractor', () => {
     it('should handle built-in type when includeBuiltIn is true', () => {
       const customExtractor = new TypeExtractor({
         ...defaultOptions,
-        includeBuiltIn: true
+        includeBuiltIn: true,
       });
 
       const node: ASTNode = {
@@ -1504,10 +1507,10 @@ describe('TypeExtractor', () => {
           typeInfo: {
             name: 'String',
             kind: 'interface',
-            definition: 'interface String { }'
-          }
+            definition: 'interface String { }',
+          },
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = customExtractor.extractFromNode(node);
@@ -1517,7 +1520,7 @@ describe('TypeExtractor', () => {
     it('should handle type with custom type kinds', () => {
       const customExtractor = new TypeExtractor({
         ...defaultOptions,
-        customTypeKinds: ['custom', 'special']
+        customTypeKinds: ['custom', 'special'],
       });
 
       const node: ASTNode = {
@@ -1533,10 +1536,10 @@ describe('TypeExtractor', () => {
           typeInfo: {
             name: 'CustomType',
             kind: 'custom',
-            definition: 'custom CustomType { }'
-          }
+            definition: 'custom CustomType { }',
+          },
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = customExtractor.extractFromNode(node);
@@ -1558,10 +1561,10 @@ describe('TypeExtractor', () => {
           typeInfo: {
             name: 'TestType',
             kind: 'union',
-            definition: 'type TestType = string | number'
-          }
+            definition: 'type TestType = string | number',
+          },
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -1584,10 +1587,10 @@ describe('TypeExtractor', () => {
             name: 'TestType',
             kind: 'interface',
             definition: 'interface TestType { }',
-            isExported: true
-          }
+            isExported: true,
+          },
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -1598,7 +1601,7 @@ describe('TypeExtractor', () => {
     it('should filter out deprecated types when includeDeprecated is false', () => {
       const nonDeprecatedExtractor = new TypeExtractor({
         ...defaultOptions,
-        includeDeprecated: false
+        includeDeprecated: false,
       });
 
       const node: ASTNode = {
@@ -1616,11 +1619,11 @@ describe('TypeExtractor', () => {
             kind: 'interface',
             definition: 'interface DeprecatedType { }',
             metadata: {
-              isDeprecated: true
-            }
-          }
+              isDeprecated: true,
+            },
+          },
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = nonDeprecatedExtractor.extractFromNode(node);
@@ -1636,7 +1639,7 @@ describe('TypeExtractor', () => {
         { pattern: 'isIntersection', expected: 'intersection' },
         { pattern: 'isGeneric', expected: 'generic' },
         { pattern: 'isLiteral', expected: 'literal' },
-        { pattern: 'isFunction', expected: 'function' }
+        { pattern: 'isFunction', expected: 'function' },
       ];
 
       testCases.forEach(({ pattern, expected }) => {
@@ -1653,10 +1656,10 @@ describe('TypeExtractor', () => {
             typeInfo: {
               name: 'TestType',
               [pattern]: true,
-              definition: `type TestType = ${expected}`
-            }
+              definition: `type TestType = ${expected}`,
+            },
           },
-          metadata: {}
+          metadata: {},
         };
 
         const result = extractor.extractFromNode(node);
@@ -1678,10 +1681,10 @@ describe('TypeExtractor', () => {
         properties: {
           typeInfo: {
             kind: 'interface',
-            definition: 'interface NodeName { }'
-          }
+            definition: 'interface NodeName { }',
+          },
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -1702,10 +1705,10 @@ describe('TypeExtractor', () => {
         properties: {
           typeInfo: {
             kind: 'interface',
-            definition: 'interface { }'
-          }
+            definition: 'interface { }',
+          },
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);

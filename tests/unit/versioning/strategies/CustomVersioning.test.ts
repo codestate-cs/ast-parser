@@ -12,7 +12,7 @@ describe('CustomVersioning', () => {
     it('should generate version with custom pattern', async () => {
       const customStrategy = new CustomVersioning({
         pattern: 'v{major}.{minor}.{patch}-{build}',
-        validation: /^v\d+\.\d+\.\d+-\w+$/
+        validation: /^v\d+\.\d+\.\d+-\w+$/,
       });
 
       const metadata: VersionMetadata = {
@@ -23,8 +23,8 @@ describe('CustomVersioning', () => {
           major: 1,
           minor: 0,
           patch: 0,
-          build: 'alpha'
-        } as any
+          build: 'alpha',
+        } as any,
       };
 
       const version = await customStrategy.generateVersion(metadata);
@@ -38,7 +38,7 @@ describe('CustomVersioning', () => {
           const custom = metadata.custom as any;
           return `${custom?.prefix || 'v'}${custom?.number || '1'}-${custom?.suffix || 'dev'}`;
         },
-        validation: /^v?\d+-\w+$/
+        validation: /^v?\d+-\w+$/,
       });
 
       const metadata: VersionMetadata = {
@@ -48,8 +48,8 @@ describe('CustomVersioning', () => {
         custom: {
           prefix: 'v',
           number: 2,
-          suffix: 'beta'
-        } as any
+          suffix: 'beta',
+        } as any,
       };
 
       const version = await customStrategy.generateVersion(metadata);
@@ -59,13 +59,13 @@ describe('CustomVersioning', () => {
     it('should handle missing custom metadata gracefully', async () => {
       const customStrategy = new CustomVersioning({
         pattern: 'v{major}.{minor}.{patch}',
-        validation: /^v\d+\.\d+\.\d+$/
+        validation: /^v\d+\.\d+\.\d+$/,
       });
 
       const metadata: VersionMetadata = {
         version: '1.0.0',
         createdAt: new Date().toISOString(),
-        tags: ['stable']
+        tags: ['stable'],
       };
 
       const version = await customStrategy.generateVersion(metadata);
@@ -93,9 +93,9 @@ describe('CustomVersioning', () => {
             major: parseInt(match[1]!, 10),
             minor: parseInt(match[2]!, 10),
             patch: parseInt(match[3]!, 10),
-            build: match[4]
+            build: match[4],
           };
-        }
+        },
       });
 
       const result = await customStrategy.parseVersion('v1.2.3-alpha');
@@ -104,7 +104,7 @@ describe('CustomVersioning', () => {
         major: 1,
         minor: 2,
         patch: 3,
-        build: 'alpha'
+        build: 'alpha',
       });
     });
 
@@ -116,24 +116,24 @@ describe('CustomVersioning', () => {
           if (!match) return null;
           return {
             number: parseInt(match[1]!, 10),
-            suffix: match[2]
+            suffix: match[2],
           };
         },
-        validation: /^v?\d+-\w+$/
+        validation: /^v?\d+-\w+$/,
       });
 
       const result = await customStrategy.parseVersion('v5-beta');
       expect(result.version).toBe('v5-beta');
       expect(result.custom).toEqual({
         number: 5,
-        suffix: 'beta'
+        suffix: 'beta',
       });
     });
 
     it('should handle invalid version format', async () => {
       const customStrategy = new CustomVersioning({
         pattern: 'v{major}.{minor}.{patch}',
-        validation: /^v\d+\.\d+\.\d+$/
+        validation: /^v\d+\.\d+\.\d+$/,
       });
 
       const result = await customStrategy.parseVersion('invalid-version');
@@ -157,26 +157,26 @@ describe('CustomVersioning', () => {
         compareFunction: (version1: string, version2: string) => {
           const v1 = version1.match(/^v(\d+)\.(\d+)\.(\d+)$/);
           const v2 = version2.match(/^v(\d+)\.(\d+)\.(\d+)$/);
-          
+
           if (!v1 || !v2) return { result: 'incompatible' as const };
-          
+
           const major1 = parseInt(v1[1]!, 10);
           const minor1 = parseInt(v1[2]!, 10);
           const patch1 = parseInt(v1[3]!, 10);
-          
+
           const major2 = parseInt(v2[1]!, 10);
           const minor2 = parseInt(v2[2]!, 10);
           const patch2 = parseInt(v2[3]!, 10);
-          
+
           if (major1 > major2) return { result: 'greater' as const, difference: major1 - major2 };
           if (major1 < major2) return { result: 'less' as const, difference: major2 - major1 };
           if (minor1 > minor2) return { result: 'greater' as const, difference: minor1 - minor2 };
           if (minor1 < minor2) return { result: 'less' as const, difference: minor2 - minor1 };
           if (patch1 > patch2) return { result: 'greater' as const, difference: patch1 - patch2 };
           if (patch1 < patch2) return { result: 'less' as const, difference: patch2 - patch1 };
-          
+
           return { result: 'equal' as const, difference: 0 };
-        }
+        },
       });
 
       const result = await customStrategy.compareVersions('v1.2.3', 'v1.2.4');
@@ -190,7 +190,7 @@ describe('CustomVersioning', () => {
         validation: /^v\d+\.\d+\.\d+$/,
         compareFunction: (_version1: string, _version2: string) => {
           return { result: 'equal' as const, difference: 0 };
-        }
+        },
       });
 
       const result = await customStrategy.compareVersions('v1.2.3', 'v1.2.3');
@@ -204,7 +204,7 @@ describe('CustomVersioning', () => {
         validation: /^v\d+\.\d+\.\d+$/,
         compareFunction: (_version1: string, _version2: string) => {
           return { result: 'incompatible' as const };
-        }
+        },
       });
 
       const result = await customStrategy.compareVersions('v1.2.3', 'invalid');
@@ -218,7 +218,7 @@ describe('CustomVersioning', () => {
         validation: /^v\d+\.\d+\.\d+$/,
         compareFunction: (_version1: string, _version2: string) => {
           throw new Error('Comparison error');
-        }
+        },
       });
 
       const result = await customStrategy.compareVersions('v1.2.3', 'v1.2.4');
@@ -237,7 +237,7 @@ describe('CustomVersioning', () => {
     it('should validate version with custom validation', () => {
       const customStrategy = new CustomVersioning({
         pattern: 'v{major}.{minor}.{patch}',
-        validation: /^v\d+\.\d+\.\d+$/
+        validation: /^v\d+\.\d+\.\d+$/,
       });
 
       expect(customStrategy.isValidVersion('v1.2.3')).toBe(true);
@@ -251,7 +251,7 @@ describe('CustomVersioning', () => {
         pattern: 'custom',
         validationFunction: (version: string) => {
           return version.length > 3 && version.includes('-');
-        }
+        },
       });
 
       expect(customStrategy.isValidVersion('v1-beta')).toBe(true);
@@ -281,8 +281,11 @@ describe('CustomVersioning', () => {
         validation: /^v\d+\.\d+\.\d+$/,
         generateFunction: (_metadata: VersionMetadata) => 'v1.0.0',
         parseFunction: (_version: string) => ({ major: 1, minor: 0, patch: 0 }),
-        compareFunction: (_v1: string, _v2: string) => ({ result: 'equal' as const, difference: 0 }),
-        validationFunction: (_version: string) => true
+        compareFunction: (_v1: string, _v2: string) => ({
+          result: 'equal' as const,
+          difference: 0,
+        }),
+        validationFunction: (_version: string) => true,
       };
 
       const customStrategy = new CustomVersioning(customConfig);
@@ -299,7 +302,7 @@ describe('CustomVersioning', () => {
     it('should merge configuration with defaults', () => {
       const partialConfig = {
         pattern: 'v{major}.{minor}',
-        validation: /^v\d+\.\d+$/
+        validation: /^v\d+\.\d+$/,
       };
 
       const customStrategy = new CustomVersioning(partialConfig);
@@ -318,7 +321,7 @@ describe('CustomVersioning', () => {
     it('should process pattern with placeholders', () => {
       const customStrategy = new CustomVersioning({
         pattern: 'v{major}.{minor}.{patch}-{build}',
-        validation: /^v\d+\.\d+\.\d+-\w+$/
+        validation: /^v\d+\.\d+\.\d+-\w+$/,
       });
 
       const metadata: VersionMetadata = {
@@ -329,8 +332,8 @@ describe('CustomVersioning', () => {
           major: 1,
           minor: 2,
           patch: 3,
-          build: 'alpha'
-        } as any
+          build: 'alpha',
+        } as any,
       };
 
       const result = customStrategy['processPattern'](metadata);
@@ -340,7 +343,7 @@ describe('CustomVersioning', () => {
     it('should handle missing placeholders in pattern', () => {
       const customStrategy = new CustomVersioning({
         pattern: 'v{major}.{minor}.{patch}-{build}',
-        validation: /^v\d+\.\d+\.\d+-\w+$/
+        validation: /^v\d+\.\d+\.\d+-\w+$/,
       });
 
       const metadata: VersionMetadata = {
@@ -349,9 +352,9 @@ describe('CustomVersioning', () => {
         tags: ['stable'],
         custom: {
           major: 1,
-          minor: 2
+          minor: 2,
           // missing patch and build
-        } as any
+        } as any,
       };
 
       const result = customStrategy['processPattern'](metadata);
@@ -361,13 +364,13 @@ describe('CustomVersioning', () => {
     it('should handle empty pattern', () => {
       const customStrategy = new CustomVersioning({
         pattern: '',
-        validation: /^.*$/
+        validation: /^.*$/,
       });
 
       const metadata: VersionMetadata = {
         version: '1.0.0',
         createdAt: new Date().toISOString(),
-        tags: ['stable']
+        tags: ['stable'],
       };
 
       const result = customStrategy['processPattern'](metadata);
@@ -382,13 +385,13 @@ describe('CustomVersioning', () => {
         generateFunction: (_metadata: VersionMetadata) => {
           throw new Error('Generation error');
         },
-        validation: /^.*$/
+        validation: /^.*$/,
       });
 
       const metadata: VersionMetadata = {
         version: '1.0.0',
         createdAt: new Date().toISOString(),
-        tags: ['stable']
+        tags: ['stable'],
       };
 
       await expect(customStrategy.generateVersion(metadata)).rejects.toThrow();
@@ -400,7 +403,7 @@ describe('CustomVersioning', () => {
         parseFunction: (_version: string) => {
           throw new Error('Parse error');
         },
-        validation: /^.*$/
+        validation: /^.*$/,
       });
 
       const result = await customStrategy.parseVersion('test-version');
@@ -413,7 +416,7 @@ describe('CustomVersioning', () => {
         pattern: 'custom',
         validationFunction: (_version: string) => {
           throw new Error('Validation error');
-        }
+        },
       });
 
       expect(customStrategy.isValidVersion('test')).toBe(false);
@@ -430,7 +433,7 @@ describe('CustomVersioning', () => {
     it('should handle complex custom metadata', async () => {
       const customStrategy = new CustomVersioning({
         pattern: 'v{major}.{minor}.{patch}-{build}.{revision}',
-        validation: /^v\d+\.\d+\.\d+-\w+\.\d+$/
+        validation: /^v\d+\.\d+\.\d+-\w+\.\d+$/,
       });
 
       const metadata: VersionMetadata = {
@@ -442,8 +445,8 @@ describe('CustomVersioning', () => {
           minor: 1,
           patch: 0,
           build: 'rc',
-          revision: 42
-        } as any
+          revision: 42,
+        } as any,
       };
 
       const version = await customStrategy.generateVersion(metadata);
@@ -453,7 +456,7 @@ describe('CustomVersioning', () => {
     it('should handle special characters in custom metadata', async () => {
       const customStrategy = new CustomVersioning({
         pattern: 'v{major}.{minor}-{build}',
-        validation: /^v\d+\.\d+-\w+$/
+        validation: /^v\d+\.\d+-\w+$/,
       });
 
       const metadata: VersionMetadata = {
@@ -463,8 +466,8 @@ describe('CustomVersioning', () => {
         custom: {
           major: 1,
           minor: 0,
-          build: 'alpha-beta'
-        } as any
+          build: 'alpha-beta',
+        } as any,
       };
 
       const version = await customStrategy.generateVersion(metadata);
@@ -474,7 +477,7 @@ describe('CustomVersioning', () => {
     it('should handle numeric custom metadata', async () => {
       const customStrategy = new CustomVersioning({
         pattern: 'v{major}.{minor}.{patch}',
-        validation: /^v\d+\.\d+\.\d+$/
+        validation: /^v\d+\.\d+\.\d+$/,
       });
 
       const metadata: VersionMetadata = {
@@ -484,8 +487,8 @@ describe('CustomVersioning', () => {
         custom: {
           major: '1' as any,
           minor: '2' as any,
-          patch: '3' as any
-        } as any
+          patch: '3' as any,
+        } as any,
       };
 
       const version = await customStrategy.generateVersion(metadata);
@@ -495,7 +498,7 @@ describe('CustomVersioning', () => {
     it('should handle boolean custom metadata', async () => {
       const customStrategy = new CustomVersioning({
         pattern: 'v{major}.{minor}-{isStable}',
-        validation: /^v\d+\.\d+-(true|false)$/
+        validation: /^v\d+\.\d+-(true|false)$/,
       });
 
       const metadata: VersionMetadata = {
@@ -505,8 +508,8 @@ describe('CustomVersioning', () => {
         custom: {
           major: 1,
           minor: 0,
-          isStable: true
-        } as any
+          isStable: true,
+        } as any,
       };
 
       const version = await customStrategy.generateVersion(metadata);
@@ -517,11 +520,11 @@ describe('CustomVersioning', () => {
   describe('additional edge cases for coverage', () => {
     it('should handle fallback to basic version when no pattern or function', async () => {
       const customStrategy = new CustomVersioning({});
-      
+
       const metadata: VersionMetadata = {
         version: '2.0.0',
         createdAt: new Date().toISOString(),
-        tags: ['stable']
+        tags: ['stable'],
       };
 
       const version = await customStrategy.generateVersion(metadata);
@@ -530,14 +533,14 @@ describe('CustomVersioning', () => {
 
     it('should handle null custom metadata in processPattern', () => {
       const customStrategy = new CustomVersioning({
-        pattern: 'v{major}.{minor}'
+        pattern: 'v{major}.{minor}',
       });
 
       const metadata: VersionMetadata = {
         version: '1.0.0',
         createdAt: new Date().toISOString(),
         tags: ['stable'],
-        custom: null as any
+        custom: null as any,
       };
 
       const result = customStrategy['processPattern'](metadata);
@@ -546,13 +549,13 @@ describe('CustomVersioning', () => {
 
     it('should handle undefined custom metadata in processPattern', () => {
       const customStrategy = new CustomVersioning({
-        pattern: 'v{major}.{minor}'
+        pattern: 'v{major}.{minor}',
       });
 
       const metadata: VersionMetadata = {
         version: '1.0.0',
         createdAt: new Date().toISOString(),
-        tags: ['stable']
+        tags: ['stable'],
       };
 
       const result = customStrategy['processPattern'](metadata);
@@ -561,7 +564,7 @@ describe('CustomVersioning', () => {
 
     it('should handle null values in custom metadata', () => {
       const customStrategy = new CustomVersioning({
-        pattern: 'v{major}.{minor}.{patch}'
+        pattern: 'v{major}.{minor}.{patch}',
       });
 
       const metadata: VersionMetadata = {
@@ -571,8 +574,8 @@ describe('CustomVersioning', () => {
         custom: {
           major: 1,
           minor: null,
-          patch: 3
-        } as any
+          patch: 3,
+        } as any,
       };
 
       const result = customStrategy['processPattern'](metadata);
@@ -581,7 +584,7 @@ describe('CustomVersioning', () => {
 
     it('should handle undefined values in custom metadata', () => {
       const customStrategy = new CustomVersioning({
-        pattern: 'v{major}.{minor}.{patch}'
+        pattern: 'v{major}.{minor}.{patch}',
       });
 
       const metadata: VersionMetadata = {
@@ -591,8 +594,8 @@ describe('CustomVersioning', () => {
         custom: {
           major: 1,
           minor: undefined,
-          patch: 3
-        } as any
+          patch: 3,
+        } as any,
       };
 
       const result = customStrategy['processPattern'](metadata);
@@ -601,7 +604,7 @@ describe('CustomVersioning', () => {
 
     it('should handle string values in custom metadata', () => {
       const customStrategy = new CustomVersioning({
-        pattern: 'v{major}.{minor}.{patch}'
+        pattern: 'v{major}.{minor}.{patch}',
       });
 
       const metadata: VersionMetadata = {
@@ -611,8 +614,8 @@ describe('CustomVersioning', () => {
         custom: {
           major: '1',
           minor: '2',
-          patch: '3'
-        } as any
+          patch: '3',
+        } as any,
       };
 
       const result = customStrategy['processPattern'](metadata);
@@ -621,7 +624,7 @@ describe('CustomVersioning', () => {
 
     it('should handle number values in custom metadata', () => {
       const customStrategy = new CustomVersioning({
-        pattern: 'v{major}.{minor}.{patch}'
+        pattern: 'v{major}.{minor}.{patch}',
       });
 
       const metadata: VersionMetadata = {
@@ -631,8 +634,8 @@ describe('CustomVersioning', () => {
         custom: {
           major: 1,
           minor: 2,
-          patch: 3
-        } as any
+          patch: 3,
+        } as any,
       };
 
       const result = customStrategy['processPattern'](metadata);
@@ -641,7 +644,7 @@ describe('CustomVersioning', () => {
 
     it('should handle boolean values in custom metadata', () => {
       const customStrategy = new CustomVersioning({
-        pattern: 'v{major}.{minor}-{isStable}'
+        pattern: 'v{major}.{minor}-{isStable}',
       });
 
       const metadata: VersionMetadata = {
@@ -651,8 +654,8 @@ describe('CustomVersioning', () => {
         custom: {
           major: 1,
           minor: 2,
-          isStable: false
-        } as any
+          isStable: false,
+        } as any,
       };
 
       const result = customStrategy['processPattern'](metadata);
@@ -661,7 +664,7 @@ describe('CustomVersioning', () => {
 
     it('should handle object values in custom metadata', () => {
       const customStrategy = new CustomVersioning({
-        pattern: 'v{major}.{minor}-{build}'
+        pattern: 'v{major}.{minor}-{build}',
       });
 
       const metadata: VersionMetadata = {
@@ -671,8 +674,8 @@ describe('CustomVersioning', () => {
         custom: {
           major: 1,
           minor: 2,
-          build: { name: 'alpha', version: '1' }
-        } as any
+          build: { name: 'alpha', version: '1' },
+        } as any,
       };
 
       const result = customStrategy['processPattern'](metadata);
@@ -681,7 +684,7 @@ describe('CustomVersioning', () => {
 
     it('should handle array values in custom metadata', () => {
       const customStrategy = new CustomVersioning({
-        pattern: 'v{major}.{minor}-{build}'
+        pattern: 'v{major}.{minor}-{build}',
       });
 
       const metadata: VersionMetadata = {
@@ -691,8 +694,8 @@ describe('CustomVersioning', () => {
         custom: {
           major: 1,
           minor: 2,
-          build: ['alpha', 'beta']
-        } as any
+          build: ['alpha', 'beta'],
+        } as any,
       };
 
       const result = customStrategy['processPattern'](metadata);
@@ -760,7 +763,7 @@ describe('CustomVersioning', () => {
 
     it('should handle regex validation', () => {
       const customStrategy = new CustomVersioning({
-        validation: /^v\d+\.\d+\.\d+$/
+        validation: /^v\d+\.\d+\.\d+$/,
       });
 
       expect(customStrategy.isValidVersion('v1.2.3')).toBe(true);
@@ -771,12 +774,12 @@ describe('CustomVersioning', () => {
     it('should handle setCustomConfig', () => {
       const newConfig = {
         pattern: 'v{major}.{minor}',
-        validation: /^v\d+\.\d+$/
+        validation: /^v\d+\.\d+$/,
       };
 
       strategy.setCustomConfig(newConfig);
       const config = strategy.getCustomConfig();
-      
+
       expect(config.pattern).toBe('v{major}.{minor}');
       expect(config.validation).toEqual(/^v\d+\.\d+$/);
     });
@@ -796,7 +799,7 @@ describe('CustomVersioning', () => {
     it('should handle mergeCustomDefaults with partial config', () => {
       const customStrategy = new CustomVersioning({
         pattern: 'v{major}',
-        generateFunction: (_metadata: VersionMetadata) => 'v1.0.0'
+        generateFunction: (_metadata: VersionMetadata) => 'v1.0.0',
       });
 
       const config = customStrategy.getCustomConfig();

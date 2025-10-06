@@ -1,10 +1,13 @@
 /**
  * Tests for HTMLGenerator
- * 
+ *
  * Following TDD approach - tests define expected behavior
  */
 
-import { HTMLGenerator, HTMLGeneratorOptions } from '../../../../src/documentation/generators/HTMLGenerator';
+import {
+  HTMLGenerator,
+  HTMLGeneratorOptions,
+} from '../../../../src/documentation/generators/HTMLGenerator';
 import { JSDocComment } from '../../../../src/documentation/extractors/JSDocExtractor';
 import { TypeInfo } from '../../../../src/documentation/extractors/TypeExtractor';
 import { ExampleInfo } from '../../../../src/documentation/extractors/ExampleExtractor';
@@ -20,7 +23,7 @@ describe('HTMLGenerator', () => {
       includeTOC: true,
       includeNavigation: true,
       includeMetadata: true,
-      templateVariables: {}
+      templateVariables: {},
     });
   });
 
@@ -37,7 +40,7 @@ describe('HTMLGenerator', () => {
         includeTOC: false,
         includeNavigation: false,
         includeMetadata: false,
-        templateVariables: { customVar: 'value' }
+        templateVariables: { customVar: 'value' },
       };
 
       const customGenerator = new HTMLGenerator(customOptions);
@@ -57,8 +60,8 @@ describe('HTMLGenerator', () => {
           start: 0,
           end: 50,
           lineNumber: 1,
-          fullText: '/** Test function documentation */'
-        }
+          fullText: '/** Test function documentation */',
+        },
       ];
 
       const typeInfo: TypeInfo[] = [
@@ -77,8 +80,8 @@ describe('HTMLGenerator', () => {
           lineNumber: 1,
           exported: true,
           public: true,
-          dependencies: []
-        }
+          dependencies: [],
+        },
       ];
 
       const examples: ExampleInfo[] = [
@@ -95,8 +98,8 @@ describe('HTMLGenerator', () => {
           start: 0,
           end: 30,
           lineNumber: 1,
-          metadata: {}
-        }
+          metadata: {},
+        },
       ];
 
       // Test HTML content generation directly
@@ -177,10 +180,10 @@ describe('HTMLGenerator', () => {
       const headers = ['Name', 'Type', 'Description'];
       const rows = [
         ['testFunction', 'function', 'Test function'],
-        ['testVar', 'string', 'Test variable']
+        ['testVar', 'string', 'Test variable'],
       ];
       const table = (generator as any).formatTable(headers, rows);
-      
+
       expect(table).toContain('<table>');
       expect(table).toContain('<thead>');
       expect(table).toContain('<th>Name</th>');
@@ -205,7 +208,7 @@ describe('HTMLGenerator', () => {
         includeNavigation: true,
         includeMetadata: true,
         templateVariables: {},
-        theme: 'dark'
+        theme: 'dark',
       });
 
       const css = (themeGenerator as any).generateCSS();
@@ -309,7 +312,7 @@ describe('HTMLGenerator', () => {
     it('should handle sections without titles', () => {
       const sections = [
         { id: 'section1', title: '', level: 1 },
-        { id: 'section2', title: 'Valid Title', level: 1 }
+        { id: 'section2', title: 'Valid Title', level: 1 },
       ];
 
       const toc = (generator as any).generateTableOfContents(sections);
@@ -372,7 +375,7 @@ describe('HTMLGenerator', () => {
         includeNavigation: true,
         includeMetadata: true,
         templateVariables: {},
-        theme: 'light'
+        theme: 'light',
       });
 
       expect(lightGenerator).toBeDefined();
@@ -386,7 +389,7 @@ describe('HTMLGenerator', () => {
         includeNavigation: true,
         includeMetadata: true,
         templateVariables: {},
-        theme: 'dark'
+        theme: 'dark',
       });
 
       expect(darkGenerator).toBeDefined();
@@ -400,7 +403,7 @@ describe('HTMLGenerator', () => {
         includeNavigation: true,
         includeMetadata: true,
         templateVariables: {},
-        theme: 'custom'
+        theme: 'custom',
       });
 
       expect(customGenerator).toBeDefined();
@@ -420,8 +423,8 @@ describe('HTMLGenerator', () => {
           end: 50,
           children: [],
           metadata: {},
-          properties: {}
-        }
+          properties: {},
+        },
       ];
 
       const result = await generator.generate(nodes);
@@ -438,7 +441,7 @@ describe('HTMLGenerator', () => {
     it('should handle validation errors in generate', async () => {
       const invalidGenerator = new HTMLGenerator({
         outputDir: '', // Invalid empty output directory
-        fileName: 'test.html'
+        fileName: 'test.html',
       });
 
       const nodes: ASTNode[] = [
@@ -452,8 +455,8 @@ describe('HTMLGenerator', () => {
           end: 50,
           children: [],
           metadata: {},
-          properties: {}
-        }
+          properties: {},
+        },
       ];
 
       const result = await invalidGenerator.generate(nodes);
@@ -490,8 +493,8 @@ describe('HTMLGenerator', () => {
           end: 50,
           children: [],
           metadata: {},
-          properties: {}
-        }
+          properties: {},
+        },
       ];
 
       const content = (generator as any).generateHTMLContentFromNodes(nodes);
@@ -504,7 +507,7 @@ describe('HTMLGenerator', () => {
       const customGenerator = new HTMLGenerator({
         outputDir: './docs',
         fileName: 'index.html',
-        customTemplate: 'Custom Template: {{content}}'
+        customTemplate: 'Custom Template: {{content}}',
       });
 
       const nodes: ASTNode[] = [
@@ -518,8 +521,8 @@ describe('HTMLGenerator', () => {
           end: 50,
           children: [],
           metadata: {},
-          properties: {}
-        }
+          properties: {},
+        },
       ];
 
       const result = await customGenerator.generate(nodes);
@@ -540,11 +543,15 @@ describe('HTMLGenerator', () => {
           end: 20,
           lineNumber: 1,
           isValid: true,
-          errors: []
-        }
+          errors: [],
+        },
       ];
 
-      const content = (generator as any).generateOverviewContentFromExtracted(jsdocComments, [], []);
+      const content = (generator as any).generateOverviewContentFromExtracted(
+        jsdocComments,
+        [],
+        []
+      );
 
       expect(content).toContain('Total JSDoc Comments');
       expect(content).toContain('1');
@@ -566,8 +573,8 @@ describe('HTMLGenerator', () => {
           exported: true,
           public: true,
           dependencies: [],
-          metadata: {}
-        }
+          metadata: {},
+        },
       ];
 
       const content = (generator as any).generateAPIReferenceContentFromExtracted(typeInfo);
@@ -591,8 +598,8 @@ describe('HTMLGenerator', () => {
           end: 20,
           lineNumber: 1,
           isValid: true,
-          errors: []
-        }
+          errors: [],
+        },
       ];
 
       const content = (generator as any).generateExamplesContentFromExtracted(examples);
@@ -613,8 +620,8 @@ describe('HTMLGenerator', () => {
           end: 50,
           children: [],
           metadata: {},
-          properties: {}
-        }
+          properties: {},
+        },
       ];
 
       const content = (generator as any).generateMetadataContentFromNodes(nodes);
@@ -634,11 +641,15 @@ describe('HTMLGenerator', () => {
           end: 20,
           lineNumber: 1,
           isValid: true,
-          errors: []
-        }
+          errors: [],
+        },
       ];
 
-      const content = (generator as any).generateMetadataContentFromExtracted(jsdocComments, [], []);
+      const content = (generator as any).generateMetadataContentFromExtracted(
+        jsdocComments,
+        [],
+        []
+      );
 
       expect(content).toContain('Generated');
       expect(content).toContain('Total Items');
@@ -694,8 +705,8 @@ describe('HTMLGenerator', () => {
               optional: false,
               readonly: false,
               documentation: 'Test property description',
-              metadata: {}
-            }
+              metadata: {},
+            },
           ],
           methods: [
             {
@@ -707,8 +718,8 @@ describe('HTMLGenerator', () => {
               static: false,
               abstract: false,
               documentation: 'Test method description',
-              metadata: {}
-            }
+              metadata: {},
+            },
           ],
           filePath: 'test.ts',
           start: 0,
@@ -717,8 +728,8 @@ describe('HTMLGenerator', () => {
           exported: true,
           public: true,
           dependencies: [],
-          metadata: {}
-        }
+          metadata: {},
+        },
       ];
 
       const content = (generator as any).generateAPIReferenceContentFromExtracted(typeInfo);
@@ -743,8 +754,8 @@ describe('HTMLGenerator', () => {
               optional: false,
               readonly: false,
               documentation: undefined as any,
-              metadata: {}
-            }
+              metadata: {},
+            },
           ],
           methods: [],
           filePath: 'test.ts',
@@ -754,8 +765,8 @@ describe('HTMLGenerator', () => {
           exported: true,
           public: true,
           dependencies: [],
-          metadata: {}
-        }
+          metadata: {},
+        },
       ];
 
       const content = (generator as any).generateAPIReferenceContentFromExtracted(typeInfo);
@@ -783,8 +794,8 @@ describe('HTMLGenerator', () => {
               static: false,
               abstract: false,
               documentation: undefined as any,
-              metadata: {}
-            }
+              metadata: {},
+            },
           ],
           filePath: 'test.ts',
           start: 0,
@@ -793,8 +804,8 @@ describe('HTMLGenerator', () => {
           exported: true,
           public: true,
           dependencies: [],
-          metadata: {}
-        }
+          metadata: {},
+        },
       ];
 
       const content = (generator as any).generateAPIReferenceContentFromExtracted(typeInfo);
@@ -807,7 +818,7 @@ describe('HTMLGenerator', () => {
     it('should handle generateFromExtracted with validation errors', async () => {
       const invalidGenerator = new HTMLGenerator({
         outputDir: '', // Invalid empty output directory
-        fileName: 'test.html'
+        fileName: 'test.html',
       });
 
       const result = await invalidGenerator.generateFromExtracted([], [], []);
@@ -874,8 +885,8 @@ describe('HTMLGenerator', () => {
           end: 50,
           children: [],
           metadata: {},
-          properties: {}
-        }
+          properties: {},
+        },
       ];
 
       // Mock generateHTMLContentFromNodes to throw an error
@@ -905,8 +916,8 @@ describe('HTMLGenerator', () => {
           end: 50,
           children: [],
           metadata: {},
-          properties: {}
-        }
+          properties: {},
+        },
       ];
 
       // Mock generateHTMLContentFromNodes to throw a non-Error object
@@ -943,7 +954,7 @@ describe('HTMLGenerator', () => {
       const customGenerator = new HTMLGenerator({
         outputDir: './docs',
         fileName: 'index.html',
-        customTemplate: 'Custom: {{content}}'
+        customTemplate: 'Custom: {{content}}',
       });
 
       const nodes: ASTNode[] = [
@@ -957,8 +968,8 @@ describe('HTMLGenerator', () => {
           end: 50,
           children: [],
           metadata: {},
-          properties: {}
-        }
+          properties: {},
+        },
       ];
 
       const result = await customGenerator.generate(nodes);
@@ -988,12 +999,12 @@ describe('HTMLGenerator', () => {
               end: 50,
               children: [],
               metadata: {},
-              properties: {}
-            }
+              properties: {},
+            },
           ],
           metadata: {},
-          properties: {}
-        }
+          properties: {},
+        },
       ];
 
       const content = (generator as any).generateHTMLContentFromNodes(nodes);
@@ -1021,10 +1032,10 @@ describe('HTMLGenerator', () => {
           end: 50,
           children: [],
           metadata: {
-            jsdoc: '/** Test JSDoc comment */'
+            jsdoc: '/** Test JSDoc comment */',
           },
-          properties: {}
-        }
+          properties: {},
+        },
       ];
 
       const content = (generator as any).generateHTMLContentFromNodes(nodes);
@@ -1037,7 +1048,7 @@ describe('HTMLGenerator', () => {
       // Mock the fs module to throw an error
       const fs = require('fs/promises');
       const originalMkdir = fs.mkdir;
-      
+
       fs.mkdir = jest.fn().mockRejectedValue(new Error('Directory creation failed'));
 
       const result = await generator.generateFromExtracted([], [], []);
@@ -1061,14 +1072,14 @@ describe('HTMLGenerator', () => {
           end: 50,
           children: [],
           metadata: {},
-          properties: {}
-        }
+          properties: {},
+        },
       ];
 
       // Mock the fs module to throw an error
       const fs = require('fs/promises');
       const originalMkdir = fs.mkdir;
-      
+
       fs.mkdir = jest.fn().mockRejectedValue(new Error('Directory creation failed'));
 
       const result = await generator.generate(nodes);
@@ -1079,6 +1090,5 @@ describe('HTMLGenerator', () => {
       // Restore original method
       fs.mkdir = originalMkdir;
     });
-
   });
 });

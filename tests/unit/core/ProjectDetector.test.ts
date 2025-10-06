@@ -8,7 +8,7 @@ describe('ProjectDetector', () => {
   describe('detectProjectType', () => {
     it('should detect project type for valid path', async () => {
       const result = await ProjectDetector.detectProjectType(__dirname);
-      
+
       expect(result).toBeDefined();
       expect(result.type).toBeDefined();
       expect(result.language).toBeDefined();
@@ -18,7 +18,7 @@ describe('ProjectDetector', () => {
 
     it('should handle invalid path gracefully', async () => {
       const result = await ProjectDetector.detectProjectType('/invalid/path');
-      
+
       expect(result).toBeDefined();
       expect(result.type).toBe('unknown');
       expect(result.confidence).toBe(0);
@@ -88,7 +88,7 @@ describe('ProjectDetector', () => {
     });
 
     it('should handle very long project path', async () => {
-      const longPath = '/very/long/path/' + 'a'.repeat(1000);
+      const longPath = `/very/long/path/${'a'.repeat(1000)}`;
       const result = await ProjectDetector.detectProjectType(longPath);
       expect(result).toBeDefined();
       expect(result.type).toBeDefined();
@@ -131,7 +131,7 @@ describe('ProjectDetector', () => {
     it('should return consistent results for same path', async () => {
       const result1 = await ProjectDetector.detectProjectType(__dirname);
       const result2 = await ProjectDetector.detectProjectType(__dirname);
-      
+
       expect(result1.type).toBe(result2.type);
       expect(result1.language).toBe(result2.language);
       expect(result1.confidence).toBe(result2.confidence);
@@ -164,7 +164,7 @@ describe('ProjectDetector', () => {
     });
 
     it('should handle path with trailing slash', async () => {
-      const result = await ProjectDetector.getProjectRoot(__dirname + '/');
+      const result = await ProjectDetector.getProjectRoot(`${__dirname}/`);
       expect(result).toBeDefined();
       expect(typeof result).toBe('string');
     });
@@ -187,7 +187,7 @@ describe('ProjectDetector', () => {
     });
 
     it('should handle path with trailing slash', async () => {
-      const result = await ProjectDetector.isValidProject(__dirname + '/');
+      const result = await ProjectDetector.isValidProject(`${__dirname}/`);
       expect(typeof result).toBe('boolean');
     });
   });
@@ -201,8 +201,8 @@ describe('ProjectDetector', () => {
         main: 'index.js',
         browser: 'browser.js',
         scripts: {
-          start: 'node index.js'
-        }
+          start: 'node index.js',
+        },
       };
 
       // Mock FileUtils.exists to return true for package.json
@@ -223,8 +223,8 @@ describe('ProjectDetector', () => {
         main: 'index.js',
         types: 'index.d.ts',
         scripts: {
-          start: 'node index.js'
-        }
+          start: 'node index.js',
+        },
       };
 
       // Mock FileUtils.exists to return true for package.json
@@ -245,8 +245,8 @@ describe('ProjectDetector', () => {
         main: 'index.js',
         typings: 'index.d.ts',
         scripts: {
-          start: 'node index.js'
-        }
+          start: 'node index.js',
+        },
       };
 
       // Mock FileUtils.exists to return true for package.json
@@ -267,8 +267,8 @@ describe('ProjectDetector', () => {
         main: 'index.js',
         bin: 'bin/cli.js',
         scripts: {
-          start: 'node index.js'
-        }
+          start: 'node index.js',
+        },
       };
 
       // Mock FileUtils.exists to return true for package.json
@@ -288,12 +288,12 @@ describe('ProjectDetector', () => {
         version: '1.0.0',
         main: 'index.js',
         bin: {
-          'cli': 'bin/cli.js',
-          'server': 'bin/server.js'
+          cli: 'bin/cli.js',
+          server: 'bin/server.js',
         },
         scripts: {
-          start: 'node index.js'
-        }
+          start: 'node index.js',
+        },
       };
 
       // Mock FileUtils.exists to return true for package.json
@@ -314,41 +314,47 @@ describe('ProjectDetector', () => {
 
     it('should detect React project type', async () => {
       const FileUtils = require('../../../src/utils/file/FileUtils').FileUtils;
-      jest.spyOn(FileUtils, 'exists')
+      jest
+        .spyOn(FileUtils, 'exists')
         .mockResolvedValueOnce(true) // package.json exists
         .mockResolvedValueOnce(false) // tsconfig.json doesn't exist (analyzeProjectType)
         .mockResolvedValueOnce(false) // babel.config.js doesn't exist (analyzeProjectType)
         .mockResolvedValueOnce(false) // tsconfig.json doesn't exist (detectLanguage)
         .mockResolvedValueOnce(false); // requirements.txt doesn't exist (detectLanguage)
 
-      jest.spyOn(FileUtils, 'readFile').mockResolvedValue(JSON.stringify({
-        dependencies: {
-          'react': '^18.0.0',
-          'react-dom': '^18.0.0'
-        }
-      }));
+      jest.spyOn(FileUtils, 'readFile').mockResolvedValue(
+        JSON.stringify({
+          dependencies: {
+            react: '^18.0.0',
+            'react-dom': '^18.0.0',
+          },
+        })
+      );
 
       const result = await ProjectDetector.detectProjectType(__dirname);
-      
+
       expect(result.type).toBe('react');
       expect(result.language).toBe('javascript');
     });
 
     it('should detect JavaScript project with Babel', async () => {
       const FileUtils = require('../../../src/utils/file/FileUtils').FileUtils;
-      jest.spyOn(FileUtils, 'exists')
+      jest
+        .spyOn(FileUtils, 'exists')
         .mockResolvedValueOnce(true) // package.json exists
         .mockResolvedValueOnce(true) // babel.config.js exists
         .mockResolvedValueOnce(false); // requirements.txt doesn't exist
 
-      jest.spyOn(FileUtils, 'readFile').mockResolvedValue(JSON.stringify({
-        dependencies: {
-          'babel': '^7.0.0'
-        }
-      }));
+      jest.spyOn(FileUtils, 'readFile').mockResolvedValue(
+        JSON.stringify({
+          dependencies: {
+            babel: '^7.0.0',
+          },
+        })
+      );
 
       const result = await ProjectDetector.detectProjectType(__dirname);
-      
+
       expect(result.type).toBe('javascript');
       expect(result.language).toBe('javascript');
     });
@@ -369,14 +375,16 @@ describe('ProjectDetector', () => {
         return Promise.resolve(false);
       });
 
-      jest.spyOn(FileUtils, 'readFile').mockResolvedValue(JSON.stringify({
-        dependencies: {
-          'python': '^3.8.0'
-        }
-      }));
+      jest.spyOn(FileUtils, 'readFile').mockResolvedValue(
+        JSON.stringify({
+          dependencies: {
+            python: '^3.8.0',
+          },
+        })
+      );
 
       const result = await ProjectDetector.detectProjectType(__dirname);
-      
+
       expect(result.type).toBe('unknown'); // Python is not a supported project type in analyzeProjectType
       expect(result.language).toBe('python');
     });
@@ -384,14 +392,16 @@ describe('ProjectDetector', () => {
     it('should detect module entry point', async () => {
       const FileUtils = require('../../../src/utils/file/FileUtils').FileUtils;
       jest.spyOn(FileUtils, 'exists').mockResolvedValue(true);
-      jest.spyOn(FileUtils, 'readFile').mockResolvedValue(JSON.stringify({
-        name: 'test-project',
-        main: 'index.js',
-        module: 'index.mjs'
-      }));
+      jest.spyOn(FileUtils, 'readFile').mockResolvedValue(
+        JSON.stringify({
+          name: 'test-project',
+          main: 'index.js',
+          module: 'index.mjs',
+        })
+      );
 
       const result = await ProjectDetector.detectProjectType(__dirname);
-      
+
       expect(result).toBeDefined();
       expect(result.type).toBeDefined();
     });

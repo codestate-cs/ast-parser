@@ -1,17 +1,14 @@
 /**
  * Branch-based versioning strategy
- * 
+ *
  * This strategy creates versions based on git branches, including branch names,
  * commit hashes, and branch-specific metadata. It supports different branch
  * types (main, feature, develop, release, hotfix) with appropriate naming conventions.
  */
 
 import { BaseVersioningStrategy } from './BaseVersioningStrategy';
-import { 
-  VersionMetadata, 
-  VersionComparison, 
-  BranchInfo
-} from '../../types/versioning';
+import { VersionMetadata, VersionComparison, BranchInfo } from '../../types/versioning';
+import { GitUtils } from '../../utils/git/GitUtils';
 
 /**
  * Branch-based versioning strategy
@@ -22,7 +19,7 @@ export class BranchVersioning extends BaseVersioningStrategy {
     feature: /^feature/i,
     develop: /^(develop|dev)$/i,
     release: /^release/i,
-    hotfix: /^hotfix/i
+    hotfix: /^hotfix/i,
   };
 
   /**
@@ -34,10 +31,31 @@ export class BranchVersioning extends BaseVersioningStrategy {
         throw this.createError('Invalid version metadata', 'INVALID_METADATA');
       }
 
-      const branchName = this.extractBranchName(metadata);
-      const commitHash = this.extractCommitHash(metadata);
-      const version = metadata.version;
+      // Get actual git information if project path is available
+      let branchName = this.extractBranchName(metadata);
+      let commitHash = this.extractCommitHash(metadata);
 
+      if (metadata.projectPath) {
+        const gitInfo = await GitUtils.getGitInfo(metadata.projectPath);
+        if (gitInfo) {
+          branchName = gitInfo.branch;
+          commitHash = gitInfo.shortHash;
+
+          // Update metadata with actual git information
+          metadata.gitInfo = {
+            branch: gitInfo.branch,
+            commitHash: gitInfo.commitHash,
+            shortHash: gitInfo.shortHash,
+            commitMessage: gitInfo.commitMessage,
+            author: gitInfo.author,
+            commitDate: gitInfo.commitDate,
+            isClean: gitInfo.isClean,
+            ...(gitInfo.remoteUrl && { remoteUrl: gitInfo.remoteUrl }),
+          };
+        }
+      }
+
+      const version = metadata.version;
       return this.formatBranchVersion(branchName, commitHash, version);
     } catch (error) {
       this.handleError(error as Error, 'generateVersion');
@@ -55,23 +73,23 @@ export class BranchVersioning extends BaseVersioningStrategy {
         return {
           version,
           createdAt: this.generateTimestamp(),
-          tags: []
+          tags: [],
         };
       }
 
       const parts = this.parseVersionParts(version);
-      
+
       const metadata: VersionMetadata = {
         version,
         createdAt: this.generateTimestamp(),
-        tags: []
+        tags: [],
       };
 
       if (parts.branch) {
         metadata.branch = {
           name: parts.branch,
           type: this.detectBranchType(parts.branch),
-          description: this.generateBranchDescription(parts.branch)
+          description: this.generateBranchDescription(parts.branch),
         };
       }
 
@@ -82,7 +100,7 @@ export class BranchVersioning extends BaseVersioningStrategy {
           author: '',
           date: this.generateTimestamp(),
           parents: [],
-          filesChanged: []
+          filesChanged: [],
         };
       }
 
@@ -93,7 +111,7 @@ export class BranchVersioning extends BaseVersioningStrategy {
       return {
         version,
         createdAt: this.generateTimestamp(),
-        tags: []
+        tags: [],
       };
     }
   }
@@ -106,7 +124,7 @@ export class BranchVersioning extends BaseVersioningStrategy {
       if (!this.isValidVersion(version1) || !this.isValidVersion(version2)) {
         return {
           result: 'incompatible',
-          details: this.generateComparisonDetails(version1, version2, 'incompatible')
+          details: this.generateComparisonDetails(version1, version2, 'incompatible'),
         };
       }
 
@@ -122,17 +140,17 @@ export class BranchVersioning extends BaseVersioningStrategy {
             breakingChanges: true,
             newFeatures: false,
             bugFixes: false,
-            information: `Versions from different branches: ${parts1.branch} vs ${parts2.branch}`
-          }
+            information: `Versions from different branches: ${parts1.branch} vs ${parts2.branch}`,
+          },
         };
       }
 
       // Compare semantic versions
       const comparison = this.compareSemanticVersions(parts1.version, parts2.version);
-      
+
       const result: VersionComparison = {
         result: comparison.result,
-        details: this.generateComparisonDetails(version1, version2, comparison.result)
+        details: this.generateComparisonDetails(version1, version2, comparison.result),
       };
 
       if (comparison.difference !== undefined) {
@@ -226,7 +244,7 @@ export class BranchVersioning extends BaseVersioningStrategy {
     version: string;
   } {
     const parts = versionString.split('-');
-    
+
     if (parts.length < 3) {
       throw this.createError(`Invalid version format: ${versionString}`, 'INVALID_FORMAT');
     }
@@ -237,14 +255,14 @@ export class BranchVersioning extends BaseVersioningStrategy {
 
     for (let i = 0; i < parts.length; i++) {
       const part = parts[i];
-      
+
       if (!part) continue;
-      
+
       // Check if this part is a commit hash (8 hex characters)
       if (/^[a-f0-9]{8}$/.test(part)) {
         commitIndex = i;
       }
-      
+
       // Check if this part is a semantic version
       if (/^\d+\.\d+/.test(part)) {
         versionIndex = i;
@@ -266,7 +284,10 @@ export class BranchVersioning extends BaseVersioningStrategy {
   /**
    * Compare semantic versions
    */
-  private compareSemanticVersions(version1: string, version2: string): {
+  private compareSemanticVersions(
+    version1: string,
+    version2: string
+  ): {
     result: 'greater' | 'less' | 'equal' | 'incompatible';
     difference?: number;
   } {
@@ -276,14 +297,14 @@ export class BranchVersioning extends BaseVersioningStrategy {
 
       // Ensure both versions have the same number of parts
       const maxLength = Math.max(v1Parts.length, v2Parts.length);
-      
+
       while (v1Parts.length < maxLength) v1Parts.push(0);
       while (v2Parts.length < maxLength) v2Parts.push(0);
 
       for (let i = 0; i < maxLength; i++) {
         const v1Part = v1Parts[i]!;
         const v2Part = v2Parts[i]!;
-        
+
         if (v1Part > v2Part) {
           return { result: 'greater', difference: v1Part - v2Part };
         }
@@ -303,7 +324,7 @@ export class BranchVersioning extends BaseVersioningStrategy {
    */
   private generateBranchDescription(branchName: string): string {
     const type = this.detectBranchType(branchName);
-    
+
     switch (type) {
       case 'main':
         return 'Main production branch';
@@ -329,38 +350,38 @@ export class BranchVersioning extends BaseVersioningStrategy {
         requirePullRequestReviews: true,
         requireStatusChecks: true,
         requireUpToDateBranches: true,
-        restrictPushes: true
+        restrictPushes: true,
       },
       develop: {
         requirePullRequestReviews: true,
         requireStatusChecks: true,
         requireUpToDateBranches: true,
-        restrictPushes: false
+        restrictPushes: false,
       },
       feature: {
         requirePullRequestReviews: false,
         requireStatusChecks: false,
         requireUpToDateBranches: false,
-        restrictPushes: false
+        restrictPushes: false,
       },
       release: {
         requirePullRequestReviews: true,
         requireStatusChecks: true,
         requireUpToDateBranches: true,
-        restrictPushes: true
+        restrictPushes: true,
       },
       hotfix: {
         requirePullRequestReviews: true,
         requireStatusChecks: true,
         requireUpToDateBranches: false,
-        restrictPushes: true
+        restrictPushes: true,
       },
       custom: {
         requirePullRequestReviews: false,
         requireStatusChecks: false,
         requireUpToDateBranches: false,
-        restrictPushes: false
-      }
+        restrictPushes: false,
+      },
     };
 
     return protectionRules[branchType];
@@ -371,7 +392,7 @@ export class BranchVersioning extends BaseVersioningStrategy {
    */
   isBranchProtected(branchType: BranchInfo['type']): boolean {
     const protection = this.getBranchProtection(branchType);
-    return protection ? (protection.restrictPushes || protection.requirePullRequestReviews) : false;
+    return protection ? protection.restrictPushes || protection.requirePullRequestReviews : false;
   }
 
   /**
@@ -384,7 +405,7 @@ export class BranchVersioning extends BaseVersioningStrategy {
       hotfix: 80,
       develop: 70,
       feature: 60,
-      custom: 50
+      custom: 50,
     };
 
     return priorities[branchType];
@@ -396,7 +417,7 @@ export class BranchVersioning extends BaseVersioningStrategy {
   shouldPromoteVersion(fromBranch: BranchInfo['type'], toBranch: BranchInfo['type']): boolean {
     const fromPriority = this.getBranchPriority(fromBranch);
     const toPriority = this.getBranchPriority(toBranch);
-    
+
     return toPriority > fromPriority;
   }
 
@@ -406,11 +427,162 @@ export class BranchVersioning extends BaseVersioningStrategy {
   getPromotionPath(currentBranch: BranchInfo['type']): BranchInfo['type'][] {
     const allBranches: BranchInfo['type'][] = ['custom', 'feature', 'develop', 'release', 'main'];
     const currentIndex = allBranches.indexOf(currentBranch);
-    
+
     if (currentIndex === -1) {
       return [];
     }
-    
+
     return allBranches.slice(currentIndex + 1);
+  }
+
+  /**
+   * Detect git information for a project
+   */
+  async detectGitInfo(
+    projectPath: string
+  ): Promise<import('../../utils/git/GitUtils').GitInfo | null> {
+    try {
+      if (!(await GitUtils.isGitRepository(projectPath))) {
+        return null;
+      }
+
+      return await GitUtils.getGitInfo(projectPath);
+    } catch (error) {
+      return null;
+    }
+  }
+
+  /**
+   * Detect branch information for a project
+   */
+  async detectBranchInfo(projectPath: string): Promise<BranchInfo | null> {
+    try {
+      const gitInfo = await this.detectGitInfo(projectPath);
+      if (!gitInfo) {
+        return null;
+      }
+
+      const branchType = this.detectBranchType(gitInfo.branch);
+
+      return {
+        name: gitInfo.branch,
+        type: branchType,
+        description: this.generateBranchDescription(gitInfo.branch),
+        isProtected: branchType === 'main' || branchType === 'release',
+        priority: this.getBranchPriority(branchType),
+        lastCommit: {
+          hash: gitInfo.commitHash,
+          shortHash: gitInfo.shortHash,
+          message: gitInfo.commitMessage,
+          author: gitInfo.author,
+          date: gitInfo.commitDate,
+        },
+        isClean: gitInfo.isClean,
+        remoteUrl: gitInfo.remoteUrl || undefined,
+      };
+    } catch (error) {
+      return null;
+    }
+  }
+
+  /**
+   * Detect commit information for a project
+   */
+  async detectCommitInfo(projectPath: string): Promise<{
+    hash: string;
+    shortHash: string;
+    message: string;
+    author: string;
+    date: string;
+  } | null> {
+    try {
+      const gitInfo = await this.detectGitInfo(projectPath);
+      if (!gitInfo) {
+        return null;
+      }
+
+      return {
+        hash: gitInfo.commitHash,
+        shortHash: gitInfo.shortHash,
+        message: gitInfo.commitMessage,
+        author: gitInfo.author,
+        date: gitInfo.commitDate,
+      };
+    } catch (error) {
+      return null;
+    }
+  }
+
+  /**
+   * Detect repository information for a project
+   */
+  async detectRepositoryInfo(projectPath: string): Promise<{
+    isGitRepository: boolean;
+    remoteUrl?: string | undefined;
+    isClean: boolean;
+  } | null> {
+    try {
+      const isGitRepository = await GitUtils.isGitRepository(projectPath);
+      if (!isGitRepository) {
+        return null;
+      }
+
+      const gitInfo = await GitUtils.getGitInfo(projectPath);
+      if (!gitInfo) {
+        return {
+          isGitRepository: true,
+          isClean: true,
+        };
+      }
+
+      return {
+        isGitRepository: true,
+        remoteUrl: gitInfo.remoteUrl || undefined,
+        isClean: gitInfo.isClean,
+      };
+    } catch (error) {
+      return null;
+    }
+  }
+
+  /**
+   * Detect tags for a project
+   */
+  async detectTags(projectPath: string): Promise<string[]> {
+    try {
+      if (!(await GitUtils.isGitRepository(projectPath))) {
+        return [];
+      }
+
+      return await GitUtils.getTags(projectPath);
+    } catch (error) {
+      return [];
+    }
+  }
+
+  /**
+   * Detect recent commits for a project
+   */
+  async detectRecentCommits(
+    projectPath: string,
+    count: number = 10
+  ): Promise<
+    Array<{
+      hash: string;
+      shortHash: string;
+      message: string;
+      author: string;
+      date: string;
+    }>
+  > {
+    try {
+      if (!(await GitUtils.isGitRepository(projectPath))) {
+        return [];
+      }
+
+      return await GitUtils.getRecentCommits(projectPath, count);
+    } catch (error) {
+      return [];
+    }
   }
 }

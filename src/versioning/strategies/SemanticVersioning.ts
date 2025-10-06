@@ -1,20 +1,16 @@
 /**
  * Semantic Versioning Strategy
- * 
+ *
  * Implements semantic versioning (semver) standard for version management.
  * Follows the semantic versioning specification: MAJOR.MINOR.PATCH[-PRERELEASE][+BUILD]
  */
 
-import { 
-  VersionMetadata, 
-  VersionComparison,
-  SemanticVersionInfo
-} from '../../types/versioning';
+import { VersionMetadata, VersionComparison, SemanticVersionInfo } from '../../types/versioning';
 import { BaseVersioningStrategy } from './BaseVersioningStrategy';
 
 /**
  * Semantic versioning strategy implementation
- * 
+ *
  * Supports:
  * - Basic semantic versions (MAJOR.MINOR.PATCH)
  * - Pre-release identifiers (alpha, beta, rc, etc.)
@@ -23,7 +19,8 @@ import { BaseVersioningStrategy } from './BaseVersioningStrategy';
  * - Version bumping (major, minor, patch, prerelease)
  */
 export class SemanticVersioning extends BaseVersioningStrategy {
-  private readonly SEMVER_REGEX = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/;
+  private readonly SEMVER_REGEX =
+    /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/;
 
   /**
    * Get the strategy name
@@ -58,11 +55,17 @@ export class SemanticVersioning extends BaseVersioningStrategy {
     const { major, minor, patch, prerelease, build } = metadata.semantic;
 
     if (typeof major !== 'number' || typeof minor !== 'number' || typeof patch !== 'number') {
-      throw this.createError('Major, minor, and patch must be numbers', 'INVALID_VERSION_COMPONENTS');
+      throw this.createError(
+        'Major, minor, and patch must be numbers',
+        'INVALID_VERSION_COMPONENTS'
+      );
     }
 
     if (major < 0 || minor < 0 || patch < 0) {
-      throw this.createError('Version components must be non-negative', 'NEGATIVE_VERSION_COMPONENTS');
+      throw this.createError(
+        'Version components must be non-negative',
+        'NEGATIVE_VERSION_COMPONENTS'
+      );
     }
 
     let version = `${major}.${minor}.${patch}`;
@@ -96,7 +99,7 @@ export class SemanticVersioning extends BaseVersioningStrategy {
     }
 
     const [, majorStr, minorStr, patchStr, prerelease, build] = match;
-    
+
     const major = parseInt(majorStr!, 10);
     const minor = parseInt(minorStr!, 10);
     const patch = parseInt(patchStr!, 10);
@@ -105,7 +108,7 @@ export class SemanticVersioning extends BaseVersioningStrategy {
       major,
       minor,
       patch,
-      full: version
+      full: version,
     };
 
     if (prerelease) {
@@ -120,7 +123,7 @@ export class SemanticVersioning extends BaseVersioningStrategy {
       version,
       createdAt: this.generateTimestamp(),
       tags: [],
-      semantic
+      semantic,
     };
   }
 
@@ -145,23 +148,43 @@ export class SemanticVersioning extends BaseVersioningStrategy {
     // Compare major, minor, patch
     const majorDiff = v1.major - v2.major;
     if (majorDiff !== 0) {
-      return this.createComparisonResult(version1, version2, majorDiff > 0 ? 'greater' : 'less', majorDiff);
+      return this.createComparisonResult(
+        version1,
+        version2,
+        majorDiff > 0 ? 'greater' : 'less',
+        majorDiff
+      );
     }
 
     const minorDiff = v1.minor - v2.minor;
     if (minorDiff !== 0) {
-      return this.createComparisonResult(version1, version2, minorDiff > 0 ? 'greater' : 'less', minorDiff);
+      return this.createComparisonResult(
+        version1,
+        version2,
+        minorDiff > 0 ? 'greater' : 'less',
+        minorDiff
+      );
     }
 
     const patchDiff = v1.patch - v2.patch;
     if (patchDiff !== 0) {
-      return this.createComparisonResult(version1, version2, patchDiff > 0 ? 'greater' : 'less', patchDiff);
+      return this.createComparisonResult(
+        version1,
+        version2,
+        patchDiff > 0 ? 'greater' : 'less',
+        patchDiff
+      );
     }
 
     // Compare prerelease identifiers
     const prereleaseComparison = this.comparePrereleaseIdentifiers(v1.prerelease, v2.prerelease);
     if (prereleaseComparison !== 0) {
-      return this.createComparisonResult(version1, version2, prereleaseComparison > 0 ? 'greater' : 'less', prereleaseComparison);
+      return this.createComparisonResult(
+        version1,
+        version2,
+        prereleaseComparison > 0 ? 'greater' : 'less',
+        prereleaseComparison
+      );
     }
 
     // Versions are equal (build identifiers don't affect precedence)
@@ -172,12 +195,15 @@ export class SemanticVersioning extends BaseVersioningStrategy {
    * Bump version according to the specified type
    */
   async bumpVersion(
-    metadata: VersionMetadata, 
+    metadata: VersionMetadata,
     bumpType: 'major' | 'minor' | 'patch' | 'prerelease',
     prereleaseIdentifier?: string
   ): Promise<string> {
     if (!metadata.semantic) {
-      throw this.createError('Semantic version information is required for bumping', 'MISSING_SEMANTIC_INFO');
+      throw this.createError(
+        'Semantic version information is required for bumping',
+        'MISSING_SEMANTIC_INFO'
+      );
     }
 
     const { major, minor, patch, prerelease, build } = metadata.semantic;
@@ -223,8 +249,8 @@ export class SemanticVersioning extends BaseVersioningStrategy {
         major: newMajor,
         minor: newMinor,
         patch: newPatch,
-        full: '' // Will be generated
-      }
+        full: '', // Will be generated
+      },
     };
 
     if (newPrerelease) {
@@ -314,15 +340,15 @@ export class SemanticVersioning extends BaseVersioningStrategy {
    * Create comparison result
    */
   private createComparisonResult(
-    version1: string, 
-    version2: string, 
+    version1: string,
+    version2: string,
     result: 'greater' | 'less' | 'equal' | 'incompatible',
     difference: number
   ): VersionComparison {
     return {
       result,
       difference,
-      details: this.generateComparisonDetails(version1, version2, result)
+      details: this.generateComparisonDetails(version1, version2, result),
     };
   }
 }

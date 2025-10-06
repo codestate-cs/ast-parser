@@ -15,12 +15,12 @@ class TestParser extends BaseParser {
 
   async parseFile(file: FileInfo): Promise<ParserResult> {
     this.validateFile(file);
-    
+
     const startTime = Date.now();
     // Small delay to ensure parsing time > 0
     await new Promise(resolve => setTimeout(resolve, 5));
     const parsingTime = this.calculateParsingTime(startTime);
-    
+
     const node = this.createASTNode(
       'test-node',
       'TestNode',
@@ -107,21 +107,13 @@ class TestParser2 extends BaseParser {
 
   async parseFile(file: FileInfo): Promise<ParserResult> {
     this.validateFile(file);
-    
+
     const startTime = Date.now();
     // Small delay to ensure parsing time > 0
     await new Promise(resolve => setTimeout(resolve, 5));
     const parsingTime = this.calculateParsingTime(startTime);
-    
-    const node = this.createASTNode(
-      'test-node',
-      'TestNode',
-      'class',
-      'class',
-      file.path,
-      0,
-      10
-    );
+
+    const node = this.createASTNode('test-node', 'TestNode', 'class', 'class', file.path, 0, 10);
 
     const relation = this.createRelation(
       'test-relation',
@@ -171,12 +163,7 @@ class TestParser2 extends BaseParser {
     return this.createASTNode(id, name, type, nodeType, filePath, start, end, metadata, properties);
   }
 
-  public testCreateRelation(
-    id: string,
-    type: string,
-    from: string,
-    to: string
-  ) {
+  public testCreateRelation(id: string, type: string, from: string, to: string) {
     return this.createRelation(id, type, from, to);
   }
 
@@ -277,7 +264,7 @@ describe('BaseParser', () => {
       };
 
       const result = await parser.parseFile(file);
-      
+
       expect(result).toBeDefined();
       expect(result.nodes).toHaveLength(1);
       expect(result.relations).toHaveLength(1);
@@ -313,7 +300,9 @@ describe('BaseParser', () => {
         hash: 'test-hash',
       };
 
-      await expect(parser.parseFile(file)).rejects.toThrow('Parser TestParser cannot parse file: test.txt');
+      await expect(parser.parseFile(file)).rejects.toThrow(
+        'Parser TestParser cannot parse file: test.txt'
+      );
     });
   });
 
@@ -476,7 +465,7 @@ describe('BaseParser', () => {
         0,
         10
       );
-      
+
       expect(node.metadata).toEqual({});
       expect(node.properties).toEqual({});
     });
@@ -492,7 +481,7 @@ describe('BaseParser', () => {
         10,
         { line: 1, column: 0 }
       );
-      
+
       expect(node.metadata).toEqual({ line: 1, column: 0 });
       expect(node.properties).toEqual({});
     });
@@ -539,12 +528,12 @@ describe('BaseParser', () => {
       const newOptions = {
         mode: 'incremental' as const,
         filtering: {
-          includePatterns: ['**/*.ts']
-        }
+          includePatterns: ['**/*.ts'],
+        },
       };
 
       parser.updateOptions(newOptions);
-      
+
       const updatedOptions = parser.getOptions();
       expect(updatedOptions.mode).toBe('incremental');
       expect(updatedOptions.filtering.includePatterns).toEqual(['**/*.ts']);
@@ -554,9 +543,9 @@ describe('BaseParser', () => {
 
     it('should handle partial options update', () => {
       parser.updateOptions({
-        mode: 'incremental' as const
+        mode: 'incremental' as const,
       });
-      
+
       const updatedOptions = parser.getOptions();
       expect(updatedOptions.mode).toBe('incremental');
       expect(updatedOptions.filtering.includePatterns).toEqual(['**/*.test']); // Should remain unchanged
@@ -607,7 +596,9 @@ describe('BaseParser', () => {
         hash: 'test-hash',
       };
 
-      await expect(parser.parseFile(unsupportedFile)).rejects.toThrow('Parser TestParser cannot parse file: test.py');
+      await expect(parser.parseFile(unsupportedFile)).rejects.toThrow(
+        'Parser TestParser cannot parse file: test.py'
+      );
     });
   });
 
@@ -645,7 +636,7 @@ describe('BaseParser', () => {
     });
 
     it('should handle very long file paths', async () => {
-      const longPath = '/very/long/path/' + 'a'.repeat(1000) + '.test';
+      const longPath = `/very/long/path/${'a'.repeat(1000)}.test`;
       const file: FileInfo = {
         path: longPath,
         name: 'long.test',

@@ -3,24 +3,25 @@ import { VersionInfo, StorageConfig } from '../../../../src/types/versioning';
 import { ProjectType } from '../../../../src/types/core';
 
 // Mock Response constructor
-const createMockResponse = (overrides: Partial<Response> = {}): Response => ({
-  ok: true,
-  status: 200,
-  statusText: 'OK',
-  headers: new Headers(),
-  type: 'basic',
-  url: '',
-  redirected: false,
-  body: null,
-  bodyUsed: false,
-  arrayBuffer: jest.fn(),
-  blob: jest.fn(),
-  formData: jest.fn(),
-  json: jest.fn(),
-  text: jest.fn(),
-  clone: jest.fn(),
-  ...overrides
-} as Response);
+const createMockResponse = (overrides: Partial<Response> = {}): Response =>
+  ({
+    ok: true,
+    status: 200,
+    statusText: 'OK',
+    headers: new Headers(),
+    type: 'basic',
+    url: '',
+    redirected: false,
+    body: null,
+    bodyUsed: false,
+    arrayBuffer: jest.fn(),
+    blob: jest.fn(),
+    formData: jest.fn(),
+    json: jest.fn(),
+    text: jest.fn(),
+    clone: jest.fn(),
+    ...overrides,
+  }) as Response;
 import { jest } from '@jest/globals';
 
 // Mock fetch
@@ -34,7 +35,7 @@ describe('RemoteStorage', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    
+
     mockConfig = {
       type: 'remote',
       path: 'https://api.example.com/versions',
@@ -42,8 +43,8 @@ describe('RemoteStorage', () => {
         apiKey: 'test-api-key',
         timeout: 5000,
         retries: 1, // Set retries to 1 for faster tests
-        compressionEnabled: true
-      }
+        compressionEnabled: true,
+      },
     };
 
     mockVersionInfo = {
@@ -55,7 +56,7 @@ describe('RemoteStorage', () => {
         version: '1.0.0',
         createdAt: '2023-01-01T00:00:00Z',
         tags: ['stable'],
-        description: 'Test version'
+        description: 'Test version',
       },
       data: {
         project: {
@@ -65,46 +66,46 @@ describe('RemoteStorage', () => {
           rootPath: '/test/project',
           entryPoints: [],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [],
           directories: [],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: {
           nodes: [],
           relations: [],
           entryPoints: [],
           publicExports: [],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: {
             cyclomatic: 1,
             cognitive: 1,
-            maintainability: 1
+            maintainability: 1,
           },
           patterns: [],
           architecture: {
             layers: [],
-            modules: []
+            modules: [],
           },
           quality: {
             score: 1,
-            issues: []
-          }
+            issues: [],
+          },
         },
         metadata: {
           generatedAt: '2023-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 0,
           cacheUsed: false,
-          filesProcessed: 0
-        }
-      }
+          filesProcessed: 0,
+        },
+      },
     };
 
     remoteStorage = new RemoteStorage(mockConfig);
@@ -127,8 +128,8 @@ describe('RemoteStorage', () => {
         options: {
           timeout: 5000,
           retries: 2,
-          compressionEnabled: false
-        }
+          compressionEnabled: false,
+        },
       };
       const storage = new RemoteStorage(configWithoutKey);
       expect(storage).toBeInstanceOf(RemoteStorage);
@@ -142,8 +143,8 @@ describe('RemoteStorage', () => {
           apiKey: undefined,
           timeout: undefined,
           retries: undefined,
-          compressionEnabled: undefined
-        }
+          compressionEnabled: undefined,
+        },
       };
       const storage = new RemoteStorage(configWithUndefinedOptions);
       expect(storage).toBeInstanceOf(RemoteStorage);
@@ -153,7 +154,7 @@ describe('RemoteStorage', () => {
       const configWithMinimalOptions = {
         type: 'remote' as const,
         path: 'https://api.example.com/versions',
-        options: {}
+        options: {},
       };
       const storage = new RemoteStorage(configWithMinimalOptions);
       expect(storage).toBeInstanceOf(RemoteStorage);
@@ -162,9 +163,11 @@ describe('RemoteStorage', () => {
 
   describe('initialize', () => {
     it('should initialize remote storage', async () => {
-      mockFetch.mockResolvedValueOnce(createMockResponse({
-        json: () => Promise.resolve({ status: 'ok' })
-      }));
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({
+          json: () => Promise.resolve({ status: 'ok' }),
+        })
+      );
 
       await remoteStorage.initialize();
 
@@ -173,8 +176,8 @@ describe('RemoteStorage', () => {
         expect.objectContaining({
           method: 'GET',
           headers: expect.objectContaining({
-            'Authorization': 'Bearer test-api-key'
-          })
+            Authorization: 'Bearer test-api-key',
+          }),
         })
       );
     });
@@ -188,13 +191,17 @@ describe('RemoteStorage', () => {
     });
 
     it('should handle initialization failure with non-ok response', async () => {
-      mockFetch.mockResolvedValueOnce(createMockResponse({
-        ok: false,
-        status: 500,
-        statusText: 'Internal Server Error'
-      }));
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({
+          ok: false,
+          status: 500,
+          statusText: 'Internal Server Error',
+        })
+      );
 
-      await expect(remoteStorage.initialize()).rejects.toThrow('Remote storage initialization failed');
+      await expect(remoteStorage.initialize()).rejects.toThrow(
+        'Remote storage initialization failed'
+      );
     });
 
     it('should handle initialization without API key', async () => {
@@ -203,13 +210,15 @@ describe('RemoteStorage', () => {
         path: 'https://api.example.com/versions',
         options: {
           timeout: 5000,
-          retries: 1
-        }
+          retries: 1,
+        },
       });
 
-      mockFetch.mockResolvedValueOnce(createMockResponse({
-        json: () => Promise.resolve({ status: 'ok' })
-      }));
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({
+          json: () => Promise.resolve({ status: 'ok' }),
+        })
+      );
 
       await storageWithoutKey.initialize();
 
@@ -218,8 +227,8 @@ describe('RemoteStorage', () => {
         expect.objectContaining({
           method: 'GET',
           headers: expect.not.objectContaining({
-            'Authorization': expect.any(String)
-          })
+            Authorization: expect.any(String),
+          }),
         })
       );
     });
@@ -227,25 +236,30 @@ describe('RemoteStorage', () => {
 
   describe('store', () => {
     beforeEach(async () => {
-      mockFetch.mockResolvedValueOnce(createMockResponse({
-        json: () => Promise.resolve({ status: 'ok' })
-      }));
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({
+          json: () => Promise.resolve({ status: 'ok' }),
+        })
+      );
       await remoteStorage.initialize();
     });
 
     it('should store version data via API', async () => {
-      mockFetch.mockResolvedValueOnce(createMockResponse({
-        json: () => Promise.resolve({
-          id: 'storage-123',
-          versionId: 'test-version-1',
-          path: 'https://api.example.com/versions/test-version-1',
-          metadata: {
-            storedAt: '2023-01-01T00:00:00Z',
-            size: 1024,
-            checksum: 'abc123'
-          }
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({
+          json: () =>
+            Promise.resolve({
+              id: 'storage-123',
+              versionId: 'test-version-1',
+              path: 'https://api.example.com/versions/test-version-1',
+              metadata: {
+                storedAt: '2023-01-01T00:00:00Z',
+                size: 1024,
+                checksum: 'abc123',
+              },
+            }),
         })
-      }));
+      );
 
       const result = await remoteStorage.store(mockVersionInfo);
 
@@ -254,10 +268,10 @@ describe('RemoteStorage', () => {
         expect.objectContaining({
           method: 'POST',
           headers: expect.objectContaining({
-            'Authorization': 'Bearer test-api-key',
-            'Content-Type': 'application/json'
+            Authorization: 'Bearer test-api-key',
+            'Content-Type': 'application/json',
           }),
-          body: JSON.stringify(mockVersionInfo)
+          body: JSON.stringify(mockVersionInfo),
         })
       );
 
@@ -268,8 +282,8 @@ describe('RemoteStorage', () => {
         metadata: {
           storedAt: '2023-01-01T00:00:00Z',
           size: 1024,
-          checksum: 'abc123'
-        }
+          checksum: 'abc123',
+        },
       });
     });
 
@@ -286,12 +300,14 @@ describe('RemoteStorage', () => {
     });
 
     it('should handle API errors', async () => {
-      mockFetch.mockResolvedValueOnce(createMockResponse({
-        ok: false,
-        status: 400,
-        statusText: 'Bad Request',
-        json: () => Promise.resolve({ error: 'Invalid data' })
-      }));
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({
+          ok: false,
+          status: 400,
+          statusText: 'Bad Request',
+          json: () => Promise.resolve({ error: 'Invalid data' }),
+        })
+      );
 
       await expect(remoteStorage.store(mockVersionInfo)).rejects.toThrow();
     });
@@ -299,16 +315,20 @@ describe('RemoteStorage', () => {
 
   describe('retrieve', () => {
     beforeEach(async () => {
-      mockFetch.mockResolvedValueOnce(createMockResponse({
-        json: () => Promise.resolve({ status: 'ok' })
-      }));
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({
+          json: () => Promise.resolve({ status: 'ok' }),
+        })
+      );
       await remoteStorage.initialize();
     });
 
     it('should retrieve version data from API', async () => {
-      mockFetch.mockResolvedValueOnce(createMockResponse({
-        json: () => Promise.resolve(mockVersionInfo)
-      }));
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({
+          json: () => Promise.resolve(mockVersionInfo),
+        })
+      );
 
       const result = await remoteStorage.retrieve('test-version-1');
 
@@ -317,8 +337,8 @@ describe('RemoteStorage', () => {
         expect.objectContaining({
           method: 'GET',
           headers: expect.objectContaining({
-            'Authorization': 'Bearer test-api-key'
-          })
+            Authorization: 'Bearer test-api-key',
+          }),
         })
       );
 
@@ -326,11 +346,13 @@ describe('RemoteStorage', () => {
     });
 
     it('should return null when version not found', async () => {
-      mockFetch.mockResolvedValueOnce(createMockResponse({
-        ok: false,
-        status: 404,
-        statusText: 'Not Found'
-      }));
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({
+          ok: false,
+          status: 404,
+          statusText: 'Not Found',
+        })
+      );
 
       const result = await remoteStorage.retrieve('nonexistent');
       expect(result).toBeNull();
@@ -351,16 +373,20 @@ describe('RemoteStorage', () => {
 
   describe('delete', () => {
     beforeEach(async () => {
-      mockFetch.mockResolvedValueOnce(createMockResponse({
-        json: () => Promise.resolve({ status: 'ok' })
-      }));
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({
+          json: () => Promise.resolve({ status: 'ok' }),
+        })
+      );
       await remoteStorage.initialize();
     });
 
     it('should delete version via API', async () => {
-      mockFetch.mockResolvedValueOnce(createMockResponse({
-        json: () => Promise.resolve({ deleted: true })
-      }));
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({
+          json: () => Promise.resolve({ deleted: true }),
+        })
+      );
 
       const result = await remoteStorage.delete('test-version-1');
 
@@ -369,8 +395,8 @@ describe('RemoteStorage', () => {
         expect.objectContaining({
           method: 'DELETE',
           headers: expect.objectContaining({
-            'Authorization': 'Bearer test-api-key'
-          })
+            Authorization: 'Bearer test-api-key',
+          }),
         })
       );
 
@@ -392,9 +418,11 @@ describe('RemoteStorage', () => {
 
   describe('list', () => {
     beforeEach(async () => {
-      mockFetch.mockResolvedValueOnce(createMockResponse({
-        json: () => Promise.resolve({ status: 'ok' })
-      }));
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({
+          json: () => Promise.resolve({ status: 'ok' }),
+        })
+      );
       await remoteStorage.initialize();
     });
 
@@ -407,8 +435,8 @@ describe('RemoteStorage', () => {
           metadata: {
             storedAt: '2023-01-01T00:00:00Z',
             size: 1024,
-            checksum: 'abc123'
-          }
+            checksum: 'abc123',
+          },
         },
         {
           id: 'storage-2',
@@ -417,14 +445,16 @@ describe('RemoteStorage', () => {
           metadata: {
             storedAt: '2023-01-02T00:00:00Z',
             size: 2048,
-            checksum: 'def456'
-          }
-        }
+            checksum: 'def456',
+          },
+        },
       ];
 
-      mockFetch.mockResolvedValueOnce(createMockResponse({
-        json: () => Promise.resolve({ versions: mockVersions })
-      }));
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({
+          json: () => Promise.resolve({ versions: mockVersions }),
+        })
+      );
 
       const result = await remoteStorage.list();
 
@@ -433,8 +463,8 @@ describe('RemoteStorage', () => {
         expect.objectContaining({
           method: 'GET',
           headers: expect.objectContaining({
-            'Authorization': 'Bearer test-api-key'
-          })
+            Authorization: 'Bearer test-api-key',
+          }),
         })
       );
 
@@ -456,16 +486,20 @@ describe('RemoteStorage', () => {
 
   describe('exists', () => {
     beforeEach(async () => {
-      mockFetch.mockResolvedValueOnce(createMockResponse({
-        json: () => Promise.resolve({ status: 'ok' })
-      }));
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({
+          json: () => Promise.resolve({ status: 'ok' }),
+        })
+      );
       await remoteStorage.initialize();
     });
 
     it('should check if version exists via API', async () => {
-      mockFetch.mockResolvedValueOnce(createMockResponse({
-        json: () => Promise.resolve({ exists: true })
-      }));
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({
+          json: () => Promise.resolve({ exists: true }),
+        })
+      );
 
       const result = await remoteStorage.exists('test-version-1');
 
@@ -474,8 +508,8 @@ describe('RemoteStorage', () => {
         expect.objectContaining({
           method: 'HEAD',
           headers: expect.objectContaining({
-            'Authorization': 'Bearer test-api-key'
-          })
+            Authorization: 'Bearer test-api-key',
+          }),
         })
       );
 
@@ -483,10 +517,12 @@ describe('RemoteStorage', () => {
     });
 
     it('should return false if version does not exist', async () => {
-      mockFetch.mockResolvedValueOnce(createMockResponse({
-        ok: false,
-        status: 404
-      }));
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({
+          ok: false,
+          status: 404,
+        })
+      );
 
       const result = await remoteStorage.exists('nonexistent');
 
@@ -496,9 +532,11 @@ describe('RemoteStorage', () => {
 
   describe('getMetadata', () => {
     beforeEach(async () => {
-      mockFetch.mockResolvedValueOnce(createMockResponse({
-        json: () => Promise.resolve({ status: 'ok' })
-      }));
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({
+          json: () => Promise.resolve({ status: 'ok' }),
+        })
+      );
       await remoteStorage.initialize();
     });
 
@@ -506,12 +544,14 @@ describe('RemoteStorage', () => {
       const mockMetadata = {
         storedAt: '2023-01-01T00:00:00Z',
         size: 1024,
-        checksum: 'abc123'
+        checksum: 'abc123',
       };
 
-      mockFetch.mockResolvedValueOnce(createMockResponse({
-        json: () => Promise.resolve(mockMetadata)
-      }));
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({
+          json: () => Promise.resolve(mockMetadata),
+        })
+      );
 
       const result = await remoteStorage.getMetadata('test-version-1');
 
@@ -520,8 +560,8 @@ describe('RemoteStorage', () => {
         expect.objectContaining({
           method: 'GET',
           headers: expect.objectContaining({
-            'Authorization': 'Bearer test-api-key'
-          })
+            Authorization: 'Bearer test-api-key',
+          }),
         })
       );
 
@@ -543,16 +583,20 @@ describe('RemoteStorage', () => {
 
   describe('updateMetadata', () => {
     beforeEach(async () => {
-      mockFetch.mockResolvedValueOnce(createMockResponse({
-        json: () => Promise.resolve({ status: 'ok' })
-      }));
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({
+          json: () => Promise.resolve({ status: 'ok' }),
+        })
+      );
       await remoteStorage.initialize();
     });
 
     it('should update version metadata via API', async () => {
-      mockFetch.mockResolvedValueOnce(createMockResponse({
-        json: () => Promise.resolve({ updated: true })
-      }));
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({
+          json: () => Promise.resolve({ updated: true }),
+        })
+      );
 
       const newMetadata = { tags: ['updated'] };
       const result = await remoteStorage.updateMetadata('test-version-1', newMetadata);
@@ -562,10 +606,10 @@ describe('RemoteStorage', () => {
         expect.objectContaining({
           method: 'PATCH',
           headers: expect.objectContaining({
-            'Authorization': 'Bearer test-api-key',
-            'Content-Type': 'application/json'
+            Authorization: 'Bearer test-api-key',
+            'Content-Type': 'application/json',
           }),
-          body: JSON.stringify(newMetadata)
+          body: JSON.stringify(newMetadata),
         })
       );
 
@@ -587,16 +631,20 @@ describe('RemoteStorage', () => {
 
   describe('cleanup', () => {
     beforeEach(async () => {
-      mockFetch.mockResolvedValueOnce(createMockResponse({
-        json: () => Promise.resolve({ status: 'ok' })
-      }));
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({
+          json: () => Promise.resolve({ status: 'ok' }),
+        })
+      );
       await remoteStorage.initialize();
     });
 
     it('should cleanup old versions via API', async () => {
-      mockFetch.mockResolvedValueOnce(createMockResponse({
-        json: () => Promise.resolve({ deletedCount: 5 })
-      }));
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({
+          json: () => Promise.resolve({ deletedCount: 5 }),
+        })
+      );
 
       const result = await remoteStorage.cleanup();
 
@@ -605,8 +653,8 @@ describe('RemoteStorage', () => {
         expect.objectContaining({
           method: 'POST',
           headers: expect.objectContaining({
-            'Authorization': 'Bearer test-api-key'
-          })
+            Authorization: 'Bearer test-api-key',
+          }),
         })
       );
 
@@ -628,9 +676,11 @@ describe('RemoteStorage', () => {
 
   describe('validate', () => {
     it('should validate remote storage configuration', async () => {
-      mockFetch.mockResolvedValueOnce(createMockResponse({
-        json: () => Promise.resolve({ status: 'ok' })
-      }));
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({
+          json: () => Promise.resolve({ status: 'ok' }),
+        })
+      );
 
       const result = await remoteStorage.validate(mockConfig);
 
@@ -655,9 +705,11 @@ describe('RemoteStorage', () => {
 
   describe('exportData', () => {
     beforeEach(async () => {
-      mockFetch.mockResolvedValueOnce(createMockResponse({
-        json: () => Promise.resolve({ status: 'ok' })
-      }));
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({
+          json: () => Promise.resolve({ status: 'ok' }),
+        })
+      );
       await remoteStorage.initialize();
     });
 
@@ -667,13 +719,15 @@ describe('RemoteStorage', () => {
         metadata: {
           exportedAt: '2023-01-01T00:00:00Z',
           totalVersions: 1,
-          storageType: 'remote'
-        }
+          storageType: 'remote',
+        },
       };
 
-      mockFetch.mockResolvedValueOnce(createMockResponse({
-        json: () => Promise.resolve(mockExportData)
-      }));
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({
+          json: () => Promise.resolve(mockExportData),
+        })
+      );
 
       const result = await remoteStorage.exportData();
 
@@ -682,8 +736,8 @@ describe('RemoteStorage', () => {
         expect.objectContaining({
           method: 'GET',
           headers: expect.objectContaining({
-            'Authorization': 'Bearer test-api-key'
-          })
+            Authorization: 'Bearer test-api-key',
+          }),
         })
       );
 
@@ -705,9 +759,11 @@ describe('RemoteStorage', () => {
 
   describe('importData', () => {
     beforeEach(async () => {
-      mockFetch.mockResolvedValueOnce(createMockResponse({
-        json: () => Promise.resolve({ status: 'ok' })
-      }));
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({
+          json: () => Promise.resolve({ status: 'ok' }),
+        })
+      );
       await remoteStorage.initialize();
     });
 
@@ -717,13 +773,15 @@ describe('RemoteStorage', () => {
         metadata: {
           exportedAt: '2023-01-01T00:00:00Z',
           totalVersions: 1,
-          storageType: 'remote'
-        }
+          storageType: 'remote',
+        },
       };
 
-      mockFetch.mockResolvedValueOnce(createMockResponse({
-        json: () => Promise.resolve({ importedCount: 1, errors: [] })
-      }));
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({
+          json: () => Promise.resolve({ importedCount: 1, errors: [] }),
+        })
+      );
 
       await remoteStorage.importData(importData);
 
@@ -732,10 +790,10 @@ describe('RemoteStorage', () => {
         expect.objectContaining({
           method: 'POST',
           headers: expect.objectContaining({
-            'Authorization': 'Bearer test-api-key',
-            'Content-Type': 'application/json'
+            Authorization: 'Bearer test-api-key',
+            'Content-Type': 'application/json',
           }),
-          body: JSON.stringify(importData)
+          body: JSON.stringify(importData),
         })
       );
     });
@@ -749,8 +807,8 @@ describe('RemoteStorage', () => {
         metadata: {
           exportedAt: '2023-01-01T00:00:00Z',
           totalVersions: 1,
-          storageType: 'remote'
-        }
+          storageType: 'remote',
+        },
       };
 
       // Create a new instance with a fresh initialized state
@@ -763,27 +821,33 @@ describe('RemoteStorage', () => {
 
   describe('edge cases', () => {
     it('should handle concurrent operations', async () => {
-      mockFetch.mockResolvedValueOnce(createMockResponse({
-        json: () => Promise.resolve({ status: 'ok' })
-      }));
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({
+          json: () => Promise.resolve({ status: 'ok' }),
+        })
+      );
       await remoteStorage.initialize();
 
-      mockFetch.mockResolvedValue(createMockResponse({
-        json: () => Promise.resolve({ success: true })
-      }));
+      mockFetch.mockResolvedValue(
+        createMockResponse({
+          json: () => Promise.resolve({ success: true }),
+        })
+      );
 
       const promises = [
         remoteStorage.store(mockVersionInfo),
-        remoteStorage.store({ ...mockVersionInfo, id: 'test-version-2' })
+        remoteStorage.store({ ...mockVersionInfo, id: 'test-version-2' }),
       ];
 
       await expect(Promise.all(promises)).resolves.toHaveLength(2);
     });
 
     it('should handle very large files', async () => {
-      mockFetch.mockResolvedValueOnce(createMockResponse({
-        json: () => Promise.resolve({ status: 'ok' })
-      }));
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({
+          json: () => Promise.resolve({ status: 'ok' }),
+        })
+      );
       await remoteStorage.initialize();
 
       const largeVersionInfo = {
@@ -795,32 +859,38 @@ describe('RemoteStorage', () => {
             relations: new Array(10000).fill({ from: 'a', to: 'b' }),
             entryPoints: [],
             publicExports: [],
-            privateExports: []
-          }
-        }
+            privateExports: [],
+          },
+        },
       };
 
-      mockFetch.mockResolvedValueOnce(createMockResponse({
-        json: () => Promise.resolve({ success: true })
-      }));
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({
+          json: () => Promise.resolve({ success: true }),
+        })
+      );
 
       await expect(remoteStorage.store(largeVersionInfo)).resolves.toBeDefined();
     });
 
     it('should handle special characters in version IDs', async () => {
-      mockFetch.mockResolvedValueOnce(createMockResponse({
-        json: () => Promise.resolve({ status: 'ok' })
-      }));
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({
+          json: () => Promise.resolve({ status: 'ok' }),
+        })
+      );
       await remoteStorage.initialize();
 
       const specialVersionInfo = {
         ...mockVersionInfo,
-        id: 'test-version-with-special-chars-@#$%'
+        id: 'test-version-with-special-chars-@#$%',
       };
 
-      mockFetch.mockResolvedValueOnce(createMockResponse({
-        json: () => Promise.resolve({ success: true })
-      }));
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({
+          json: () => Promise.resolve({ success: true }),
+        })
+      );
 
       await expect(remoteStorage.store(specialVersionInfo)).resolves.toBeDefined();
     });
@@ -828,9 +898,11 @@ describe('RemoteStorage', () => {
 
   describe('HTTP request handling', () => {
     beforeEach(async () => {
-      mockFetch.mockResolvedValueOnce(createMockResponse({
-        json: () => Promise.resolve({ status: 'ok' })
-      }));
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({
+          json: () => Promise.resolve({ status: 'ok' }),
+        })
+      );
       await remoteStorage.initialize();
     });
 
@@ -841,14 +913,16 @@ describe('RemoteStorage', () => {
         options: {
           apiKey: 'test-key',
           timeout: 1000,
-          retries: 3
-        }
+          retries: 3,
+        },
       });
 
       // Mock initialization
-      mockFetch.mockResolvedValueOnce(createMockResponse({
-        json: () => Promise.resolve({ status: 'ok' })
-      }));
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({
+          json: () => Promise.resolve({ status: 'ok' }),
+        })
+      );
       await storageWithRetries.initialize();
 
       // Clear the mock to start fresh for the store operation
@@ -858,9 +932,11 @@ describe('RemoteStorage', () => {
       mockFetch
         .mockRejectedValueOnce(new Error('Network error'))
         .mockRejectedValueOnce(new Error('Network error'))
-        .mockResolvedValueOnce(createMockResponse({
-          json: () => Promise.resolve({ success: true })
-        }));
+        .mockResolvedValueOnce(
+          createMockResponse({
+            json: () => Promise.resolve({ success: true }),
+          })
+        );
 
       await expect(storageWithRetries.store(mockVersionInfo)).resolves.toBeDefined();
       expect(mockFetch).toHaveBeenCalledTimes(3); // 3 calls for retries
@@ -873,14 +949,16 @@ describe('RemoteStorage', () => {
         options: {
           apiKey: 'test-key',
           timeout: 1000,
-          retries: 2
-        }
+          retries: 2,
+        },
       });
 
       // Mock initialization
-      mockFetch.mockResolvedValueOnce(createMockResponse({
-        json: () => Promise.resolve({ status: 'ok' })
-      }));
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({
+          json: () => Promise.resolve({ status: 'ok' }),
+        })
+      );
       await storageWithRetries.initialize();
 
       // Mock fetch to always fail
@@ -892,50 +970,58 @@ describe('RemoteStorage', () => {
 
     it('should handle different HTTP methods', async () => {
       // Test GET request
-      mockFetch.mockResolvedValueOnce(createMockResponse({
-        json: () => Promise.resolve(mockVersionInfo)
-      }));
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({
+          json: () => Promise.resolve(mockVersionInfo),
+        })
+      );
       await remoteStorage.retrieve('test-version-1');
 
       expect(global.fetch).toHaveBeenCalledWith(
         'https://api.example.com/versions/test-version-1',
         expect.objectContaining({
-          method: 'GET'
+          method: 'GET',
         })
       );
 
       // Test DELETE request
-      mockFetch.mockResolvedValueOnce(createMockResponse({
-        json: () => Promise.resolve({ deleted: true })
-      }));
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({
+          json: () => Promise.resolve({ deleted: true }),
+        })
+      );
       await remoteStorage.delete('test-version-1');
 
       expect(global.fetch).toHaveBeenCalledWith(
         'https://api.example.com/versions/test-version-1',
         expect.objectContaining({
-          method: 'DELETE'
+          method: 'DELETE',
         })
       );
 
       // Test HEAD request
-      mockFetch.mockResolvedValueOnce(createMockResponse({
-        json: () => Promise.resolve({ exists: true })
-      }));
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({
+          json: () => Promise.resolve({ exists: true }),
+        })
+      );
       await remoteStorage.exists('test-version-1');
 
       expect(global.fetch).toHaveBeenCalledWith(
         'https://api.example.com/versions/test-version-1/exists',
         expect.objectContaining({
-          method: 'HEAD'
+          method: 'HEAD',
         })
       );
     });
 
     it('should handle requests with and without body', async () => {
       // Test request with body
-      mockFetch.mockResolvedValueOnce(createMockResponse({
-        json: () => Promise.resolve({ success: true })
-      }));
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({
+          json: () => Promise.resolve({ success: true }),
+        })
+      );
       await remoteStorage.store(mockVersionInfo);
 
       // Verify the store call was made with body
@@ -943,21 +1029,23 @@ describe('RemoteStorage', () => {
         'https://api.example.com/versions',
         expect.objectContaining({
           method: 'POST',
-          body: JSON.stringify(mockVersionInfo)
+          body: JSON.stringify(mockVersionInfo),
         })
       );
 
       // Test request without body
-      mockFetch.mockResolvedValueOnce(createMockResponse({
-        json: () => Promise.resolve({ versions: [] })
-      }));
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({
+          json: () => Promise.resolve({ versions: [] }),
+        })
+      );
       await remoteStorage.list();
 
       // Verify the list call was made without body
       expect(mockFetch).toHaveBeenCalledWith(
         'https://api.example.com/versions',
         expect.objectContaining({
-          method: 'GET'
+          method: 'GET',
         })
       );
     });
@@ -969,14 +1057,16 @@ describe('RemoteStorage', () => {
         options: {
           apiKey: 'test-key',
           timeout: 1, // Very short timeout
-          retries: 1
-        }
+          retries: 1,
+        },
       });
 
       // Mock initialization
-      mockFetch.mockResolvedValueOnce(createMockResponse({
-        json: () => Promise.resolve({ status: 'ok' })
-      }));
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({
+          json: () => Promise.resolve({ status: 'ok' }),
+        })
+      );
       await storageWithShortTimeout.initialize();
 
       // Mock fetch to timeout
@@ -988,70 +1078,98 @@ describe('RemoteStorage', () => {
 
   describe('error handling', () => {
     beforeEach(async () => {
-      mockFetch.mockResolvedValueOnce(createMockResponse({
-        json: () => Promise.resolve({ status: 'ok' })
-      }));
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({
+          json: () => Promise.resolve({ status: 'ok' }),
+        })
+      );
       await remoteStorage.initialize();
     });
 
     it('should handle different API error status codes', async () => {
       // Test 400 Bad Request
-      mockFetch.mockResolvedValueOnce(createMockResponse({
-        ok: false,
-        status: 400,
-        statusText: 'Bad Request',
-        json: () => Promise.resolve({ error: 'Invalid data' })
-      }));
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({
+          ok: false,
+          status: 400,
+          statusText: 'Bad Request',
+          json: () => Promise.resolve({ error: 'Invalid data' }),
+        })
+      );
 
       await expect(remoteStorage.store(mockVersionInfo)).rejects.toThrow('Failed to store version');
 
       // Test 401 Unauthorized
-      mockFetch.mockResolvedValueOnce(createMockResponse({
-        ok: false,
-        status: 401,
-        statusText: 'Unauthorized'
-      }));
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({
+          ok: false,
+          status: 401,
+          statusText: 'Unauthorized',
+        })
+      );
 
-      await expect(remoteStorage.retrieve('test-version-1')).rejects.toThrow('Failed to retrieve version');
+      await expect(remoteStorage.retrieve('test-version-1')).rejects.toThrow(
+        'Failed to retrieve version'
+      );
 
       // Test 403 Forbidden
-      mockFetch.mockResolvedValueOnce(createMockResponse({
-        ok: false,
-        status: 403,
-        statusText: 'Forbidden'
-      }));
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({
+          ok: false,
+          status: 403,
+          statusText: 'Forbidden',
+        })
+      );
 
-      await expect(remoteStorage.delete('test-version-1')).rejects.toThrow('Failed to delete version');
+      await expect(remoteStorage.delete('test-version-1')).rejects.toThrow(
+        'Failed to delete version'
+      );
 
       // Test 500 Internal Server Error
-      mockFetch.mockResolvedValueOnce(createMockResponse({
-        ok: false,
-        status: 500,
-        statusText: 'Internal Server Error'
-      }));
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({
+          ok: false,
+          status: 500,
+          statusText: 'Internal Server Error',
+        })
+      );
 
       await expect(remoteStorage.list()).rejects.toThrow('Failed to list versions');
     });
 
     it('should handle JSON parsing errors', async () => {
-      mockFetch.mockResolvedValueOnce(createMockResponse({
-        ok: true,
-        json: () => Promise.reject(new Error('Invalid JSON'))
-      }));
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({
+          ok: true,
+          json: () => Promise.reject(new Error('Invalid JSON')),
+        })
+      );
 
       await expect(remoteStorage.retrieve('test-version-1')).rejects.toThrow('Invalid JSON');
     });
 
     it('should handle ensureInitialized error', async () => {
       const uninitializedStorage = new RemoteStorage(mockConfig);
-      
-      await expect(uninitializedStorage.store(mockVersionInfo)).rejects.toThrow('Storage not initialized');
-      await expect(uninitializedStorage.retrieve('test-version-1')).rejects.toThrow('Storage not initialized');
-      await expect(uninitializedStorage.delete('test-version-1')).rejects.toThrow('Storage not initialized');
+
+      await expect(uninitializedStorage.store(mockVersionInfo)).rejects.toThrow(
+        'Storage not initialized'
+      );
+      await expect(uninitializedStorage.retrieve('test-version-1')).rejects.toThrow(
+        'Storage not initialized'
+      );
+      await expect(uninitializedStorage.delete('test-version-1')).rejects.toThrow(
+        'Storage not initialized'
+      );
       await expect(uninitializedStorage.list()).rejects.toThrow('Storage not initialized');
-      await expect(uninitializedStorage.exists('test-version-1')).rejects.toThrow('Storage not initialized');
-      await expect(uninitializedStorage.getMetadata('test-version-1')).rejects.toThrow('Storage not initialized');
-      await expect(uninitializedStorage.updateMetadata('test-version-1', {})).rejects.toThrow('Storage not initialized');
+      await expect(uninitializedStorage.exists('test-version-1')).rejects.toThrow(
+        'Storage not initialized'
+      );
+      await expect(uninitializedStorage.getMetadata('test-version-1')).rejects.toThrow(
+        'Storage not initialized'
+      );
+      await expect(uninitializedStorage.updateMetadata('test-version-1', {})).rejects.toThrow(
+        'Storage not initialized'
+      );
       await expect(uninitializedStorage.cleanup()).rejects.toThrow('Storage not initialized');
       await expect(uninitializedStorage.exportData()).rejects.toThrow('Storage not initialized');
       await expect(uninitializedStorage.importData({})).rejects.toThrow('Storage not initialized');
@@ -1066,45 +1184,55 @@ describe('RemoteStorage', () => {
 
   describe('additional edge cases', () => {
     it('should handle empty response from API', async () => {
-      mockFetch.mockResolvedValueOnce(createMockResponse({
-        json: () => Promise.resolve({ status: 'ok' })
-      }));
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({
+          json: () => Promise.resolve({ status: 'ok' }),
+        })
+      );
       await remoteStorage.initialize();
 
       // Test empty list response
-      mockFetch.mockResolvedValueOnce(createMockResponse({
-        json: () => Promise.resolve({})
-      }));
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({
+          json: () => Promise.resolve({}),
+        })
+      );
 
       const result = await remoteStorage.list();
       expect(result).toEqual([]);
 
       // Test empty cleanup response
-      mockFetch.mockResolvedValueOnce(createMockResponse({
-        json: () => Promise.resolve({})
-      }));
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({
+          json: () => Promise.resolve({}),
+        })
+      );
 
       const cleanupResult = await remoteStorage.cleanup();
       expect(cleanupResult).toBe(0);
     });
 
     it('should handle store response with missing fields', async () => {
-      mockFetch.mockResolvedValueOnce(createMockResponse({
-        json: () => Promise.resolve({ status: 'ok' })
-      }));
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({
+          json: () => Promise.resolve({ status: 'ok' }),
+        })
+      );
       await remoteStorage.initialize();
 
       // Test store response with missing fields
-      mockFetch.mockResolvedValueOnce(createMockResponse({
-        json: () => Promise.resolve({})
-      }));
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({
+          json: () => Promise.resolve({}),
+        })
+      );
 
       const result = await remoteStorage.store(mockVersionInfo);
       expect(result).toEqual({
         id: expect.any(String),
         versionId: mockVersionInfo.id,
         path: `${mockConfig.path}/${mockVersionInfo.id}`,
-        metadata: expect.any(Object)
+        metadata: expect.any(Object),
       });
     });
 
@@ -1115,18 +1243,22 @@ describe('RemoteStorage', () => {
         options: {
           apiKey: 'test-key',
           timeout: 30000, // 30 seconds
-          retries: 1
-        }
+          retries: 1,
+        },
       });
 
-      mockFetch.mockResolvedValueOnce(createMockResponse({
-        json: () => Promise.resolve({ status: 'ok' })
-      }));
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({
+          json: () => Promise.resolve({ status: 'ok' }),
+        })
+      );
       await storageWithCustomTimeout.initialize();
 
-      mockFetch.mockResolvedValueOnce(createMockResponse({
-        json: () => Promise.resolve({ success: true })
-      }));
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({
+          json: () => Promise.resolve({ success: true }),
+        })
+      );
 
       await expect(storageWithCustomTimeout.store(mockVersionInfo)).resolves.toBeDefined();
     });
@@ -1139,8 +1271,8 @@ describe('RemoteStorage', () => {
         options: {
           apiKey: 'test-key',
           timeout: 5000,
-          retries: 0 // No retries
-        }
+          retries: 0, // No retries
+        },
       });
 
       const storageWithManyRetries = new RemoteStorage({
@@ -1149,8 +1281,8 @@ describe('RemoteStorage', () => {
         options: {
           apiKey: 'test-key',
           timeout: 5000,
-          retries: 5 // Many retries
-        }
+          retries: 5, // Many retries
+        },
       });
 
       // Both should be created successfully
@@ -1161,9 +1293,11 @@ describe('RemoteStorage', () => {
 
   describe('additional branch coverage', () => {
     beforeEach(async () => {
-      mockFetch.mockResolvedValueOnce(createMockResponse({
-        json: () => Promise.resolve({ status: 'ok' })
-      }));
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({
+          json: () => Promise.resolve({ status: 'ok' }),
+        })
+      );
       await remoteStorage.initialize();
     });
 
@@ -1176,59 +1310,73 @@ describe('RemoteStorage', () => {
     });
 
     it('should handle getMetadata with non-ok response', async () => {
-      mockFetch.mockResolvedValueOnce(createMockResponse({
-        ok: false,
-        status: 404,
-        statusText: 'Not Found'
-      }));
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({
+          ok: false,
+          status: 404,
+          statusText: 'Not Found',
+        })
+      );
 
-      await expect(remoteStorage.getMetadata('test-version-1')).rejects.toThrow('Failed to get metadata');
+      await expect(remoteStorage.getMetadata('test-version-1')).rejects.toThrow(
+        'Failed to get metadata'
+      );
     });
 
     it('should handle updateMetadata with non-ok response', async () => {
-      mockFetch.mockResolvedValueOnce(createMockResponse({
-        ok: false,
-        status: 400,
-        statusText: 'Bad Request'
-      }));
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({
+          ok: false,
+          status: 400,
+          statusText: 'Bad Request',
+        })
+      );
 
-      await expect(remoteStorage.updateMetadata('test-version-1', {})).rejects.toThrow('Failed to update metadata');
+      await expect(remoteStorage.updateMetadata('test-version-1', {})).rejects.toThrow(
+        'Failed to update metadata'
+      );
     });
 
     it('should handle cleanup with non-ok response', async () => {
-      mockFetch.mockResolvedValueOnce(createMockResponse({
-        ok: false,
-        status: 500,
-        statusText: 'Internal Server Error'
-      }));
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({
+          ok: false,
+          status: 500,
+          statusText: 'Internal Server Error',
+        })
+      );
 
       await expect(remoteStorage.cleanup()).rejects.toThrow('Failed to cleanup versions');
     });
 
     it('should handle exportData with non-ok response', async () => {
-      mockFetch.mockResolvedValueOnce(createMockResponse({
-        ok: false,
-        status: 403,
-        statusText: 'Forbidden'
-      }));
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({
+          ok: false,
+          status: 403,
+          statusText: 'Forbidden',
+        })
+      );
 
       await expect(remoteStorage.exportData()).rejects.toThrow('Failed to export data');
     });
 
     it('should handle importData with non-ok response', async () => {
-      mockFetch.mockResolvedValueOnce(createMockResponse({
-        ok: false,
-        status: 400,
-        statusText: 'Bad Request'
-      }));
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({
+          ok: false,
+          status: 400,
+          statusText: 'Bad Request',
+        })
+      );
 
       const importData = {
         versions: [mockVersionInfo],
         metadata: {
           exportedAt: '2023-01-01T00:00:00Z',
           totalVersions: 1,
-          storageType: 'remote'
-        }
+          storageType: 'remote',
+        },
       };
 
       await expect(remoteStorage.importData(importData)).rejects.toThrow('Failed to import data');
@@ -1236,10 +1384,12 @@ describe('RemoteStorage', () => {
 
     it('should handle makeRequest with body parameter', async () => {
       const testData = { test: 'data' };
-      
-      mockFetch.mockResolvedValueOnce(createMockResponse({
-        json: () => Promise.resolve({ success: true })
-      }));
+
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({
+          json: () => Promise.resolve({ success: true }),
+        })
+      );
 
       await remoteStorage.updateMetadata('test-version-1', testData);
 
@@ -1247,22 +1397,24 @@ describe('RemoteStorage', () => {
         'https://api.example.com/versions/test-version-1/metadata',
         expect.objectContaining({
           method: 'PATCH',
-          body: JSON.stringify(testData)
+          body: JSON.stringify(testData),
         })
       );
     });
 
     it('should handle makeRequest without body parameter', async () => {
-      mockFetch.mockResolvedValueOnce(createMockResponse({
-        json: () => Promise.resolve({ versions: [] })
-      }));
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({
+          json: () => Promise.resolve({ versions: [] }),
+        })
+      );
 
       await remoteStorage.list();
 
       expect(mockFetch).toHaveBeenCalledWith(
         'https://api.example.com/versions',
         expect.objectContaining({
-          method: 'GET'
+          method: 'GET',
         })
       );
     });
@@ -1274,18 +1426,22 @@ describe('RemoteStorage', () => {
         options: {
           apiKey: 'test-api-key',
           timeout: 5000,
-          retries: 1
-        }
+          retries: 1,
+        },
       });
 
-      mockFetch.mockResolvedValueOnce(createMockResponse({
-        json: () => Promise.resolve({ status: 'ok' })
-      }));
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({
+          json: () => Promise.resolve({ status: 'ok' }),
+        })
+      );
       await storageWithKey.initialize();
 
-      mockFetch.mockResolvedValueOnce(createMockResponse({
-        json: () => Promise.resolve({ success: true })
-      }));
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({
+          json: () => Promise.resolve({ success: true }),
+        })
+      );
 
       await storageWithKey.store(mockVersionInfo);
 
@@ -1293,8 +1449,8 @@ describe('RemoteStorage', () => {
         'https://api.example.com/versions',
         expect.objectContaining({
           headers: expect.objectContaining({
-            'Authorization': 'Bearer test-api-key'
-          })
+            Authorization: 'Bearer test-api-key',
+          }),
         })
       );
     });
@@ -1305,18 +1461,22 @@ describe('RemoteStorage', () => {
         path: 'https://api.example.com/versions',
         options: {
           timeout: 5000,
-          retries: 1
-        }
+          retries: 1,
+        },
       });
 
-      mockFetch.mockResolvedValueOnce(createMockResponse({
-        json: () => Promise.resolve({ status: 'ok' })
-      }));
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({
+          json: () => Promise.resolve({ status: 'ok' }),
+        })
+      );
       await storageWithoutKey.initialize();
 
-      mockFetch.mockResolvedValueOnce(createMockResponse({
-        json: () => Promise.resolve({ success: true })
-      }));
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({
+          json: () => Promise.resolve({ success: true }),
+        })
+      );
 
       await storageWithoutKey.store(mockVersionInfo);
 
@@ -1324,8 +1484,8 @@ describe('RemoteStorage', () => {
         'https://api.example.com/versions',
         expect.objectContaining({
           headers: expect.not.objectContaining({
-            'Authorization': expect.any(String)
-          })
+            Authorization: expect.any(String),
+          }),
         })
       );
     });
@@ -1337,14 +1497,16 @@ describe('RemoteStorage', () => {
         options: {
           apiKey: 'test-key',
           timeout: 1000,
-          retries: 3
-        }
+          retries: 3,
+        },
       });
 
       // Mock initialization
-      mockFetch.mockResolvedValueOnce(createMockResponse({
-        json: () => Promise.resolve({ status: 'ok' })
-      }));
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({
+          json: () => Promise.resolve({ status: 'ok' }),
+        })
+      );
       await storageWithRetries.initialize();
 
       // Clear the mock to start fresh for the store operation
@@ -1354,9 +1516,11 @@ describe('RemoteStorage', () => {
       mockFetch
         .mockRejectedValueOnce(new Error('Network error'))
         .mockRejectedValueOnce(new Error('Network error'))
-        .mockResolvedValueOnce(createMockResponse({
-          json: () => Promise.resolve({ success: true })
-        }));
+        .mockResolvedValueOnce(
+          createMockResponse({
+            json: () => Promise.resolve({ success: true }),
+          })
+        );
 
       await expect(storageWithRetries.store(mockVersionInfo)).resolves.toBeDefined();
       expect(mockFetch).toHaveBeenCalledTimes(3); // 3 calls for retries
@@ -1369,14 +1533,16 @@ describe('RemoteStorage', () => {
         options: {
           apiKey: 'test-key',
           timeout: 1000,
-          retries: 2
-        }
+          retries: 2,
+        },
       });
 
       // Mock initialization
-      mockFetch.mockResolvedValueOnce(createMockResponse({
-        json: () => Promise.resolve({ status: 'ok' })
-      }));
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({
+          json: () => Promise.resolve({ status: 'ok' }),
+        })
+      );
       await storageWithRetries.initialize();
 
       // Mock fetch to always fail
@@ -1393,14 +1559,16 @@ describe('RemoteStorage', () => {
         options: {
           apiKey: 'test-key',
           timeout: 1000,
-          retries: 1
-        }
+          retries: 1,
+        },
       });
 
       // Mock initialization
-      mockFetch.mockResolvedValueOnce(createMockResponse({
-        json: () => Promise.resolve({ status: 'ok' })
-      }));
+      mockFetch.mockResolvedValueOnce(
+        createMockResponse({
+          json: () => Promise.resolve({ status: 'ok' }),
+        })
+      );
       await storageWithRetries.initialize();
 
       // Mock fetch to reject with non-Error value

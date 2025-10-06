@@ -1,10 +1,14 @@
 /**
  * Tests for BaseGenerator
- * 
+ *
  * Following TDD approach - tests define expected behavior
  */
 
-import { BaseGenerator, DocumentationGenerationOptions, DocumentationGenerationResult } from '../../../../src/documentation/generators/BaseGenerator';
+import {
+  BaseGenerator,
+  DocumentationGenerationOptions,
+  DocumentationGenerationResult,
+} from '../../../../src/documentation/generators/BaseGenerator';
 import { ASTNode, ASTNodeType } from '../../../../src/types/core';
 import { JSDocComment } from '../../../../src/documentation/extractors/JSDocExtractor';
 import { TypeInfo } from '../../../../src/documentation/extractors/TypeExtractor';
@@ -15,9 +19,9 @@ class TestGenerator extends BaseGenerator {
   public async generate(nodes: ASTNode[]): Promise<any> {
     const content = this.createContent(nodes);
     const filePath = `${this.options.outputDir}/${this.options.fileName}.test`;
-    
+
     await this.writeToFile(JSON.stringify(content), filePath);
-    
+
     return {
       filePath,
       contentSize: JSON.stringify(content).length,
@@ -25,10 +29,10 @@ class TestGenerator extends BaseGenerator {
       metadata: {
         generationTime: 100,
         filesProcessed: this.getFileCount(nodes),
-        nodesProcessed: nodes.length
+        nodesProcessed: nodes.length,
       },
       errors: [],
-      success: true
+      success: true,
     };
   }
 
@@ -45,10 +49,10 @@ class TestGenerator extends BaseGenerator {
       metadata: {
         generationTime: 50,
         filesProcessed: 1,
-        nodesProcessed: 10
+        nodesProcessed: 10,
       },
       errors: [],
-      success: true
+      success: true,
     };
   }
 }
@@ -64,7 +68,7 @@ describe('BaseGenerator', () => {
       includeTOC: true,
       includeNavigation: true,
       includeMetadata: true,
-      templateVariables: {}
+      templateVariables: {},
     };
     generator = new TestGenerator();
   });
@@ -78,13 +82,13 @@ describe('BaseGenerator', () => {
       const customOptions = {
         outputDir: './custom-docs',
         fileName: 'custom-doc',
-        includeTOC: false
+        includeTOC: false,
       };
       const customGenerator = new TestGenerator(customOptions);
-      
+
       expect(customGenerator.getOptions()).toEqual({
         ...defaultOptions,
-        ...customOptions
+        ...customOptions,
       });
     });
   });
@@ -92,7 +96,7 @@ describe('BaseGenerator', () => {
   describe('validate', () => {
     it('should pass validation with valid options', () => {
       const result = generator.validate();
-      
+
       expect(result.isValid).toBe(true);
       expect(result.errors).toHaveLength(0);
       expect(result.warnings).toHaveLength(0);
@@ -101,7 +105,7 @@ describe('BaseGenerator', () => {
     it('should fail validation with empty output directory', () => {
       generator.updateOptions({ outputDir: '' });
       const result = generator.validate();
-      
+
       expect(result.isValid).toBe(false);
       expect(result.errors).toContain('Output directory is required');
     });
@@ -109,7 +113,7 @@ describe('BaseGenerator', () => {
     it('should fail validation with empty file name', () => {
       generator.updateOptions({ fileName: '' });
       const result = generator.validate();
-      
+
       expect(result.isValid).toBe(false);
       expect(result.errors).toContain('File name is required');
     });
@@ -117,7 +121,7 @@ describe('BaseGenerator', () => {
     it('should fail validation with invalid file name characters', () => {
       generator.updateOptions({ fileName: 'invalid<file>name' });
       const result = generator.validate();
-      
+
       expect(result.isValid).toBe(false);
       expect(result.errors).toContain('File name contains invalid characters');
     });
@@ -125,7 +129,7 @@ describe('BaseGenerator', () => {
     it('should fail validation with invalid template variables', () => {
       generator.updateOptions({ templateVariables: 'invalid' as any });
       const result = generator.validate();
-      
+
       expect(result.isValid).toBe(false);
       expect(result.errors).toContain('Template variables must be an object');
     });
@@ -144,10 +148,10 @@ describe('BaseGenerator', () => {
           end: 100,
           children: [],
           properties: {
-            description: 'Test function description'
+            description: 'Test function description',
           },
-          metadata: {}
-        }
+          metadata: {},
+        },
       ];
 
       const result = await generator.generate(nodes);
@@ -171,7 +175,7 @@ describe('BaseGenerator', () => {
           end: 50,
           children: [],
           properties: {},
-          metadata: {}
+          metadata: {},
         },
         {
           id: 'test-class',
@@ -183,7 +187,7 @@ describe('BaseGenerator', () => {
           end: 100,
           children: [],
           properties: {},
-          metadata: {}
+          metadata: {},
         },
         {
           id: 'test-interface',
@@ -195,8 +199,8 @@ describe('BaseGenerator', () => {
           end: 150,
           children: [],
           properties: {},
-          metadata: {}
-        }
+          metadata: {},
+        },
       ];
 
       const result = await generator.generate(nodes);
@@ -219,8 +223,8 @@ describe('BaseGenerator', () => {
           end: 20,
           lineNumber: 1,
           isValid: true,
-          errors: []
-        }
+          errors: [],
+        },
       ];
 
       const typeInfo: TypeInfo[] = [
@@ -238,8 +242,8 @@ describe('BaseGenerator', () => {
           exported: true,
           public: true,
           dependencies: [],
-          metadata: {}
-        }
+          metadata: {},
+        },
       ];
 
       const examples: ExampleInfo[] = [
@@ -256,8 +260,8 @@ describe('BaseGenerator', () => {
           lineNumber: 1,
           isValid: true,
           errors: [],
-          metadata: {}
-        }
+          metadata: {},
+        },
       ];
 
       const result = await generator.generateFromExtracted(jsdocComments, typeInfo, examples);
@@ -281,8 +285,8 @@ describe('BaseGenerator', () => {
           end: 100,
           children: [],
           properties: {},
-          metadata: {}
-        }
+          metadata: {},
+        },
       ];
 
       const content = (generator as any).createContent(nodes);
@@ -307,7 +311,7 @@ describe('BaseGenerator', () => {
           end: 50,
           children: [],
           properties: {},
-          metadata: {}
+          metadata: {},
         },
         {
           id: 'test-class',
@@ -319,8 +323,8 @@ describe('BaseGenerator', () => {
           end: 100,
           children: [],
           properties: {},
-          metadata: {}
-        }
+          metadata: {},
+        },
       ];
 
       const overviewSection = (generator as any).createOverviewSection(nodes);
@@ -343,10 +347,10 @@ describe('BaseGenerator', () => {
           end: 100,
           children: [],
           properties: {
-            description: 'Test function description'
+            description: 'Test function description',
           },
-          metadata: {}
-        }
+          metadata: {},
+        },
       ];
 
       const apiSection = (generator as any).createAPIReferenceSection(nodes);
@@ -371,10 +375,10 @@ describe('BaseGenerator', () => {
           end: 100,
           children: [],
           properties: {
-            name: 'test-package'
+            name: 'test-package',
           },
-          metadata: {}
-        }
+          metadata: {},
+        },
       ];
 
       const title = (generator as any).getProjectTitle(nodes);
@@ -394,8 +398,8 @@ describe('BaseGenerator', () => {
           end: 100,
           children: [],
           properties: {},
-          metadata: {}
-        }
+          metadata: {},
+        },
       ];
 
       const title = (generator as any).getProjectTitle(nodes);
@@ -415,10 +419,10 @@ describe('BaseGenerator', () => {
           end: 100,
           children: [],
           properties: {
-            description: 'Test package description'
+            description: 'Test package description',
           },
-          metadata: {}
-        }
+          metadata: {},
+        },
       ];
 
       const description = (generator as any).getProjectDescription(nodes);
@@ -437,9 +441,9 @@ describe('BaseGenerator', () => {
         end: 100,
         children: [],
         properties: {
-          description: 'Test function description'
+          description: 'Test function description',
         },
-        metadata: {}
+        metadata: {},
       };
 
       const description = (generator as any).getNodeDescription(node);
@@ -470,7 +474,7 @@ describe('BaseGenerator', () => {
           end: 50,
           children: [],
           properties: {},
-          metadata: {}
+          metadata: {},
         },
         {
           id: 'func2',
@@ -482,7 +486,7 @@ describe('BaseGenerator', () => {
           end: 100,
           children: [],
           properties: {},
-          metadata: {}
+          metadata: {},
         },
         {
           id: 'class1',
@@ -494,7 +498,7 @@ describe('BaseGenerator', () => {
           end: 150,
           children: [],
           properties: {},
-          metadata: {}
+          metadata: {},
         },
         {
           id: 'interface1',
@@ -506,8 +510,8 @@ describe('BaseGenerator', () => {
           end: 200,
           children: [],
           properties: {},
-          metadata: {}
-        }
+          metadata: {},
+        },
       ];
 
       expect((generator as any).getFileCount(nodes)).toBe(1);
@@ -521,7 +525,7 @@ describe('BaseGenerator', () => {
     it('should update options correctly', () => {
       const newOptions = {
         outputDir: './new-docs',
-        fileName: 'new-documentation'
+        fileName: 'new-documentation',
       };
 
       generator.updateOptions(newOptions);
@@ -553,8 +557,8 @@ describe('BaseGenerator', () => {
           end: 100,
           children: [],
           properties: {},
-          metadata: {}
-        }
+          metadata: {},
+        },
       ];
 
       const description = (generator as any).getNodeDescription(nodes[0]);
@@ -594,8 +598,8 @@ describe('BaseGenerator', () => {
           end: 100,
           children: [],
           properties: {}, // Empty properties
-          metadata: {}
-        }
+          metadata: {},
+        },
       ];
 
       const result = await generator.generate(nodes);
@@ -615,10 +619,10 @@ describe('BaseGenerator', () => {
             metadata: {
               generationTime: 10,
               filesProcessed: 1,
-              nodesProcessed: nodes.length
+              nodesProcessed: nodes.length,
             },
             errors: [],
-            success: true
+            success: true,
           };
         }
 
@@ -634,10 +638,10 @@ describe('BaseGenerator', () => {
             metadata: {
               generationTime: 10,
               filesProcessed: 1,
-              nodesProcessed: 1
+              nodesProcessed: 1,
             },
             errors: [],
-            success: true
+            success: true,
           };
         }
       }
@@ -648,7 +652,7 @@ describe('BaseGenerator', () => {
         includeTOC: true,
         includeNavigation: true,
         includeMetadata: true,
-        templateVariables: {}
+        templateVariables: {},
       });
 
       const result = await invalidGenerator.generate([]);
@@ -678,8 +682,8 @@ describe('BaseGenerator', () => {
           end: 50,
           lineNumber: 1,
           metadata: {},
-          fullText: '/** JSDoc comment */'
-        }
+          fullText: '/** JSDoc comment */',
+        },
       ];
 
       const typeInfo = [
@@ -698,8 +702,8 @@ describe('BaseGenerator', () => {
           lineNumber: 1,
           exported: true,
           public: true,
-          dependencies: []
-        }
+          dependencies: [],
+        },
       ];
 
       const examples = [
@@ -717,8 +721,8 @@ describe('BaseGenerator', () => {
           start: 0,
           end: 30,
           lineNumber: 1,
-          metadata: {}
-        }
+          metadata: {},
+        },
       ];
 
       const result = await generator.generateFromExtracted(jsdocComments, typeInfo, examples);
@@ -750,10 +754,10 @@ describe('BaseGenerator', () => {
           end: 100,
           children: [],
           properties: {
-            description: 'Test function'
+            description: 'Test function',
           },
-          metadata: {}
-        }
+          metadata: {},
+        },
       ];
 
       const overviewSection = (generator as any).createOverviewSection(nodes);
@@ -781,9 +785,9 @@ describe('BaseGenerator', () => {
           end: 100,
           children: [],
           properties: {
-            description: 'Test function'
+            description: 'Test function',
           },
-          metadata: {}
+          metadata: {},
         },
         {
           id: 'test-class',
@@ -795,9 +799,9 @@ describe('BaseGenerator', () => {
           end: 200,
           children: [],
           properties: {
-            description: 'Test class'
+            description: 'Test class',
           },
-          metadata: {}
+          metadata: {},
         },
         {
           id: 'test-interface',
@@ -809,10 +813,10 @@ describe('BaseGenerator', () => {
           end: 300,
           children: [],
           properties: {
-            description: 'Test interface'
+            description: 'Test interface',
           },
-          metadata: {}
-        }
+          metadata: {},
+        },
       ];
 
       const apiSection = (generator as any).createAPIReferenceSection(nodes);
@@ -849,10 +853,10 @@ describe('BaseGenerator', () => {
           end: 100,
           children: [],
           properties: {
-            description: 'Test package description'
+            description: 'Test package description',
           },
-          metadata: {}
-        }
+          metadata: {},
+        },
       ];
 
       const description = (generator as any).getProjectDescription(nodes);
@@ -872,7 +876,7 @@ describe('BaseGenerator', () => {
           end: 50,
           children: [],
           properties: {},
-          metadata: {}
+          metadata: {},
         },
         {
           id: 'func2',
@@ -884,7 +888,7 @@ describe('BaseGenerator', () => {
           end: 100,
           children: [],
           properties: {},
-          metadata: {}
+          metadata: {},
         },
         {
           id: 'class1',
@@ -896,7 +900,7 @@ describe('BaseGenerator', () => {
           end: 150,
           children: [],
           properties: {},
-          metadata: {}
+          metadata: {},
         },
         {
           id: 'interface1',
@@ -908,8 +912,8 @@ describe('BaseGenerator', () => {
           end: 200,
           children: [],
           properties: {},
-          metadata: {}
-        }
+          metadata: {},
+        },
       ];
 
       // countNodeTypes doesn't exist, so test the individual count methods
@@ -961,7 +965,7 @@ describe('BaseGenerator', () => {
   describe('options and configuration', () => {
     it('should handle updateOptions with partial options', () => {
       const newOptions = {
-        fileName: 'updated.md'
+        fileName: 'updated.md',
       };
 
       generator.updateOptions(newOptions);
@@ -972,7 +976,7 @@ describe('BaseGenerator', () => {
 
     it('should handle updateOptions with empty options', () => {
       const originalOptions = generator.getOptions();
-      
+
       generator.updateOptions({});
 
       expect(generator.getOptions()).toEqual(originalOptions);
@@ -1015,11 +1019,11 @@ describe('BaseGenerator', () => {
                 end: 20,
                 lineNumber: 1,
                 isValid: true,
-                errors: []
-              }
-            ]
-          }
-        }
+                errors: [],
+              },
+            ],
+          },
+        },
       ];
 
       const content = (generator as any).generateExamplesContent(nodes);
@@ -1043,7 +1047,7 @@ describe('BaseGenerator', () => {
         end: 20,
         lineNumber: 1,
         isValid: true,
-        errors: []
+        errors: [],
       };
 
       const content = (generator as any).generateExampleDocumentation(example);
@@ -1081,11 +1085,11 @@ describe('BaseGenerator', () => {
                 end: 20,
                 lineNumber: 1,
                 isValid: true,
-                errors: []
-              }
-            ]
-          }
-        }
+                errors: [],
+              },
+            ],
+          },
+        },
       ];
 
       const examples = (generator as any).extractExamplesFromNodes(nodes);
@@ -1130,15 +1134,15 @@ describe('BaseGenerator', () => {
                     end: 20,
                     lineNumber: 1,
                     isValid: true,
-                    errors: []
-                  }
-                ]
-              }
-            }
+                    errors: [],
+                  },
+                ],
+              },
+            },
           ],
           metadata: {},
-          properties: {}
-        }
+          properties: {},
+        },
       ];
 
       const examples = (generator as any).extractExamplesFromNodes(nodes);
@@ -1161,9 +1165,9 @@ describe('BaseGenerator', () => {
         properties: {
           jsDocComments: [
             '/**\n * Test JSDoc comment\n * This is a description\n */',
-            '/**\n * Another JSDoc comment\n */'
-          ]
-        }
+            '/**\n * Another JSDoc comment\n */',
+          ],
+        },
       };
 
       const description = (generator as any).getNodeDescription(node);

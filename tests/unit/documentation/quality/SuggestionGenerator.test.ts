@@ -15,26 +15,26 @@ describe('SuggestionGenerator', () => {
           type: 'FunctionDeclaration',
           documentation: 'Basic function',
           complexity: { cyclomatic: 3, cognitive: 2 },
-          coverage: { statements: 80, branches: 70 }
+          coverage: { statements: 80, branches: 70 },
         },
         {
           name: 'uncoveredFunction',
           type: 'FunctionDeclaration',
           documentation: '',
           complexity: { cyclomatic: 5, cognitive: 4 },
-          coverage: { statements: 0, branches: 0 }
-        }
+          coverage: { statements: 0, branches: 0 },
+        },
       ],
       quality: {
         overall: 75,
         maintainability: 80,
-        readability: 70
+        readability: 70,
       },
       coverage: {
         overall: 60,
         statements: 65,
-        branches: 55
-      }
+        branches: 55,
+      },
     };
   });
 
@@ -47,7 +47,7 @@ describe('SuggestionGenerator', () => {
     it('should initialize with custom options', () => {
       const customOptions = {
         maxSuggestions: 50,
-        includeDocumentationSuggestions: true
+        includeDocumentationSuggestions: true,
       };
       const customGenerator = new SuggestionGenerator(customOptions);
 
@@ -106,18 +106,19 @@ describe('SuggestionGenerator', () => {
     it('should identify missing documentation', () => {
       const result = suggestionGenerator.generateDocumentationSuggestions(mockAnalysisData);
 
-      const missingDocSuggestions = result.suggestions?.filter(s => 
-        s.type === 'documentation' && s.category === 'missing'
-      ) || [];
+      const missingDocSuggestions =
+        result.suggestions?.filter(s => s.type === 'documentation' && s.category === 'missing') ||
+        [];
       expect(missingDocSuggestions.length).toBeGreaterThan(0);
     });
 
     it('should suggest documentation improvements', () => {
       const result = suggestionGenerator.generateDocumentationSuggestions(mockAnalysisData);
 
-      const improvementSuggestions = result.suggestions?.filter(s => 
-        s.type === 'documentation' && s.category === 'improvement'
-      ) || [];
+      const improvementSuggestions =
+        result.suggestions?.filter(
+          s => s.type === 'documentation' && s.category === 'improvement'
+        ) || [];
       expect(improvementSuggestions.length).toBeGreaterThanOrEqual(0);
     });
   });
@@ -134,18 +135,17 @@ describe('SuggestionGenerator', () => {
     it('should identify complexity issues', () => {
       const result = suggestionGenerator.generateQualitySuggestions(mockAnalysisData);
 
-      const complexitySuggestions = result.suggestions?.filter(s => 
-        s.type === 'quality' && s.category === 'complexity'
-      ) || [];
+      const complexitySuggestions =
+        result.suggestions?.filter(s => s.type === 'quality' && s.category === 'complexity') || [];
       expect(complexitySuggestions.length).toBeGreaterThanOrEqual(0);
     });
 
     it('should suggest maintainability improvements', () => {
       const result = suggestionGenerator.generateQualitySuggestions(mockAnalysisData);
 
-      const maintainabilitySuggestions = result.suggestions?.filter(s => 
-        s.type === 'quality' && s.category === 'maintainability'
-      ) || [];
+      const maintainabilitySuggestions =
+        result.suggestions?.filter(s => s.type === 'quality' && s.category === 'maintainability') ||
+        [];
       expect(maintainabilitySuggestions.length).toBeGreaterThanOrEqual(0);
     });
   });
@@ -179,9 +179,7 @@ describe('SuggestionGenerator', () => {
   describe('customization', () => {
     it('should support custom suggestion rules', () => {
       const customOptions = {
-        customRules: [
-          { type: 'documentation', priority: 'high' as const, condition: 'missing' }
-        ]
+        customRules: [{ type: 'documentation', priority: 'high' as const, condition: 'missing' }],
       };
       const customGenerator = new SuggestionGenerator(customOptions);
 
@@ -192,7 +190,7 @@ describe('SuggestionGenerator', () => {
       const customOptions = {
         includeDocumentationSuggestions: true,
         includeQualitySuggestions: true,
-        includeStructureSuggestions: false
+        includeStructureSuggestions: false,
       };
       const customGenerator = new SuggestionGenerator(customOptions);
 
@@ -204,8 +202,8 @@ describe('SuggestionGenerator', () => {
         priorityWeights: {
           high: 3,
           medium: 2,
-          low: 1
-        }
+          low: 1,
+        },
       };
       const customGenerator = new SuggestionGenerator(customOptions);
 
@@ -239,7 +237,7 @@ describe('SuggestionGenerator', () => {
     it('should handle very large analysis data', () => {
       const largeData = {
         ...mockAnalysisData,
-        nodes: Array(1000).fill(mockAnalysisData.nodes[0])
+        nodes: Array(1000).fill(mockAnalysisData.nodes[0]),
       };
       const result = suggestionGenerator.generateSuggestions(largeData);
 
@@ -250,13 +248,15 @@ describe('SuggestionGenerator', () => {
     it('should handle analysis data with special characters', () => {
       const specialData = {
         ...mockAnalysisData,
-        nodes: [{
-          name: '特殊函数',
-          type: 'FunctionDeclaration',
-          documentation: '特殊文档',
-          complexity: { cyclomatic: 2, cognitive: 1 },
-          coverage: { statements: 90, branches: 85 }
-        }]
+        nodes: [
+          {
+            name: '特殊函数',
+            type: 'FunctionDeclaration',
+            documentation: '特殊文档',
+            complexity: { cyclomatic: 2, cognitive: 1 },
+            coverage: { statements: 90, branches: 85 },
+          },
+        ],
       };
       const result = suggestionGenerator.generateSuggestions(specialData);
 
@@ -268,13 +268,15 @@ describe('SuggestionGenerator', () => {
       const unicodeData = {
         ...mockAnalysisData,
         name: '测试项目',
-        nodes: [{
-          name: '测试函数',
-          type: 'FunctionDeclaration',
-          documentation: '测试文档',
-          complexity: { cyclomatic: 2, cognitive: 1 },
-          coverage: { statements: 90, branches: 85 }
-        }]
+        nodes: [
+          {
+            name: '测试函数',
+            type: 'FunctionDeclaration',
+            documentation: '测试文档',
+            complexity: { cyclomatic: 2, cognitive: 1 },
+            coverage: { statements: 90, branches: 85 },
+          },
+        ],
       };
       const result = suggestionGenerator.generateSuggestions(unicodeData);
 
@@ -283,9 +285,9 @@ describe('SuggestionGenerator', () => {
     });
 
     it('should handle concurrent suggestion generation', async () => {
-      const promises = Array(5).fill(null).map(() => 
-        Promise.resolve(suggestionGenerator.generateSuggestions(mockAnalysisData))
-      );
+      const promises = Array(5)
+        .fill(null)
+        .map(() => Promise.resolve(suggestionGenerator.generateSuggestions(mockAnalysisData)));
       const results = await Promise.all(promises);
 
       results.forEach(result => {
@@ -335,7 +337,7 @@ describe('SuggestionGenerator', () => {
         const noDocData = {
           name: 'Test',
           version: '1.0.0',
-          nodes: [{ name: 'test', type: 'FunctionDeclaration', documentation: '' }]
+          nodes: [{ name: 'test', type: 'FunctionDeclaration', documentation: '' }],
         };
         const result = suggestionGenerator.generateDocumentationSuggestions(noDocData);
 
@@ -347,7 +349,7 @@ describe('SuggestionGenerator', () => {
         const incompleteDocData = {
           name: 'Test',
           version: '1.0.0',
-          nodes: [{ name: 'test', type: 'FunctionDeclaration', documentation: 'Short' }]
+          nodes: [{ name: 'test', type: 'FunctionDeclaration', documentation: 'Short' }],
         };
         const result = suggestionGenerator.generateDocumentationSuggestions(incompleteDocData);
 
@@ -361,11 +363,13 @@ describe('SuggestionGenerator', () => {
         const lowComplexityData = {
           name: 'Test',
           version: '1.0.0',
-          nodes: [{ 
-            name: 'test', 
-            type: 'FunctionDeclaration', 
-            complexity: { cyclomatic: 1, cognitive: 1 } 
-          }]
+          nodes: [
+            {
+              name: 'test',
+              type: 'FunctionDeclaration',
+              complexity: { cyclomatic: 1, cognitive: 1 },
+            },
+          ],
         };
         const result = suggestionGenerator.generateQualitySuggestions(lowComplexityData);
 
@@ -377,11 +381,13 @@ describe('SuggestionGenerator', () => {
         const highComplexityData = {
           name: 'Test',
           version: '1.0.0',
-          nodes: [{ 
-            name: 'test', 
-            type: 'FunctionDeclaration', 
-            complexity: { cyclomatic: 10, cognitive: 8 } 
-          }]
+          nodes: [
+            {
+              name: 'test',
+              type: 'FunctionDeclaration',
+              complexity: { cyclomatic: 10, cognitive: 8 },
+            },
+          ],
         };
         const result = suggestionGenerator.generateQualitySuggestions(highComplexityData);
 
@@ -393,7 +399,7 @@ describe('SuggestionGenerator', () => {
         const noComplexityData = {
           name: 'Test',
           version: '1.0.0',
-          nodes: [{ name: 'test', type: 'FunctionDeclaration' }]
+          nodes: [{ name: 'test', type: 'FunctionDeclaration' }],
         };
         const result = suggestionGenerator.generateQualitySuggestions(noComplexityData);
 
@@ -446,10 +452,10 @@ describe('SuggestionGenerator', () => {
       });
 
       it('should handle invalid nodes array', () => {
-        const result = suggestionGenerator.validateAnalysisData({ 
-          name: 'Test', 
-          version: '1.0.0', 
-          nodes: 'invalid'
+        const result = suggestionGenerator.validateAnalysisData({
+          name: 'Test',
+          version: '1.0.0',
+          nodes: 'invalid',
         });
 
         expect(result.isValid).toBe(false);
@@ -461,7 +467,7 @@ describe('SuggestionGenerator', () => {
       it('should handle prioritizeSuggestions', () => {
         const suggestions = [
           { type: 'documentation', priority: 'high', impact: 8 },
-          { type: 'quality', priority: 'medium', impact: 5 }
+          { type: 'quality', priority: 'medium', impact: 5 },
         ];
         const result = (suggestionGenerator as any).prioritizeSuggestions(suggestions);
 
@@ -496,16 +502,15 @@ describe('SuggestionGenerator', () => {
         (suggestionGenerator as any).validateAnalysisData = jest.fn().mockImplementation(() => {
           throw 'String error';
         });
-        
+
         const result = await suggestionGenerator.generateSuggestions(mockAnalysisData);
-        
+
         expect(result.success).toBe(false);
         expect(result.error).toBe('Unknown suggestion generation error');
-        
+
         // Restore original method
         (suggestionGenerator as any).validateAnalysisData = originalValidateAnalysisData;
       });
-
 
       it('should handle non-Error exceptions in generateStructureSuggestions', async () => {
         // Mock isGoodNaming to throw a non-Error object
@@ -513,12 +518,12 @@ describe('SuggestionGenerator', () => {
         (suggestionGenerator as any).isGoodNaming = jest.fn().mockImplementation(() => {
           throw 'String error';
         });
-        
+
         const result = (suggestionGenerator as any).generateStructureSuggestions(mockAnalysisData);
-        
+
         expect(result.success).toBe(false);
         expect(result.error).toBe('Unknown structure suggestion error');
-        
+
         // Restore original method
         (suggestionGenerator as any).isGoodNaming = originalIsGoodNaming;
       });
@@ -532,13 +537,15 @@ describe('SuggestionGenerator', () => {
               type: 'FunctionDeclaration',
               documentation: '', // Empty documentation
               complexity: { cyclomatic: 3, cognitive: 2 },
-              coverage: { statements: 80, branches: 70 }
-            }
-          ]
+              coverage: { statements: 80, branches: 70 },
+            },
+          ],
         };
-        
-        const result = (suggestionGenerator as any).generateDocumentationSuggestions(analysisDataWithoutDocs);
-        
+
+        const result = (suggestionGenerator as any).generateDocumentationSuggestions(
+          analysisDataWithoutDocs
+        );
+
         expect(result.success).toBe(true);
         expect(result.suggestions).toBeDefined();
         expect(result.suggestions.length).toBeGreaterThan(0);
@@ -553,13 +560,15 @@ describe('SuggestionGenerator', () => {
               type: 'FunctionDeclaration',
               documentation: 'Short', // Short documentation
               complexity: { cyclomatic: 3, cognitive: 2 },
-              coverage: { statements: 80, branches: 70 }
-            }
-          ]
+              coverage: { statements: 80, branches: 70 },
+            },
+          ],
         };
-        
-        const result = (suggestionGenerator as any).generateDocumentationSuggestions(analysisDataWithShortDocs);
-        
+
+        const result = (suggestionGenerator as any).generateDocumentationSuggestions(
+          analysisDataWithShortDocs
+        );
+
         expect(result.success).toBe(true);
         expect(result.suggestions).toBeDefined();
         expect(result.suggestions.length).toBeGreaterThan(0);
@@ -574,13 +583,15 @@ describe('SuggestionGenerator', () => {
               type: 'FunctionDeclaration',
               documentation: 'Complex function',
               complexity: { cyclomatic: 15, cognitive: 12 }, // High complexity
-              coverage: { statements: 80, branches: 70 }
-            }
-          ]
+              coverage: { statements: 80, branches: 70 },
+            },
+          ],
         };
-        
-        const result = (suggestionGenerator as any).generateQualitySuggestions(analysisDataWithHighComplexity);
-        
+
+        const result = (suggestionGenerator as any).generateQualitySuggestions(
+          analysisDataWithHighComplexity
+        );
+
         expect(result.success).toBe(true);
         expect(result.suggestions).toBeDefined();
         expect(result.suggestions.length).toBeGreaterThan(0);
@@ -595,13 +606,15 @@ describe('SuggestionGenerator', () => {
               type: 'FunctionDeclaration',
               documentation: 'Function with low coverage',
               complexity: { cyclomatic: 3, cognitive: 2 },
-              coverage: { statements: 50, branches: 40 } // Low coverage
-            }
-          ]
+              coverage: { statements: 50, branches: 40 }, // Low coverage
+            },
+          ],
         };
-        
-        const result = (suggestionGenerator as any).generateQualitySuggestions(analysisDataWithLowCoverage);
-        
+
+        const result = (suggestionGenerator as any).generateQualitySuggestions(
+          analysisDataWithLowCoverage
+        );
+
         expect(result.success).toBe(true);
         expect(result.suggestions).toBeDefined();
         expect(result.suggestions.length).toBeGreaterThan(0);
@@ -616,13 +629,15 @@ describe('SuggestionGenerator', () => {
               type: 'FunctionDeclaration',
               documentation: 'Poorly named function',
               complexity: { cyclomatic: 3, cognitive: 2 },
-              coverage: { statements: 80, branches: 70 }
-            }
-          ]
+              coverage: { statements: 80, branches: 70 },
+            },
+          ],
         };
-        
-        const result = (suggestionGenerator as any).generateStructureSuggestions(analysisDataWithPoorNames);
-        
+
+        const result = (suggestionGenerator as any).generateStructureSuggestions(
+          analysisDataWithPoorNames
+        );
+
         expect(result.success).toBe(true);
         expect(result.suggestions).toBeDefined();
         // The method might not generate suggestions for single character names
@@ -631,7 +646,7 @@ describe('SuggestionGenerator', () => {
 
       it('should handle isGoodNaming with various name patterns', () => {
         const isGoodNaming = (suggestionGenerator as any).isGoodNaming;
-        
+
         expect(isGoodNaming('camelCase')).toBe(true);
         expect(isGoodNaming('PascalCase')).toBe(true);
         expect(isGoodNaming('snake_case')).toBe(false);
@@ -642,53 +657,59 @@ describe('SuggestionGenerator', () => {
 
       it('should handle validateAnalysisData with null data', () => {
         const result = (suggestionGenerator as any).validateAnalysisData(null);
-        
+
         expect(result.isValid).toBe(false);
         expect(result.errors).toContain('Analysis data is null or undefined');
       });
 
       it('should handle validateAnalysisData with non-object data', () => {
         const result = (suggestionGenerator as any).validateAnalysisData('string');
-        
+
         expect(result.isValid).toBe(false);
         expect(result.errors).toContain('Analysis data must be an object');
       });
 
       it('should handle validateAnalysisData with missing name', () => {
         const result = (suggestionGenerator as any).validateAnalysisData({ version: '1.0.0' });
-        
+
         expect(result.isValid).toBe(false);
         expect(result.errors).toContain('Project name is required and must be a string');
       });
 
       it('should handle validateAnalysisData with invalid name type', () => {
-        const result = (suggestionGenerator as any).validateAnalysisData({ name: 123, version: '1.0.0' });
-        
+        const result = (suggestionGenerator as any).validateAnalysisData({
+          name: 123,
+          version: '1.0.0',
+        });
+
         expect(result.isValid).toBe(false);
         expect(result.errors).toContain('Project name is required and must be a string');
       });
 
       it('should handle validateAnalysisData with missing version', () => {
         const result = (suggestionGenerator as any).validateAnalysisData({ name: 'Test Project' });
-        
+
         expect(result.isValid).toBe(false);
         expect(result.errors).toContain('Project version is required and must be a string');
       });
 
       it('should handle validateAnalysisData with invalid version type', () => {
-        const result = (suggestionGenerator as any).validateAnalysisData({ name: 'Test Project', version: 123 });
-        
+        const result = (suggestionGenerator as any).validateAnalysisData({
+          name: 'Test Project',
+          version: 123,
+        });
+
         expect(result.isValid).toBe(false);
         expect(result.errors).toContain('Project version is required and must be a string');
       });
 
       it('should handle validateAnalysisData with invalid nodes array', () => {
-        const result = (suggestionGenerator as any).validateAnalysisData({ 
-          name: 'Test Project', 
-          version: '1.0.0', 
-          nodes: 'not an array' 
+        const result = (suggestionGenerator as any).validateAnalysisData({
+          name: 'Test Project',
+          version: '1.0.0',
+          nodes: 'not an array',
         });
-        
+
         expect(result.isValid).toBe(false);
         expect(result.errors).toContain('Nodes must be an array');
       });
@@ -705,12 +726,12 @@ describe('SuggestionGenerator', () => {
                 };
               }
               return target[prop as keyof typeof target];
-            }
-          })
+            },
+          }),
         };
-        
+
         const result = suggestionGenerator.generateDocumentationSuggestions(problematicData);
-        
+
         expect(result.success).toBe(false);
         expect(result.error).toBe('Test error');
       });
@@ -727,12 +748,12 @@ describe('SuggestionGenerator', () => {
                 };
               }
               return target[prop as keyof typeof target];
-            }
-          })
+            },
+          }),
         };
-        
+
         const result = suggestionGenerator.generateQualitySuggestions(problematicData);
-        
+
         expect(result.success).toBe(false);
         expect(result.error).toBe('Test error');
       });

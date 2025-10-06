@@ -1,6 +1,6 @@
 /**
  * Tests for DependencyAnalyzer
- * 
+ *
  * This test suite covers:
  * - Happy path scenarios
  * - Failure scenarios
@@ -18,7 +18,7 @@ describe('DependencyAnalyzer', () => {
 
   beforeEach(() => {
     analyzer = new DependencyAnalyzer();
-    
+
     // Create a comprehensive mock project for testing
     mockProjectInfo = {
       type: 'typescript',
@@ -35,15 +35,15 @@ describe('DependencyAnalyzer', () => {
           version: '^18.0.0',
           type: 'production',
           source: 'npm',
-          metadata: {}
+          metadata: {},
         },
         {
           name: 'typescript',
           version: '^4.9.0',
           type: 'development',
           source: 'npm',
-          metadata: {}
-        }
+          metadata: {},
+        },
       ],
       devDependencies: [
         {
@@ -51,15 +51,15 @@ describe('DependencyAnalyzer', () => {
           version: '^29.0.0',
           type: 'development',
           source: 'npm',
-          metadata: {}
-        }
+          metadata: {},
+        },
       ],
       structure: {
         files: [],
         directories: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       },
       ast: [],
       relations: [],
@@ -71,15 +71,15 @@ describe('DependencyAnalyzer', () => {
         linesOfCode: 0,
         functionCount: 0,
         classCount: 0,
-        interfaceCount: 0
+        interfaceCount: 0,
       },
       quality: {
         score: 0,
         maintainabilityIndex: 0,
         technicalDebtRatio: 0,
         duplicationPercentage: 0,
-        testCoveragePercentage: 0
-      }
+        testCoveragePercentage: 0,
+      },
     };
   });
 
@@ -97,7 +97,7 @@ describe('DependencyAnalyzer', () => {
           end: 100,
           children: [],
           properties: {},
-          metadata: {}
+          metadata: {},
         },
         {
           id: 'node2',
@@ -113,10 +113,10 @@ describe('DependencyAnalyzer', () => {
             importedNames: ['React'],
             isDefault: true,
             isNamespace: false,
-            isTypeOnly: false
+            isTypeOnly: false,
           },
-          metadata: {}
-        }
+          metadata: {},
+        },
       ];
 
       const relations: Relation[] = [
@@ -127,9 +127,9 @@ describe('DependencyAnalyzer', () => {
           to: 'external:react',
           metadata: {
             modulePath: 'react',
-            importedNames: ['React']
-          }
-        }
+            importedNames: ['React'],
+          },
+        },
       ];
 
       mockProjectInfo.ast = astNodes;
@@ -144,7 +144,9 @@ describe('DependencyAnalyzer', () => {
       expect(result.externalDependencies).toHaveLength(1);
       expect(result.externalDependencies[0]?.name).toBe('react');
       expect(result.externalDependencies[0]?.usageCount).toBe(1);
-      expect(result.externalDependencies[0]?.files).toContain('/test/project/src/components/Button.tsx');
+      expect(result.externalDependencies[0]?.files).toContain(
+        '/test/project/src/components/Button.tsx'
+      );
     });
 
     it('should analyze complex dependency chains', () => {
@@ -160,7 +162,7 @@ describe('DependencyAnalyzer', () => {
           end: 100,
           children: [],
           properties: {},
-          metadata: {}
+          metadata: {},
         },
         {
           id: 'node2',
@@ -172,7 +174,7 @@ describe('DependencyAnalyzer', () => {
           end: 80,
           children: [],
           properties: {},
-          metadata: {}
+          metadata: {},
         },
         {
           id: 'node3',
@@ -188,10 +190,10 @@ describe('DependencyAnalyzer', () => {
             importedNames: ['ApiClient'],
             isDefault: false,
             isNamespace: false,
-            isTypeOnly: false
+            isTypeOnly: false,
           },
-          metadata: {}
-        }
+          metadata: {},
+        },
       ];
 
       const relations: Relation[] = [
@@ -202,9 +204,9 @@ describe('DependencyAnalyzer', () => {
           to: 'node2',
           metadata: {
             modulePath: './ApiClient',
-            importedNames: ['ApiClient']
-          }
-        }
+            importedNames: ['ApiClient'],
+          },
+        },
       ];
 
       mockProjectInfo.ast = astNodes;
@@ -215,7 +217,9 @@ describe('DependencyAnalyzer', () => {
 
       // Assert
       expect(result.internalDependencies).toHaveLength(1);
-      expect(result.internalDependencies[0]?.from).toBe('/test/project/src/services/UserService.ts');
+      expect(result.internalDependencies[0]?.from).toBe(
+        '/test/project/src/services/UserService.ts'
+      );
       expect(result.internalDependencies[0]?.to).toBe('/test/project/src/services/ApiClient.ts');
       expect(result.internalDependencies[0]?.type).toBe('import');
     });
@@ -237,9 +241,9 @@ describe('DependencyAnalyzer', () => {
             importedNames: ['React'],
             isDefault: true,
             isNamespace: false,
-            isTypeOnly: false
+            isTypeOnly: false,
           },
-          metadata: {}
+          metadata: {},
         },
         {
           id: 'node2',
@@ -255,9 +259,9 @@ describe('DependencyAnalyzer', () => {
             importedNames: ['useState'],
             isDefault: false,
             isNamespace: false,
-            isTypeOnly: false
+            isTypeOnly: false,
           },
-          metadata: {}
+          metadata: {},
         },
         {
           id: 'node3',
@@ -273,10 +277,10 @@ describe('DependencyAnalyzer', () => {
             importedNames: ['Button'],
             isDefault: false,
             isNamespace: false,
-            isTypeOnly: false
+            isTypeOnly: false,
           },
-          metadata: {}
-        }
+          metadata: {},
+        },
       ];
 
       const relations: Relation[] = [
@@ -285,22 +289,22 @@ describe('DependencyAnalyzer', () => {
           type: 'import',
           from: 'node1',
           to: 'external:react',
-          metadata: { modulePath: 'react', importedNames: ['React'] }
+          metadata: { modulePath: 'react', importedNames: ['React'] },
         },
         {
           id: 'rel2',
           type: 'import',
           from: 'node2',
           to: 'external:react',
-          metadata: { modulePath: 'react', importedNames: ['useState'] }
+          metadata: { modulePath: 'react', importedNames: ['useState'] },
         },
         {
           id: 'rel3',
           type: 'import',
           from: 'node3',
           to: 'internal:./components/Button',
-          metadata: { modulePath: './components/Button', importedNames: ['Button'] }
-        }
+          metadata: { modulePath: './components/Button', importedNames: ['Button'] },
+        },
       ];
 
       mockProjectInfo.ast = astNodes;
@@ -325,15 +329,15 @@ describe('DependencyAnalyzer', () => {
           type: 'import',
           from: 'file1',
           to: 'file2',
-          metadata: { modulePath: './file2' }
+          metadata: { modulePath: './file2' },
         },
         {
           id: 'rel2',
           type: 'import',
           from: 'file2',
           to: 'file1',
-          metadata: { modulePath: './file1' }
-        }
+          metadata: { modulePath: './file1' },
+        },
       ];
 
       mockProjectInfo.relations = relations;
@@ -354,22 +358,22 @@ describe('DependencyAnalyzer', () => {
           type: 'import',
           from: 'file1',
           to: 'file2',
-          metadata: {}
+          metadata: {},
         },
         {
           id: 'rel2',
           type: 'import',
           from: 'file1',
           to: 'file3',
-          metadata: {}
+          metadata: {},
         },
         {
           id: 'rel3',
           type: 'import',
           from: 'file2',
           to: 'file4',
-          metadata: {}
-        }
+          metadata: {},
+        },
       ];
 
       mockProjectInfo.relations = relations;
@@ -410,8 +414,8 @@ describe('DependencyAnalyzer', () => {
           end: -1,
           children: [],
           properties: {},
-          metadata: {}
-        }
+          metadata: {},
+        },
       ];
 
       mockProjectInfo.ast = malformedNodes;
@@ -433,8 +437,8 @@ describe('DependencyAnalyzer', () => {
           type: 'unknown' as any,
           from: '',
           to: '',
-          metadata: {}
-        }
+          metadata: {},
+        },
       ];
 
       mockProjectInfo.relations = malformedRelations;
@@ -452,7 +456,7 @@ describe('DependencyAnalyzer', () => {
       // Arrange
       const incompleteProject = {
         type: 'typescript',
-        rootPath: '/test/project'
+        rootPath: '/test/project',
         // Missing required properties
       } as any;
 
@@ -464,7 +468,7 @@ describe('DependencyAnalyzer', () => {
       // Arrange
       const invalidProjectInfo = {
         ...mockProjectInfo,
-        relations: 'not an array' as any
+        relations: 'not an array' as any,
       };
 
       // Act & Assert
@@ -475,7 +479,7 @@ describe('DependencyAnalyzer', () => {
       // Arrange
       const invalidProjectInfo = {
         ...mockProjectInfo,
-        ast: 'not an array' as any
+        ast: 'not an array' as any,
       };
 
       // Act & Assert
@@ -493,7 +497,7 @@ describe('DependencyAnalyzer', () => {
           type: 'import',
           from: `file${i}`,
           to: `file${i + 1}`,
-          metadata: {}
+          metadata: {},
         });
       }
 
@@ -519,7 +523,7 @@ describe('DependencyAnalyzer', () => {
           type: 'import',
           from: `file${i}`,
           to: `file${i + 1}`,
-          metadata: {}
+          metadata: {},
         });
       }
 
@@ -542,7 +546,7 @@ describe('DependencyAnalyzer', () => {
         { id: 'rel3', type: 'import', from: 'C', to: 'A', metadata: {} },
         { id: 'rel4', type: 'import', from: 'A', to: 'D', metadata: {} },
         { id: 'rel5', type: 'import', from: 'D', to: 'E', metadata: {} },
-        { id: 'rel6', type: 'import', from: 'E', to: 'A', metadata: {} }
+        { id: 'rel6', type: 'import', from: 'E', to: 'A', metadata: {} },
       ];
 
       mockProjectInfo.relations = circularRelations;
@@ -563,7 +567,7 @@ describe('DependencyAnalyzer', () => {
         ast: [],
         relations: [],
         dependencies: [],
-        devDependencies: []
+        devDependencies: [],
       };
 
       // Act
@@ -587,15 +591,15 @@ describe('DependencyAnalyzer', () => {
           type: 'import',
           from: 'file1',
           to: 'external:react',
-          metadata: { modulePath: 'react', importedNames: ['React'] }
+          metadata: { modulePath: 'react', importedNames: ['React'] },
         },
         {
           id: 'rel2',
           type: 'import',
           from: 'file1',
           to: 'external:react',
-          metadata: { modulePath: 'react', importedNames: ['useState'] }
-        }
+          metadata: { modulePath: 'react', importedNames: ['useState'] },
+        },
       ];
 
       mockProjectInfo.relations = relations;
@@ -617,15 +621,15 @@ describe('DependencyAnalyzer', () => {
           type: 'import',
           from: 'file1',
           to: 'external:react',
-          metadata: { modulePath: 'react', importedNames: ['React'], isTypeOnly: false }
+          metadata: { modulePath: 'react', importedNames: ['React'], isTypeOnly: false },
         },
         {
           id: 'rel2',
           type: 'import',
           from: 'file2',
           to: 'external:react',
-          metadata: { modulePath: 'react', importedNames: ['Component'], isTypeOnly: true }
-        }
+          metadata: { modulePath: 'react', importedNames: ['Component'], isTypeOnly: true },
+        },
       ];
 
       mockProjectInfo.relations = relations;
@@ -647,12 +651,12 @@ describe('DependencyAnalyzer', () => {
           type: 'import',
           from: 'file1',
           to: 'external:lodash',
-          metadata: { 
-            modulePath: 'lodash', 
-            importedNames: ['lodash'], 
-            isNamespace: true 
-          }
-        }
+          metadata: {
+            modulePath: 'lodash',
+            importedNames: ['lodash'],
+            isNamespace: true,
+          },
+        },
       ];
 
       mockProjectInfo.relations = relations;
@@ -673,8 +677,8 @@ describe('DependencyAnalyzer', () => {
           type: 'import',
           from: '/test/project/src/components/Button.tsx',
           to: '/test/project/src/utils/helpers.ts',
-          metadata: { modulePath: '../utils/helpers' }
-        }
+          metadata: { modulePath: '../utils/helpers' },
+        },
       ];
 
       mockProjectInfo.relations = relations;
@@ -684,7 +688,9 @@ describe('DependencyAnalyzer', () => {
 
       // Assert
       expect(result.internalDependencies).toHaveLength(1);
-      expect(result.internalDependencies[0]?.resolvedPath).toBe('/test/project/src/utils/helpers.ts');
+      expect(result.internalDependencies[0]?.resolvedPath).toBe(
+        '/test/project/src/utils/helpers.ts'
+      );
     });
 
     it('should handle barrel exports correctly', () => {
@@ -695,8 +701,8 @@ describe('DependencyAnalyzer', () => {
           type: 'import',
           from: 'file1',
           to: 'file2',
-          metadata: { modulePath: './index', isBarrelExport: true }
-        }
+          metadata: { modulePath: './index', isBarrelExport: true },
+        },
       ];
 
       mockProjectInfo.relations = relations;
@@ -717,12 +723,12 @@ describe('DependencyAnalyzer', () => {
           type: 'import',
           from: 'file1',
           to: 'external:react',
-          metadata: { 
-            modulePath: 'react', 
+          metadata: {
+            modulePath: 'react',
             isDynamic: true,
-            condition: 'lazy loading'
-          }
-        }
+            condition: 'lazy loading',
+          },
+        },
       ];
 
       mockProjectInfo.relations = relations;
@@ -743,11 +749,11 @@ describe('DependencyAnalyzer', () => {
           type: 'import',
           from: 'file1',
           to: 'external:lodash',
-          metadata: { 
-            modulePath: 'lodash', 
-            condition: 'process.env.NODE_ENV === "development"'
-          }
-        }
+          metadata: {
+            modulePath: 'lodash',
+            condition: 'process.env.NODE_ENV === "development"',
+          },
+        },
       ];
 
       mockProjectInfo.relations = relations;
@@ -757,7 +763,9 @@ describe('DependencyAnalyzer', () => {
 
       // Assert
       expect(result.externalDependencies).toHaveLength(1);
-      expect(result.externalDependencies[0]?.conditions).toContain('process.env.NODE_ENV === "development"');
+      expect(result.externalDependencies[0]?.conditions).toContain(
+        'process.env.NODE_ENV === "development"'
+      );
     });
 
     it('should handle peer dependencies correctly', () => {
@@ -768,8 +776,8 @@ describe('DependencyAnalyzer', () => {
           version: '^18.0.0',
           type: 'peer',
           source: 'npm',
-          metadata: {}
-        }
+          metadata: {},
+        },
       ];
 
       mockProjectInfo.dependencies = peerDeps;
@@ -791,8 +799,8 @@ describe('DependencyAnalyzer', () => {
           version: '^1.0.0',
           type: 'optional',
           source: 'npm',
-          metadata: {}
-        }
+          metadata: {},
+        },
       ];
 
       mockProjectInfo.dependencies = optionalDeps;
@@ -814,8 +822,8 @@ describe('DependencyAnalyzer', () => {
           type: 'import',
           from: 'file1',
           to: 'external:@types/react',
-          metadata: { modulePath: '@types/react', importedNames: ['React'] }
-        }
+          metadata: { modulePath: '@types/react', importedNames: ['React'] },
+        },
       ];
 
       mockProjectInfo.relations = relations;
@@ -837,8 +845,8 @@ describe('DependencyAnalyzer', () => {
           version: 'git+https://github.com/user/repo.git#main',
           type: 'production',
           source: 'git',
-          metadata: { url: 'https://github.com/user/repo.git', branch: 'main' }
-        }
+          metadata: { url: 'https://github.com/user/repo.git', branch: 'main' },
+        },
       ];
 
       mockProjectInfo.dependencies = gitDeps;
@@ -850,7 +858,9 @@ describe('DependencyAnalyzer', () => {
       // Assert
       expect(result.packageDependencies).toHaveLength(1);
       expect(result.packageDependencies[0]?.source).toBe('git');
-      expect(result.packageDependencies[0]?.metadata['url']).toBe('https://github.com/user/repo.git');
+      expect(result.packageDependencies[0]?.metadata['url']).toBe(
+        'https://github.com/user/repo.git'
+      );
     });
 
     it('should handle local file dependencies correctly', () => {
@@ -861,8 +871,8 @@ describe('DependencyAnalyzer', () => {
           version: 'file:../local-package',
           type: 'production',
           source: 'local',
-          metadata: { path: '../local-package' }
-        }
+          metadata: { path: '../local-package' },
+        },
       ];
 
       mockProjectInfo.dependencies = localDeps;
@@ -885,22 +895,22 @@ describe('DependencyAnalyzer', () => {
           version: '^1.0.0',
           type: 'production',
           source: 'npm',
-          metadata: {}
+          metadata: {},
         },
         {
           name: 'package2',
           version: '~2.1.0',
           type: 'production',
           source: 'npm',
-          metadata: {}
+          metadata: {},
         },
         {
           name: 'package3',
           version: '>=3.0.0 <4.0.0',
           type: 'production',
           source: 'npm',
-          metadata: {}
-        }
+          metadata: {},
+        },
       ];
 
       mockProjectInfo.dependencies = versionDeps;
@@ -926,8 +936,8 @@ describe('DependencyAnalyzer', () => {
           type: 'import',
           from: 'file1',
           to: 'file2',
-          metadata: {}
-        }
+          metadata: {},
+        },
       ];
 
       mockProjectInfo.relations = relations;
@@ -950,14 +960,14 @@ describe('DependencyAnalyzer', () => {
           type: 'import',
           from: 'file1',
           to: 'file2',
-          metadata: {}
-        }
+          metadata: {},
+        },
       ];
 
       mockProjectInfo.relations = relations;
 
       // Act
-      const promises = Array.from({ length: 10 }, () => 
+      const promises = Array.from({ length: 10 }, () =>
         Promise.resolve(analyzer.analyze(mockProjectInfo))
       );
 
@@ -981,22 +991,22 @@ describe('DependencyAnalyzer', () => {
           type: 'import',
           from: '/test/project/src/file1.ts',
           to: '/test/project/src/file2.ts',
-          metadata: {}
+          metadata: {},
         },
         {
           id: 'rel2',
           type: 'import',
           from: '/test/project/test/file1.test.ts',
           to: '/test/project/test/file2.test.ts',
-          metadata: {}
-        }
+          metadata: {},
+        },
       ];
 
       mockProjectInfo.relations = relations;
 
       // Act
       const result = analyzer.analyze(mockProjectInfo, {
-        includePatterns: ['src/**/*.ts']
+        includePatterns: ['src/**/*.ts'],
       });
 
       // Assert
@@ -1012,22 +1022,22 @@ describe('DependencyAnalyzer', () => {
           type: 'import',
           from: '/test/project/src/file1.ts',
           to: '/test/project/src/file2.ts',
-          metadata: {}
+          metadata: {},
         },
         {
           id: 'rel2',
           type: 'import',
           from: '/test/project/test/file1.test.ts',
           to: '/test/project/test/file2.test.ts',
-          metadata: {}
-        }
+          metadata: {},
+        },
       ];
 
       mockProjectInfo.relations = relations;
 
       // Act
       const result = analyzer.analyze(mockProjectInfo, {
-        excludePatterns: ['**/test/**']
+        excludePatterns: ['**/test/**'],
       });
 
       // Assert
@@ -1043,15 +1053,15 @@ describe('DependencyAnalyzer', () => {
           type: 'custom' as any,
           from: 'file1',
           to: 'file2',
-          metadata: { customType: 'special' }
-        }
+          metadata: { customType: 'special' },
+        },
       ];
 
       mockProjectInfo.relations = relations;
 
       // Act
       const result = analyzer.analyze(mockProjectInfo, {
-        customRelationTypes: ['custom']
+        customRelationTypes: ['custom'],
       });
 
       // Assert
@@ -1067,15 +1077,15 @@ describe('DependencyAnalyzer', () => {
           type: 'import',
           from: '/test/project/src/components/Button.ts',
           to: '/test/project/lib/utils/helper.ts',
-          metadata: { modulePath: '../utils/helper' }
-        }
+          metadata: { modulePath: '../utils/helper' },
+        },
       ];
 
       mockProjectInfo.relations = relations;
 
       // Act
       const result = analyzer.analyze(mockProjectInfo, {
-        includePatterns: ['**/src/**/*.ts']
+        includePatterns: ['**/src/**/*.ts'],
       });
 
       // Assert
@@ -1090,15 +1100,15 @@ describe('DependencyAnalyzer', () => {
           type: 'import',
           from: '/test/project/src/components/Button.tsx',
           to: '/test/project/utils/helper.ts',
-          metadata: { modulePath: '../utils/helper' }
-        }
+          metadata: { modulePath: '../utils/helper' },
+        },
       ];
 
       mockProjectInfo.relations = relations;
 
       // Act
       const result = analyzer.analyze(mockProjectInfo, {
-        includePatterns: ['**/nonexistent/**/*.ts']
+        includePatterns: ['**/nonexistent/**/*.ts'],
       });
 
       // Assert
@@ -1113,15 +1123,15 @@ describe('DependencyAnalyzer', () => {
           type: 'import',
           from: '/test/project/src/components/Button.ts',
           to: '/test/project/utils/helper.ts',
-          metadata: { modulePath: '../utils/helper' }
-        }
+          metadata: { modulePath: '../utils/helper' },
+        },
       ];
 
       mockProjectInfo.relations = relations;
 
       // Act
       const result = analyzer.analyze(mockProjectInfo, {
-        includePatterns: ['/test/project/src/**/*.ts']
+        includePatterns: ['/test/project/src/**/*.ts'],
       });
 
       // Assert
@@ -1136,15 +1146,15 @@ describe('DependencyAnalyzer', () => {
           type: 'import',
           from: '/test/project/src/components/Button.ts',
           to: '/test/project/utils/helper.ts',
-          metadata: { modulePath: '../utils/helper' }
-        }
+          metadata: { modulePath: '../utils/helper' },
+        },
       ];
 
       mockProjectInfo.relations = relations;
 
       // Act
       const result = analyzer.analyze(mockProjectInfo, {
-        includePatterns: ['**/src/**/Button.t?']
+        includePatterns: ['**/src/**/Button.t?'],
       });
 
       // Assert
@@ -1159,15 +1169,15 @@ describe('DependencyAnalyzer', () => {
           type: 'import',
           from: '/test/project/test/components/Button.test.ts',
           to: '/test/project/test/utils/helper.test.ts',
-          metadata: { modulePath: '../utils/helper' }
-        }
+          metadata: { modulePath: '../utils/helper' },
+        },
       ];
 
       mockProjectInfo.relations = relations;
 
       // Act
       const result = analyzer.analyze(mockProjectInfo, {
-        includePatterns: ['**/test/**/*.ts']
+        includePatterns: ['**/test/**/*.ts'],
       });
 
       // Assert
@@ -1184,12 +1194,12 @@ describe('DependencyAnalyzer', () => {
         entryPoints: [],
         dependencies: [],
         devDependencies: [],
-        structure: { 
-          directories: [], 
+        structure: {
+          directories: [],
           files: [],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: [],
         relations: [],
@@ -1201,15 +1211,15 @@ describe('DependencyAnalyzer', () => {
           linesOfCode: 0,
           functionCount: 0,
           classCount: 0,
-          interfaceCount: 0
+          interfaceCount: 0,
         },
         quality: {
           score: 100,
           maintainabilityIndex: 100,
           technicalDebtRatio: 0,
           duplicationPercentage: 0,
-          testCoveragePercentage: 0
-        }
+          testCoveragePercentage: 0,
+        },
       };
 
       // Act
@@ -1231,21 +1241,21 @@ describe('DependencyAnalyzer', () => {
           type: 'import',
           from: '/test/project/src/file1.ts',
           to: '/test/project/src/file2.ts',
-          metadata: { 
+          metadata: {
             modulePath: './file2',
-            importedNames: ['Component']
-          }
+            importedNames: ['Component'],
+          },
         },
         {
           id: 'rel2',
           type: 'import',
           from: '/test/project/src/file1.ts',
           to: '/test/project/src/file2.ts',
-          metadata: { 
+          metadata: {
             modulePath: './file2',
-            importedNames: ['Helper']
-          }
-        }
+            importedNames: ['Helper'],
+          },
+        },
       ];
 
       mockProjectInfo.relations = relations;
@@ -1267,21 +1277,21 @@ describe('DependencyAnalyzer', () => {
           type: 'import',
           from: '/test/project/src/file1.ts',
           to: 'external:react',
-          metadata: { 
+          metadata: {
             modulePath: 'react',
-            importedNames: ['Component']
-          }
+            importedNames: ['Component'],
+          },
         },
         {
           id: 'rel2',
           type: 'import',
           from: '/test/project/src/file1.ts',
           to: 'external:react',
-          metadata: { 
+          metadata: {
             modulePath: 'react',
-            importedNames: ['useState']
-          }
-        }
+            importedNames: ['useState'],
+          },
+        },
       ];
 
       const projectInfo: ProjectInfo = {
@@ -1292,12 +1302,12 @@ describe('DependencyAnalyzer', () => {
         entryPoints: [],
         dependencies: [],
         devDependencies: [],
-        structure: { 
-          directories: [], 
+        structure: {
+          directories: [],
           files: [],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: [
           {
@@ -1310,8 +1320,8 @@ describe('DependencyAnalyzer', () => {
             metadata: {},
             nodeType: 'module',
             children: [],
-            properties: {}
-          }
+            properties: {},
+          },
         ],
         relations,
         publicExports: [],
@@ -1322,15 +1332,15 @@ describe('DependencyAnalyzer', () => {
           linesOfCode: 0,
           functionCount: 0,
           classCount: 0,
-          interfaceCount: 0
+          interfaceCount: 0,
         },
         quality: {
           score: 100,
           maintainabilityIndex: 100,
           technicalDebtRatio: 0,
           duplicationPercentage: 0,
-          testCoveragePercentage: 0
-        }
+          testCoveragePercentage: 0,
+        },
       };
 
       // Act
@@ -1350,21 +1360,21 @@ describe('DependencyAnalyzer', () => {
           type: 'import',
           from: '/test/project/src/file1.ts',
           to: 'external:react',
-          metadata: { 
+          metadata: {
             modulePath: 'react',
-            condition: 'development'
-          }
+            condition: 'development',
+          },
         },
         {
           id: 'rel2',
           type: 'import',
           from: '/test/project/src/file1.ts',
           to: 'external:react',
-          metadata: { 
+          metadata: {
             modulePath: 'react',
-            condition: 'production'
-          }
-        }
+            condition: 'production',
+          },
+        },
       ];
 
       const projectInfo: ProjectInfo = {
@@ -1375,12 +1385,12 @@ describe('DependencyAnalyzer', () => {
         entryPoints: [],
         dependencies: [],
         devDependencies: [],
-        structure: { 
-          directories: [], 
+        structure: {
+          directories: [],
           files: [],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: [
           {
@@ -1393,8 +1403,8 @@ describe('DependencyAnalyzer', () => {
             metadata: {},
             nodeType: 'module',
             children: [],
-            properties: {}
-          }
+            properties: {},
+          },
         ],
         relations,
         publicExports: [],
@@ -1405,15 +1415,15 @@ describe('DependencyAnalyzer', () => {
           linesOfCode: 0,
           functionCount: 0,
           classCount: 0,
-          interfaceCount: 0
+          interfaceCount: 0,
         },
         quality: {
           score: 100,
           maintainabilityIndex: 100,
           technicalDebtRatio: 0,
           duplicationPercentage: 0,
-          testCoveragePercentage: 0
-        }
+          testCoveragePercentage: 0,
+        },
       };
 
       // Act
@@ -1433,10 +1443,10 @@ describe('DependencyAnalyzer', () => {
           type: 'import',
           from: '/test/project/src/file1.ts',
           to: 'external:react',
-          metadata: { 
-            modulePath: 'react'
-          }
-        }
+          metadata: {
+            modulePath: 'react',
+          },
+        },
       ];
 
       const projectInfo: ProjectInfo = {
@@ -1447,12 +1457,12 @@ describe('DependencyAnalyzer', () => {
         entryPoints: [],
         dependencies: [],
         devDependencies: [],
-        structure: { 
-          directories: [], 
+        structure: {
+          directories: [],
           files: [],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: [
           {
@@ -1465,8 +1475,8 @@ describe('DependencyAnalyzer', () => {
             metadata: {},
             nodeType: 'module',
             children: [],
-            properties: {}
-          }
+            properties: {},
+          },
         ],
         relations,
         publicExports: [],
@@ -1477,15 +1487,15 @@ describe('DependencyAnalyzer', () => {
           linesOfCode: 0,
           functionCount: 0,
           classCount: 0,
-          interfaceCount: 0
+          interfaceCount: 0,
         },
         quality: {
           score: 100,
           maintainabilityIndex: 100,
           technicalDebtRatio: 0,
           duplicationPercentage: 0,
-          testCoveragePercentage: 0
-        }
+          testCoveragePercentage: 0,
+        },
       };
 
       // Act
@@ -1504,10 +1514,10 @@ describe('DependencyAnalyzer', () => {
           type: 'import',
           from: '/test/project/src/file1.ts',
           to: '/test/project/src/file2.ts',
-          metadata: { 
-            modulePath: './file2'
-          }
-        }
+          metadata: {
+            modulePath: './file2',
+          },
+        },
       ];
 
       mockProjectInfo.relations = relations;
@@ -1545,12 +1555,12 @@ describe('DependencyAnalyzer', () => {
         entryPoints: [],
         dependencies: [],
         devDependencies: [],
-        structure: { 
-          directories: [], 
+        structure: {
+          directories: [],
           files: [],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: [],
         relations: [],
@@ -1562,15 +1572,15 @@ describe('DependencyAnalyzer', () => {
           linesOfCode: 0,
           functionCount: 0,
           classCount: 0,
-          interfaceCount: 0
+          interfaceCount: 0,
         },
         quality: {
           score: 100,
           maintainabilityIndex: 100,
           technicalDebtRatio: 0,
           duplicationPercentage: 0,
-          testCoveragePercentage: 0
-        }
+          testCoveragePercentage: 0,
+        },
       };
 
       // Act
@@ -1593,12 +1603,12 @@ describe('DependencyAnalyzer', () => {
         entryPoints: [],
         dependencies: [],
         devDependencies: [],
-        structure: { 
-          directories: [], 
+        structure: {
+          directories: [],
           files: [],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: [],
         relations: [],
@@ -1610,15 +1620,15 @@ describe('DependencyAnalyzer', () => {
           linesOfCode: 0,
           functionCount: 0,
           classCount: 0,
-          interfaceCount: 0
+          interfaceCount: 0,
         },
         quality: {
           score: 100,
           maintainabilityIndex: 100,
           technicalDebtRatio: 0,
           duplicationPercentage: 0,
-          testCoveragePercentage: 0
-        }
+          testCoveragePercentage: 0,
+        },
       };
 
       // Act
@@ -1638,20 +1648,20 @@ describe('DependencyAnalyzer', () => {
           type: 'import',
           from: '/test/project/src/index.ts',
           to: '/test/project/src/utils.ts',
-          metadata: {}
+          metadata: {},
         },
         {
           id: 'rel2',
           type: 'import',
           from: '/test/project/test/index.test.ts',
           to: '/test/project/src/utils.ts',
-          metadata: {}
-        }
+          metadata: {},
+        },
       ];
 
       // Act
       const result = analyzer.analyze(mockProjectInfo, {
-        excludePatterns: ['**/test/**']
+        excludePatterns: ['**/test/**'],
       });
 
       // Assert
@@ -1666,8 +1676,8 @@ describe('DependencyAnalyzer', () => {
           type: 'import',
           from: '/test/project/src/index.ts',
           to: 'external:react',
-          metadata: {}
-        }
+          metadata: {},
+        },
       ];
 
       // Act
@@ -1686,13 +1696,13 @@ describe('DependencyAnalyzer', () => {
           type: 'import',
           from: '/test/project/src/index.ts',
           to: '/test/project/test/utils.test.ts',
-          metadata: {}
-        }
+          metadata: {},
+        },
       ];
 
       // Act
       const result = analyzer.analyze(mockProjectInfo, {
-        excludePatterns: ['**/test/**/*.ts']
+        excludePatterns: ['**/test/**/*.ts'],
       });
 
       // Assert

@@ -23,16 +23,14 @@ describe('APITemplate', () => {
                 name: 'testMethod',
                 parameters: [
                   { name: 'param1', type: 'string', description: 'First parameter' },
-                  { name: 'param2', type: 'number', description: 'Second parameter' }
+                  { name: 'param2', type: 'number', description: 'Second parameter' },
                 ],
                 returnType: 'string',
-                description: 'A test method'
-              }
+                description: 'A test method',
+              },
             ],
-            properties: [
-              { name: 'testProperty', type: 'string', description: 'A test property' }
-            ]
-          }
+            properties: [{ name: 'testProperty', type: 'string', description: 'A test property' }],
+          },
         },
         {
           id: '2',
@@ -45,18 +43,18 @@ describe('APITemplate', () => {
                 name: 'interfaceMethod',
                 parameters: [{ name: 'param', type: 'any' }],
                 returnType: 'void',
-                description: 'Interface method'
-              }
-            ]
-          }
-        }
+                description: 'Interface method',
+              },
+            ],
+          },
+        },
       ],
       statistics: {
         totalClasses: 1,
         totalInterfaces: 1,
         totalMethods: 2,
-        totalProperties: 1
-      }
+        totalProperties: 1,
+      },
     };
   });
 
@@ -71,10 +69,10 @@ describe('APITemplate', () => {
         templateVariables: { customVar: 'value' },
         validateTemplate: false,
         includeMethodSignatures: true,
-        includeTypeDefinitions: true
+        includeTypeDefinitions: true,
       };
       const customTemplate = new APITemplate(customOptions);
-      
+
       expect(customTemplate.getOptions().templateVariables).toEqual({ customVar: 'value' });
       expect(customTemplate.getOptions().validateTemplate).toBe(false);
     });
@@ -105,7 +103,8 @@ describe('APITemplate', () => {
     });
 
     it('should handle nested API data structures', () => {
-      const templateContent = 'Classes: {{statistics.totalClasses}}, Methods: {{statistics.totalMethods}}';
+      const templateContent =
+        'Classes: {{statistics.totalClasses}}, Methods: {{statistics.totalMethods}}';
       const variables = mockAPIData;
 
       const result = template.processTemplate(templateContent, variables);
@@ -175,13 +174,13 @@ describe('APITemplate', () => {
   describe('customization', () => {
     it('should support custom template variables', () => {
       const customOptions = {
-        templateVariables: { 
+        templateVariables: {
           customTitle: 'Custom API Reference',
-          customStyle: 'modern'
-        }
+          customStyle: 'modern',
+        },
       };
       const customTemplate = new APITemplate(customOptions);
-      
+
       const templateContent = '{{customTitle}} - {{customStyle}}';
       const variables = {};
 
@@ -195,7 +194,7 @@ describe('APITemplate', () => {
     it('should allow template inheritance', () => {
       const baseTemplate = 'Base: {{name}}';
       const extendedTemplate = 'Extended: {{name}} - {{version}}';
-      
+
       template.loadTemplate(baseTemplate);
       const result = template.extendTemplate(extendedTemplate);
 
@@ -205,13 +204,13 @@ describe('APITemplate', () => {
 
     it('should support different API documentation styles', () => {
       const styleOptions = {
-        templateVariables: { 
+        templateVariables: {
           style: 'detailed',
-          format: 'markdown'
-        }
+          format: 'markdown',
+        },
       };
       const styledTemplate = new APITemplate(styleOptions);
-      
+
       const result = styledTemplate.generateContent(mockAPIData);
 
       expect(result).toBeDefined();
@@ -249,7 +248,7 @@ describe('APITemplate', () => {
       const newOptions = {
         validateTemplate: false,
         templateVariables: { newVar: 'value' },
-        includeMethodSignatures: true
+        includeMethodSignatures: true,
       };
 
       template.updateOptions(newOptions);
@@ -268,7 +267,7 @@ describe('APITemplate', () => {
 
     it('should handle partial options update', () => {
       const partialOptions = { validateTemplate: false };
-      
+
       template.updateOptions(partialOptions);
       const options = template.getOptions();
 
@@ -301,7 +300,7 @@ describe('APITemplate', () => {
     it('should handle configuration errors', () => {
       const invalidOptions = {
         validateTemplate: 'invalid' as any,
-        templateVariables: 'invalid' as any
+        templateVariables: 'invalid' as any,
       };
 
       template.updateOptions(invalidOptions);
@@ -320,8 +319,8 @@ describe('APITemplate', () => {
           id: `${i}`,
           name: `Class${i}`,
           type: 'ClassDeclaration',
-          properties: { description: `Class ${i}` }
-        }))
+          properties: { description: `Class ${i}` },
+        })),
       };
 
       const result = template.generateContent(largeData);
@@ -334,7 +333,7 @@ describe('APITemplate', () => {
       const specialData = {
         ...mockAPIData,
         name: 'Test API & Co. (Ltd.)',
-        description: 'An API with "quotes" and <tags>'
+        description: 'An API with "quotes" and <tags>',
       };
 
       const result = template.generateContent(specialData);
@@ -347,7 +346,7 @@ describe('APITemplate', () => {
       const unicodeData = {
         ...mockAPIData,
         name: '测试API',
-        description: 'Un API de test 🚀'
+        description: 'Un API de test 🚀',
       };
 
       const result = template.generateContent(unicodeData);
@@ -359,7 +358,7 @@ describe('APITemplate', () => {
 
     it('should handle concurrent template processing', async () => {
       const templateContent = 'API: {{name}}';
-      const promises = Array.from({ length: 10 }, (_, i) => 
+      const promises = Array.from({ length: 10 }, (_, i) =>
         template.processTemplate(templateContent, { name: `API${i}` })
       );
 
@@ -505,7 +504,7 @@ describe('APITemplate', () => {
       it('should handle generateContent with exception', () => {
         // Test with invalid data that might cause issues
         const invalidData = { name: null, version: undefined, nodes: 'invalid' };
-        
+
         const result = template.generateContent(invalidData);
 
         expect(result).toBeDefined();
@@ -515,7 +514,7 @@ describe('APITemplate', () => {
       it('should handle options disabled for sections', () => {
         const customTemplate = new APITemplate({
           includeTypeDefinitions: false,
-          includeMethodSignatures: false
+          includeMethodSignatures: false,
         });
 
         const result = customTemplate.generateContent(mockAPIData);
@@ -615,13 +614,13 @@ describe('APITemplate', () => {
       });
 
       it('should handle nodes with missing properties', () => {
-        const data = { 
-          name: 'Test API', 
-          version: '1.0.0', 
+        const data = {
+          name: 'Test API',
+          version: '1.0.0',
           nodes: [
             { id: '1' }, // Missing name and type
-            { name: 'Test', type: 'Class' } // Missing id
-          ]
+            { name: 'Test', type: 'Class' }, // Missing id
+          ],
         };
         const result = template.validateAPIData(data);
 
@@ -640,15 +639,15 @@ describe('APITemplate', () => {
       });
 
       it('should handle invalid statistics properties', () => {
-        const data = { 
-          name: 'Test API', 
-          version: '1.0.0', 
+        const data = {
+          name: 'Test API',
+          version: '1.0.0',
           statistics: {
             totalClasses: 'invalid',
             totalInterfaces: 'invalid',
             totalMethods: 'invalid',
-            totalProperties: 'invalid'
-          }
+            totalProperties: 'invalid',
+          },
         };
         const result = template.validateAPIData(data);
 
@@ -669,12 +668,10 @@ describe('APITemplate', () => {
       });
 
       it('should handle nodes without classes', () => {
-        const data = { 
-          name: 'Test API', 
-          version: '1.0.0', 
-          nodes: [
-            { id: '1', name: 'TestInterface', type: 'InterfaceDeclaration' }
-          ]
+        const data = {
+          name: 'Test API',
+          version: '1.0.0',
+          nodes: [{ id: '1', name: 'TestInterface', type: 'InterfaceDeclaration' }],
         };
         const result = template.generateClassDocumentation(data);
 
@@ -682,17 +679,17 @@ describe('APITemplate', () => {
       });
 
       it('should handle classes without methods', () => {
-        const data = { 
-          name: 'Test API', 
-          version: '1.0.0', 
+        const data = {
+          name: 'Test API',
+          version: '1.0.0',
           nodes: [
-            { 
-              id: '1', 
-              name: 'TestClass', 
+            {
+              id: '1',
+              name: 'TestClass',
               type: 'ClassDeclaration',
-              properties: { description: 'A test class' }
-            }
-          ]
+              properties: { description: 'A test class' },
+            },
+          ],
         };
         const result = template.generateClassDocumentation(data);
 
@@ -702,24 +699,24 @@ describe('APITemplate', () => {
 
       it('should handle classes with methods exceeding maxMethodsDisplay', () => {
         const customTemplate = new APITemplate({ maxMethodsDisplay: 2 });
-        const data = { 
-          name: 'Test API', 
-          version: '1.0.0', 
+        const data = {
+          name: 'Test API',
+          version: '1.0.0',
           nodes: [
-            { 
-              id: '1', 
-              name: 'TestClass', 
+            {
+              id: '1',
+              name: 'TestClass',
               type: 'ClassDeclaration',
-              properties: { 
+              properties: {
                 description: 'A test class',
                 methods: [
                   { name: 'method1', description: 'Method 1' },
                   { name: 'method2', description: 'Method 2' },
-                  { name: 'method3', description: 'Method 3' }
-                ]
-              }
-            }
-          ]
+                  { name: 'method3', description: 'Method 3' },
+                ],
+              },
+            },
+          ],
         };
         const result = customTemplate.generateClassDocumentation(data);
 
@@ -730,20 +727,20 @@ describe('APITemplate', () => {
 
       it('should handle classes with methods when includeMethodSignatures is false', () => {
         const customTemplate = new APITemplate({ includeMethodSignatures: false });
-        const data = { 
-          name: 'Test API', 
-          version: '1.0.0', 
+        const data = {
+          name: 'Test API',
+          version: '1.0.0',
           nodes: [
-            { 
-              id: '1', 
-              name: 'TestClass', 
+            {
+              id: '1',
+              name: 'TestClass',
               type: 'ClassDeclaration',
-              properties: { 
+              properties: {
                 description: 'A test class',
-                methods: [{ name: 'method1', description: 'Method 1' }]
-              }
-            }
-          ]
+                methods: [{ name: 'method1', description: 'Method 1' }],
+              },
+            },
+          ],
         };
         const result = customTemplate.generateClassDocumentation(data);
 
@@ -753,20 +750,20 @@ describe('APITemplate', () => {
 
       it('should handle classes with properties when includeTypeDefinitions is false', () => {
         const customTemplate = new APITemplate({ includeTypeDefinitions: false });
-        const data = { 
-          name: 'Test API', 
-          version: '1.0.0', 
+        const data = {
+          name: 'Test API',
+          version: '1.0.0',
           nodes: [
-            { 
-              id: '1', 
-              name: 'TestClass', 
+            {
+              id: '1',
+              name: 'TestClass',
               type: 'ClassDeclaration',
-              properties: { 
+              properties: {
                 description: 'A test class',
-                properties: [{ name: 'prop1', type: 'string', description: 'Property 1' }]
-              }
-            }
-          ]
+                properties: [{ name: 'prop1', type: 'string', description: 'Property 1' }],
+              },
+            },
+          ],
         };
         const result = customTemplate.generateClassDocumentation(data);
 
@@ -784,12 +781,10 @@ describe('APITemplate', () => {
       });
 
       it('should handle nodes without interfaces', () => {
-        const data = { 
-          name: 'Test API', 
-          version: '1.0.0', 
-          nodes: [
-            { id: '1', name: 'TestClass', type: 'ClassDeclaration' }
-          ]
+        const data = {
+          name: 'Test API',
+          version: '1.0.0',
+          nodes: [{ id: '1', name: 'TestClass', type: 'ClassDeclaration' }],
         };
         const result = template.generateInterfaceDocumentation(data);
 
@@ -797,17 +792,17 @@ describe('APITemplate', () => {
       });
 
       it('should handle interfaces without methods', () => {
-        const data = { 
-          name: 'Test API', 
-          version: '1.0.0', 
+        const data = {
+          name: 'Test API',
+          version: '1.0.0',
           nodes: [
-            { 
-              id: '1', 
-              name: 'TestInterface', 
+            {
+              id: '1',
+              name: 'TestInterface',
               type: 'InterfaceDeclaration',
-              properties: { description: 'A test interface' }
-            }
-          ]
+              properties: { description: 'A test interface' },
+            },
+          ],
         };
         const result = template.generateInterfaceDocumentation(data);
 
@@ -817,23 +812,23 @@ describe('APITemplate', () => {
 
       it('should handle interfaces with methods exceeding maxMethodsDisplay', () => {
         const customTemplate = new APITemplate({ maxMethodsDisplay: 1 });
-        const data = { 
-          name: 'Test API', 
-          version: '1.0.0', 
+        const data = {
+          name: 'Test API',
+          version: '1.0.0',
           nodes: [
-            { 
-              id: '1', 
-              name: 'TestInterface', 
+            {
+              id: '1',
+              name: 'TestInterface',
               type: 'InterfaceDeclaration',
-              properties: { 
+              properties: {
                 description: 'A test interface',
                 methods: [
                   { name: 'method1', description: 'Method 1' },
-                  { name: 'method2', description: 'Method 2' }
-                ]
-              }
-            }
-          ]
+                  { name: 'method2', description: 'Method 2' },
+                ],
+              },
+            },
+          ],
         };
         const result = customTemplate.generateInterfaceDocumentation(data);
 
@@ -843,20 +838,20 @@ describe('APITemplate', () => {
 
       it('should handle interfaces with methods when includeMethodSignatures is false', () => {
         const customTemplate = new APITemplate({ includeMethodSignatures: false });
-        const data = { 
-          name: 'Test API', 
-          version: '1.0.0', 
+        const data = {
+          name: 'Test API',
+          version: '1.0.0',
           nodes: [
-            { 
-              id: '1', 
-              name: 'TestInterface', 
+            {
+              id: '1',
+              name: 'TestInterface',
               type: 'InterfaceDeclaration',
-              properties: { 
+              properties: {
                 description: 'A test interface',
-                methods: [{ name: 'method1', description: 'Method 1' }]
-              }
-            }
-          ]
+                methods: [{ name: 'method1', description: 'Method 1' }],
+              },
+            },
+          ],
         };
         const result = customTemplate.generateInterfaceDocumentation(data);
 
@@ -874,17 +869,17 @@ describe('APITemplate', () => {
       });
 
       it('should handle nodes without methods', () => {
-        const data = { 
-          name: 'Test API', 
-          version: '1.0.0', 
+        const data = {
+          name: 'Test API',
+          version: '1.0.0',
           nodes: [
-            { 
-              id: '1', 
-              name: 'TestClass', 
+            {
+              id: '1',
+              name: 'TestClass',
               type: 'ClassDeclaration',
-              properties: { description: 'A test class' }
-            }
-          ]
+              properties: { description: 'A test class' },
+            },
+          ],
         };
         const result = template.generateMethodDocumentation(data);
 
@@ -893,22 +888,22 @@ describe('APITemplate', () => {
 
       it('should handle methods exceeding maxMethodsDisplay', () => {
         const customTemplate = new APITemplate({ maxMethodsDisplay: 1 });
-        const data = { 
-          name: 'Test API', 
-          version: '1.0.0', 
+        const data = {
+          name: 'Test API',
+          version: '1.0.0',
           nodes: [
-            { 
-              id: '1', 
-              name: 'TestClass', 
+            {
+              id: '1',
+              name: 'TestClass',
               type: 'ClassDeclaration',
-              properties: { 
+              properties: {
                 methods: [
                   { name: 'method1', description: 'Method 1' },
-                  { name: 'method2', description: 'Method 2' }
-                ]
-              }
-            }
-          ]
+                  { name: 'method2', description: 'Method 2' },
+                ],
+              },
+            },
+          ],
         };
         const result = customTemplate.generateMethodDocumentation(data);
 
@@ -918,23 +913,25 @@ describe('APITemplate', () => {
 
       it('should handle methods when includeReturnTypes is false', () => {
         const customTemplate = new APITemplate({ includeReturnTypes: false });
-        const data = { 
-          name: 'Test API', 
-          version: '1.0.0', 
+        const data = {
+          name: 'Test API',
+          version: '1.0.0',
           nodes: [
-            { 
-              id: '1', 
-              name: 'TestClass', 
+            {
+              id: '1',
+              name: 'TestClass',
               type: 'ClassDeclaration',
-              properties: { 
-                methods: [{ 
-                  name: 'method1', 
-                  description: 'Method 1',
-                  returnType: 'string'
-                }]
-              }
-            }
-          ]
+              properties: {
+                methods: [
+                  {
+                    name: 'method1',
+                    description: 'Method 1',
+                    returnType: 'string',
+                  },
+                ],
+              },
+            },
+          ],
         };
         const result = customTemplate.generateMethodDocumentation(data);
 
@@ -944,23 +941,25 @@ describe('APITemplate', () => {
 
       it('should handle methods when includeParameterDescriptions is false', () => {
         const customTemplate = new APITemplate({ includeParameterDescriptions: false });
-        const data = { 
-          name: 'Test API', 
-          version: '1.0.0', 
+        const data = {
+          name: 'Test API',
+          version: '1.0.0',
           nodes: [
-            { 
-              id: '1', 
-              name: 'TestClass', 
+            {
+              id: '1',
+              name: 'TestClass',
               type: 'ClassDeclaration',
-              properties: { 
-                methods: [{ 
-                  name: 'method1', 
-                  description: 'Method 1',
-                  parameters: [{ name: 'param1', type: 'string', description: 'Parameter 1' }]
-                }]
-              }
-            }
-          ]
+              properties: {
+                methods: [
+                  {
+                    name: 'method1',
+                    description: 'Method 1',
+                    parameters: [{ name: 'param1', type: 'string', description: 'Parameter 1' }],
+                  },
+                ],
+              },
+            },
+          ],
         };
         const result = customTemplate.generateMethodDocumentation(data);
 
@@ -1007,7 +1006,9 @@ describe('APITemplate', () => {
         const validation = customTemplate.validateConfiguration();
 
         expect(validation.isValid).toBe(false);
-        expect(validation.errors).toContain('apiStyle must be one of: simple, detailed, comprehensive');
+        expect(validation.errors).toContain(
+          'apiStyle must be one of: simple, detailed, comprehensive'
+        );
       });
 
       it('should handle invalid maxMethodsDisplay type', () => {
@@ -1028,7 +1029,7 @@ describe('APITemplate', () => {
 
       it('should handle valid apiStyle values', () => {
         const styles = ['simple', 'detailed', 'comprehensive'];
-        
+
         styles.forEach(style => {
           const customTemplate = new APITemplate({ apiStyle: style as any });
           const validation = customTemplate.validateConfiguration();
@@ -1039,27 +1040,27 @@ describe('APITemplate', () => {
 
     describe('additional branch coverage', () => {
       it('should handle generateClassDocumentation with complex class', () => {
-        const data = { 
-          name: 'Test API', 
-          version: '1.0.0', 
+        const data = {
+          name: 'Test API',
+          version: '1.0.0',
           nodes: [
-            { 
-              id: '1', 
-              name: 'TestClass', 
+            {
+              id: '1',
+              name: 'TestClass',
               type: 'ClassDeclaration',
-              properties: { 
+              properties: {
                 description: 'A test class',
                 methods: [
                   { name: 'method1', description: 'Method 1', returnType: 'string' },
-                  { name: 'method2', description: 'Method 2', returnType: 'number' }
+                  { name: 'method2', description: 'Method 2', returnType: 'number' },
                 ],
                 properties: [
                   { name: 'prop1', type: 'string', description: 'Property 1', optional: true },
-                  { name: 'prop2', type: 'number', description: 'Property 2', readonly: true }
-                ]
-              }
-            }
-          ]
+                  { name: 'prop2', type: 'number', description: 'Property 2', readonly: true },
+                ],
+              },
+            },
+          ],
         };
         const result = template.generateClassDocumentation(data);
 
@@ -1070,27 +1071,27 @@ describe('APITemplate', () => {
       });
 
       it('should handle generateInterfaceDocumentation with complex interface', () => {
-        const data = { 
-          name: 'Test API', 
-          version: '1.0.0', 
+        const data = {
+          name: 'Test API',
+          version: '1.0.0',
           nodes: [
-            { 
-              id: '1', 
-              name: 'TestInterface', 
+            {
+              id: '1',
+              name: 'TestInterface',
               type: 'InterfaceDeclaration',
-              properties: { 
+              properties: {
                 description: 'A test interface',
                 methods: [
                   { name: 'method1', description: 'Method 1', returnType: 'string' },
-                  { name: 'method2', description: 'Method 2', returnType: 'number' }
+                  { name: 'method2', description: 'Method 2', returnType: 'number' },
                 ],
                 properties: [
                   { name: 'prop1', type: 'string', description: 'Property 1', optional: true },
-                  { name: 'prop2', type: 'number', description: 'Property 2', readonly: true }
-                ]
-              }
-            }
-          ]
+                  { name: 'prop2', type: 'number', description: 'Property 2', readonly: true },
+                ],
+              },
+            },
+          ],
         };
         const result = template.generateInterfaceDocumentation(data);
 
@@ -1101,29 +1102,29 @@ describe('APITemplate', () => {
       });
 
       it('should handle generateMethodDocumentation with complex methods', () => {
-        const data = { 
-          name: 'Test API', 
-          version: '1.0.0', 
+        const data = {
+          name: 'Test API',
+          version: '1.0.0',
           nodes: [
-            { 
-              id: '1', 
-              name: 'TestClass', 
+            {
+              id: '1',
+              name: 'TestClass',
               type: 'ClassDeclaration',
-              properties: { 
+              properties: {
                 methods: [
-                  { 
-                    name: 'method1', 
-                    description: 'Method 1', 
+                  {
+                    name: 'method1',
+                    description: 'Method 1',
                     returnType: 'string',
                     parameters: [
                       { name: 'param1', type: 'string', description: 'Parameter 1' },
-                      { name: 'param2', type: 'number', description: 'Parameter 2' }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
+                      { name: 'param2', type: 'number', description: 'Parameter 2' },
+                    ],
+                  },
+                ],
+              },
+            },
+          ],
         };
         const result = template.generateMethodDocumentation(data);
 
@@ -1143,11 +1144,11 @@ describe('APITemplate', () => {
       });
 
       it('should handle validateConfiguration with invalid options', () => {
-        const customTemplate = new APITemplate({ 
+        const customTemplate = new APITemplate({
           includeMethodSignatures: 'invalid' as any,
           includeTypeDefinitions: 'invalid' as any,
           apiStyle: 'invalid' as any,
-          maxMethodsDisplay: -1
+          maxMethodsDisplay: -1,
         });
 
         const result = customTemplate.validateConfiguration();
@@ -1171,14 +1172,28 @@ describe('APITemplate', () => {
                 description: 'Service for user management',
                 methods: [
                   { name: 'createUser', description: 'Create a new user', returnType: 'User' },
-                  { name: 'updateUser', description: 'Update user information', returnType: 'User' },
-                  { name: 'deleteUser', description: 'Delete a user', returnType: 'boolean' }
+                  {
+                    name: 'updateUser',
+                    description: 'Update user information',
+                    returnType: 'User',
+                  },
+                  { name: 'deleteUser', description: 'Delete a user', returnType: 'boolean' },
                 ],
                 properties: [
-                  { name: 'userCount', type: 'number', description: 'Total user count', readonly: true },
-                  { name: 'isActive', type: 'boolean', description: 'Service active status', optional: true }
-                ]
-              }
+                  {
+                    name: 'userCount',
+                    type: 'number',
+                    description: 'Total user count',
+                    readonly: true,
+                  },
+                  {
+                    name: 'isActive',
+                    type: 'boolean',
+                    description: 'Service active status',
+                    optional: true,
+                  },
+                ],
+              },
             },
             {
               id: '2',
@@ -1188,17 +1203,17 @@ describe('APITemplate', () => {
                 description: 'Repository interface for user data',
                 methods: [
                   { name: 'findById', description: 'Find user by ID', returnType: 'User | null' },
-                  { name: 'findAll', description: 'Find all users', returnType: 'User[]' }
-                ]
-              }
-            }
+                  { name: 'findAll', description: 'Find all users', returnType: 'User[]' },
+                ],
+              },
+            },
           ],
           statistics: {
             totalClasses: 1,
             totalInterfaces: 1,
             totalMethods: 5,
-            totalProperties: 2
-          }
+            totalProperties: 2,
+          },
         };
 
         const result = template.generateContent(complexData);
@@ -1233,7 +1248,7 @@ describe('APITemplate', () => {
       it('should handle generateContent with Error exception', () => {
         // Create a custom template that will throw an error in generateContent
         const customTemplate = new APITemplate();
-        
+
         // Mock the generateAPIDescription method to throw an error
         const originalGenerateAPIDescription = (customTemplate as any).generateAPIDescription;
         (customTemplate as any).generateAPIDescription = () => {
@@ -1252,7 +1267,7 @@ describe('APITemplate', () => {
       it('should handle generateContent with non-Error exception', () => {
         // Create a custom template that will throw a non-Error in generateContent
         const customTemplate = new APITemplate();
-        
+
         // Mock the generateAPIDescription method to throw a non-Error
         const originalGenerateAPIDescription = (customTemplate as any).generateAPIDescription;
         (customTemplate as any).generateAPIDescription = () => {
@@ -1283,27 +1298,27 @@ describe('APITemplate', () => {
       });
 
       it('should handle generateClassDocumentation with methods and properties', () => {
-        const data = { 
-          name: 'Test API', 
-          version: '1.0.0', 
+        const data = {
+          name: 'Test API',
+          version: '1.0.0',
           nodes: [
-            { 
-              id: '1', 
-              name: 'TestClass', 
+            {
+              id: '1',
+              name: 'TestClass',
               type: 'ClassDeclaration',
-              properties: { 
+              properties: {
                 description: 'A test class',
                 methods: [
                   { name: 'method1', description: 'Method 1', returnType: 'string' },
-                  { name: 'method2', description: 'Method 2', returnType: 'number' }
+                  { name: 'method2', description: 'Method 2', returnType: 'number' },
                 ],
                 properties: [
                   { name: 'prop1', type: 'string', description: 'Property 1', optional: true },
-                  { name: 'prop2', type: 'number', description: 'Property 2', readonly: true }
-                ]
-              }
-            }
-          ]
+                  { name: 'prop2', type: 'number', description: 'Property 2', readonly: true },
+                ],
+              },
+            },
+          ],
         };
         const result = template.generateClassDocumentation(data);
 
@@ -1316,27 +1331,27 @@ describe('APITemplate', () => {
       });
 
       it('should handle generateInterfaceDocumentation with methods and properties', () => {
-        const data = { 
-          name: 'Test API', 
-          version: '1.0.0', 
+        const data = {
+          name: 'Test API',
+          version: '1.0.0',
           nodes: [
-            { 
-              id: '1', 
-              name: 'TestInterface', 
+            {
+              id: '1',
+              name: 'TestInterface',
               type: 'InterfaceDeclaration',
-              properties: { 
+              properties: {
                 description: 'A test interface',
                 methods: [
                   { name: 'method1', description: 'Method 1', returnType: 'string' },
-                  { name: 'method2', description: 'Method 2', returnType: 'number' }
+                  { name: 'method2', description: 'Method 2', returnType: 'number' },
                 ],
                 properties: [
                   { name: 'prop1', type: 'string', description: 'Property 1', optional: true },
-                  { name: 'prop2', type: 'number', description: 'Property 2', readonly: true }
-                ]
-              }
-            }
-          ]
+                  { name: 'prop2', type: 'number', description: 'Property 2', readonly: true },
+                ],
+              },
+            },
+          ],
         };
         const result = template.generateInterfaceDocumentation(data);
 
@@ -1349,29 +1364,29 @@ describe('APITemplate', () => {
       });
 
       it('should handle generateMethodDocumentation with parameters', () => {
-        const data = { 
-          name: 'Test API', 
-          version: '1.0.0', 
+        const data = {
+          name: 'Test API',
+          version: '1.0.0',
           nodes: [
-            { 
-              id: '1', 
-              name: 'TestClass', 
+            {
+              id: '1',
+              name: 'TestClass',
               type: 'ClassDeclaration',
-              properties: { 
+              properties: {
                 methods: [
-                  { 
-                    name: 'method1', 
-                    description: 'Method 1', 
+                  {
+                    name: 'method1',
+                    description: 'Method 1',
                     returnType: 'string',
                     parameters: [
                       { name: 'param1', type: 'string', description: 'Parameter 1' },
-                      { name: 'param2', type: 'number', description: 'Parameter 2' }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
+                      { name: 'param2', type: 'number', description: 'Parameter 2' },
+                    ],
+                  },
+                ],
+              },
+            },
+          ],
         };
         const result = template.generateMethodDocumentation(data);
 
@@ -1384,25 +1399,25 @@ describe('APITemplate', () => {
       });
 
       it('should handle generateMethodDocumentation with return types', () => {
-        const data = { 
-          name: 'Test API', 
-          version: '1.0.0', 
+        const data = {
+          name: 'Test API',
+          version: '1.0.0',
           nodes: [
-            { 
-              id: '1', 
-              name: 'TestClass', 
+            {
+              id: '1',
+              name: 'TestClass',
               type: 'ClassDeclaration',
-              properties: { 
+              properties: {
                 methods: [
-                  { 
-                    name: 'method1', 
-                    description: 'Method 1', 
-                    returnType: 'string'
-                  }
-                ]
-              }
-            }
-          ]
+                  {
+                    name: 'method1',
+                    description: 'Method 1',
+                    returnType: 'string',
+                  },
+                ],
+              },
+            },
+          ],
         };
         const result = template.generateMethodDocumentation(data);
 
@@ -1412,25 +1427,25 @@ describe('APITemplate', () => {
       });
 
       it('should handle generateMethodDocumentation with parent information', () => {
-        const data = { 
-          name: 'Test API', 
-          version: '1.0.0', 
+        const data = {
+          name: 'Test API',
+          version: '1.0.0',
           nodes: [
-            { 
-              id: '1', 
-              name: 'TestClass', 
+            {
+              id: '1',
+              name: 'TestClass',
               type: 'ClassDeclaration',
-              properties: { 
+              properties: {
                 methods: [
-                  { 
-                    name: 'method1', 
-                    description: 'Method 1', 
-                    returnType: 'string'
-                  }
-                ]
-              }
-            }
-          ]
+                  {
+                    name: 'method1',
+                    description: 'Method 1',
+                    returnType: 'string',
+                  },
+                ],
+              },
+            },
+          ],
         };
         const result = template.generateMethodDocumentation(data);
 
@@ -1440,19 +1455,19 @@ describe('APITemplate', () => {
       });
 
       it('should handle generateClassDocumentation with unknown class name', () => {
-        const data = { 
-          name: 'Test API', 
-          version: '1.0.0', 
+        const data = {
+          name: 'Test API',
+          version: '1.0.0',
           nodes: [
-            { 
-              id: '1', 
+            {
+              id: '1',
               name: null, // Unknown class name
               type: 'ClassDeclaration',
-              properties: { 
-                description: 'A test class'
-              }
-            }
-          ]
+              properties: {
+                description: 'A test class',
+              },
+            },
+          ],
         };
         const result = template.generateClassDocumentation(data);
 
@@ -1461,19 +1476,19 @@ describe('APITemplate', () => {
       });
 
       it('should handle generateInterfaceDocumentation with unknown interface name', () => {
-        const data = { 
-          name: 'Test API', 
-          version: '1.0.0', 
+        const data = {
+          name: 'Test API',
+          version: '1.0.0',
           nodes: [
-            { 
-              id: '1', 
+            {
+              id: '1',
               name: null, // Unknown interface name
               type: 'InterfaceDeclaration',
-              properties: { 
-                description: 'A test interface'
-              }
-            }
-          ]
+              properties: {
+                description: 'A test interface',
+              },
+            },
+          ],
         };
         const result = template.generateInterfaceDocumentation(data);
 
@@ -1482,25 +1497,25 @@ describe('APITemplate', () => {
       });
 
       it('should handle generateMethodDocumentation with unknown method name', () => {
-        const data = { 
-          name: 'Test API', 
-          version: '1.0.0', 
+        const data = {
+          name: 'Test API',
+          version: '1.0.0',
           nodes: [
-            { 
-              id: '1', 
-              name: 'TestClass', 
+            {
+              id: '1',
+              name: 'TestClass',
               type: 'ClassDeclaration',
-              properties: { 
+              properties: {
                 methods: [
-                  { 
+                  {
                     name: null, // Unknown method name
-                    description: 'Method 1', 
-                    returnType: 'string'
-                  }
-                ]
-              }
-            }
-          ]
+                    description: 'Method 1',
+                    returnType: 'string',
+                  },
+                ],
+              },
+            },
+          ],
         };
         const result = template.generateMethodDocumentation(data);
 
@@ -1509,28 +1524,26 @@ describe('APITemplate', () => {
       });
 
       it('should handle generateMethodDocumentation with unknown parameter name', () => {
-        const data = { 
-          name: 'Test API', 
-          version: '1.0.0', 
+        const data = {
+          name: 'Test API',
+          version: '1.0.0',
           nodes: [
-            { 
-              id: '1', 
-              name: 'TestClass', 
+            {
+              id: '1',
+              name: 'TestClass',
               type: 'ClassDeclaration',
-              properties: { 
+              properties: {
                 methods: [
-                  { 
-                    name: 'method1', 
-                    description: 'Method 1', 
+                  {
+                    name: 'method1',
+                    description: 'Method 1',
                     returnType: 'string',
-                    parameters: [
-                      { name: null, type: 'string', description: 'Parameter 1' }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
+                    parameters: [{ name: null, type: 'string', description: 'Parameter 1' }],
+                  },
+                ],
+              },
+            },
+          ],
         };
         const result = template.generateMethodDocumentation(data);
 
@@ -1540,28 +1553,26 @@ describe('APITemplate', () => {
       });
 
       it('should handle generateMethodDocumentation with unknown parameter type', () => {
-        const data = { 
-          name: 'Test API', 
-          version: '1.0.0', 
+        const data = {
+          name: 'Test API',
+          version: '1.0.0',
           nodes: [
-            { 
-              id: '1', 
-              name: 'TestClass', 
+            {
+              id: '1',
+              name: 'TestClass',
               type: 'ClassDeclaration',
-              properties: { 
+              properties: {
                 methods: [
-                  { 
-                    name: 'method1', 
-                    description: 'Method 1', 
+                  {
+                    name: 'method1',
+                    description: 'Method 1',
                     returnType: 'string',
-                    parameters: [
-                      { name: 'param1', type: null, description: 'Parameter 1' }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
+                    parameters: [{ name: 'param1', type: null, description: 'Parameter 1' }],
+                  },
+                ],
+              },
+            },
+          ],
         };
         const result = template.generateMethodDocumentation(data);
 
@@ -1572,28 +1583,26 @@ describe('APITemplate', () => {
       });
 
       it('should handle generateMethodDocumentation with unknown parameter description', () => {
-        const data = { 
-          name: 'Test API', 
-          version: '1.0.0', 
+        const data = {
+          name: 'Test API',
+          version: '1.0.0',
           nodes: [
-            { 
-              id: '1', 
-              name: 'TestClass', 
+            {
+              id: '1',
+              name: 'TestClass',
               type: 'ClassDeclaration',
-              properties: { 
+              properties: {
                 methods: [
-                  { 
-                    name: 'method1', 
-                    description: 'Method 1', 
+                  {
+                    name: 'method1',
+                    description: 'Method 1',
                     returnType: 'string',
-                    parameters: [
-                      { name: 'param1', type: 'string', description: null }
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
+                    parameters: [{ name: 'param1', type: 'string', description: null }],
+                  },
+                ],
+              },
+            },
+          ],
         };
         const result = template.generateMethodDocumentation(data);
 
@@ -1603,25 +1612,25 @@ describe('APITemplate', () => {
       });
 
       it('should handle generateMethodDocumentation with unknown return type', () => {
-        const data = { 
-          name: 'Test API', 
-          version: '1.0.0', 
+        const data = {
+          name: 'Test API',
+          version: '1.0.0',
           nodes: [
-            { 
-              id: '1', 
-              name: 'TestClass', 
+            {
+              id: '1',
+              name: 'TestClass',
               type: 'ClassDeclaration',
-              properties: { 
+              properties: {
                 methods: [
-                  { 
-                    name: 'method1', 
-                    description: 'Method 1', 
-                    returnType: null
-                  }
-                ]
-              }
-            }
-          ]
+                  {
+                    name: 'method1',
+                    description: 'Method 1',
+                    returnType: null,
+                  },
+                ],
+              },
+            },
+          ],
         };
         const result = template.generateMethodDocumentation(data);
 

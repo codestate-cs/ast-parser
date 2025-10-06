@@ -1,6 +1,6 @@
 /**
  * Markdown Generator for documentation generation
- * 
+ *
  * This module provides markdown-specific documentation generation including:
  * - Markdown formatting utilities
  * - Table of contents generation
@@ -12,7 +12,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // @ts-nocheck
 
-import { BaseGenerator, DocumentationGenerationOptions, DocumentationGenerationResult } from './BaseGenerator';
+import {
+  BaseGenerator,
+  DocumentationGenerationOptions,
+  DocumentationGenerationResult,
+} from './BaseGenerator';
 import { ASTNode } from '../../types/core';
 import { JSDocComment } from '../extractors/JSDocExtractor';
 import { TypeInfo } from '../extractors/TypeExtractor';
@@ -47,7 +51,7 @@ export class MarkdownGenerator extends BaseGenerator {
       templateVariables: {},
       markdownFlavor: 'github',
       enableSyntaxHighlighting: true,
-      customTemplate: undefined
+      customTemplate: undefined,
     };
 
     super({ ...defaultOptions, ...options });
@@ -56,7 +60,7 @@ export class MarkdownGenerator extends BaseGenerator {
 
   /**
    * Generate documentation from AST nodes
-   * 
+   *
    * @param nodes - AST nodes
    * @returns Documentation generation result
    */
@@ -74,22 +78,22 @@ export class MarkdownGenerator extends BaseGenerator {
           metadata: {
             generationTime: Date.now() - startTime,
             filesProcessed: 0,
-            nodesProcessed: 0
+            nodesProcessed: 0,
           },
           errors: validation.errors,
-          success: false
+          success: false,
         };
       }
 
       // Generate markdown content
       const content = this.generateMarkdownContentFromNodes(nodes);
-      
+
       // Process template if provided
-      const processedContent = this.markdownOptions.customTemplate 
+      const processedContent = this.markdownOptions.customTemplate
         ? this.processTemplate(this.markdownOptions.customTemplate, {
             content,
             nodes,
-            ...this.markdownOptions.templateVariables
+            ...this.markdownOptions.templateVariables,
           })
         : content;
 
@@ -103,10 +107,10 @@ export class MarkdownGenerator extends BaseGenerator {
           metadata: {
             generationTime: Date.now() - startTime,
             filesProcessed: 0,
-            nodesProcessed: 0
+            nodesProcessed: 0,
           },
           errors: ['Invalid markdown syntax generated'],
-          success: false
+          success: false,
         };
       }
 
@@ -121,10 +125,10 @@ export class MarkdownGenerator extends BaseGenerator {
         metadata: {
           generationTime: Date.now() - startTime,
           filesProcessed: 1,
-          nodesProcessed: nodes.length
+          nodesProcessed: nodes.length,
         },
         errors: [],
-        success: true
+        success: true,
       };
     } catch (error) {
       return {
@@ -134,17 +138,17 @@ export class MarkdownGenerator extends BaseGenerator {
         metadata: {
           generationTime: Date.now() - startTime,
           filesProcessed: 0,
-          nodesProcessed: 0
+          nodesProcessed: 0,
         },
         errors: [error instanceof Error ? error.message : 'Unknown error'],
-        success: false
+        success: false,
       };
     }
   }
 
   /**
    * Generate documentation from extracted data
-   * 
+   *
    * @param jsdocComments - JSDoc comments
    * @param typeInfo - Type information
    * @param examples - Code examples
@@ -168,24 +172,24 @@ export class MarkdownGenerator extends BaseGenerator {
           metadata: {
             generationTime: Date.now() - startTime,
             filesProcessed: 0,
-            nodesProcessed: 0
+            nodesProcessed: 0,
           },
           errors: validation.errors,
-          success: false
+          success: false,
         };
       }
 
       // Generate markdown content
       const content = this.generateMarkdownContent(jsdocComments, typeInfo, examples);
-      
+
       // Process template if provided
-      const processedContent = this.markdownOptions.customTemplate 
+      const processedContent = this.markdownOptions.customTemplate
         ? this.processTemplate(this.markdownOptions.customTemplate, {
             content,
             jsdocComments,
             typeInfo,
             examples,
-            ...this.markdownOptions.templateVariables
+            ...this.markdownOptions.templateVariables,
           })
         : content;
 
@@ -199,10 +203,10 @@ export class MarkdownGenerator extends BaseGenerator {
           metadata: {
             generationTime: Date.now() - startTime,
             filesProcessed: 0,
-            nodesProcessed: 0
+            nodesProcessed: 0,
           },
           errors: ['Invalid markdown syntax generated'],
-          success: false
+          success: false,
         };
       }
 
@@ -217,10 +221,10 @@ export class MarkdownGenerator extends BaseGenerator {
         metadata: {
           generationTime: Date.now() - startTime,
           filesProcessed: 1,
-          nodesProcessed: jsdocComments.length + typeInfo.length + examples.length
+          nodesProcessed: jsdocComments.length + typeInfo.length + examples.length,
         },
         errors: [],
-        success: true
+        success: true,
       };
     } catch (error) {
       return {
@@ -230,17 +234,17 @@ export class MarkdownGenerator extends BaseGenerator {
         metadata: {
           generationTime: Date.now() - startTime,
           filesProcessed: 0,
-          nodesProcessed: 0
+          nodesProcessed: 0,
         },
         errors: [error instanceof Error ? error.message : 'Unknown error'],
-        success: false
+        success: false,
       };
     }
   }
 
   /**
    * Generate markdown content from AST nodes
-   * 
+   *
    * @param nodes - AST nodes
    * @returns Markdown content
    */
@@ -249,31 +253,31 @@ export class MarkdownGenerator extends BaseGenerator {
     let content = '';
 
     // Title
-    content += this.formatHeader('Project Documentation', 1) + '\n\n';
+    content += `${this.formatHeader('Project Documentation', 1)}\n\n`;
 
     // Table of Contents
     if (this.markdownOptions.includeTOC) {
       const tocSections = [
         { id: 'overview', title: 'Overview', level: 1 },
-        { id: 'api-reference', title: 'API Reference', level: 1 }
+        { id: 'api-reference', title: 'API Reference', level: 1 },
       ];
-      content += this.generateTableOfContents(tocSections) + '\n\n';
+      content += `${this.generateTableOfContents(tocSections)}\n\n`;
     }
 
     // Overview section
-    content += this.formatHeader('Overview', 2) + '\n\n';
-    content += this.generateOverviewContent(nodes) + '\n\n';
+    content += `${this.formatHeader('Overview', 2)}\n\n`;
+    content += `${this.generateOverviewContent(nodes)}\n\n`;
     sections.push({ id: 'overview', title: 'Overview', level: 2 });
 
     // API Reference section
-    content += this.formatHeader('API Reference', 2) + '\n\n';
-    content += this.generateAPIReferenceContent(nodes) + '\n\n';
+    content += `${this.formatHeader('API Reference', 2)}\n\n`;
+    content += `${this.generateAPIReferenceContent(nodes)}\n\n`;
     sections.push({ id: 'api-reference', title: 'API Reference', level: 2 });
 
     // Metadata section
     if (this.markdownOptions.includeMetadata) {
-      content += this.formatHeader('Metadata', 2) + '\n\n';
-      content += this.generateMetadataContentFromNodes(nodes) + '\n\n';
+      content += `${this.formatHeader('Metadata', 2)}\n\n`;
+      content += `${this.generateMetadataContentFromNodes(nodes)}\n\n`;
     }
 
     return content;
@@ -281,7 +285,7 @@ export class MarkdownGenerator extends BaseGenerator {
 
   /**
    * Generate markdown content from extracted data
-   * 
+   *
    * @param jsdocComments - JSDoc comments
    * @param typeInfo - Type information
    * @param examples - Code examples
@@ -296,41 +300,41 @@ export class MarkdownGenerator extends BaseGenerator {
     let content = '';
 
     // Title
-    content += this.formatHeader('Project Documentation', 1) + '\n\n';
+    content += `${this.formatHeader('Project Documentation', 1)}\n\n`;
 
     // Table of Contents
     if (this.markdownOptions.includeTOC) {
       const tocSections = [
         { id: 'overview', title: 'Overview', level: 1 },
         { id: 'api-reference', title: 'API Reference', level: 1 },
-        { id: 'examples', title: 'Examples', level: 1 }
+        { id: 'examples', title: 'Examples', level: 1 },
       ];
-      content += this.generateTableOfContents(tocSections) + '\n\n';
+      content += `${this.generateTableOfContents(tocSections)}\n\n`;
     }
 
     // Overview section
-    content += this.formatHeader('Overview', 2) + '\n\n';
-    content += this.generateOverviewContentFromExtracted(jsdocComments, typeInfo, examples) + '\n\n';
+    content += `${this.formatHeader('Overview', 2)}\n\n`;
+    content += `${this.generateOverviewContentFromExtracted(jsdocComments, typeInfo, examples)}\n\n`;
     sections.push({ id: 'overview', title: 'Overview', level: 2 });
 
     // API Reference section
     if (typeInfo.length > 0) {
-      content += this.formatHeader('API Reference', 2) + '\n\n';
-      content += this.generateAPIReferenceContentFromExtracted(typeInfo) + '\n\n';
+      content += `${this.formatHeader('API Reference', 2)}\n\n`;
+      content += `${this.generateAPIReferenceContentFromExtracted(typeInfo)}\n\n`;
       sections.push({ id: 'api-reference', title: 'API Reference', level: 2 });
     }
 
     // Examples section
     if (examples.length > 0) {
-      content += this.formatHeader('Examples', 2) + '\n\n';
-      content += this.generateExamplesContentFromExtracted(examples) + '\n\n';
+      content += `${this.formatHeader('Examples', 2)}\n\n`;
+      content += `${this.generateExamplesContentFromExtracted(examples)}\n\n`;
       sections.push({ id: 'examples', title: 'Examples', level: 2 });
     }
 
     // Metadata section
     if (this.markdownOptions.includeMetadata) {
-      content += this.formatHeader('Metadata', 2) + '\n\n';
-      content += this.generateMetadataContentFromExtracted(jsdocComments, typeInfo, examples) + '\n\n';
+      content += `${this.formatHeader('Metadata', 2)}\n\n`;
+      content += `${this.generateMetadataContentFromExtracted(jsdocComments, typeInfo, examples)}\n\n`;
     }
 
     return content;
@@ -338,7 +342,7 @@ export class MarkdownGenerator extends BaseGenerator {
 
   /**
    * Generate overview content from extracted data
-   * 
+   *
    * @param jsdocComments - JSDoc comments
    * @param typeInfo - Type information
    * @param examples - Code examples
@@ -355,18 +359,18 @@ export class MarkdownGenerator extends BaseGenerator {
     const stats = [
       `**Total JSDoc Comments**: ${jsdocComments.length}`,
       `**Total Types**: ${typeInfo.length}`,
-      `**Total Examples**: ${examples.length}`
+      `**Total Examples**: ${examples.length}`,
     ];
 
-    content += this.formatHeader('Statistics', 3) + '\n\n';
-    content += this.formatList(stats) + '\n\n';
+    content += `${this.formatHeader('Statistics', 3)}\n\n`;
+    content += `${this.formatList(stats)}\n\n`;
 
     return content;
   }
 
   /**
    * Generate API reference content from extracted data
-   * 
+   *
    * @param typeInfo - Type information
    * @returns API reference markdown content
    */
@@ -374,36 +378,36 @@ export class MarkdownGenerator extends BaseGenerator {
     let content = '';
 
     for (const type of typeInfo) {
-      content += this.formatHeader(type.name, 3) + '\n\n';
-      
+      content += `${this.formatHeader(type.name, 3)}\n\n`;
+
       if (type.documentation) {
-        content += type.documentation + '\n\n';
+        content += `${type.documentation}\n\n`;
       }
 
       // Type definition
-      content += this.formatHeader('Definition', 4) + '\n\n';
-      content += this.formatCodeBlock(type.definition, 'typescript') + '\n\n';
+      content += `${this.formatHeader('Definition', 4)}\n\n`;
+      content += `${this.formatCodeBlock(type.definition, 'typescript')}\n\n`;
 
       // Properties
       if (type.properties && type.properties.length > 0) {
-        content += this.formatHeader('Properties', 4) + '\n\n';
+        content += `${this.formatHeader('Properties', 4)}\n\n`;
         const propertyRows = type.properties.map(prop => [
           prop.name || 'unknown',
           prop.type || 'unknown',
-          prop.documentation || 'No description'
+          prop.documentation || 'No description',
         ]);
-        content += this.formatTable(['Name', 'Type', 'Description'], propertyRows) + '\n\n';
+        content += `${this.formatTable(['Name', 'Type', 'Description'], propertyRows)}\n\n`;
       }
 
       // Methods
       if (type.methods && type.methods.length > 0) {
-        content += this.formatHeader('Methods', 4) + '\n\n';
+        content += `${this.formatHeader('Methods', 4)}\n\n`;
         const methodRows = type.methods.map(method => [
           method.name || 'unknown',
           method.returnType || 'unknown',
-          method.documentation || 'No description'
+          method.documentation || 'No description',
         ]);
-        content += this.formatTable(['Name', 'Return Type', 'Description'], methodRows) + '\n\n';
+        content += `${this.formatTable(['Name', 'Return Type', 'Description'], methodRows)}\n\n`;
       }
     }
 
@@ -412,7 +416,7 @@ export class MarkdownGenerator extends BaseGenerator {
 
   /**
    * Generate examples content from extracted data
-   * 
+   *
    * @param examples - Code examples
    * @returns Examples markdown content
    */
@@ -420,15 +424,15 @@ export class MarkdownGenerator extends BaseGenerator {
     let content = '';
 
     for (const example of examples) {
-      content += this.formatHeader(example.title || 'Example', 3) + '\n\n';
-      
+      content += `${this.formatHeader(example.title || 'Example', 3)}\n\n`;
+
       if (example.description) {
-        content += example.description + '\n\n';
+        content += `${example.description}\n\n`;
       }
 
       // Determine language for syntax highlighting
       const language = this.detectLanguage(example.language || 'typescript');
-      content += this.formatCodeBlock(example.code, language) + '\n\n';
+      content += `${this.formatCodeBlock(example.code, language)}\n\n`;
     }
 
     return content;
@@ -436,7 +440,7 @@ export class MarkdownGenerator extends BaseGenerator {
 
   /**
    * Generate metadata content from extracted data
-   * 
+   *
    * @param jsdocComments - JSDoc comments
    * @param typeInfo - Type information
    * @param examples - Code examples
@@ -451,7 +455,7 @@ export class MarkdownGenerator extends BaseGenerator {
       `**Generated**: ${new Date().toISOString()}`,
       `**Markdown Flavor**: ${this.markdownOptions.markdownFlavor}`,
       `**Syntax Highlighting**: ${this.markdownOptions.enableSyntaxHighlighting ? 'Enabled' : 'Disabled'}`,
-      `**Total Items**: ${jsdocComments.length + typeInfo.length + examples.length}`
+      `**Total Items**: ${jsdocComments.length + typeInfo.length + examples.length}`,
     ];
 
     return this.formatList(metadata);
@@ -459,7 +463,7 @@ export class MarkdownGenerator extends BaseGenerator {
 
   /**
    * Generate metadata content from AST nodes
-   * 
+   *
    * @param nodes - AST nodes
    * @returns Metadata markdown content
    */
@@ -468,27 +472,29 @@ export class MarkdownGenerator extends BaseGenerator {
       `**Generated**: ${new Date().toISOString()}`,
       `**Markdown Flavor**: ${this.markdownOptions.markdownFlavor}`,
       `**Syntax Highlighting**: ${this.markdownOptions.enableSyntaxHighlighting ? 'Enabled' : 'Disabled'}`,
-      `**Total Nodes**: ${nodes.length}`
+      `**Total Nodes**: ${nodes.length}`,
     ];
 
     return this.formatList(metadata);
   }
   /**
    * Generate table of contents
-   * 
+   *
    * @param sections - Document sections
    * @returns Table of contents markdown
    */
-  private generateTableOfContents(sections: Array<{ id: string; title: string; level: number }>): string {
+  private generateTableOfContents(
+    sections: Array<{ id: string; title: string; level: number }>
+  ): string {
     if (!this.markdownOptions.includeTOC || sections.length === 0) {
       return '';
     }
 
-    let toc = this.formatHeader('Table of Contents', 2) + '\n\n';
+    let toc = `${this.formatHeader('Table of Contents', 2)}\n\n`;
 
     for (const section of sections) {
       if (!section.title) continue;
-      
+
       const indent = '  '.repeat(Math.max(0, section.level - 1));
       const anchor = section.title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
       toc += `${indent}- [${section.title}](#${anchor})\n`;
@@ -499,19 +505,19 @@ export class MarkdownGenerator extends BaseGenerator {
 
   /**
    * Format header
-   * 
+   *
    * @param text - Header text
    * @param level - Header level (1-6)
    * @returns Formatted header
    */
   private formatHeader(text: string, level: number): string {
     const hashCount = Math.min(Math.max(1, level), 6);
-    return '#'.repeat(hashCount) + ' ' + (text || '');
+    return `${'#'.repeat(hashCount)} ${text || ''}`;
   }
 
   /**
    * Format code block
-   * 
+   *
    * @param code - Code content
    * @param language - Programming language
    * @returns Formatted code block
@@ -523,7 +529,7 @@ export class MarkdownGenerator extends BaseGenerator {
 
   /**
    * Format inline code
-   * 
+   *
    * @param text - Code text
    * @returns Formatted inline code
    */
@@ -534,7 +540,7 @@ export class MarkdownGenerator extends BaseGenerator {
 
   /**
    * Format bold text
-   * 
+   *
    * @param text - Text to bold
    * @returns Formatted bold text
    */
@@ -545,7 +551,7 @@ export class MarkdownGenerator extends BaseGenerator {
 
   /**
    * Format italic text
-   * 
+   *
    * @param text - Text to italicize
    * @returns Formatted italic text
    */
@@ -556,7 +562,7 @@ export class MarkdownGenerator extends BaseGenerator {
 
   /**
    * Format link
-   * 
+   *
    * @param text - Link text
    * @param url - Link URL
    * @returns Formatted link
@@ -568,7 +574,7 @@ export class MarkdownGenerator extends BaseGenerator {
 
   /**
    * Format list
-   * 
+   *
    * @param items - List items
    * @returns Formatted list
    */
@@ -579,7 +585,7 @@ export class MarkdownGenerator extends BaseGenerator {
 
   /**
    * Format numbered list
-   * 
+   *
    * @param items - List items
    * @returns Formatted numbered list
    */
@@ -591,7 +597,7 @@ export class MarkdownGenerator extends BaseGenerator {
 
   /**
    * Format table
-   * 
+   *
    * @param headers - Table headers
    * @param rows - Table rows
    * @returns Formatted table
@@ -601,10 +607,10 @@ export class MarkdownGenerator extends BaseGenerator {
 
     // Header row
     let table = `| ${headers.join(' | ')} |\n`;
-    
+
     // Separator row
     table += `| ${headers.map(() => '---').join(' | ')} |\n`;
-    
+
     // Data rows
     if (rows && rows.length > 0) {
       for (const row of rows) {
@@ -618,7 +624,7 @@ export class MarkdownGenerator extends BaseGenerator {
 
   /**
    * Detect language from file extension or language name
-   * 
+   *
    * @param input - File path or language name
    * @returns Detected language
    */
@@ -626,37 +632,37 @@ export class MarkdownGenerator extends BaseGenerator {
     if (!input) return 'text';
 
     const extension = input.split('.').pop()?.toLowerCase();
-    
+
     const languageMap: Record<string, string> = {
-      'ts': 'typescript',
-      'tsx': 'typescript',
-      'js': 'javascript',
-      'jsx': 'javascript',
-      'html': 'html',
-      'htm': 'html',
-      'css': 'css',
-      'scss': 'scss',
-      'sass': 'sass',
-      'json': 'json',
-      'md': 'markdown',
-      'sh': 'bash',
-      'sql': 'sql',
-      'py': 'python',
-      'java': 'java',
-      'cpp': 'cpp',
-      'c': 'c',
-      'cs': 'csharp',
-      'php': 'php',
-      'rb': 'ruby',
-      'go': 'go',
-      'rs': 'rust',
-      'swift': 'swift',
-      'kt': 'kotlin',
-      'scala': 'scala',
-      'typescript': 'typescript',
-      'javascript': 'javascript',
-      'markdown': 'markdown',
-      'bash': 'bash'
+      ts: 'typescript',
+      tsx: 'typescript',
+      js: 'javascript',
+      jsx: 'javascript',
+      html: 'html',
+      htm: 'html',
+      css: 'css',
+      scss: 'scss',
+      sass: 'sass',
+      json: 'json',
+      md: 'markdown',
+      sh: 'bash',
+      sql: 'sql',
+      py: 'python',
+      java: 'java',
+      cpp: 'cpp',
+      c: 'c',
+      cs: 'csharp',
+      php: 'php',
+      rb: 'ruby',
+      go: 'go',
+      rs: 'rust',
+      swift: 'swift',
+      kt: 'kotlin',
+      scala: 'scala',
+      typescript: 'typescript',
+      javascript: 'javascript',
+      markdown: 'markdown',
+      bash: 'bash',
     };
 
     return languageMap[extension || input.toLowerCase()] || 'text';
@@ -664,14 +670,14 @@ export class MarkdownGenerator extends BaseGenerator {
 
   /**
    * Escape special markdown characters
-   * 
+   *
    * @param text - Text to escape
    * @returns Escaped text
    */
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   private escapeMarkdown(text: string): string {
     if (!text) return '';
-    
+
     return text
       .replace(/\\/g, '\\\\')
       .replace(/\*/g, '\\*')
@@ -694,7 +700,7 @@ export class MarkdownGenerator extends BaseGenerator {
 
   /**
    * Process template with variables
-   * 
+   *
    * @param template - Template string
    * @param variables - Template variables
    * @returns Processed template
@@ -709,7 +715,7 @@ export class MarkdownGenerator extends BaseGenerator {
 
   /**
    * Validate markdown syntax
-   * 
+   *
    * @param markdown - Markdown content
    * @returns True if valid
    */
@@ -718,12 +724,12 @@ export class MarkdownGenerator extends BaseGenerator {
 
     // Basic validation - check for unmatched markdown syntax
     const lines = markdown.split('\n');
-    
+
     for (const line of lines) {
       // Check for unmatched bold/italic markers
       const boldCount = (line.match(/\*\*/g) || []).length;
       const italicCount = (line.match(/(?<!\*)\*(?!\*)/g) || []).length;
-      
+
       if (boldCount % 2 !== 0 || italicCount % 2 !== 0) {
         return false;
       }
@@ -734,32 +740,32 @@ export class MarkdownGenerator extends BaseGenerator {
 
   /**
    * Count sections in markdown content
-   * 
+   *
    * @param content - Markdown content
    * @returns Number of sections
    */
   private countSections(content: string): number {
     if (!content) return 0;
-    
+
     const headerMatches = content.match(/^#+\s+/gm);
     return headerMatches ? headerMatches.length : 0;
   }
 
   /**
    * Write content to file
-   * 
+   *
    * @param content - Content to write
    * @param filePath - File path
    */
   protected override async writeToFile(content: string, _filePath: string): Promise<void> {
     const fs = await import('fs/promises');
     const path = await import('path');
-    
+
     const fullPath = path.join(this.markdownOptions.outputDir, this.markdownOptions.fileName);
-    
+
     // Ensure directory exists
     await fs.mkdir(this.markdownOptions.outputDir, { recursive: true });
-    
+
     // Write file
     await fs.writeFile(fullPath, content, 'utf8');
   }

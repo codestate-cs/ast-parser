@@ -18,11 +18,11 @@ export class LocalStorage extends BaseStorage {
         createDirectories: true,
         atomicWrites: true,
         backupEnabled: false,
-        compressionEnabled: false
+        compressionEnabled: false,
       },
-      ...config
+      ...config,
     });
-    
+
     this.storagePath = this.config.path;
   }
 
@@ -38,11 +38,11 @@ export class LocalStorage extends BaseStorage {
       } else {
         throw this.createError('Storage directory does not exist', 'STORAGE_INIT_ERROR', {
           path: this.storagePath,
-          error: error instanceof Error ? error.message : 'Unknown error'
+          error: error instanceof Error ? error.message : 'Unknown error',
         });
       }
     }
-    
+
     this.initialized = true;
   }
 
@@ -51,30 +51,30 @@ export class LocalStorage extends BaseStorage {
    */
   async store(versionInfo: VersionInfo, _config?: Partial<StorageConfig>): Promise<VersionStorage> {
     this.ensureInitialized();
-    
+
     const filePath = this.getVersionFilePath(versionInfo.id);
     const data = JSON.stringify(versionInfo, null, 2);
-    
+
     try {
       // Create backup if enabled and file exists
       if (this.config.options?.['backupEnabled']) {
         await this.createBackup(filePath);
       }
-      
+
       await fs.writeFile(filePath, data, 'utf8');
-      
+
       const metadata = this.createStorageMetadata(versionInfo);
       return {
         id: this.generateStorageId(versionInfo.id),
         versionId: versionInfo.id,
         path: filePath,
-        metadata
+        metadata,
       };
     } catch (error) {
       const errorObj = error instanceof Error ? error : new Error(String(error));
       this.handleError(errorObj, 'store', {
         versionId: versionInfo.id,
-        path: filePath
+        path: filePath,
       });
       throw errorObj;
     }
@@ -85,9 +85,9 @@ export class LocalStorage extends BaseStorage {
    */
   async retrieve(versionId: string, _config?: Partial<StorageConfig>): Promise<VersionInfo | null> {
     this.ensureInitialized();
-    
+
     const filePath = this.getVersionFilePath(versionId);
-    
+
     try {
       const data = await fs.readFile(filePath, 'utf8');
       return JSON.parse(data);
@@ -95,7 +95,7 @@ export class LocalStorage extends BaseStorage {
       const errorObj = error instanceof Error ? error : new Error(String(error));
       this.handleError(errorObj, 'retrieve', {
         versionId,
-        path: filePath
+        path: filePath,
       });
       throw errorObj;
     }
@@ -106,9 +106,9 @@ export class LocalStorage extends BaseStorage {
    */
   async delete(versionId: string, _config?: Partial<StorageConfig>): Promise<boolean> {
     this.ensureInitialized();
-    
+
     const filePath = this.getVersionFilePath(versionId);
-    
+
     try {
       await fs.unlink(filePath);
       return true;
@@ -116,7 +116,7 @@ export class LocalStorage extends BaseStorage {
       const errorObj = error instanceof Error ? error : new Error(String(error));
       this.handleError(errorObj, 'delete', {
         versionId,
-        path: filePath
+        path: filePath,
       });
       throw errorObj;
     }
@@ -127,7 +127,7 @@ export class LocalStorage extends BaseStorage {
    */
   async list(_config?: Partial<StorageConfig>): Promise<VersionStorage[]> {
     this.ensureInitialized();
-    
+
     try {
       const files = await fs.readdir(this.storagePath);
       const versionFiles = files.filter((file: string | { name: string }) => {
@@ -135,14 +135,14 @@ export class LocalStorage extends BaseStorage {
         const ext = path.extname(fileName);
         return ext === '.json' && !fileName.endsWith('.backup');
       });
-      
+
       const versions: VersionStorage[] = [];
-      
+
       for (const file of versionFiles) {
         const fileName = typeof file === 'string' ? file : (file as { name: string }).name;
         const versionId = path.basename(fileName, '.json');
         const filePath = path.join(this.storagePath, fileName);
-        
+
         try {
           const stats = await fs.stat(filePath);
           versions.push({
@@ -152,20 +152,20 @@ export class LocalStorage extends BaseStorage {
             metadata: {
               storedAt: stats.mtime.toISOString(),
               size: stats.size,
-              checksum: await this.generateChecksumFromFile(filePath)
-            }
+              checksum: await this.generateChecksumFromFile(filePath),
+            },
           });
         } catch (error) {
           // Skip files that can't be read
           continue;
         }
       }
-      
+
       return versions;
     } catch (error) {
       const errorObj = error instanceof Error ? error : new Error(String(error));
       this.handleError(errorObj, 'list', {
-        path: this.storagePath
+        path: this.storagePath,
       });
       throw errorObj;
     }
@@ -176,9 +176,9 @@ export class LocalStorage extends BaseStorage {
    */
   async exists(versionId: string, _config?: Partial<StorageConfig>): Promise<boolean> {
     this.ensureInitialized();
-    
+
     const filePath = this.getVersionFilePath(versionId);
-    
+
     try {
       await fs.access(filePath);
       return true;
@@ -192,21 +192,21 @@ export class LocalStorage extends BaseStorage {
    */
   async getMetadata(versionId: string, _config?: Partial<StorageConfig>): Promise<any> {
     this.ensureInitialized();
-    
+
     const filePath = this.getVersionFilePath(versionId);
-    
+
     try {
       const stats = await fs.stat(filePath);
       return {
         storedAt: stats.mtime.toISOString(),
         size: stats.size,
-        checksum: await this.generateChecksumFromFile(filePath)
+        checksum: await this.generateChecksumFromFile(filePath),
       };
     } catch (error) {
       const errorObj = error instanceof Error ? error : new Error(String(error));
       this.handleError(errorObj, 'getMetadata', {
         versionId,
-        path: filePath
+        path: filePath,
       });
       throw errorObj;
     }
@@ -215,25 +215,29 @@ export class LocalStorage extends BaseStorage {
   /**
    * Update version metadata
    */
-  async updateMetadata(versionId: string, metadata: any, _config?: Partial<StorageConfig>): Promise<boolean> {
+  async updateMetadata(
+    versionId: string,
+    metadata: any,
+    _config?: Partial<StorageConfig>
+  ): Promise<boolean> {
     this.ensureInitialized();
-    
+
     const filePath = this.getVersionFilePath(versionId);
-    
+
     try {
       const versionInfo = await this.retrieve(versionId);
       if (!versionInfo) {
         throw this.createError('Version not found', 'VERSION_NOT_FOUND');
       }
       versionInfo.metadata = { ...versionInfo.metadata, ...metadata };
-      
+
       await fs.writeFile(filePath, JSON.stringify(versionInfo, null, 2), 'utf8');
       return true;
     } catch (error) {
       const errorObj = error instanceof Error ? error : new Error(String(error));
       this.handleError(errorObj, 'updateMetadata', {
         versionId,
-        path: filePath
+        path: filePath,
       });
       throw errorObj;
     }
@@ -244,27 +248,27 @@ export class LocalStorage extends BaseStorage {
    */
   async cleanup(_config?: Partial<StorageConfig>): Promise<number> {
     this.ensureInitialized();
-    
+
     try {
       const versions = await this.list();
       const now = Date.now();
       let deletedCount = 0;
-      
+
       // Sort by creation time (newest first)
-      versions.sort((a, b) => 
-        new Date(b.metadata.storedAt).getTime() - new Date(a.metadata.storedAt).getTime()
+      versions.sort(
+        (a, b) => new Date(b.metadata.storedAt).getTime() - new Date(a.metadata.storedAt).getTime()
       );
-      
+
       const keepLatest = 5; // Default value
       const maxAge = 7 * 24 * 60 * 60 * 1000; // 7 days default
       const maxVersions = 10; // Default value
-      
+
       for (let i = keepLatest; i < versions.length; i++) {
         const version = versions[i];
         if (!version) continue;
-        
+
         const versionAge = now - new Date(version.metadata.storedAt).getTime();
-        
+
         if (versionAge > maxAge || versions.length > maxVersions) {
           try {
             await this.delete(version.versionId);
@@ -275,12 +279,12 @@ export class LocalStorage extends BaseStorage {
           }
         }
       }
-      
+
       return deletedCount;
     } catch (error) {
       const errorObj = error instanceof Error ? error : new Error(String(error));
       this.handleError(errorObj, 'cleanup', {
-        config: _config
+        config: _config,
       });
       throw errorObj;
     }
@@ -291,13 +295,15 @@ export class LocalStorage extends BaseStorage {
    */
   async validate(_config: StorageConfig): Promise<boolean> {
     const errors: string[] = [];
-    
+
     try {
       await fs.access(this.storagePath);
     } catch (error) {
-      errors.push(`Storage path not accessible: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      errors.push(
+        `Storage path not accessible: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
     }
-    
+
     return errors.length === 0;
   }
 
@@ -320,35 +326,35 @@ export class LocalStorage extends BaseStorage {
     };
   }> {
     this.ensureInitialized();
-    
+
     try {
       const versions = await this.list();
       const versionData: VersionInfo[] = [];
-      
+
       for (const version of versions) {
         try {
           const data = await this.retrieve(version.versionId);
-        if (data) {
-          versionData.push(data);
-        }
+          if (data) {
+            versionData.push(data);
+          }
         } catch (error) {
           // Skip versions that can't be read
           continue;
         }
       }
-      
+
       return {
         versions: versionData,
         metadata: {
           exportedAt: new Date().toISOString(),
           totalVersions: versionData.length,
-          storageType: 'local'
-        }
+          storageType: 'local',
+        },
       };
     } catch (error) {
       const errorObj = error instanceof Error ? error : new Error(String(error));
       this.handleError(errorObj, 'exportData', {
-        path: this.storagePath
+        path: this.storagePath,
       });
       throw errorObj;
     }
@@ -359,7 +365,7 @@ export class LocalStorage extends BaseStorage {
    */
   override async importData(_data: any, _config?: Partial<StorageConfig>): Promise<void> {
     this.ensureInitialized();
-    
+
     // Import not implemented - throw error
     throw this.createError('Import not implemented', 'IMPORT_NOT_IMPLEMENTED');
   }

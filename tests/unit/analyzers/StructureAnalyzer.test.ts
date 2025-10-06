@@ -23,7 +23,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       },
       ast: [],
       relations: [],
@@ -35,49 +35,58 @@ describe('StructureAnalyzer', () => {
         linesOfCode: 0,
         functionCount: 0,
         classCount: 0,
-        interfaceCount: 0
+        interfaceCount: 0,
       },
       quality: {
         score: 0,
         maintainabilityIndex: 0,
         technicalDebtRatio: 0,
         duplicationPercentage: 0,
-        testCoveragePercentage: 0
+        testCoveragePercentage: 0,
       },
-      metadata: {}
+      metadata: {},
     };
   });
 
   // Helper function to create mock directories
-  const createMockDirectory = (name: string, path: string, depth?: number): DirectoryInfo & { depth?: number } => ({
+  const createMockDirectory = (
+    name: string,
+    path: string,
+    depth?: number
+  ): DirectoryInfo & { depth?: number } => ({
     name,
     path,
     fileCount: 0,
     subdirectoryCount: 0,
     totalSize: 0,
-    ...(depth !== undefined && { depth })
+    ...(depth !== undefined && { depth }),
   });
 
   // Helper function to create mock files
-  const createMockFile = (name: string, path: string, lines: number = 10, size: number = 100): FileInfo => ({
+  const createMockFile = (
+    name: string,
+    path: string,
+    lines: number = 10,
+    size: number = 100
+  ): FileInfo => ({
     name,
     path,
     extension: '.ts',
     lines,
     size,
     lastModified: new Date(),
-    hash: 'mock-hash'
+    hash: 'mock-hash',
   });
 
   describe('Happy Path Scenarios', () => {
     it('should analyze simple project structure', () => {
       const directories = [
         createMockDirectory('src', '/test/project/src', 1),
-        createMockDirectory('tests', '/test/project/tests', 1)
+        createMockDirectory('tests', '/test/project/tests', 1),
       ];
       const files = [
         createMockFile('index.ts', '/test/project/src/index.ts'),
-        createMockFile('test.ts', '/test/project/tests/test.ts')
+        createMockFile('test.ts', '/test/project/tests/test.ts'),
       ];
 
       mockProjectInfo.structure = {
@@ -85,7 +94,7 @@ describe('StructureAnalyzer', () => {
         files,
         totalFiles: 2,
         totalLines: 20,
-        totalSize: 200
+        totalSize: 200,
       };
 
       const result = analyzer.analyze(mockProjectInfo);
@@ -102,7 +111,7 @@ describe('StructureAnalyzer', () => {
         createMockDirectory('components', '/test/project/src/components', 2),
         createMockDirectory('utils', '/test/project/src/utils', 2),
         createMockDirectory('deep', '/test/project/src/components/deep', 3),
-        createMockDirectory('deeper', '/test/project/src/components/deep/deeper', 4)
+        createMockDirectory('deeper', '/test/project/src/components/deep/deeper', 4),
       ];
 
       mockProjectInfo.structure = {
@@ -110,7 +119,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo);
@@ -124,7 +133,7 @@ describe('StructureAnalyzer', () => {
         createMockDirectory('packages', '/test/project/packages', 1),
         createMockDirectory('package1', '/test/project/packages/package1', 2),
         createMockDirectory('package2', '/test/project/packages/package2', 2),
-        createMockDirectory('package3', '/test/project/packages/package3', 2)
+        createMockDirectory('package3', '/test/project/packages/package3', 2),
       ];
 
       mockProjectInfo.structure = {
@@ -132,7 +141,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo);
@@ -144,7 +153,7 @@ describe('StructureAnalyzer', () => {
       const directories = [
         createMockDirectory('apps', '/test/project/apps', 1),
         createMockDirectory('packages', '/test/project/packages', 1),
-        createMockDirectory('tools', '/test/project/tools', 1)
+        createMockDirectory('tools', '/test/project/tools', 1),
       ];
 
       mockProjectInfo.structure = {
@@ -152,7 +161,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo);
@@ -166,7 +175,7 @@ describe('StructureAnalyzer', () => {
         createMockDirectory('hooks', '/test/project/hooks', 1),
         createMockDirectory('utils', '/test/project/utils', 1),
         createMockDirectory('services', '/test/project/services', 1),
-        createMockDirectory('types', '/test/project/types', 1)
+        createMockDirectory('types', '/test/project/types', 1),
       ];
 
       mockProjectInfo.structure = {
@@ -174,7 +183,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo);
@@ -189,7 +198,7 @@ describe('StructureAnalyzer', () => {
       const directories = [
         createMockDirectory('presentation', '/test/project/presentation', 1),
         createMockDirectory('business', '/test/project/business', 1),
-        createMockDirectory('data', '/test/project/data', 1)
+        createMockDirectory('data', '/test/project/data', 1),
       ];
 
       mockProjectInfo.structure = {
@@ -197,7 +206,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo);
@@ -209,7 +218,7 @@ describe('StructureAnalyzer', () => {
     it('should detect modular architecture', () => {
       const directories = [
         createMockDirectory('feature-module', '/test/project/feature-module', 1),
-        createMockDirectory('user-feature', '/test/project/user-feature', 1)
+        createMockDirectory('user-feature', '/test/project/user-feature', 1),
       ];
 
       mockProjectInfo.structure = {
@@ -217,7 +226,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo);
@@ -229,7 +238,7 @@ describe('StructureAnalyzer', () => {
     it('should calculate file statistics when requested', () => {
       const files = [
         createMockFile('file1.ts', '/test/project/file1.ts', 50, 500),
-        createMockFile('file2.ts', '/test/project/file2.ts', 30, 300)
+        createMockFile('file2.ts', '/test/project/file2.ts', 30, 300),
       ];
 
       mockProjectInfo.structure = {
@@ -237,7 +246,7 @@ describe('StructureAnalyzer', () => {
         files,
         totalFiles: 2,
         totalLines: 80,
-        totalSize: 800
+        totalSize: 800,
       };
 
       const result = analyzer.analyze(mockProjectInfo, { includeFileStats: true });
@@ -254,7 +263,7 @@ describe('StructureAnalyzer', () => {
       const directories = [
         createMockDirectory('level1', '/test/project/level1', 1),
         createMockDirectory('level2a', '/test/project/level1/level2a', 2),
-        createMockDirectory('level2b', '/test/project/level1/level2b', 2)
+        createMockDirectory('level2b', '/test/project/level1/level2b', 2),
       ];
 
       mockProjectInfo.structure = {
@@ -262,7 +271,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo, { includeDirectoryStats: true });
@@ -293,7 +302,7 @@ describe('StructureAnalyzer', () => {
 
     it('should handle missing structure gracefully', () => {
       const projectInfoWithoutStructure = { ...mockProjectInfo, structure: undefined as any };
-      
+
       const result = analyzer.analyze(projectInfoWithoutStructure);
 
       expect(result.structureAnalysis).toBeDefined();
@@ -304,7 +313,7 @@ describe('StructureAnalyzer', () => {
 
   describe('Pathological Cases', () => {
     it('should handle extremely large number of directories', () => {
-      const directories = Array.from({ length: 1000 }, (_, i) => 
+      const directories = Array.from({ length: 1000 }, (_, i) =>
         createMockDirectory(`dir${i}`, `/test/project/dir${i}`, 1)
       );
 
@@ -313,7 +322,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo);
@@ -323,8 +332,14 @@ describe('StructureAnalyzer', () => {
     });
 
     it('should handle extremely deep directory structure', () => {
-      const directories = Array.from({ length: 100 }, (_, i) => 
-        createMockDirectory(`level${i}`, `/test/project/${Array(i + 1).fill('level').join('/')}`, i)
+      const directories = Array.from({ length: 100 }, (_, i) =>
+        createMockDirectory(
+          `level${i}`,
+          `/test/project/${Array(i + 1)
+            .fill('level')
+            .join('/')}`,
+          i
+        )
       );
 
       mockProjectInfo.structure = {
@@ -332,7 +347,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo);
@@ -354,7 +369,7 @@ describe('StructureAnalyzer', () => {
       const directories = [
         createMockDirectory('dir1', '/test/project/dir1', 1),
         createMockDirectory('dir1', '/test/project/dir1', 1), // Duplicate
-        createMockDirectory('dir2', '/test/project/dir2', 1)
+        createMockDirectory('dir2', '/test/project/dir2', 1),
       ];
 
       mockProjectInfo.structure = {
@@ -362,7 +377,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo);
@@ -375,7 +390,7 @@ describe('StructureAnalyzer', () => {
     it('should handle directories without names', () => {
       const directories = [
         { ...createMockDirectory('', '/test/project/unnamed', 1), name: '' },
-        createMockDirectory('named', '/test/project/named', 1)
+        createMockDirectory('named', '/test/project/named', 1),
       ];
 
       mockProjectInfo.structure = {
@@ -383,7 +398,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo);
@@ -394,7 +409,7 @@ describe('StructureAnalyzer', () => {
     it('should handle directories without paths', () => {
       const directories = [
         { ...createMockDirectory('dir1', '', 1), path: '' },
-        createMockDirectory('dir2', '/test/project/dir2', 1)
+        createMockDirectory('dir2', '/test/project/dir2', 1),
       ];
 
       mockProjectInfo.structure = {
@@ -402,7 +417,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo);
@@ -413,7 +428,7 @@ describe('StructureAnalyzer', () => {
     it('should handle negative depth values', () => {
       const directories = [
         createMockDirectory('dir1', '/test/project/dir1', -1),
-        createMockDirectory('dir2', '/test/project/dir2', 0)
+        createMockDirectory('dir2', '/test/project/dir2', 0),
       ];
 
       mockProjectInfo.structure = {
@@ -421,7 +436,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo);
@@ -433,7 +448,7 @@ describe('StructureAnalyzer', () => {
       const directories = [
         createMockDirectory('dir-with-dashes', '/test/project/dir-with-dashes', 1),
         createMockDirectory('dir_with_underscores', '/test/project/dir_with_underscores', 1),
-        createMockDirectory('dir.with.dots', '/test/project/dir.with.dots', 1)
+        createMockDirectory('dir.with.dots', '/test/project/dir.with.dots', 1),
       ];
 
       mockProjectInfo.structure = {
@@ -441,7 +456,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo);
@@ -451,8 +466,20 @@ describe('StructureAnalyzer', () => {
 
     it('should handle directories without depth property', () => {
       const directories = [
-        { name: 'dir1', path: '/test/project/dir1', fileCount: 0, subdirectoryCount: 0, totalSize: 0 },
-        { name: 'dir2', path: '/test/project/dir2/subdir', fileCount: 0, subdirectoryCount: 0, totalSize: 0 }
+        {
+          name: 'dir1',
+          path: '/test/project/dir1',
+          fileCount: 0,
+          subdirectoryCount: 0,
+          totalSize: 0,
+        },
+        {
+          name: 'dir2',
+          path: '/test/project/dir2/subdir',
+          fileCount: 0,
+          subdirectoryCount: 0,
+          totalSize: 0,
+        },
       ];
 
       mockProjectInfo.structure = {
@@ -460,7 +487,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo);
@@ -470,8 +497,22 @@ describe('StructureAnalyzer', () => {
 
     it('should handle directories with undefined depth', () => {
       const directories = [
-        { name: 'dir1', path: '/test/project/dir1', depth: undefined, fileCount: 0, subdirectoryCount: 0, totalSize: 0 },
-        { name: 'dir2', path: '/test/project/dir2/subdir', depth: undefined, fileCount: 0, subdirectoryCount: 0, totalSize: 0 }
+        {
+          name: 'dir1',
+          path: '/test/project/dir1',
+          depth: undefined,
+          fileCount: 0,
+          subdirectoryCount: 0,
+          totalSize: 0,
+        },
+        {
+          name: 'dir2',
+          path: '/test/project/dir2/subdir',
+          depth: undefined,
+          fileCount: 0,
+          subdirectoryCount: 0,
+          totalSize: 0,
+        },
       ];
 
       mockProjectInfo.structure = {
@@ -479,7 +520,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo);
@@ -489,8 +530,22 @@ describe('StructureAnalyzer', () => {
 
     it('should handle directories with null path', () => {
       const directories = [
-        { name: 'dir1', path: null as any, depth: 1, fileCount: 0, subdirectoryCount: 0, totalSize: 0 },
-        { name: 'dir2', path: '/test/project/dir2', depth: 1, fileCount: 0, subdirectoryCount: 0, totalSize: 0 }
+        {
+          name: 'dir1',
+          path: null as any,
+          depth: 1,
+          fileCount: 0,
+          subdirectoryCount: 0,
+          totalSize: 0,
+        },
+        {
+          name: 'dir2',
+          path: '/test/project/dir2',
+          depth: 1,
+          fileCount: 0,
+          subdirectoryCount: 0,
+          totalSize: 0,
+        },
       ];
 
       mockProjectInfo.structure = {
@@ -498,7 +553,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo);
@@ -509,7 +564,14 @@ describe('StructureAnalyzer', () => {
     it('should handle directories with empty path', () => {
       const directories = [
         { name: 'dir1', path: '', depth: 1, fileCount: 0, subdirectoryCount: 0, totalSize: 0 },
-        { name: 'dir2', path: '/test/project/dir2', depth: 1, fileCount: 0, subdirectoryCount: 0, totalSize: 0 }
+        {
+          name: 'dir2',
+          path: '/test/project/dir2',
+          depth: 1,
+          fileCount: 0,
+          subdirectoryCount: 0,
+          totalSize: 0,
+        },
       ];
 
       mockProjectInfo.structure = {
@@ -517,7 +579,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo);
@@ -527,8 +589,22 @@ describe('StructureAnalyzer', () => {
 
     it('should handle directories with zero depth', () => {
       const directories = [
-        { name: 'dir1', path: '/test/project', depth: 0, fileCount: 0, subdirectoryCount: 0, totalSize: 0 },
-        { name: 'dir2', path: '/test/project/dir2', depth: 1, fileCount: 0, subdirectoryCount: 0, totalSize: 0 }
+        {
+          name: 'dir1',
+          path: '/test/project',
+          depth: 0,
+          fileCount: 0,
+          subdirectoryCount: 0,
+          totalSize: 0,
+        },
+        {
+          name: 'dir2',
+          path: '/test/project/dir2',
+          depth: 1,
+          fileCount: 0,
+          subdirectoryCount: 0,
+          totalSize: 0,
+        },
       ];
 
       mockProjectInfo.structure = {
@@ -536,7 +612,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo);
@@ -546,8 +622,22 @@ describe('StructureAnalyzer', () => {
 
     it('should handle directories with negative depth in calculateDepth', () => {
       const directories = [
-        { name: 'dir1', path: '/test/project/dir1', depth: -1, fileCount: 0, subdirectoryCount: 0, totalSize: 0 },
-        { name: 'dir2', path: '/test/project/dir2', depth: 0, fileCount: 0, subdirectoryCount: 0, totalSize: 0 }
+        {
+          name: 'dir1',
+          path: '/test/project/dir1',
+          depth: -1,
+          fileCount: 0,
+          subdirectoryCount: 0,
+          totalSize: 0,
+        },
+        {
+          name: 'dir2',
+          path: '/test/project/dir2',
+          depth: 0,
+          fileCount: 0,
+          subdirectoryCount: 0,
+          totalSize: 0,
+        },
       ];
 
       mockProjectInfo.structure = {
@@ -555,7 +645,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo);
@@ -565,8 +655,22 @@ describe('StructureAnalyzer', () => {
 
     it('should handle directories with undefined depth in calculateDepth', () => {
       const directories = [
-        { name: 'dir1', path: '/test/project/dir1', depth: undefined, fileCount: 0, subdirectoryCount: 0, totalSize: 0 },
-        { name: 'dir2', path: '/test/project/dir2/subdir', depth: undefined, fileCount: 0, subdirectoryCount: 0, totalSize: 0 }
+        {
+          name: 'dir1',
+          path: '/test/project/dir1',
+          depth: undefined,
+          fileCount: 0,
+          subdirectoryCount: 0,
+          totalSize: 0,
+        },
+        {
+          name: 'dir2',
+          path: '/test/project/dir2/subdir',
+          depth: undefined,
+          fileCount: 0,
+          subdirectoryCount: 0,
+          totalSize: 0,
+        },
       ];
 
       mockProjectInfo.structure = {
@@ -574,7 +678,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo);
@@ -584,8 +688,22 @@ describe('StructureAnalyzer', () => {
 
     it('should handle directories with null path in calculateDepth', () => {
       const directories = [
-        { name: 'dir1', path: null as any, depth: undefined, fileCount: 0, subdirectoryCount: 0, totalSize: 0 },
-        { name: 'dir2', path: '/test/project/dir2', depth: undefined, fileCount: 0, subdirectoryCount: 0, totalSize: 0 }
+        {
+          name: 'dir1',
+          path: null as any,
+          depth: undefined,
+          fileCount: 0,
+          subdirectoryCount: 0,
+          totalSize: 0,
+        },
+        {
+          name: 'dir2',
+          path: '/test/project/dir2',
+          depth: undefined,
+          fileCount: 0,
+          subdirectoryCount: 0,
+          totalSize: 0,
+        },
       ];
 
       mockProjectInfo.structure = {
@@ -593,7 +711,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo);
@@ -605,7 +723,7 @@ describe('StructureAnalyzer', () => {
       const directories = [
         createMockDirectory('Components', '/test/project/Components', 1),
         createMockDirectory('HOOKS', '/test/project/HOOKS', 1),
-        createMockDirectory('Utils', '/test/project/Utils', 1)
+        createMockDirectory('Utils', '/test/project/Utils', 1),
       ];
 
       mockProjectInfo.structure = {
@@ -613,7 +731,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo);
@@ -627,7 +745,7 @@ describe('StructureAnalyzer', () => {
     it('should handle files without size or lines', () => {
       const files = [
         createMockFile('file1.ts', '/test/project/file1.ts', 0, 0),
-        createMockFile('file2.ts', '/test/project/file2.ts', 20, 200)
+        createMockFile('file2.ts', '/test/project/file2.ts', 20, 200),
       ];
 
       mockProjectInfo.structure = {
@@ -635,7 +753,7 @@ describe('StructureAnalyzer', () => {
         files,
         totalFiles: 2,
         totalLines: 20,
-        totalSize: 200
+        totalSize: 200,
       };
 
       const result = analyzer.analyze(mockProjectInfo, { includeFileStats: true });
@@ -648,7 +766,7 @@ describe('StructureAnalyzer', () => {
 
   describe('Performance and Memory', () => {
     it('should not leak memory with repeated analysis', () => {
-      const directories = Array.from({ length: 100 }, (_, i) => 
+      const directories = Array.from({ length: 100 }, (_, i) =>
         createMockDirectory(`dir${i}`, `/test/project/dir${i}`, 1)
       );
 
@@ -657,7 +775,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       // Run analysis multiple times
@@ -670,7 +788,7 @@ describe('StructureAnalyzer', () => {
     it('should handle concurrent analysis calls', () => {
       const directories = [
         createMockDirectory('dir1', '/test/project/dir1', 1),
-        createMockDirectory('dir2', '/test/project/dir2', 1)
+        createMockDirectory('dir2', '/test/project/dir2', 1),
       ];
 
       mockProjectInfo.structure = {
@@ -678,12 +796,12 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       // Simulate concurrent calls
       const results = Array.from({ length: 5 }, () => analyzer.analyze(mockProjectInfo));
-      
+
       results.forEach(result => {
         expect(result.structureAnalysis).toBeDefined();
         expect(result.structureAnalysis.breadth).toBe(2);
@@ -696,7 +814,7 @@ describe('StructureAnalyzer', () => {
       const directories = [
         createMockDirectory('level1', '/test/project/level1', 1),
         createMockDirectory('level2', '/test/project/level1/level2', 2),
-        createMockDirectory('level3', '/test/project/level1/level2/level3', 3)
+        createMockDirectory('level3', '/test/project/level1/level2/level3', 3),
       ];
 
       mockProjectInfo.structure = {
@@ -704,7 +822,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo, { maxDepth: 2 });
@@ -715,7 +833,7 @@ describe('StructureAnalyzer', () => {
     it('should disable depth analysis when requested', () => {
       const directories = [
         createMockDirectory('level1', '/test/project/level1', 1),
-        createMockDirectory('level2', '/test/project/level1/level2', 2)
+        createMockDirectory('level2', '/test/project/level1/level2', 2),
       ];
 
       mockProjectInfo.structure = {
@@ -723,7 +841,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo, { analyzeDepth: false });
@@ -734,7 +852,7 @@ describe('StructureAnalyzer', () => {
     it('should disable breadth analysis when requested', () => {
       const directories = [
         createMockDirectory('dir1', '/test/project/dir1', 1),
-        createMockDirectory('dir2', '/test/project/dir2', 1)
+        createMockDirectory('dir2', '/test/project/dir2', 1),
       ];
 
       mockProjectInfo.structure = {
@@ -742,7 +860,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo, { analyzeBreadth: false });
@@ -755,7 +873,7 @@ describe('StructureAnalyzer', () => {
         createMockDirectory('level1', '/test/project/level1', 1),
         createMockDirectory('level2', '/test/project/level1/level2', 2),
         createMockDirectory('level3', '/test/project/level1/level2/level3', 3),
-        createMockDirectory('level4', '/test/project/level1/level2/level3/level4', 4)
+        createMockDirectory('level4', '/test/project/level1/level2/level3/level4', 4),
       ];
 
       mockProjectInfo.structure = {
@@ -763,7 +881,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo, { analyzeOrganization: false });
@@ -774,7 +892,7 @@ describe('StructureAnalyzer', () => {
     it('should disable pattern analysis when requested', () => {
       const directories = [
         createMockDirectory('components', '/test/project/components', 1),
-        createMockDirectory('hooks', '/test/project/hooks', 1)
+        createMockDirectory('hooks', '/test/project/hooks', 1),
       ];
 
       mockProjectInfo.structure = {
@@ -782,7 +900,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo, { analyzePatterns: false });
@@ -793,7 +911,7 @@ describe('StructureAnalyzer', () => {
     it('should disable architecture analysis when requested', () => {
       const directories = [
         createMockDirectory('presentation', '/test/project/presentation', 1),
-        createMockDirectory('business', '/test/project/business', 1)
+        createMockDirectory('business', '/test/project/business', 1),
       ];
 
       mockProjectInfo.structure = {
@@ -801,7 +919,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo, { analyzeArchitecture: false });
@@ -811,16 +929,14 @@ describe('StructureAnalyzer', () => {
     });
 
     it('should handle empty options', () => {
-      const directories = [
-        createMockDirectory('dir1', '/test/project/dir1', 1)
-      ];
+      const directories = [createMockDirectory('dir1', '/test/project/dir1', 1)];
 
       mockProjectInfo.structure = {
         directories,
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo, {});
@@ -836,7 +952,7 @@ describe('StructureAnalyzer', () => {
       const directories = [
         { ...createMockDirectory('dir1', '/test/project/dir1'), depth: undefined },
         createMockDirectory('dir2', '/test/project/dir2', 1),
-        createMockDirectory('dir3', '/test/project/dir3', 1)
+        createMockDirectory('dir3', '/test/project/dir3', 1),
       ];
 
       mockProjectInfo.structure = {
@@ -844,7 +960,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo);
@@ -859,7 +975,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo);
@@ -874,7 +990,7 @@ describe('StructureAnalyzer', () => {
         files: [] as any,
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo);
@@ -888,7 +1004,7 @@ describe('StructureAnalyzer', () => {
         createMockDirectory('presentation-layer', '/test/project/presentation-layer', 1),
         createMockDirectory('business-layer', '/test/project/business-layer', 1),
         createMockDirectory('data-layer', '/test/project/data-layer', 1),
-        createMockDirectory('infrastructure-layer', '/test/project/infrastructure-layer', 1)
+        createMockDirectory('infrastructure-layer', '/test/project/infrastructure-layer', 1),
       ];
 
       mockProjectInfo.structure = {
@@ -896,7 +1012,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo);
@@ -915,7 +1031,7 @@ describe('StructureAnalyzer', () => {
         createMockDirectory('base-module', '/test/project/base-module', 1),
         createMockDirectory('infrastructure-module', '/test/project/infrastructure-module', 1),
         createMockDirectory('config-module', '/test/project/config-module', 1),
-        createMockDirectory('other-module', '/test/project/other-module', 1)
+        createMockDirectory('other-module', '/test/project/other-module', 1),
       ];
 
       mockProjectInfo.structure = {
@@ -923,7 +1039,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo);
@@ -938,7 +1054,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo, { includeFileStats: true });
@@ -956,7 +1072,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo, { includeDirectoryStats: true });
@@ -971,7 +1087,7 @@ describe('StructureAnalyzer', () => {
       const directories = [
         createMockDirectory('level1', '/test/project/level1', 1),
         createMockDirectory('level2', '/test/project/level1/level2', 2),
-        createMockDirectory('level3', '/test/project/level1/level2/level3', 3)
+        createMockDirectory('level3', '/test/project/level1/level2/level3', 3),
       ];
 
       mockProjectInfo.structure = {
@@ -979,7 +1095,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo, { maxDepth: 2 });
@@ -990,7 +1106,7 @@ describe('StructureAnalyzer', () => {
     it('should handle determineLayerType with infrastructure patterns', () => {
       const directories = [
         createMockDirectory('infrastructure-layer', '/test/project/infrastructure-layer', 1),
-        createMockDirectory('presentation-layer', '/test/project/presentation-layer', 1)
+        createMockDirectory('presentation-layer', '/test/project/presentation-layer', 1),
       ];
 
       mockProjectInfo.structure = {
@@ -998,7 +1114,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo);
@@ -1010,7 +1126,7 @@ describe('StructureAnalyzer', () => {
     it('should handle calculateDirectoryStats with path-based depth calculation', () => {
       const directories = [
         { ...createMockDirectory('dir1', '/test/project/dir1'), depth: undefined },
-        { ...createMockDirectory('dir2', '/test/project/dir2'), depth: undefined }
+        { ...createMockDirectory('dir2', '/test/project/dir2'), depth: undefined },
       ];
 
       mockProjectInfo.structure = {
@@ -1018,7 +1134,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo, { includeDirectoryStats: true });
@@ -1031,7 +1147,7 @@ describe('StructureAnalyzer', () => {
     it('should handle determineLayerType with other patterns', () => {
       const directories = [
         createMockDirectory('random-layer', '/test/project/random-layer', 1),
-        createMockDirectory('custom-layer', '/test/project/custom-layer', 1)
+        createMockDirectory('custom-layer', '/test/project/custom-layer', 1),
       ];
 
       mockProjectInfo.structure = {
@@ -1039,7 +1155,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo);
@@ -1051,7 +1167,7 @@ describe('StructureAnalyzer', () => {
     it('should handle filterStructure with maxDepth when depth is undefined', () => {
       const directories = [
         createMockDirectory('dir1', '/test/project/dir1'), // No depth property
-        createMockDirectory('dir2', '/test/project/dir2', 1)
+        createMockDirectory('dir2', '/test/project/dir2', 1),
       ];
 
       mockProjectInfo.structure = {
@@ -1059,7 +1175,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const options = {
@@ -1070,7 +1186,7 @@ describe('StructureAnalyzer', () => {
         analyzePatterns: true,
         analyzeArchitecture: true,
         includeFileStats: true,
-        includeDirectoryStats: true
+        includeDirectoryStats: true,
       };
 
       const result = analyzer.analyze(mockProjectInfo, options);
@@ -1084,7 +1200,7 @@ describe('StructureAnalyzer', () => {
         createMockDirectory('infrastructure', '/test/project/infrastructure', 1),
         createMockDirectory('config', '/test/project/config', 1),
         createMockDirectory('util', '/test/project/util', 1),
-        createMockDirectory('presentation', '/test/project/presentation', 1) // Add another layered pattern
+        createMockDirectory('presentation', '/test/project/presentation', 1), // Add another layered pattern
       ];
 
       mockProjectInfo.structure = {
@@ -1092,16 +1208,16 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo);
 
       // Should detect layered architecture with infrastructure layers
       expect(result.structureAnalysis.architecture.type).toBe('layered');
-      expect(result.structureAnalysis.architecture.layers.some(layer => 
-        layer.type === 'infrastructure'
-      )).toBe(true);
+      expect(
+        result.structureAnalysis.architecture.layers.some(layer => layer.type === 'infrastructure')
+      ).toBe(true);
     });
 
     it('should handle determineLayerType with other patterns (line 385)', () => {
@@ -1122,12 +1238,12 @@ describe('StructureAnalyzer', () => {
               path: '/test/path/random-folder',
               fileCount: 0,
               subdirectoryCount: 0,
-              totalSize: 0
-            }
+              totalSize: 0,
+            },
           ],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: [],
         relations: [],
@@ -1139,19 +1255,19 @@ describe('StructureAnalyzer', () => {
           linesOfCode: 0,
           functionCount: 0,
           classCount: 0,
-          interfaceCount: 0
+          interfaceCount: 0,
         },
         quality: {
           score: 85,
           maintainabilityIndex: 80,
           technicalDebtRatio: 0.1,
           duplicationPercentage: 5,
-          testCoveragePercentage: 90
-        }
+          testCoveragePercentage: 90,
+        },
       };
 
       const options: StructureAnalysisOptions = {
-        analyzeArchitecture: true
+        analyzeArchitecture: true,
       };
 
       // When: Analyzing structure
@@ -1182,12 +1298,12 @@ describe('StructureAnalyzer', () => {
               path: '/test/path/config-module',
               fileCount: 0,
               subdirectoryCount: 0,
-              totalSize: 0
-            }
+              totalSize: 0,
+            },
           ],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: [],
         relations: [],
@@ -1199,19 +1315,19 @@ describe('StructureAnalyzer', () => {
           linesOfCode: 0,
           functionCount: 0,
           classCount: 0,
-          interfaceCount: 0
+          interfaceCount: 0,
         },
         quality: {
           score: 85,
           maintainabilityIndex: 80,
           technicalDebtRatio: 0.1,
           duplicationPercentage: 5,
-          testCoveragePercentage: 90
-        }
+          testCoveragePercentage: 90,
+        },
       };
 
       const options: StructureAnalysisOptions = {
-        analyzeArchitecture: true
+        analyzeArchitecture: true,
       };
 
       // When: Analyzing structure
@@ -1220,9 +1336,11 @@ describe('StructureAnalyzer', () => {
       // Then: Should detect infrastructure module type for config directories
       expect(result).toBeDefined();
       expect(result.structureAnalysis.architecture).toBeDefined();
-      expect(result.structureAnalysis.architecture.modules.some(
-        module => module.type === 'infrastructure'
-      )).toBe(true);
+      expect(
+        result.structureAnalysis.architecture.modules.some(
+          module => module.type === 'infrastructure'
+        )
+      ).toBe(true);
     });
 
     it('should detect util layer type (line 381)', () => {
@@ -1243,12 +1361,12 @@ describe('StructureAnalyzer', () => {
               path: '/test/path/config-module',
               fileCount: 0,
               subdirectoryCount: 0,
-              totalSize: 0
-            }
+              totalSize: 0,
+            },
           ],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: [],
         relations: [],
@@ -1260,19 +1378,19 @@ describe('StructureAnalyzer', () => {
           linesOfCode: 0,
           functionCount: 0,
           classCount: 0,
-          interfaceCount: 0
+          interfaceCount: 0,
         },
         quality: {
           score: 85,
           maintainabilityIndex: 80,
           technicalDebtRatio: 0.1,
           duplicationPercentage: 5,
-          testCoveragePercentage: 90
-        }
+          testCoveragePercentage: 90,
+        },
       };
 
       const options: StructureAnalysisOptions = {
-        analyzeArchitecture: true
+        analyzeArchitecture: true,
       };
 
       // When: Analyzing structure
@@ -1281,9 +1399,11 @@ describe('StructureAnalyzer', () => {
       // Then: Should detect infrastructure module type for util directories
       expect(result).toBeDefined();
       expect(result.structureAnalysis.architecture).toBeDefined();
-      expect(result.structureAnalysis.architecture.modules.some(
-        module => module.type === 'infrastructure'
-      )).toBe(true);
+      expect(
+        result.structureAnalysis.architecture.modules.some(
+          module => module.type === 'infrastructure'
+        )
+      ).toBe(true);
     });
 
     it('should detect other layer type for unmatched patterns (line 385)', () => {
@@ -1304,12 +1424,12 @@ describe('StructureAnalyzer', () => {
               path: '/test/path/random-module',
               fileCount: 0,
               subdirectoryCount: 0,
-              totalSize: 0
-            }
+              totalSize: 0,
+            },
           ],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: [],
         relations: [],
@@ -1321,19 +1441,19 @@ describe('StructureAnalyzer', () => {
           linesOfCode: 0,
           functionCount: 0,
           classCount: 0,
-          interfaceCount: 0
+          interfaceCount: 0,
         },
         quality: {
           score: 85,
           maintainabilityIndex: 80,
           technicalDebtRatio: 0.1,
           duplicationPercentage: 5,
-          testCoveragePercentage: 90
-        }
+          testCoveragePercentage: 90,
+        },
       };
 
       const options: StructureAnalysisOptions = {
-        analyzeArchitecture: true
+        analyzeArchitecture: true,
       };
 
       // When: Analyzing structure
@@ -1342,9 +1462,9 @@ describe('StructureAnalyzer', () => {
       // Then: Should detect 'other' module type for unmatched patterns
       expect(result).toBeDefined();
       expect(result.structureAnalysis.architecture).toBeDefined();
-      expect(result.structureAnalysis.architecture.modules.some(
-        module => module.type === 'other'
-      )).toBe(true);
+      expect(
+        result.structureAnalysis.architecture.modules.some(module => module.type === 'other')
+      ).toBe(true);
     });
 
     it('should detect other layer type for unmatched patterns (line 385)', () => {
@@ -1365,26 +1485,26 @@ describe('StructureAnalyzer', () => {
               path: '/test/path/xyz-unknown-folder',
               fileCount: 0,
               subdirectoryCount: 0,
-              totalSize: 0
+              totalSize: 0,
             },
             {
               name: 'abc-misc-folder',
               path: '/test/path/abc-misc-folder',
               fileCount: 0,
               subdirectoryCount: 0,
-              totalSize: 0
+              totalSize: 0,
             },
             {
               name: 'random-stuff',
               path: '/test/path/random-stuff',
               fileCount: 0,
               subdirectoryCount: 0,
-              totalSize: 0
-            }
+              totalSize: 0,
+            },
           ],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: [],
         relations: [],
@@ -1396,19 +1516,19 @@ describe('StructureAnalyzer', () => {
           linesOfCode: 0,
           functionCount: 0,
           classCount: 0,
-          interfaceCount: 0
+          interfaceCount: 0,
         },
         quality: {
           score: 85,
           maintainabilityIndex: 80,
           technicalDebtRatio: 0.1,
           duplicationPercentage: 5,
-          testCoveragePercentage: 90
-        }
+          testCoveragePercentage: 90,
+        },
       };
 
       const options: StructureAnalysisOptions = {
-        analyzeArchitecture: true
+        analyzeArchitecture: true,
       };
 
       // When: Analyzing structure
@@ -1419,7 +1539,7 @@ describe('StructureAnalyzer', () => {
       expect(result.structureAnalysis.architecture).toBeDefined();
       // The layer type might be detected as something else, so let's just verify the analysis works
       expect(result.structureAnalysis.architecture.type).toBeDefined();
-      
+
       // Should detect 'other' layer type for unmatched patterns
       expect(result.structureAnalysis.architecture.type).toBeDefined();
     });
@@ -1442,26 +1562,26 @@ describe('StructureAnalyzer', () => {
               path: '/test/path/presentation',
               fileCount: 0,
               subdirectoryCount: 0,
-              totalSize: 0
+              totalSize: 0,
             },
             {
               name: 'business',
               path: '/test/path/business',
               fileCount: 0,
               subdirectoryCount: 0,
-              totalSize: 0
+              totalSize: 0,
             },
             {
               name: 'data',
               path: '/test/path/data',
               fileCount: 0,
               subdirectoryCount: 0,
-              totalSize: 0
-            }
+              totalSize: 0,
+            },
           ],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: [],
         relations: [],
@@ -1473,19 +1593,19 @@ describe('StructureAnalyzer', () => {
           linesOfCode: 0,
           functionCount: 0,
           classCount: 0,
-          interfaceCount: 0
+          interfaceCount: 0,
         },
         quality: {
           score: 85,
           maintainabilityIndex: 80,
           technicalDebtRatio: 0.1,
           duplicationPercentage: 5,
-          testCoveragePercentage: 90
-        }
+          testCoveragePercentage: 90,
+        },
       };
 
       const options: StructureAnalysisOptions = {
-        analyzeArchitecture: true
+        analyzeArchitecture: true,
       };
 
       // When: Analyzing structure
@@ -1496,12 +1616,12 @@ describe('StructureAnalyzer', () => {
       expect(result.structureAnalysis.architecture).toBeDefined();
       expect(result.structureAnalysis.architecture.type).toBe('layered');
       expect(result.structureAnalysis.architecture.layers).toHaveLength(3);
-      
+
       // All layers should have specific types (presentation, business, data)
       expect(result.structureAnalysis.architecture.layers.map(layer => layer.type)).toEqual([
         'presentation',
-        'business', 
-        'data'
+        'business',
+        'data',
       ]);
     });
 
@@ -1523,19 +1643,19 @@ describe('StructureAnalyzer', () => {
               path: '/test/path/feature-module',
               fileCount: 0,
               subdirectoryCount: 0,
-              totalSize: 0
+              totalSize: 0,
             },
             {
               name: 'random-unknown-module',
               path: '/test/path/random-unknown-module',
               fileCount: 0,
               subdirectoryCount: 0,
-              totalSize: 0
-            }
+              totalSize: 0,
+            },
           ],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: [],
         relations: [],
@@ -1547,19 +1667,19 @@ describe('StructureAnalyzer', () => {
           linesOfCode: 0,
           functionCount: 0,
           classCount: 0,
-          interfaceCount: 0
+          interfaceCount: 0,
         },
         quality: {
           score: 85,
           maintainabilityIndex: 80,
           technicalDebtRatio: 0.1,
           duplicationPercentage: 5,
-          testCoveragePercentage: 90
-        }
+          testCoveragePercentage: 90,
+        },
       };
 
       const options: StructureAnalysisOptions = {
-        analyzeArchitecture: true
+        analyzeArchitecture: true,
       };
 
       // When: Analyzing structure
@@ -1570,9 +1690,11 @@ describe('StructureAnalyzer', () => {
       expect(result.structureAnalysis.architecture).toBeDefined();
       expect(result.structureAnalysis.architecture.type).toBe('modular');
       expect(result.structureAnalysis.architecture.modules).toHaveLength(2);
-      
+
       // Check that one of the modules has type 'other'
-      const otherModules = result.structureAnalysis.architecture.modules.filter(module => module.type === 'other');
+      const otherModules = result.structureAnalysis.architecture.modules.filter(
+        module => module.type === 'other'
+      );
       expect(otherModules).toHaveLength(1);
       expect(otherModules[0]?.name).toBe('random-unknown-module');
     });
@@ -1595,26 +1717,26 @@ describe('StructureAnalyzer', () => {
               path: '/test/path/presentation',
               fileCount: 0,
               subdirectoryCount: 0,
-              totalSize: 0
+              totalSize: 0,
             },
             {
               name: 'business',
               path: '/test/path/business',
               fileCount: 0,
               subdirectoryCount: 0,
-              totalSize: 0
+              totalSize: 0,
             },
             {
               name: 'random-unknown-layer',
               path: '/test/path/random-unknown-layer',
               fileCount: 0,
               subdirectoryCount: 0,
-              totalSize: 0
-            }
+              totalSize: 0,
+            },
           ],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: [],
         relations: [],
@@ -1626,19 +1748,19 @@ describe('StructureAnalyzer', () => {
           linesOfCode: 0,
           functionCount: 0,
           classCount: 0,
-          interfaceCount: 0
+          interfaceCount: 0,
         },
         quality: {
           score: 85,
           maintainabilityIndex: 80,
           technicalDebtRatio: 0.1,
           duplicationPercentage: 5,
-          testCoveragePercentage: 90
-        }
+          testCoveragePercentage: 90,
+        },
       };
 
       const options: StructureAnalysisOptions = {
-        analyzeArchitecture: true
+        analyzeArchitecture: true,
       };
 
       // When: Analyzing structure
@@ -1649,12 +1771,12 @@ describe('StructureAnalyzer', () => {
       expect(result.structureAnalysis.architecture).toBeDefined();
       expect(result.structureAnalysis.architecture.type).toBe('layered');
       expect(result.structureAnalysis.architecture.layers).toHaveLength(2); // Only presentation and business match layered patterns
-      
+
       // The random-unknown-layer should not be included in layered architecture
       // because it doesn't match any layered patterns
       expect(result.structureAnalysis.architecture.layers.map(layer => layer.type)).toEqual([
         'presentation',
-        'business'
+        'business',
       ]);
     });
 
@@ -1676,33 +1798,33 @@ describe('StructureAnalyzer', () => {
               path: '/test/path/presentation',
               fileCount: 0,
               subdirectoryCount: 0,
-              totalSize: 0
+              totalSize: 0,
             },
             {
               name: 'business',
               path: '/test/path/business',
               fileCount: 0,
               subdirectoryCount: 0,
-              totalSize: 0
+              totalSize: 0,
             },
             {
               name: 'infrastructure',
               path: '/test/path/infrastructure',
               fileCount: 0,
               subdirectoryCount: 0,
-              totalSize: 0
+              totalSize: 0,
             },
             {
               name: 'random-unknown-layer',
               path: '/test/path/random-unknown-layer',
               fileCount: 0,
               subdirectoryCount: 0,
-              totalSize: 0
-            }
+              totalSize: 0,
+            },
           ],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: [],
         relations: [],
@@ -1714,19 +1836,19 @@ describe('StructureAnalyzer', () => {
           linesOfCode: 0,
           functionCount: 0,
           classCount: 0,
-          interfaceCount: 0
+          interfaceCount: 0,
         },
         quality: {
           score: 85,
           maintainabilityIndex: 80,
           technicalDebtRatio: 0.1,
           duplicationPercentage: 5,
-          testCoveragePercentage: 90
-        }
+          testCoveragePercentage: 90,
+        },
       };
 
       const options: StructureAnalysisOptions = {
-        analyzeArchitecture: true
+        analyzeArchitecture: true,
       };
 
       // When: Analyzing structure
@@ -1737,12 +1859,12 @@ describe('StructureAnalyzer', () => {
       expect(result.structureAnalysis.architecture).toBeDefined();
       expect(result.structureAnalysis.architecture.type).toBe('layered');
       expect(result.structureAnalysis.architecture.layers).toHaveLength(3); // presentation, business, infrastructure
-      
+
       // All layers should have specific types
       expect(result.structureAnalysis.architecture.layers.map(layer => layer.type)).toEqual([
         'presentation',
         'business',
-        'infrastructure'
+        'infrastructure',
       ]);
     });
 
@@ -1764,33 +1886,33 @@ describe('StructureAnalyzer', () => {
               path: '/test/path/presentation',
               fileCount: 0,
               subdirectoryCount: 0,
-              totalSize: 0
+              totalSize: 0,
             },
             {
               name: 'business',
               path: '/test/path/business',
               fileCount: 0,
               subdirectoryCount: 0,
-              totalSize: 0
+              totalSize: 0,
             },
             {
               name: 'data',
               path: '/test/path/data',
               fileCount: 0,
               subdirectoryCount: 0,
-              totalSize: 0
+              totalSize: 0,
             },
             {
               name: 'random-unknown-layer',
               path: '/test/path/random-unknown-layer',
               fileCount: 0,
               subdirectoryCount: 0,
-              totalSize: 0
-            }
+              totalSize: 0,
+            },
           ],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: [],
         relations: [],
@@ -1802,19 +1924,19 @@ describe('StructureAnalyzer', () => {
           linesOfCode: 0,
           functionCount: 0,
           classCount: 0,
-          interfaceCount: 0
+          interfaceCount: 0,
         },
         quality: {
           score: 85,
           maintainabilityIndex: 80,
           technicalDebtRatio: 0.1,
           duplicationPercentage: 5,
-          testCoveragePercentage: 90
-        }
+          testCoveragePercentage: 90,
+        },
       };
 
       const options: StructureAnalysisOptions = {
-        analyzeArchitecture: true
+        analyzeArchitecture: true,
       };
 
       // When: Analyzing structure
@@ -1825,12 +1947,12 @@ describe('StructureAnalyzer', () => {
       expect(result.structureAnalysis.architecture).toBeDefined();
       expect(result.structureAnalysis.architecture.type).toBe('layered');
       expect(result.structureAnalysis.architecture.layers).toHaveLength(3); // presentation, business, data
-      
+
       // All layers should have specific types
       expect(result.structureAnalysis.architecture.layers.map(layer => layer.type)).toEqual([
         'presentation',
         'business',
-        'data'
+        'data',
       ]);
     });
 
@@ -1852,19 +1974,19 @@ describe('StructureAnalyzer', () => {
               path: '/test/path/feature-module',
               fileCount: 0,
               subdirectoryCount: 0,
-              totalSize: 0
+              totalSize: 0,
             },
             {
               name: 'unknown-module',
               path: '/test/path/unknown-module',
               fileCount: 0,
               subdirectoryCount: 0,
-              totalSize: 0
-            }
+              totalSize: 0,
+            },
           ],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: [],
         relations: [],
@@ -1876,15 +1998,15 @@ describe('StructureAnalyzer', () => {
           linesOfCode: 0,
           functionCount: 0,
           classCount: 0,
-          interfaceCount: 0
+          interfaceCount: 0,
         },
         quality: {
           score: 85,
           maintainabilityIndex: 80,
           technicalDebtRatio: 10,
           duplicationPercentage: 5,
-          testCoveragePercentage: 90
-        }
+          testCoveragePercentage: 90,
+        },
       };
 
       const options: StructureAnalysisOptions = {
@@ -1894,7 +2016,7 @@ describe('StructureAnalyzer', () => {
         analyzeArchitecture: true,
         maxDepth: 10,
         includePatterns: ['**/*'],
-        excludePatterns: []
+        excludePatterns: [],
       };
 
       // When: Analyzing structure
@@ -1905,10 +2027,14 @@ describe('StructureAnalyzer', () => {
       expect(result.structureAnalysis.architecture).toBeDefined();
       expect(result.structureAnalysis.architecture.type).toBe('modular');
       expect(result.structureAnalysis.architecture.modules).toHaveLength(2);
-      
+
       // Check that one module has type 'feature' and one has type 'other'
-      const featureModules = result.structureAnalysis.architecture.modules.filter(module => module.type === 'feature');
-      const otherModules = result.structureAnalysis.architecture.modules.filter(module => module.type === 'other');
+      const featureModules = result.structureAnalysis.architecture.modules.filter(
+        module => module.type === 'feature'
+      );
+      const otherModules = result.structureAnalysis.architecture.modules.filter(
+        module => module.type === 'other'
+      );
       expect(featureModules).toHaveLength(1);
       expect(otherModules).toHaveLength(1);
       expect(featureModules[0]?.name).toBe('feature-module');
@@ -1918,20 +2044,20 @@ describe('StructureAnalyzer', () => {
     it('should return other layer type for unmatched directory names', () => {
       // Test the determineLayerType method directly to cover the 'other' return
       const analyzer = new StructureAnalyzer();
-      
+
       // Use reflection to access the private method
       const determineLayerType = (analyzer as any).determineLayerType.bind(analyzer);
-      
+
       // Test with a name that doesn't match any layer patterns
       const result = determineLayerType('random-folder');
-      
+
       expect(result).toBe('other');
     });
 
     it('should handle filterStructure with maxDepth when depth is undefined', () => {
       const directories = [
         createMockDirectory('src', '/test/project/src', undefined), // depth undefined
-        createMockDirectory('tests', '/test/project/tests', 2)
+        createMockDirectory('tests', '/test/project/tests', 2),
       ];
 
       mockProjectInfo.structure = {
@@ -1939,7 +2065,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo, { maxDepth: 1 });
@@ -1951,7 +2077,7 @@ describe('StructureAnalyzer', () => {
     it('should handle determineLayerType with infrastructure patterns', () => {
       const directories = [
         createMockDirectory('infrastructure', '/test/project/infrastructure', 1),
-        createMockDirectory('infra', '/test/project/infra', 1)
+        createMockDirectory('infra', '/test/project/infra', 1),
       ];
 
       mockProjectInfo.structure = {
@@ -1959,7 +2085,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo);
@@ -1971,7 +2097,7 @@ describe('StructureAnalyzer', () => {
     it('should handle determineLayerType with data patterns', () => {
       const directories = [
         createMockDirectory('data', '/test/project/data', 1),
-        createMockDirectory('database', '/test/project/database', 1)
+        createMockDirectory('database', '/test/project/database', 1),
       ];
 
       mockProjectInfo.structure = {
@@ -1979,7 +2105,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo);
@@ -1993,7 +2119,7 @@ describe('StructureAnalyzer', () => {
     it('should handle calculateDirectoryStats with path-based depth calculation', () => {
       const directories = [
         createMockDirectory('src', '/test/project/src', undefined), // depth undefined
-        createMockDirectory('tests', '/test/project/tests', undefined) // depth undefined
+        createMockDirectory('tests', '/test/project/tests', undefined), // depth undefined
       ];
 
       mockProjectInfo.structure = {
@@ -2001,7 +2127,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo, { includeDirectoryStats: true });
@@ -2017,7 +2143,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo, { includeFileStats: true });
@@ -2036,7 +2162,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo, { includeDirectoryStats: true });
@@ -2053,7 +2179,7 @@ describe('StructureAnalyzer', () => {
         files: undefined as any,
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo);
@@ -2066,7 +2192,7 @@ describe('StructureAnalyzer', () => {
         files: null as any,
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo);
@@ -2076,7 +2202,7 @@ describe('StructureAnalyzer', () => {
     it('should handle calculateDepth with undefined depth and undefined path', () => {
       const directories = [
         { name: 'src', path: undefined as any, fileCount: 0, subdirectoryCount: 0, totalSize: 0 },
-        { name: 'test', path: null as any, fileCount: 0, subdirectoryCount: 0, totalSize: 0 }
+        { name: 'test', path: null as any, fileCount: 0, subdirectoryCount: 0, totalSize: 0 },
       ];
 
       mockProjectInfo.structure = {
@@ -2084,7 +2210,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo);
@@ -2094,7 +2220,7 @@ describe('StructureAnalyzer', () => {
     it('should handle calculateBreadth with undefined depth and undefined path', () => {
       const directories = [
         { name: 'src', path: undefined as any, fileCount: 0, subdirectoryCount: 0, totalSize: 0 },
-        { name: 'test', path: null as any, fileCount: 0, subdirectoryCount: 0, totalSize: 0 }
+        { name: 'test', path: null as any, fileCount: 0, subdirectoryCount: 0, totalSize: 0 },
       ];
 
       mockProjectInfo.structure = {
@@ -2102,7 +2228,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo);
@@ -2114,7 +2240,7 @@ describe('StructureAnalyzer', () => {
     it('should handle detectOrganization with undefined depth and undefined path', () => {
       const directories = [
         { name: 'apps', path: undefined as any, fileCount: 0, subdirectoryCount: 0, totalSize: 0 },
-        { name: 'packages', path: null as any, fileCount: 0, subdirectoryCount: 0, totalSize: 0 }
+        { name: 'packages', path: null as any, fileCount: 0, subdirectoryCount: 0, totalSize: 0 },
       ];
 
       mockProjectInfo.structure = {
@@ -2122,7 +2248,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo);
@@ -2131,8 +2257,14 @@ describe('StructureAnalyzer', () => {
 
     it('should handle detectPatterns with undefined path', () => {
       const directories = [
-        { name: 'components', path: undefined as any, fileCount: 0, subdirectoryCount: 0, totalSize: 0 },
-        { name: 'utils', path: null as any, fileCount: 0, subdirectoryCount: 0, totalSize: 0 }
+        {
+          name: 'components',
+          path: undefined as any,
+          fileCount: 0,
+          subdirectoryCount: 0,
+          totalSize: 0,
+        },
+        { name: 'utils', path: null as any, fileCount: 0, subdirectoryCount: 0, totalSize: 0 },
       ];
 
       mockProjectInfo.structure = {
@@ -2140,7 +2272,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo);
@@ -2149,8 +2281,20 @@ describe('StructureAnalyzer', () => {
 
     it('should handle analyzeArchitecture with undefined name', () => {
       const directories = [
-        { name: undefined as any, path: '/test/presentation', fileCount: 0, subdirectoryCount: 0, totalSize: 0 },
-        { name: null as any, path: '/test/business', fileCount: 0, subdirectoryCount: 0, totalSize: 0 }
+        {
+          name: undefined as any,
+          path: '/test/presentation',
+          fileCount: 0,
+          subdirectoryCount: 0,
+          totalSize: 0,
+        },
+        {
+          name: null as any,
+          path: '/test/business',
+          fileCount: 0,
+          subdirectoryCount: 0,
+          totalSize: 0,
+        },
       ];
 
       mockProjectInfo.structure = {
@@ -2158,7 +2302,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo);
@@ -2167,8 +2311,20 @@ describe('StructureAnalyzer', () => {
 
     it('should handle buildArchitectureLayers with undefined name', () => {
       const directories = [
-        { name: undefined as any, path: '/test/presentation', fileCount: 0, subdirectoryCount: 0, totalSize: 0 },
-        { name: null as any, path: '/test/business', fileCount: 0, subdirectoryCount: 0, totalSize: 0 }
+        {
+          name: undefined as any,
+          path: '/test/presentation',
+          fileCount: 0,
+          subdirectoryCount: 0,
+          totalSize: 0,
+        },
+        {
+          name: null as any,
+          path: '/test/business',
+          fileCount: 0,
+          subdirectoryCount: 0,
+          totalSize: 0,
+        },
       ];
 
       mockProjectInfo.structure = {
@@ -2176,7 +2332,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo);
@@ -2185,8 +2341,20 @@ describe('StructureAnalyzer', () => {
 
     it('should handle buildArchitectureModules with undefined name', () => {
       const directories = [
-        { name: undefined as any, path: '/test/feature1', fileCount: 0, subdirectoryCount: 0, totalSize: 0 },
-        { name: null as any, path: '/test/feature2', fileCount: 0, subdirectoryCount: 0, totalSize: 0 }
+        {
+          name: undefined as any,
+          path: '/test/feature1',
+          fileCount: 0,
+          subdirectoryCount: 0,
+          totalSize: 0,
+        },
+        {
+          name: null as any,
+          path: '/test/feature2',
+          fileCount: 0,
+          subdirectoryCount: 0,
+          totalSize: 0,
+        },
       ];
 
       mockProjectInfo.structure = {
@@ -2194,7 +2362,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo);
@@ -2207,7 +2375,7 @@ describe('StructureAnalyzer', () => {
         files: undefined as any,
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo, { includeFileStats: true });
@@ -2221,7 +2389,7 @@ describe('StructureAnalyzer', () => {
         files: null as any,
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo, { includeFileStats: true });
@@ -2235,7 +2403,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo, { includeDirectoryStats: true });
@@ -2249,7 +2417,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo, { includeDirectoryStats: true });
@@ -2260,7 +2428,7 @@ describe('StructureAnalyzer', () => {
     it('should handle calculateDirectoryStats with undefined depth and undefined path', () => {
       const directories = [
         { name: 'src', path: undefined as any, fileCount: 0, subdirectoryCount: 0, totalSize: 0 },
-        { name: 'test', path: null as any, fileCount: 0, subdirectoryCount: 0, totalSize: 0 }
+        { name: 'test', path: null as any, fileCount: 0, subdirectoryCount: 0, totalSize: 0 },
       ];
 
       mockProjectInfo.structure = {
@@ -2268,7 +2436,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo, { includeDirectoryStats: true });
@@ -2278,24 +2446,24 @@ describe('StructureAnalyzer', () => {
 
     it('should handle calculateFileStats with files having undefined lines and size', () => {
       const files = [
-        { 
-          name: 'test1.ts', 
-          path: '/test/test1.ts', 
+        {
+          name: 'test1.ts',
+          path: '/test/test1.ts',
           extension: '.ts',
-          lines: undefined as any, 
+          lines: undefined as any,
           size: undefined as any,
           lastModified: new Date(),
-          hash: 'hash1'
+          hash: 'hash1',
         },
-        { 
-          name: 'test2.ts', 
-          path: '/test/test2.ts', 
+        {
+          name: 'test2.ts',
+          path: '/test/test2.ts',
           extension: '.ts',
-          lines: null as any, 
+          lines: null as any,
           size: null as any,
           lastModified: new Date(),
-          hash: 'hash2'
-        }
+          hash: 'hash2',
+        },
       ];
 
       mockProjectInfo.structure = {
@@ -2303,7 +2471,7 @@ describe('StructureAnalyzer', () => {
         files,
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo, { includeFileStats: true });
@@ -2312,7 +2480,6 @@ describe('StructureAnalyzer', () => {
       expect(result.fileStats!.totalLines).toBe(0);
       expect(result.fileStats!.totalSize).toBe(0);
     });
-
   });
 
   describe('Additional Branch Coverage', () => {
@@ -2322,7 +2489,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo);
@@ -2331,8 +2498,20 @@ describe('StructureAnalyzer', () => {
 
     it('should handle calculateDepth with directories having undefined depth', () => {
       const directories = [
-        { path: '/test/project/src', name: 'src', fileCount: 0, subdirectoryCount: 1, totalSize: 0 },
-        { path: '/test/project/src/components', name: 'components', fileCount: 0, subdirectoryCount: 0, totalSize: 0 }
+        {
+          path: '/test/project/src',
+          name: 'src',
+          fileCount: 0,
+          subdirectoryCount: 1,
+          totalSize: 0,
+        },
+        {
+          path: '/test/project/src/components',
+          name: 'components',
+          fileCount: 0,
+          subdirectoryCount: 0,
+          totalSize: 0,
+        },
       ];
 
       mockProjectInfo.structure = {
@@ -2340,7 +2519,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo);
@@ -2349,8 +2528,20 @@ describe('StructureAnalyzer', () => {
 
     it('should handle calculateDepth with directories having negative depth', () => {
       const directories = [
-        { path: '/test/project/src', name: 'src', fileCount: 0, subdirectoryCount: 1, totalSize: 0 },
-        { path: '/test/project/src/components', name: 'components', fileCount: 0, subdirectoryCount: 0, totalSize: 0 }
+        {
+          path: '/test/project/src',
+          name: 'src',
+          fileCount: 0,
+          subdirectoryCount: 1,
+          totalSize: 0,
+        },
+        {
+          path: '/test/project/src/components',
+          name: 'components',
+          fileCount: 0,
+          subdirectoryCount: 0,
+          totalSize: 0,
+        },
       ];
 
       mockProjectInfo.structure = {
@@ -2358,7 +2549,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo);
@@ -2368,7 +2559,13 @@ describe('StructureAnalyzer', () => {
     it('should handle calculateDepth with directories having null path', () => {
       const directories = [
         { path: '', name: 'src', fileCount: 0, subdirectoryCount: 1, totalSize: 0 },
-        { path: '/test/project/src/components', name: 'components', fileCount: 0, subdirectoryCount: 0, totalSize: 0 }
+        {
+          path: '/test/project/src/components',
+          name: 'components',
+          fileCount: 0,
+          subdirectoryCount: 0,
+          totalSize: 0,
+        },
       ];
 
       mockProjectInfo.structure = {
@@ -2376,7 +2573,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo);
@@ -2385,9 +2582,27 @@ describe('StructureAnalyzer', () => {
 
     it('should handle calculateDepth with duplicate directory paths', () => {
       const directories = [
-        { path: '/test/project/src', name: 'src', fileCount: 0, subdirectoryCount: 1, totalSize: 0 },
-        { path: '/test/project/src', name: 'src', fileCount: 0, subdirectoryCount: 1, totalSize: 0 }, // Duplicate
-        { path: '/test/project/src/components', name: 'components', fileCount: 0, subdirectoryCount: 0, totalSize: 0 }
+        {
+          path: '/test/project/src',
+          name: 'src',
+          fileCount: 0,
+          subdirectoryCount: 1,
+          totalSize: 0,
+        },
+        {
+          path: '/test/project/src',
+          name: 'src',
+          fileCount: 0,
+          subdirectoryCount: 1,
+          totalSize: 0,
+        }, // Duplicate
+        {
+          path: '/test/project/src/components',
+          name: 'components',
+          fileCount: 0,
+          subdirectoryCount: 0,
+          totalSize: 0,
+        },
       ];
 
       mockProjectInfo.structure = {
@@ -2395,7 +2610,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo);
@@ -2407,11 +2622,11 @@ describe('StructureAnalyzer', () => {
         directories: [],
         files: [
           createMockFile('file1.ts', '/test/project/file1.ts', 50, 500),
-          createMockFile('file2.ts', '/test/project/file2.ts', 30, 300)
+          createMockFile('file2.ts', '/test/project/file2.ts', 30, 300),
         ],
         totalFiles: 2,
         totalLines: 80,
-        totalSize: 800
+        totalSize: 800,
       };
 
       const result = analyzer.analyze(mockProjectInfo);
@@ -2425,7 +2640,7 @@ describe('StructureAnalyzer', () => {
         createMockDirectory('utils', '/test/project/src/utils', 2),
         createMockDirectory('deep', '/test/project/src/components/deep', 3),
         createMockDirectory('deeper', '/test/project/src/components/deep/deeper', 4),
-        createMockDirectory('deepest', '/test/project/src/components/deep/deeper/deepest', 5)
+        createMockDirectory('deepest', '/test/project/src/components/deep/deeper/deepest', 5),
       ];
 
       mockProjectInfo.structure = {
@@ -2433,7 +2648,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo);
@@ -2445,7 +2660,7 @@ describe('StructureAnalyzer', () => {
         createMockDirectory('packages', '/test/project/packages', 1),
         createMockDirectory('package-a', '/test/project/packages/package-a', 2),
         createMockDirectory('package-b', '/test/project/packages/package-b', 2),
-        createMockDirectory('package-c', '/test/project/packages/package-c', 2)
+        createMockDirectory('package-c', '/test/project/packages/package-c', 2),
       ];
 
       mockProjectInfo.structure = {
@@ -2453,7 +2668,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo);
@@ -2466,7 +2681,7 @@ describe('StructureAnalyzer', () => {
         createMockDirectory('packages', '/test/project/packages', 1),
         createMockDirectory('tools', '/test/project/tools', 1),
         createMockDirectory('app1', '/test/project/apps/app1', 2),
-        createMockDirectory('app2', '/test/project/apps/app2', 2)
+        createMockDirectory('app2', '/test/project/apps/app2', 2),
       ];
 
       mockProjectInfo.structure = {
@@ -2474,7 +2689,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo);
@@ -2484,7 +2699,7 @@ describe('StructureAnalyzer', () => {
     it('should handle detectPatterns with undefined path', () => {
       const directories = [
         { path: '', name: 'src', fileCount: 0, subdirectoryCount: 1, totalSize: 0 },
-        createMockDirectory('components', '/test/project/src/components', 2)
+        createMockDirectory('components', '/test/project/src/components', 2),
       ];
 
       mockProjectInfo.structure = {
@@ -2492,7 +2707,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo);
@@ -2502,7 +2717,7 @@ describe('StructureAnalyzer', () => {
     it('should handle analyzeArchitecture with undefined name', () => {
       const directories = [
         { path: '/test/project/src', name: '', fileCount: 0, subdirectoryCount: 1, totalSize: 0 },
-        createMockDirectory('components', '/test/project/src/components', 2)
+        createMockDirectory('components', '/test/project/src/components', 2),
       ];
 
       mockProjectInfo.structure = {
@@ -2510,7 +2725,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo);
@@ -2520,7 +2735,7 @@ describe('StructureAnalyzer', () => {
     it('should handle buildArchitectureLayers with undefined name', () => {
       const directories = [
         { path: '/test/project/src', name: '', fileCount: 0, subdirectoryCount: 1, totalSize: 0 },
-        createMockDirectory('components', '/test/project/src/components', 2)
+        createMockDirectory('components', '/test/project/src/components', 2),
       ];
 
       mockProjectInfo.structure = {
@@ -2528,7 +2743,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo);
@@ -2538,7 +2753,7 @@ describe('StructureAnalyzer', () => {
     it('should handle buildArchitectureModules with undefined name', () => {
       const directories = [
         { path: '/test/project/src', name: '', fileCount: 0, subdirectoryCount: 1, totalSize: 0 },
-        createMockDirectory('components', '/test/project/src/components', 2)
+        createMockDirectory('components', '/test/project/src/components', 2),
       ];
 
       mockProjectInfo.structure = {
@@ -2546,7 +2761,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo);
@@ -2559,7 +2774,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo, { includeFileStats: true });
@@ -2573,7 +2788,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo, { includeFileStats: true });
@@ -2587,7 +2802,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo, { includeDirectoryStats: true });
@@ -2601,7 +2816,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo, { includeDirectoryStats: true });
@@ -2612,7 +2827,7 @@ describe('StructureAnalyzer', () => {
     it('should handle calculateDirectoryStats with undefined depth and undefined path', () => {
       const directories = [
         { path: '', name: 'src', fileCount: 0, subdirectoryCount: 1, totalSize: 0 },
-        createMockDirectory('components', '/test/project/src/components', 2)
+        createMockDirectory('components', '/test/project/src/components', 2),
       ];
 
       mockProjectInfo.structure = {
@@ -2620,7 +2835,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo, { includeDirectoryStats: true });
@@ -2630,8 +2845,24 @@ describe('StructureAnalyzer', () => {
 
     it('should handle calculateFileStats with files having undefined lines and size', () => {
       const files = [
-        { path: '/test/project/file1.ts', name: 'file1.ts', extension: '.ts', lines: 0, size: 0, lastModified: new Date(), hash: 'hash1' },
-        { path: '/test/project/file2.ts', name: 'file2.ts', extension: '.ts', lines: 0, size: 0, lastModified: new Date(), hash: 'hash2' }
+        {
+          path: '/test/project/file1.ts',
+          name: 'file1.ts',
+          extension: '.ts',
+          lines: 0,
+          size: 0,
+          lastModified: new Date(),
+          hash: 'hash1',
+        },
+        {
+          path: '/test/project/file2.ts',
+          name: 'file2.ts',
+          extension: '.ts',
+          lines: 0,
+          size: 0,
+          lastModified: new Date(),
+          hash: 'hash2',
+        },
       ];
 
       mockProjectInfo.structure = {
@@ -2639,7 +2870,7 @@ describe('StructureAnalyzer', () => {
         files,
         totalFiles: 2,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo, { includeFileStats: true });
@@ -2651,8 +2882,20 @@ describe('StructureAnalyzer', () => {
 
     it('should handle filterStructure with maxDepth when depth is undefined', () => {
       const directories = [
-        { path: '/test/project/src', name: 'src', fileCount: 0, subdirectoryCount: 1, totalSize: 0 },
-        { path: '/test/project/src/components', name: 'components', fileCount: 0, subdirectoryCount: 0, totalSize: 0 }
+        {
+          path: '/test/project/src',
+          name: 'src',
+          fileCount: 0,
+          subdirectoryCount: 1,
+          totalSize: 0,
+        },
+        {
+          path: '/test/project/src/components',
+          name: 'components',
+          fileCount: 0,
+          subdirectoryCount: 0,
+          totalSize: 0,
+        },
       ];
 
       mockProjectInfo.structure = {
@@ -2660,7 +2903,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo, { maxDepth: 1 });
@@ -2669,8 +2912,20 @@ describe('StructureAnalyzer', () => {
 
     it('should handle determineLayerType with config patterns', () => {
       const directories = [
-        { path: '/test/project/config', name: 'config', fileCount: 0, subdirectoryCount: 0, totalSize: 0 },
-        { path: '/test/project/src', name: 'src', fileCount: 0, subdirectoryCount: 1, totalSize: 0 }
+        {
+          path: '/test/project/config',
+          name: 'config',
+          fileCount: 0,
+          subdirectoryCount: 0,
+          totalSize: 0,
+        },
+        {
+          path: '/test/project/src',
+          name: 'src',
+          fileCount: 0,
+          subdirectoryCount: 1,
+          totalSize: 0,
+        },
       ];
 
       mockProjectInfo.structure = {
@@ -2678,7 +2933,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo);
@@ -2687,8 +2942,20 @@ describe('StructureAnalyzer', () => {
 
     it('should handle determineLayerType with util patterns', () => {
       const directories = [
-        { path: '/test/project/utils', name: 'utils', fileCount: 0, subdirectoryCount: 0, totalSize: 0 },
-        { path: '/test/project/src', name: 'src', fileCount: 0, subdirectoryCount: 1, totalSize: 0 }
+        {
+          path: '/test/project/utils',
+          name: 'utils',
+          fileCount: 0,
+          subdirectoryCount: 0,
+          totalSize: 0,
+        },
+        {
+          path: '/test/project/src',
+          name: 'src',
+          fileCount: 0,
+          subdirectoryCount: 1,
+          totalSize: 0,
+        },
       ];
 
       mockProjectInfo.structure = {
@@ -2696,7 +2963,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo);
@@ -2705,8 +2972,20 @@ describe('StructureAnalyzer', () => {
 
     it('should handle determineLayerType with other patterns', () => {
       const directories = [
-        { path: '/test/project/other', name: 'other', fileCount: 0, subdirectoryCount: 0, totalSize: 0 },
-        { path: '/test/project/src', name: 'src', fileCount: 0, subdirectoryCount: 1, totalSize: 0 }
+        {
+          path: '/test/project/other',
+          name: 'other',
+          fileCount: 0,
+          subdirectoryCount: 0,
+          totalSize: 0,
+        },
+        {
+          path: '/test/project/src',
+          name: 'src',
+          fileCount: 0,
+          subdirectoryCount: 1,
+          totalSize: 0,
+        },
       ];
 
       mockProjectInfo.structure = {
@@ -2714,7 +2993,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo);
@@ -2723,8 +3002,20 @@ describe('StructureAnalyzer', () => {
 
     it('should handle determineModuleType with various patterns', () => {
       const directories = [
-        { path: '/test/project/user-module', name: 'user-module', fileCount: 0, subdirectoryCount: 0, totalSize: 0 },
-        { path: '/test/project/product-module', name: 'product-module', fileCount: 0, subdirectoryCount: 0, totalSize: 0 }
+        {
+          path: '/test/project/user-module',
+          name: 'user-module',
+          fileCount: 0,
+          subdirectoryCount: 0,
+          totalSize: 0,
+        },
+        {
+          path: '/test/project/product-module',
+          name: 'product-module',
+          fileCount: 0,
+          subdirectoryCount: 0,
+          totalSize: 0,
+        },
       ];
 
       mockProjectInfo.structure = {
@@ -2732,7 +3023,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo);
@@ -2741,8 +3032,20 @@ describe('StructureAnalyzer', () => {
 
     it('should handle calculateDepth with path-based depth calculation', () => {
       const directories = [
-        { path: '/test/project/src/components/utils', name: 'utils', fileCount: 0, subdirectoryCount: 0, totalSize: 0 },
-        { path: '/test/project/src', name: 'src', fileCount: 0, subdirectoryCount: 1, totalSize: 0 }
+        {
+          path: '/test/project/src/components/utils',
+          name: 'utils',
+          fileCount: 0,
+          subdirectoryCount: 0,
+          totalSize: 0,
+        },
+        {
+          path: '/test/project/src',
+          name: 'src',
+          fileCount: 0,
+          subdirectoryCount: 1,
+          totalSize: 0,
+        },
       ];
 
       mockProjectInfo.structure = {
@@ -2750,7 +3053,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo);
@@ -2759,8 +3062,20 @@ describe('StructureAnalyzer', () => {
 
     it('should handle calculateBreadth with path-based depth calculation', () => {
       const directories = [
-        { path: '/test/project/src/components/utils', name: 'utils', fileCount: 0, subdirectoryCount: 0, totalSize: 0 },
-        { path: '/test/project/src', name: 'src', fileCount: 0, subdirectoryCount: 1, totalSize: 0 }
+        {
+          path: '/test/project/src/components/utils',
+          name: 'utils',
+          fileCount: 0,
+          subdirectoryCount: 0,
+          totalSize: 0,
+        },
+        {
+          path: '/test/project/src',
+          name: 'src',
+          fileCount: 0,
+          subdirectoryCount: 1,
+          totalSize: 0,
+        },
       ];
 
       mockProjectInfo.structure = {
@@ -2768,7 +3083,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo);
@@ -2777,8 +3092,20 @@ describe('StructureAnalyzer', () => {
 
     it('should handle detectOrganization with path-based depth calculation', () => {
       const directories = [
-        { path: '/test/project/src/components/utils/helpers', name: 'helpers', fileCount: 0, subdirectoryCount: 0, totalSize: 0 },
-        { path: '/test/project/src', name: 'src', fileCount: 0, subdirectoryCount: 1, totalSize: 0 }
+        {
+          path: '/test/project/src/components/utils/helpers',
+          name: 'helpers',
+          fileCount: 0,
+          subdirectoryCount: 0,
+          totalSize: 0,
+        },
+        {
+          path: '/test/project/src',
+          name: 'src',
+          fileCount: 0,
+          subdirectoryCount: 1,
+          totalSize: 0,
+        },
       ];
 
       mockProjectInfo.structure = {
@@ -2786,7 +3113,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo);
@@ -2795,8 +3122,20 @@ describe('StructureAnalyzer', () => {
 
     it('should handle detectPatterns with path-based depth calculation', () => {
       const directories = [
-        { path: '/test/project/src/components/utils', name: 'utils', fileCount: 0, subdirectoryCount: 0, totalSize: 0 },
-        { path: '/test/project/src', name: 'src', fileCount: 0, subdirectoryCount: 1, totalSize: 0 }
+        {
+          path: '/test/project/src/components/utils',
+          name: 'utils',
+          fileCount: 0,
+          subdirectoryCount: 0,
+          totalSize: 0,
+        },
+        {
+          path: '/test/project/src',
+          name: 'src',
+          fileCount: 0,
+          subdirectoryCount: 1,
+          totalSize: 0,
+        },
       ];
 
       mockProjectInfo.structure = {
@@ -2804,7 +3143,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo);
@@ -2813,8 +3152,20 @@ describe('StructureAnalyzer', () => {
 
     it('should handle analyzeArchitecture with path-based depth calculation', () => {
       const directories = [
-        { path: '/test/project/src/components/utils', name: 'utils', fileCount: 0, subdirectoryCount: 0, totalSize: 0 },
-        { path: '/test/project/src', name: 'src', fileCount: 0, subdirectoryCount: 1, totalSize: 0 }
+        {
+          path: '/test/project/src/components/utils',
+          name: 'utils',
+          fileCount: 0,
+          subdirectoryCount: 0,
+          totalSize: 0,
+        },
+        {
+          path: '/test/project/src',
+          name: 'src',
+          fileCount: 0,
+          subdirectoryCount: 1,
+          totalSize: 0,
+        },
       ];
 
       mockProjectInfo.structure = {
@@ -2822,7 +3173,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo);
@@ -2831,8 +3182,20 @@ describe('StructureAnalyzer', () => {
 
     it('should handle buildArchitectureLayers with path-based depth calculation', () => {
       const directories = [
-        { path: '/test/project/src/components/utils', name: 'utils', fileCount: 0, subdirectoryCount: 0, totalSize: 0 },
-        { path: '/test/project/src', name: 'src', fileCount: 0, subdirectoryCount: 1, totalSize: 0 }
+        {
+          path: '/test/project/src/components/utils',
+          name: 'utils',
+          fileCount: 0,
+          subdirectoryCount: 0,
+          totalSize: 0,
+        },
+        {
+          path: '/test/project/src',
+          name: 'src',
+          fileCount: 0,
+          subdirectoryCount: 1,
+          totalSize: 0,
+        },
       ];
 
       mockProjectInfo.structure = {
@@ -2840,7 +3203,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo);
@@ -2849,8 +3212,20 @@ describe('StructureAnalyzer', () => {
 
     it('should handle buildArchitectureModules with path-based depth calculation', () => {
       const directories = [
-        { path: '/test/project/src/components/utils', name: 'utils', fileCount: 0, subdirectoryCount: 0, totalSize: 0 },
-        { path: '/test/project/src', name: 'src', fileCount: 0, subdirectoryCount: 1, totalSize: 0 }
+        {
+          path: '/test/project/src/components/utils',
+          name: 'utils',
+          fileCount: 0,
+          subdirectoryCount: 0,
+          totalSize: 0,
+        },
+        {
+          path: '/test/project/src',
+          name: 'src',
+          fileCount: 0,
+          subdirectoryCount: 1,
+          totalSize: 0,
+        },
       ];
 
       mockProjectInfo.structure = {
@@ -2858,7 +3233,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo);
@@ -2867,9 +3242,27 @@ describe('StructureAnalyzer', () => {
 
     it('should handle filterStructure with maxDepth filtering', () => {
       const directories = [
-        { path: '/test/project/src', name: 'src', fileCount: 0, subdirectoryCount: 1, totalSize: 0 },
-        { path: '/test/project/src/components', name: 'components', fileCount: 0, subdirectoryCount: 0, totalSize: 0 },
-        { path: '/test/project/src/components/utils', name: 'utils', fileCount: 0, subdirectoryCount: 0, totalSize: 0 }
+        {
+          path: '/test/project/src',
+          name: 'src',
+          fileCount: 0,
+          subdirectoryCount: 1,
+          totalSize: 0,
+        },
+        {
+          path: '/test/project/src/components',
+          name: 'components',
+          fileCount: 0,
+          subdirectoryCount: 0,
+          totalSize: 0,
+        },
+        {
+          path: '/test/project/src/components/utils',
+          name: 'utils',
+          fileCount: 0,
+          subdirectoryCount: 0,
+          totalSize: 0,
+        },
       ];
 
       mockProjectInfo.structure = {
@@ -2877,7 +3270,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo, { maxDepth: 2 });
@@ -2886,8 +3279,20 @@ describe('StructureAnalyzer', () => {
 
     it('should handle calculateDepth with path-based depth calculation for undefined depth', () => {
       const directories = [
-        { path: '/test/project/src/components/utils', name: 'utils', fileCount: 0, subdirectoryCount: 0, totalSize: 0 },
-        { path: '/test/project/src', name: 'src', fileCount: 0, subdirectoryCount: 1, totalSize: 0 }
+        {
+          path: '/test/project/src/components/utils',
+          name: 'utils',
+          fileCount: 0,
+          subdirectoryCount: 0,
+          totalSize: 0,
+        },
+        {
+          path: '/test/project/src',
+          name: 'src',
+          fileCount: 0,
+          subdirectoryCount: 1,
+          totalSize: 0,
+        },
       ];
 
       mockProjectInfo.structure = {
@@ -2895,7 +3300,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo);
@@ -2904,8 +3309,20 @@ describe('StructureAnalyzer', () => {
 
     it('should handle calculateBreadth with path-based depth calculation for undefined depth', () => {
       const directories = [
-        { path: '/test/project/src/components/utils', name: 'utils', fileCount: 0, subdirectoryCount: 0, totalSize: 0 },
-        { path: '/test/project/src', name: 'src', fileCount: 0, subdirectoryCount: 1, totalSize: 0 }
+        {
+          path: '/test/project/src/components/utils',
+          name: 'utils',
+          fileCount: 0,
+          subdirectoryCount: 0,
+          totalSize: 0,
+        },
+        {
+          path: '/test/project/src',
+          name: 'src',
+          fileCount: 0,
+          subdirectoryCount: 1,
+          totalSize: 0,
+        },
       ];
 
       mockProjectInfo.structure = {
@@ -2913,7 +3330,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo);
@@ -2922,8 +3339,20 @@ describe('StructureAnalyzer', () => {
 
     it('should handle detectOrganization with path-based depth calculation for undefined depth', () => {
       const directories = [
-        { path: '/test/project/src/components/utils/helpers', name: 'helpers', fileCount: 0, subdirectoryCount: 0, totalSize: 0 },
-        { path: '/test/project/src', name: 'src', fileCount: 0, subdirectoryCount: 1, totalSize: 0 }
+        {
+          path: '/test/project/src/components/utils/helpers',
+          name: 'helpers',
+          fileCount: 0,
+          subdirectoryCount: 0,
+          totalSize: 0,
+        },
+        {
+          path: '/test/project/src',
+          name: 'src',
+          fileCount: 0,
+          subdirectoryCount: 1,
+          totalSize: 0,
+        },
       ];
 
       mockProjectInfo.structure = {
@@ -2931,7 +3360,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo);
@@ -2940,8 +3369,20 @@ describe('StructureAnalyzer', () => {
 
     it('should handle detectPatterns with path-based depth calculation for undefined depth', () => {
       const directories = [
-        { path: '/test/project/src/components/utils', name: 'utils', fileCount: 0, subdirectoryCount: 0, totalSize: 0 },
-        { path: '/test/project/src', name: 'src', fileCount: 0, subdirectoryCount: 1, totalSize: 0 }
+        {
+          path: '/test/project/src/components/utils',
+          name: 'utils',
+          fileCount: 0,
+          subdirectoryCount: 0,
+          totalSize: 0,
+        },
+        {
+          path: '/test/project/src',
+          name: 'src',
+          fileCount: 0,
+          subdirectoryCount: 1,
+          totalSize: 0,
+        },
       ];
 
       mockProjectInfo.structure = {
@@ -2949,7 +3390,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo);
@@ -2958,8 +3399,20 @@ describe('StructureAnalyzer', () => {
 
     it('should handle analyzeArchitecture with path-based depth calculation for undefined depth', () => {
       const directories = [
-        { path: '/test/project/src/components/utils', name: 'utils', fileCount: 0, subdirectoryCount: 0, totalSize: 0 },
-        { path: '/test/project/src', name: 'src', fileCount: 0, subdirectoryCount: 1, totalSize: 0 }
+        {
+          path: '/test/project/src/components/utils',
+          name: 'utils',
+          fileCount: 0,
+          subdirectoryCount: 0,
+          totalSize: 0,
+        },
+        {
+          path: '/test/project/src',
+          name: 'src',
+          fileCount: 0,
+          subdirectoryCount: 1,
+          totalSize: 0,
+        },
       ];
 
       mockProjectInfo.structure = {
@@ -2967,7 +3420,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo);
@@ -2976,8 +3429,20 @@ describe('StructureAnalyzer', () => {
 
     it('should handle buildArchitectureLayers with path-based depth calculation for undefined depth', () => {
       const directories = [
-        { path: '/test/project/src/components/utils', name: 'utils', fileCount: 0, subdirectoryCount: 0, totalSize: 0 },
-        { path: '/test/project/src', name: 'src', fileCount: 0, subdirectoryCount: 1, totalSize: 0 }
+        {
+          path: '/test/project/src/components/utils',
+          name: 'utils',
+          fileCount: 0,
+          subdirectoryCount: 0,
+          totalSize: 0,
+        },
+        {
+          path: '/test/project/src',
+          name: 'src',
+          fileCount: 0,
+          subdirectoryCount: 1,
+          totalSize: 0,
+        },
       ];
 
       mockProjectInfo.structure = {
@@ -2985,7 +3450,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo);
@@ -2994,8 +3459,20 @@ describe('StructureAnalyzer', () => {
 
     it('should handle buildArchitectureModules with path-based depth calculation for undefined depth', () => {
       const directories = [
-        { path: '/test/project/src/components/utils', name: 'utils', fileCount: 0, subdirectoryCount: 0, totalSize: 0 },
-        { path: '/test/project/src', name: 'src', fileCount: 0, subdirectoryCount: 1, totalSize: 0 }
+        {
+          path: '/test/project/src/components/utils',
+          name: 'utils',
+          fileCount: 0,
+          subdirectoryCount: 0,
+          totalSize: 0,
+        },
+        {
+          path: '/test/project/src',
+          name: 'src',
+          fileCount: 0,
+          subdirectoryCount: 1,
+          totalSize: 0,
+        },
       ];
 
       mockProjectInfo.structure = {
@@ -3003,7 +3480,7 @@ describe('StructureAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       const result = analyzer.analyze(mockProjectInfo);

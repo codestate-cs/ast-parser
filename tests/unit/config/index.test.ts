@@ -10,7 +10,7 @@ import '../../../src/config/ConfigLoader';
 const ConfigModule = {
   DefaultConfig: require('../../../src/config/DefaultConfig').DefaultConfig,
   ConfigValidator: require('../../../src/config/ConfigValidator').ConfigValidator,
-  ConfigLoader: require('../../../src/config/ConfigLoader').ConfigLoader
+  ConfigLoader: require('../../../src/config/ConfigLoader').ConfigLoader,
 };
 
 describe('Config Module', () => {
@@ -109,14 +109,14 @@ describe('Config Module', () => {
     it('should work with DefaultConfig and ConfigValidator', () => {
       const validator = new ConfigModule.ConfigValidator();
       const result = validator.validate(ConfigModule.DefaultConfig);
-      
+
       expect(result.isValid).toBe(true);
     });
 
     it('should work with ConfigLoader and DefaultConfig', () => {
       const loader = new ConfigModule.ConfigLoader();
       const config = loader.load();
-      
+
       expect(config).toBeDefined();
       expect(config).toEqual(ConfigModule.DefaultConfig);
     });
@@ -125,10 +125,10 @@ describe('Config Module', () => {
       const validator = new ConfigModule.ConfigValidator();
       const loader = new ConfigModule.ConfigLoader();
       const defaultConfig = ConfigModule.DefaultConfig;
-      
+
       const loadedConfig = loader.load();
       const result = validator.validate(loadedConfig);
-      
+
       expect(result.isValid).toBe(true);
       expect(loadedConfig).toEqual(defaultConfig);
     });
@@ -139,22 +139,22 @@ describe('Config Module', () => {
       // This test ensures TypeScript compilation works
       const config: any = ConfigModule.DefaultConfig;
       expect(config).toBeDefined();
-      
+
       const validator: any = new ConfigModule.ConfigValidator();
       expect(validator).toBeDefined();
-      
+
       const loader: any = new ConfigModule.ConfigLoader();
       expect(loader).toBeDefined();
     });
 
     it('should handle configuration objects correctly', () => {
       const config = ConfigModule.DefaultConfig;
-      
+
       // Test that config has expected structure
       expect(config).toHaveProperty('analyzers');
       expect(config).toHaveProperty('parsers');
       expect(config).toHaveProperty('output');
-      
+
       // Test nested properties
       expect(config.analyzers).toHaveProperty('dependency');
       expect(config.analyzers).toHaveProperty('entryPoint');
@@ -175,7 +175,7 @@ describe('Config Module', () => {
 
     it('should handle invalid configuration gracefully', () => {
       const validator = new ConfigModule.ConfigValidator();
-      
+
       expect(() => {
         validator.validate(null as any);
         validator.validate(undefined as any);
@@ -187,15 +187,15 @@ describe('Config Module', () => {
   describe('Performance', () => {
     it('should load configuration efficiently', () => {
       const startTime = Date.now();
-      
+
       for (let i = 0; i < 1000; i++) {
         const loader = new ConfigModule.ConfigLoader();
         loader.load();
       }
-      
+
       const endTime = Date.now();
       const processingTime = endTime - startTime;
-      
+
       // Should process 1000 operations in less than 1 second
       expect(processingTime).toBeLessThan(1000);
     });
@@ -203,16 +203,16 @@ describe('Config Module', () => {
     it('should validate configuration efficiently', () => {
       const validator = new ConfigModule.ConfigValidator();
       const config = ConfigModule.DefaultConfig;
-      
+
       const startTime = Date.now();
-      
+
       for (let i = 0; i < 1000; i++) {
         validator.validate(config);
       }
-      
+
       const endTime = Date.now();
       const processingTime = endTime - startTime;
-      
+
       // Should process 1000 operations in less than 1 second
       expect(processingTime).toBeLessThan(1000);
     });
@@ -221,7 +221,7 @@ describe('Config Module', () => {
   describe('Coverage Improvement Tests', () => {
     it('should export all required components', () => {
       const exports = Object.keys(ConfigModule);
-      
+
       expect(exports).toContain('DefaultConfig');
       expect(exports).toContain('ConfigValidator');
       expect(exports).toContain('ConfigLoader');
@@ -238,7 +238,7 @@ describe('Config Module', () => {
       // Test that the module maintains its structure
       const moduleKeys = Object.keys(ConfigModule);
       expect(moduleKeys.length).toBeGreaterThan(0);
-      
+
       // All exports should be functions or objects
       moduleKeys.forEach(key => {
         const exportValue = (ConfigModule as any)[key];

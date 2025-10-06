@@ -1,6 +1,6 @@
 /**
  * Change Detection System
- * 
+ *
  * Detects and analyzes changes between different versions of project analysis.
  * Supports file-level changes, API changes, breaking changes, and impact analysis.
  */
@@ -31,7 +31,12 @@ export interface ChangeImpact {
  */
 export interface BreakingChangeInfo {
   /** Type of breaking change */
-  type: 'removed_export' | 'changed_signature' | 'changed_return_type' | 'changed_parameter' | 'deprecated';
+  type:
+    | 'removed_export'
+    | 'changed_signature'
+    | 'changed_return_type'
+    | 'changed_parameter'
+    | 'deprecated';
   /** Name of the affected API */
   name: string;
   /** File where the change occurred */
@@ -139,7 +144,7 @@ export class ChangeDetector {
       if (oldFiles.has(file)) {
         const oldFile = oldAnalysis.structure.files.find(f => f.path === file);
         const newFile = newAnalysis.structure.files.find(f => f.path === file);
-        
+
         if (oldFile && newFile && this.hasFileChanged(oldFile, newFile)) {
           filesChanged.push(file);
           changeTypes.push('modified');
@@ -156,7 +161,7 @@ export class ChangeDetector {
       changeTypes,
       changeCount: filesChanged.length,
       changeHash,
-      categories
+      categories,
     };
   }
 
@@ -182,7 +187,7 @@ export class ChangeDetector {
           description: `Public export '${name}' was removed`,
           severity: 'high',
           migration: `Remove usage of '${name}' or find alternative implementation`,
-          affected: [exportInfo.file]
+          affected: [exportInfo.file],
         });
       }
     }
@@ -198,7 +203,7 @@ export class ChangeDetector {
           description: `Signature of '${name}' has changed`,
           severity: 'high',
           migration: `Update calls to '${name}' to match new signature`,
-          affected: [newExport.file]
+          affected: [newExport.file],
         });
       }
     }
@@ -209,10 +214,7 @@ export class ChangeDetector {
   /**
    * Analyze the impact of changes
    */
-  async analyzeImpact(
-    changes: ChangeInfo,
-    analysis: ProjectAnalysisOutput
-  ): Promise<ChangeImpact> {
+  async analyzeImpact(changes: ChangeInfo, analysis: ProjectAnalysisOutput): Promise<ChangeImpact> {
     const affectedFiles = new Set<string>();
     const dependencyChain: string[][] = [];
     const categories = new Set<ChangeCategory>();
@@ -221,7 +223,7 @@ export class ChangeDetector {
     for (const changedFile of changes.filesChanged) {
       const dependents = this.findDependentFiles(changedFile, analysis);
       dependents.forEach(file => affectedFiles.add(file));
-      
+
       if (dependents.length > 0) {
         dependencyChain.push([changedFile, ...dependents]);
       }
@@ -232,9 +234,13 @@ export class ChangeDetector {
 
     // Calculate risk level
     const riskLevel = this.calculateRiskLevel(changes, affectedFiles.size);
-    
+
     // Calculate impact score
-    const impactScore = this.calculateImpactScore(changes, affectedFiles.size, dependencyChain.length);
+    const impactScore = this.calculateImpactScore(
+      changes,
+      affectedFiles.size,
+      dependencyChain.length
+    );
 
     // Generate recommendations
     const recommendations = this.generateRecommendations(changes, riskLevel);
@@ -245,7 +251,7 @@ export class ChangeDetector {
       riskLevel,
       categories: Array.from(categories),
       impactScore,
-      recommendations
+      recommendations,
     };
   }
 
@@ -265,13 +271,13 @@ export class ChangeDetector {
       breakingChanges: breakingChanges.length,
       newFeatures: changes.categories.filter(c => c === 'feature').length,
       bugFixes: changes.categories.filter(c => c === 'bugfix').length,
-      riskLevel: impact.riskLevel
+      riskLevel: impact.riskLevel,
     };
 
     const recommendations = {
       migrationGuide: this.generateMigrationGuide(breakingChanges),
       testingStrategy: this.generateTestingStrategy(changes, breakingChanges),
-      documentationUpdates: this.generateDocumentationUpdates(changes, breakingChanges)
+      documentationUpdates: this.generateDocumentationUpdates(changes, breakingChanges),
     };
 
     return {
@@ -279,7 +285,7 @@ export class ChangeDetector {
       changes,
       breakingChanges,
       impact,
-      recommendations
+      recommendations,
     };
   }
 
@@ -321,7 +327,7 @@ export class ChangeDetector {
    */
   private findDependentFiles(filePath: string, analysis: ProjectAnalysisOutput): string[] {
     const dependents: string[] = [];
-    
+
     for (const relation of analysis.ast.relations) {
       // Find files that import from the changed file
       if (relation.to === filePath && relation.type === 'import') {
@@ -339,9 +345,12 @@ export class ChangeDetector {
   /**
    * Calculate risk level based on changes
    */
-  private calculateRiskLevel(changes: ChangeInfo, affectedFilesCount: number): 'low' | 'medium' | 'high' | 'critical' {
+  private calculateRiskLevel(
+    changes: ChangeInfo,
+    affectedFilesCount: number
+  ): 'low' | 'medium' | 'high' | 'critical' {
     const breakingCount = changes.categories.filter(c => c === 'breaking').length;
-    
+
     if (breakingCount > 0 || affectedFilesCount > 10) {
       return 'critical';
     } else if (breakingCount > 0 || affectedFilesCount > 5) {
@@ -357,14 +366,14 @@ export class ChangeDetector {
    * Calculate impact score
    */
   private calculateImpactScore(
-    changes: ChangeInfo, 
-    affectedFilesCount: number, 
+    changes: ChangeInfo,
+    affectedFilesCount: number,
     dependencyChainsCount: number
   ): number {
     const baseScore = changes.changeCount * 10;
     const affectedScore = affectedFilesCount * 5;
     const dependencyScore = dependencyChainsCount * 15;
-    
+
     return Math.min(100, baseScore + affectedScore + dependencyScore);
   }
 
@@ -372,12 +381,12 @@ export class ChangeDetector {
    * Generate change hash
    */
   private generateChangeHash(filesChanged: string[], changeTypes: ChangeType[]): string {
-    const data = filesChanged.join(',') + '|' + changeTypes.join(',');
+    const data = `${filesChanged.join(',')}|${changeTypes.join(',')}`;
     // Simple hash function - in production, use a proper hash library
     let hash = 0;
     for (let i = 0; i < data.length; i++) {
       const char = data.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
+      hash = (hash << 5) - hash + char;
       hash = hash & hash; // Convert to 32-bit integer
     }
     return Math.abs(hash).toString(16);
@@ -387,7 +396,7 @@ export class ChangeDetector {
    * Generate recommendations based on changes
    */
   private generateRecommendations(
-    changes: ChangeInfo, 
+    changes: ChangeInfo,
     riskLevel: 'low' | 'medium' | 'high' | 'critical'
   ): string[] {
     const recommendations: string[] = [];
@@ -427,7 +436,7 @@ export class ChangeDetector {
    * Generate testing strategy
    */
   private generateTestingStrategy(
-    changes: ChangeInfo, 
+    changes: ChangeInfo,
     breakingChanges: BreakingChangeInfo[]
   ): string[] {
     const strategy: string[] = [];
@@ -452,7 +461,7 @@ export class ChangeDetector {
    * Generate documentation update recommendations
    */
   private generateDocumentationUpdates(
-    changes: ChangeInfo, 
+    changes: ChangeInfo,
     breakingChanges: BreakingChangeInfo[]
   ): string[] {
     const updates: string[] = [];
@@ -481,15 +490,14 @@ export class ChangeDetector {
       enableImpactAnalysis: true,
       includePatterns: ['**/*'],
       excludePatterns: ['**/*.test.*', '**/*.spec.*', '**/node_modules/**'],
-      minChangeThreshold: 1
+      minChangeThreshold: 1,
     };
 
     return {
       ...defaults,
       ...config,
       includePatterns: config.includePatterns || defaults.includePatterns,
-      excludePatterns: config.excludePatterns || defaults.excludePatterns
+      excludePatterns: config.excludePatterns || defaults.excludePatterns,
     };
   }
 }
-

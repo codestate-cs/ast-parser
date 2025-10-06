@@ -1,6 +1,6 @@
 /**
  * Unit tests for EntryPointAnalyzer
- * 
+ *
  * Tests cover:
  * - Happy path scenarios
  * - Failure scenarios
@@ -32,8 +32,8 @@ describe('EntryPointAnalyzer', () => {
           version: '^18.0.0',
           type: 'production',
           source: 'npm',
-          metadata: {}
-        }
+          metadata: {},
+        },
       ],
       devDependencies: [
         {
@@ -41,22 +41,22 @@ describe('EntryPointAnalyzer', () => {
           version: '^4.9.0',
           type: 'development',
           source: 'npm',
-          metadata: {}
+          metadata: {},
         },
         {
           name: 'jest',
           version: '^29.0.0',
           type: 'development',
           source: 'npm',
-          metadata: {}
-        }
+          metadata: {},
+        },
       ],
       structure: {
         directories: [],
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       },
       ast: [],
       relations: [],
@@ -68,16 +68,16 @@ describe('EntryPointAnalyzer', () => {
         linesOfCode: 0,
         functionCount: 0,
         classCount: 0,
-        interfaceCount: 0
+        interfaceCount: 0,
       },
       quality: {
         score: 100,
         maintainabilityIndex: 100,
         technicalDebtRatio: 0,
         duplicationPercentage: 0,
-        testCoveragePercentage: 0
+        testCoveragePercentage: 0,
       },
-      metadata: {}
+      metadata: {},
     };
   });
 
@@ -87,7 +87,7 @@ describe('EntryPointAnalyzer', () => {
       const packageJson = {
         main: 'dist/index.js',
         module: 'dist/index.esm.js',
-        types: 'dist/index.d.ts'
+        types: 'dist/index.d.ts',
       };
 
       mockProjectInfo.metadata = { packageJson };
@@ -115,7 +115,7 @@ describe('EntryPointAnalyzer', () => {
           metadata: { isEntryPoint: true },
           nodeType: 'module',
           children: [],
-          properties: {}
+          properties: {},
         },
         {
           id: '/test/project/src/app.ts',
@@ -127,8 +127,8 @@ describe('EntryPointAnalyzer', () => {
           metadata: { isEntryPoint: true },
           nodeType: 'module',
           children: [],
-          properties: {}
-        }
+          properties: {},
+        },
       ];
 
       mockProjectInfo.ast = astNodes;
@@ -155,7 +155,7 @@ describe('EntryPointAnalyzer', () => {
           metadata: {},
           nodeType: 'module',
           children: [],
-          properties: {}
+          properties: {},
         },
         {
           id: '/test/project/src/main.ts',
@@ -167,15 +167,15 @@ describe('EntryPointAnalyzer', () => {
           metadata: {},
           nodeType: 'module',
           children: [],
-          properties: {}
-        }
+          properties: {},
+        },
       ];
 
       mockProjectInfo.ast = astNodes;
 
       // Act
       const result = analyzer.analyze(mockProjectInfo, {
-        entryPointPatterns: ['**/index.ts', '**/main.ts']
+        entryPointPatterns: ['**/index.ts', '**/main.ts'],
       });
 
       // Assert
@@ -192,8 +192,8 @@ describe('EntryPointAnalyzer', () => {
         types: 'dist/index.d.ts',
         browser: 'dist/browser.js',
         bin: {
-          'my-cli': 'bin/cli.js'
-        }
+          'my-cli': 'bin/cli.js',
+        },
       };
 
       mockProjectInfo.metadata = { packageJson };
@@ -216,8 +216,8 @@ describe('EntryPointAnalyzer', () => {
         exports: {
           '.': './dist/index.js',
           './utils': './dist/utils.js',
-          './types': './dist/types.d.ts'
-        }
+          './types': './dist/types.d.ts',
+        },
       };
 
       mockProjectInfo.metadata = { packageJson };
@@ -269,7 +269,7 @@ describe('EntryPointAnalyzer', () => {
     it('should handle missing required properties in project info', () => {
       // Arrange
       const incompleteProjectInfo = {
-        rootPath: '/test/project'
+        rootPath: '/test/project',
       } as any;
 
       // Act & Assert
@@ -292,7 +292,7 @@ describe('EntryPointAnalyzer', () => {
           metadata: { isEntryPoint: true },
           nodeType: 'module',
           children: [],
-          properties: {}
+          properties: {},
         });
       }
 
@@ -310,7 +310,7 @@ describe('EntryPointAnalyzer', () => {
 
     it('should handle deeply nested entry point paths', () => {
       // Arrange
-      const deepPath = '/test/project/' + 'a/'.repeat(100) + 'index.ts';
+      const deepPath = `/test/project/${'a/'.repeat(100)}index.ts`;
       const astNodes: ASTNode[] = [
         {
           id: deepPath,
@@ -322,8 +322,8 @@ describe('EntryPointAnalyzer', () => {
           metadata: { isEntryPoint: true },
           nodeType: 'module',
           children: [],
-          properties: {}
-        }
+          properties: {},
+        },
       ];
 
       mockProjectInfo.ast = astNodes;
@@ -353,8 +353,8 @@ describe('EntryPointAnalyzer', () => {
       const packageJson = {
         main: 'dist/index.js',
         exports: {
-          '.': './dist/index.js'
-        }
+          '.': './dist/index.js',
+        },
       };
 
       mockProjectInfo.metadata = { packageJson };
@@ -375,7 +375,7 @@ describe('EntryPointAnalyzer', () => {
       const packageJson = {
         main: './dist/index.js',
         module: '/absolute/path/module.js',
-        types: 'types/index.d.ts'
+        types: 'types/index.d.ts',
       };
 
       mockProjectInfo.metadata = { packageJson };
@@ -395,7 +395,7 @@ describe('EntryPointAnalyzer', () => {
       const packageJson = {
         main: 'dist/index@v2.js',
         module: 'dist/module-with-dashes.js',
-        types: 'dist/types.with.dots.d.ts'
+        types: 'dist/types.with.dots.d.ts',
       };
 
       mockProjectInfo.metadata = { packageJson };
@@ -416,7 +416,7 @@ describe('EntryPointAnalyzer', () => {
         main: 'dist/index.js',
         module: 'dist/index.mjs',
         types: 'dist/index.d.ts',
-        browser: 'dist/index.browser.js'
+        browser: 'dist/index.browser.js',
       };
 
       mockProjectInfo.metadata = { packageJson };
@@ -436,7 +436,7 @@ describe('EntryPointAnalyzer', () => {
       // Arrange
       const packageJson = {
         main: 'dist/index.js?v=1.0.0',
-        module: 'dist/index.esm.js?format=esm'
+        module: 'dist/index.esm.js?format=esm',
       };
 
       mockProjectInfo.metadata = { packageJson };
@@ -447,14 +447,16 @@ describe('EntryPointAnalyzer', () => {
       // Assert
       expect(result.entryPoints).toHaveLength(2);
       expect(result.entryPoints.find(ep => ep.path === 'dist/index.js?v=1.0.0')).toBeDefined();
-      expect(result.entryPoints.find(ep => ep.path === 'dist/index.esm.js?format=esm')).toBeDefined();
+      expect(
+        result.entryPoints.find(ep => ep.path === 'dist/index.esm.js?format=esm')
+      ).toBeDefined();
     });
 
     it('should handle entry points with hash fragments', () => {
       // Arrange
       const packageJson = {
         main: 'dist/index.js#main',
-        module: 'dist/index.esm.js#module'
+        module: 'dist/index.esm.js#module',
       };
 
       mockProjectInfo.metadata = { packageJson };
@@ -473,15 +475,15 @@ describe('EntryPointAnalyzer', () => {
       const packageJson = {
         exports: {
           '.': {
-            'import': './dist/index.esm.js',
-            'require': './dist/index.cjs.js',
-            'default': './dist/index.js'
+            import: './dist/index.esm.js',
+            require: './dist/index.cjs.js',
+            default: './dist/index.js',
           },
           './utils': {
-            'import': './dist/utils.esm.js',
-            'require': './dist/utils.cjs.js'
-          }
-        }
+            import: './dist/utils.esm.js',
+            require: './dist/utils.cjs.js',
+          },
+        },
       };
 
       mockProjectInfo.metadata = { packageJson };
@@ -502,7 +504,7 @@ describe('EntryPointAnalyzer', () => {
       // Arrange
       const packageJson = {
         main: ['dist/index.js', 'dist/index.cjs.js'],
-        module: ['dist/index.esm.js', 'dist/index.mjs']
+        module: ['dist/index.esm.js', 'dist/index.mjs'],
       };
 
       mockProjectInfo.metadata = { packageJson };
@@ -524,7 +526,7 @@ describe('EntryPointAnalyzer', () => {
         main: 'dist/index.js',
         module: null,
         types: undefined,
-        browser: ''
+        browser: '',
       };
 
       mockProjectInfo.metadata = { packageJson };
@@ -544,7 +546,7 @@ describe('EntryPointAnalyzer', () => {
       const packageJson = {
         main: 'dist/index.js',
         module: 'dist/index.esm.js',
-        types: 'dist/index.d.ts'
+        types: 'dist/index.d.ts',
       };
 
       mockProjectInfo.metadata = { packageJson };
@@ -563,13 +565,13 @@ describe('EntryPointAnalyzer', () => {
       // Arrange
       const packageJson = {
         main: 'dist/index.js',
-        module: 'dist/index.esm.js'
+        module: 'dist/index.esm.js',
       };
 
       mockProjectInfo.metadata = { packageJson };
 
       // Act
-      const promises = Array.from({ length: 10 }, () => 
+      const promises = Array.from({ length: 10 }, () =>
         Promise.resolve(analyzer.analyze(mockProjectInfo))
       );
 
@@ -596,7 +598,7 @@ describe('EntryPointAnalyzer', () => {
           metadata: {},
           nodeType: 'module',
           children: [],
-          properties: {}
+          properties: {},
         },
         {
           id: '/test/project/src/server.ts',
@@ -608,15 +610,15 @@ describe('EntryPointAnalyzer', () => {
           metadata: {},
           nodeType: 'module',
           children: [],
-          properties: {}
-        }
+          properties: {},
+        },
       ];
 
       mockProjectInfo.ast = astNodes;
 
       // Act
       const result = analyzer.analyze(mockProjectInfo, {
-        entryPointPatterns: ['**/app.ts', '**/server.ts']
+        entryPointPatterns: ['**/app.ts', '**/server.ts'],
       });
 
       // Assert
@@ -638,7 +640,7 @@ describe('EntryPointAnalyzer', () => {
           metadata: { isEntryPoint: true },
           nodeType: 'module',
           children: [],
-          properties: {}
+          properties: {},
         },
         {
           id: '/test/project/test/index.test.ts',
@@ -650,15 +652,15 @@ describe('EntryPointAnalyzer', () => {
           metadata: { isEntryPoint: true },
           nodeType: 'module',
           children: [],
-          properties: {}
-        }
+          properties: {},
+        },
       ];
 
       mockProjectInfo.ast = astNodes;
 
       // Act
       const result = analyzer.analyze(mockProjectInfo, {
-        includePatterns: ['src/**/*.ts']
+        includePatterns: ['src/**/*.ts'],
       });
 
       // Assert
@@ -679,7 +681,7 @@ describe('EntryPointAnalyzer', () => {
           metadata: { isEntryPoint: true },
           nodeType: 'module',
           children: [],
-          properties: {}
+          properties: {},
         },
         {
           id: '/test/project/test/index.test.ts',
@@ -691,15 +693,15 @@ describe('EntryPointAnalyzer', () => {
           metadata: { isEntryPoint: true },
           nodeType: 'module',
           children: [],
-          properties: {}
-        }
+          properties: {},
+        },
       ];
 
       mockProjectInfo.ast = astNodes;
 
       // Act
       const result = analyzer.analyze(mockProjectInfo, {
-        excludePatterns: ['test/**/*.ts']
+        excludePatterns: ['test/**/*.ts'],
       });
 
       // Assert
@@ -720,8 +722,8 @@ describe('EntryPointAnalyzer', () => {
           metadata: { isEntryPoint: true },
           nodeType: 'module',
           children: [],
-          properties: {}
-        }
+          properties: {},
+        },
       ];
 
       mockProjectInfo.ast = astNodes;
@@ -735,21 +737,21 @@ describe('EntryPointAnalyzer', () => {
 
     it('should throw error for invalid AST array', () => {
       const invalidProjectInfo = { ...mockProjectInfo, ast: 'not-an-array' as any };
-      
+
       expect(() => analyzer.analyze(invalidProjectInfo)).toThrow(InvalidInputError);
       expect(() => analyzer.analyze(invalidProjectInfo)).toThrow('AST nodes must be an array');
     });
 
     it('should throw error for missing root path', () => {
       const invalidProjectInfo = { ...mockProjectInfo, rootPath: undefined as any };
-      
+
       expect(() => analyzer.analyze(invalidProjectInfo)).toThrow(InvalidInputError);
       expect(() => analyzer.analyze(invalidProjectInfo)).toThrow('Project root path is required');
     });
 
     it('should handle binary entry points as string', () => {
       const packageJson = {
-        bin: './bin/cli.js'
+        bin: './bin/cli.js',
       };
 
       mockProjectInfo.metadata = { packageJson };
@@ -771,7 +773,7 @@ describe('EntryPointAnalyzer', () => {
 
     it('should handle malformed exports field gracefully', () => {
       const packageJson = {
-        exports: 'invalid exports format'
+        exports: 'invalid exports format',
       };
 
       mockProjectInfo.metadata = { packageJson };
@@ -782,7 +784,7 @@ describe('EntryPointAnalyzer', () => {
 
     it('should handle exports as string', () => {
       const packageJson = {
-        exports: './dist/index.js'
+        exports: './dist/index.js',
       };
 
       mockProjectInfo.metadata = { packageJson };
@@ -796,7 +798,7 @@ describe('EntryPointAnalyzer', () => {
 
     it('should handle exports as array', () => {
       const packageJson = {
-        exports: ['./dist/index.js', './dist/utils.js']
+        exports: ['./dist/index.js', './dist/utils.js'],
       };
 
       mockProjectInfo.metadata = { packageJson };
@@ -807,6 +809,5 @@ describe('EntryPointAnalyzer', () => {
       expect(result.entryPoints[0]?.path).toBe('./dist/index.js');
       expect(result.entryPoints[1]?.path).toBe('./dist/utils.js');
     });
-
   });
 });

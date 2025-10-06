@@ -87,7 +87,7 @@ export class QualityMetrics {
         if (!validation.isValid) {
           return {
             success: false,
-            error: `Validation failed: ${validation.errors.join(', ')}`
+            error: `Validation failed: ${validation.errors.join(', ')}`,
           };
         }
       }
@@ -113,12 +113,12 @@ export class QualityMetrics {
         success: true,
         metrics,
         score,
-        rating
+        rating,
       };
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : 'Unknown error',
       };
     }
   }
@@ -130,7 +130,7 @@ export class QualityMetrics {
     const defaultWeights = {
       complexity: 0.33,
       maintainability: 0.33,
-      readability: 0.34
+      readability: 0.34,
     };
 
     const finalWeights = weights || this.options.metricWeights || defaultWeights;
@@ -170,7 +170,7 @@ export class QualityMetrics {
 
     return {
       overall: Math.round(overallScore),
-      breakdown
+      breakdown,
     };
   }
 
@@ -182,7 +182,7 @@ export class QualityMetrics {
       excellent: 90,
       good: 80,
       fair: 70,
-      poor: 60
+      poor: 60,
     };
 
     if (score >= thresholds.excellent) return 'A';
@@ -230,7 +230,7 @@ export class QualityMetrics {
 
     return {
       isValid: errors.length === 0,
-      errors
+      errors,
     };
   }
 
@@ -266,16 +266,16 @@ export class QualityMetrics {
     }
 
     // Calculate maintainability index (simplified)
-    const maintainabilityIndex = Math.max(0, 100 - (totalCyclomatic * 2) - (totalLines / 10));
+    const maintainabilityIndex = Math.max(0, 100 - totalCyclomatic * 2 - totalLines / 10);
 
     // Calculate complexity score
-    const complexityScore = Math.max(0, 100 - (totalCyclomatic * 5) - (totalCognitive / 10));
+    const complexityScore = Math.max(0, 100 - totalCyclomatic * 5 - totalCognitive / 10);
 
     return {
       cyclomatic: totalCyclomatic,
       cognitive: totalCognitive,
       maintainabilityIndex: Math.round(maintainabilityIndex),
-      score: Math.round(complexityScore)
+      score: Math.round(complexityScore),
     };
   }
 
@@ -292,7 +292,7 @@ export class QualityMetrics {
 
     // Use AST data to calculate additional metrics if needed
     let complexNodes = 0;
-    
+
     ast.forEach((node: any) => {
       if (node.properties && node.properties.complexity > 5) {
         complexNodes++;
@@ -300,13 +300,16 @@ export class QualityMetrics {
     });
 
     // Calculate maintainability score
-    const maintainabilityScore = Math.max(0, 100 - (technicalDebt * 10) - (codeSmells * 5) + (testCoverage * 0.5) - (complexNodes * 2));
+    const maintainabilityScore = Math.max(
+      0,
+      100 - technicalDebt * 10 - codeSmells * 5 + testCoverage * 0.5 - complexNodes * 2
+    );
 
     return {
       technicalDebt,
       codeSmells,
       testCoverage,
-      score: Math.round(maintainabilityScore)
+      score: Math.round(maintainabilityScore),
     };
   }
 
@@ -323,11 +326,11 @@ export class QualityMetrics {
 
     ast.forEach((node: any) => {
       totalNodes++;
-      if (node.properties && node.properties.documentation) {
+      if (node.properties?.documentation) {
         documentedNodes++;
         totalComments += (node.properties.documentation.match(/\n/g) || []).length + 1;
       }
-      if (node.properties && node.properties.linesOfCode) {
+      if (node.properties?.linesOfCode) {
         totalLines += node.properties.linesOfCode;
       }
     });
@@ -339,13 +342,14 @@ export class QualityMetrics {
     const namingConventions = 85; // Default good score
 
     // Calculate readability score
-    const readabilityScore = (documentationCoverage * 0.4) + (commentDensity * 0.3) + (namingConventions * 0.3);
+    const readabilityScore =
+      documentationCoverage * 0.4 + commentDensity * 0.3 + namingConventions * 0.3;
 
     return {
       documentationCoverage: Math.round(documentationCoverage),
       namingConventions,
       commentDensity: Math.round(commentDensity),
-      score: Math.round(readabilityScore)
+      score: Math.round(readabilityScore),
     };
   }
 
@@ -362,14 +366,14 @@ export class QualityMetrics {
         excellent: 90,
         good: 80,
         fair: 70,
-        poor: 60
+        poor: 60,
       },
       metricWeights: {
         complexity: 0.33,
         maintainability: 0.33,
-        readability: 0.34
+        readability: 0.34,
       },
-      qualityStandard: 'basic'
+      qualityStandard: 'basic',
     };
   }
 

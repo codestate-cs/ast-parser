@@ -2,9 +2,24 @@
  * Tests for BranchVersioning strategy
  */
 
-import { describe, it, expect, beforeEach } from '@jest/globals';
+import { describe, it, expect, beforeEach, jest } from '@jest/globals';
 import { BranchVersioning } from '../../../../src/versioning/strategies/BranchVersioning';
 import { VersionMetadata, BranchInfo } from '../../../../src/types/versioning';
+import { GitUtils } from '../../../../src/utils/git/GitUtils';
+
+// Mock GitUtils
+jest.mock('../../../../src/utils/git/GitUtils', () => ({
+  GitUtils: {
+    isGitRepository: jest.fn(),
+    getGitInfo: jest.fn(),
+    getCurrentBranch: jest.fn(),
+    getCurrentCommitHash: jest.fn(),
+    getShortCommitHash: jest.fn(),
+    isWorkingDirectoryClean: jest.fn(),
+    getTags: jest.fn(),
+    getRecentCommits: jest.fn(),
+  },
+}));
 
 describe('BranchVersioning', () => {
   let strategy: BranchVersioning;
@@ -22,7 +37,7 @@ describe('BranchVersioning', () => {
         branch: {
           name: 'main',
           type: 'main',
-          description: 'Main branch'
+          description: 'Main branch',
         },
         commit: {
           hash: 'a1b2c3d4e5f6',
@@ -30,8 +45,8 @@ describe('BranchVersioning', () => {
           author: 'developer@example.com',
           date: new Date().toISOString(),
           parents: [],
-          filesChanged: ['src/index.ts']
-        }
+          filesChanged: ['src/index.ts'],
+        },
       };
 
       const result = await strategy.generateVersion(metadata);
@@ -47,7 +62,7 @@ describe('BranchVersioning', () => {
         branch: {
           name: 'feature/auth',
           type: 'feature',
-          description: 'Authentication feature'
+          description: 'Authentication feature',
         },
         commit: {
           hash: 'b2c3d4e5f6g7',
@@ -55,8 +70,8 @@ describe('BranchVersioning', () => {
           author: 'developer@example.com',
           date: new Date().toISOString(),
           parents: ['a1b2c3d4e5f6'],
-          filesChanged: ['src/auth.ts']
-        }
+          filesChanged: ['src/auth.ts'],
+        },
       };
 
       const result = await strategy.generateVersion(metadata);
@@ -72,7 +87,7 @@ describe('BranchVersioning', () => {
         branch: {
           name: 'develop',
           type: 'develop',
-          description: 'Development branch'
+          description: 'Development branch',
         },
         commit: {
           hash: 'c3d4e5f6g7h8',
@@ -80,8 +95,8 @@ describe('BranchVersioning', () => {
           author: 'developer@example.com',
           date: new Date().toISOString(),
           parents: ['b2c3d4e5f6g7'],
-          filesChanged: ['src/utils.ts']
-        }
+          filesChanged: ['src/utils.ts'],
+        },
       };
 
       const result = await strategy.generateVersion(metadata);
@@ -93,7 +108,7 @@ describe('BranchVersioning', () => {
       const metadata: VersionMetadata = {
         version: '1.0.0',
         createdAt: new Date().toISOString(),
-        tags: ['unknown']
+        tags: ['unknown'],
       };
 
       const result = await strategy.generateVersion(metadata);
@@ -134,10 +149,7 @@ describe('BranchVersioning', () => {
 
   describe('compareVersions', () => {
     it('should compare versions from same branch', async () => {
-      const result = await strategy.compareVersions(
-        'main-a1b2c3d4-1.0.0',
-        'main-b2c3d4e5-1.1.0'
-      );
+      const result = await strategy.compareVersions('main-a1b2c3d4-1.0.0', 'main-b2c3d4e5-1.1.0');
 
       expect(result.result).toBe('less');
       expect(result.details.compatible).toBe(true);
@@ -154,10 +166,7 @@ describe('BranchVersioning', () => {
     });
 
     it('should handle equal versions', async () => {
-      const result = await strategy.compareVersions(
-        'main-a1b2c3d4-1.0.0',
-        'main-a1b2c3d4-1.0.0'
-      );
+      const result = await strategy.compareVersions('main-a1b2c3d4-1.0.0', 'main-a1b2c3d4-1.0.0');
 
       expect(result.result).toBe('equal');
       expect(result.details.compatible).toBe(true);
@@ -188,7 +197,7 @@ describe('BranchVersioning', () => {
     it('should detect main branch type', () => {
       const branchInfo: BranchInfo = {
         name: 'main',
-        type: 'main'
+        type: 'main',
       };
 
       expect(strategy.detectBranchType(branchInfo.name)).toBe('main');
@@ -234,7 +243,7 @@ describe('BranchVersioning', () => {
       const invalidMetadata: VersionMetadata = {
         version: '',
         createdAt: 'invalid-date',
-        tags: 'not-an-array' as any
+        tags: 'not-an-array' as any,
       };
 
       await expect(strategy.generateVersion(invalidMetadata)).rejects.toThrow();
@@ -374,7 +383,7 @@ describe('BranchVersioning', () => {
         '-a1b2c3d4-1.0.0',
         'main-a1b2c3d4-',
         'main-a1b2c3d4',
-        'main-a1b2c3d4-1.0.0-extra'
+        'main-a1b2c3d4-1.0.0-extra',
       ];
 
       for (const version of invalidVersions) {
@@ -409,10 +418,16 @@ describe('BranchVersioning', () => {
 
     it('should handle compareSemanticVersions edge cases', async () => {
       // Test versions with different number of parts
-      const result1 = await strategy.compareVersions('main-a1b2c3d4-1.0.0', 'main-a1b2c3d4-1.0.0.0');
+      const result1 = await strategy.compareVersions(
+        'main-a1b2c3d4-1.0.0',
+        'main-a1b2c3d4-1.0.0.0'
+      );
       expect(result1.result).toBe('equal'); // Same semantic version, different commit
 
-      const result2 = await strategy.compareVersions('main-a1b2c3d4-1.0.0.0', 'main-a1b2c3d4-1.0.0');
+      const result2 = await strategy.compareVersions(
+        'main-a1b2c3d4-1.0.0.0',
+        'main-a1b2c3d4-1.0.0'
+      );
       expect(result2.result).toBe('equal'); // Same semantic version, different commit
 
       // Test versions with non-numeric parts
@@ -422,12 +437,22 @@ describe('BranchVersioning', () => {
 
     it('should handle generateBranchDescription for all branch types', () => {
       // Test each branch type individually to ensure proper detection
-      expect((strategy as any).generateBranchDescription('main')).toContain('Main production branch');
-      expect((strategy as any).generateBranchDescription('feature/auth')).toContain('Feature branch');
-      expect((strategy as any).generateBranchDescription('develop')).toContain('Development branch');
-      expect((strategy as any).generateBranchDescription('release/1.0.0')).toContain('Release branch');
+      expect((strategy as any).generateBranchDescription('main')).toContain(
+        'Main production branch'
+      );
+      expect((strategy as any).generateBranchDescription('feature/auth')).toContain(
+        'Feature branch'
+      );
+      expect((strategy as any).generateBranchDescription('develop')).toContain(
+        'Development branch'
+      );
+      expect((strategy as any).generateBranchDescription('release/1.0.0')).toContain(
+        'Release branch'
+      );
       expect((strategy as any).generateBranchDescription('hotfix/bug')).toContain('Hotfix branch');
-      expect((strategy as any).generateBranchDescription('custom-branch')).toContain('Custom branch');
+      expect((strategy as any).generateBranchDescription('custom-branch')).toContain(
+        'Custom branch'
+      );
     });
 
     it('should handle branch name formatting edge cases', () => {
@@ -495,7 +520,7 @@ describe('BranchVersioning', () => {
       const invalidMetadata: VersionMetadata = {
         version: '',
         createdAt: 'invalid-date',
-        tags: 'not-an-array' as any
+        tags: 'not-an-array' as any,
       };
 
       await expect(strategy.generateVersion(invalidMetadata)).rejects.toThrow();
@@ -548,7 +573,7 @@ describe('BranchVersioning', () => {
       const invalidMetadata: VersionMetadata = {
         version: '',
         createdAt: 'invalid-date',
-        tags: 'not-an-array' as any
+        tags: 'not-an-array' as any,
       };
 
       await expect(strategy.generateVersion(invalidMetadata)).rejects.toThrow();
@@ -585,7 +610,10 @@ describe('BranchVersioning', () => {
 
     it('should handle additional edge cases for semantic version comparison', async () => {
       // Test with versions that have different number of parts
-      const result1 = await strategy.compareVersions('main-a1b2c3d4-1.0.0', 'main-a1b2c3d4-1.0.0.0');
+      const result1 = await strategy.compareVersions(
+        'main-a1b2c3d4-1.0.0',
+        'main-a1b2c3d4-1.0.0.0'
+      );
       expect(result1.result).toBe('equal');
 
       // Test with versions that have non-numeric parts
@@ -631,6 +659,262 @@ describe('BranchVersioning', () => {
       const result3 = await strategy.parseVersion('a1b2c3d4-1.0.0');
       expect(result3.version).toBe('a1b2c3d4-1.0.0');
       expect(result3.branch).toBeUndefined();
+    });
+  });
+
+  describe('git integration', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    describe('detectGitInfo', () => {
+      it('should detect git information for git repository', async () => {
+        const mockGitInfo = {
+          branch: 'main',
+          commitHash: 'abc123def456',
+          shortHash: 'abc123de',
+          commitMessage: 'Initial commit',
+          author: 'John Doe',
+          commitDate: '2023-01-01 12:00:00 +0000',
+          isClean: true,
+          remoteUrl: 'https://github.com/user/repo.git',
+        };
+
+        (GitUtils.isGitRepository as any).mockResolvedValue(true);
+        (GitUtils.getGitInfo as any).mockResolvedValue(mockGitInfo);
+
+        const result = await strategy.detectGitInfo('/test/project');
+
+        expect(result).toBeDefined();
+        expect(result?.branch).toBe('main');
+        expect(result?.commitHash).toBe('abc123def456');
+        expect(result?.shortHash).toBe('abc123de');
+        expect(result?.commitMessage).toBe('Initial commit');
+        expect(result?.author).toBe('John Doe');
+        expect(result?.commitDate).toBe('2023-01-01 12:00:00 +0000');
+        expect(result?.isClean).toBe(true);
+        expect(result?.remoteUrl).toBe('https://github.com/user/repo.git');
+      });
+
+      it('should return null for non-git repository', async () => {
+        (GitUtils.isGitRepository as any).mockResolvedValue(false);
+
+        const result = await strategy.detectGitInfo('/test/project');
+
+        expect(result).toBeNull();
+      });
+
+      it('should return null when git info detection fails', async () => {
+        (GitUtils.isGitRepository as any).mockResolvedValue(true);
+        (GitUtils.getGitInfo as any).mockResolvedValue(null);
+
+        const result = await strategy.detectGitInfo('/test/project');
+
+        expect(result).toBeNull();
+      });
+    });
+
+    describe('detectBranchInfo', () => {
+      it('should detect branch information from git', async () => {
+        const mockGitInfo = {
+          branch: 'feature/auth',
+          commitHash: 'abc123def456',
+          shortHash: 'abc123de',
+          commitMessage: 'Add authentication',
+          author: 'John Doe',
+          commitDate: '2023-01-01 12:00:00 +0000',
+          isClean: true,
+          remoteUrl: 'https://github.com/user/repo.git',
+        };
+
+        (GitUtils.isGitRepository as any).mockResolvedValue(true);
+        (GitUtils.getGitInfo as any).mockResolvedValue(mockGitInfo);
+
+        const result = await strategy.detectBranchInfo('/test/project');
+
+        expect(result).toBeDefined();
+        expect(result?.name).toBe('feature/auth');
+        expect(result?.type).toBe('feature');
+        expect(result?.description).toContain('Feature branch');
+        expect(result?.isProtected).toBe(false);
+        expect(result?.priority).toBe(60);
+      });
+
+      it('should detect main branch information', async () => {
+        const mockGitInfo = {
+          branch: 'main',
+          commitHash: 'abc123def456',
+          shortHash: 'abc123de',
+          commitMessage: 'Release v1.0.0',
+          author: 'John Doe',
+          commitDate: '2023-01-01 12:00:00 +0000',
+          isClean: true,
+          remoteUrl: 'https://github.com/user/repo.git',
+        };
+
+        (GitUtils.isGitRepository as any).mockResolvedValue(true);
+        (GitUtils.getGitInfo as any).mockResolvedValue(mockGitInfo);
+
+        const result = await strategy.detectBranchInfo('/test/project');
+
+        expect(result).toBeDefined();
+        expect(result?.name).toBe('main');
+        expect(result?.type).toBe('main');
+        expect(result?.description).toContain('Main production branch');
+        expect(result?.isProtected).toBe(true);
+        expect(result?.priority).toBe(100);
+      });
+
+      it('should return null for non-git repository', async () => {
+        (GitUtils.isGitRepository as any).mockResolvedValue(false);
+
+        const result = await strategy.detectBranchInfo('/test/project');
+
+        expect(result).toBeNull();
+      });
+    });
+
+    describe('detectCommitInfo', () => {
+      it('should detect commit information from git', async () => {
+        const mockGitInfo = {
+          branch: 'main',
+          commitHash: 'abc123def456',
+          shortHash: 'abc123de',
+          commitMessage: 'Add new feature',
+          author: 'John Doe',
+          commitDate: '2023-01-01 12:00:00 +0000',
+          isClean: true,
+          remoteUrl: 'https://github.com/user/repo.git',
+        };
+
+        (GitUtils.isGitRepository as any).mockResolvedValue(true);
+        (GitUtils.getGitInfo as any).mockResolvedValue(mockGitInfo);
+
+        const result = await strategy.detectCommitInfo('/test/project');
+
+        expect(result).toBeDefined();
+        expect(result?.hash).toBe('abc123def456');
+        expect(result?.shortHash).toBe('abc123de');
+        expect(result?.message).toBe('Add new feature');
+        expect(result?.author).toBe('John Doe');
+        expect(result?.date).toBe('2023-01-01 12:00:00 +0000');
+      });
+
+      it('should return null for non-git repository', async () => {
+        (GitUtils.isGitRepository as any).mockResolvedValue(false);
+
+        const result = await strategy.detectCommitInfo('/test/project');
+
+        expect(result).toBeNull();
+      });
+    });
+
+    describe('detectRepositoryInfo', () => {
+      it('should detect repository information from git', async () => {
+        const mockGitInfo = {
+          branch: 'main',
+          commitHash: 'abc123def456',
+          shortHash: 'abc123de',
+          commitMessage: 'Initial commit',
+          author: 'John Doe',
+          commitDate: '2023-01-01 12:00:00 +0000',
+          isClean: true,
+          remoteUrl: 'https://github.com/user/repo.git',
+        };
+
+        (GitUtils.isGitRepository as any).mockResolvedValue(true);
+        (GitUtils.getGitInfo as any).mockResolvedValue(mockGitInfo);
+
+        const result = await strategy.detectRepositoryInfo('/test/project');
+
+        expect(result).toBeDefined();
+        expect(result?.isGitRepository).toBe(true);
+        expect(result?.remoteUrl).toBe('https://github.com/user/repo.git');
+        expect(result?.isClean).toBe(true);
+      });
+
+      it('should return null for non-git repository', async () => {
+        (GitUtils.isGitRepository as any).mockResolvedValue(false);
+
+        const result = await strategy.detectRepositoryInfo('/test/project');
+
+        expect(result).toBeNull();
+      });
+    });
+
+    describe('detectTags', () => {
+      it('should detect git tags', async () => {
+        const mockTags = ['v1.0.0', 'v1.1.0', 'v2.0.0'];
+
+        (GitUtils.isGitRepository as any).mockResolvedValue(true);
+        (GitUtils.getTags as any).mockResolvedValue(mockTags);
+
+        const result = await strategy.detectTags('/test/project');
+
+        expect(result).toEqual(mockTags);
+      });
+
+      it('should return empty array for non-git repository', async () => {
+        (GitUtils.isGitRepository as any).mockResolvedValue(false);
+
+        const result = await strategy.detectTags('/test/project');
+
+        expect(result).toEqual([]);
+      });
+
+      it('should return empty array when git command fails', async () => {
+        (GitUtils.isGitRepository as any).mockResolvedValue(true);
+        (GitUtils.getTags as any).mockResolvedValue([]);
+
+        const result = await strategy.detectTags('/test/project');
+
+        expect(result).toEqual([]);
+      });
+    });
+
+    describe('detectRecentCommits', () => {
+      it('should detect recent commits', async () => {
+        const mockCommits = [
+          {
+            hash: 'abc123def456',
+            shortHash: 'abc123de',
+            message: 'Initial commit',
+            author: 'John Doe',
+            date: '2023-01-01 12:00:00 +0000',
+          },
+          {
+            hash: 'def456ghi789',
+            shortHash: 'def456gi',
+            message: 'Add feature',
+            author: 'Jane Smith',
+            date: '2023-01-02 12:00:00 +0000',
+          },
+        ];
+
+        (GitUtils.isGitRepository as any).mockResolvedValue(true);
+        (GitUtils.getRecentCommits as any).mockResolvedValue(mockCommits);
+
+        const result = await strategy.detectRecentCommits('/test/project', 2);
+
+        expect(result).toEqual(mockCommits);
+      });
+
+      it('should return empty array for non-git repository', async () => {
+        (GitUtils.isGitRepository as any).mockResolvedValue(false);
+
+        const result = await strategy.detectRecentCommits('/test/project', 5);
+
+        expect(result).toEqual([]);
+      });
+
+      it('should return empty array when git command fails', async () => {
+        (GitUtils.isGitRepository as any).mockResolvedValue(true);
+        (GitUtils.getRecentCommits as any).mockResolvedValue([]);
+
+        const result = await strategy.detectRecentCommits('/test/project', 5);
+
+        expect(result).toEqual([]);
+      });
     });
   });
 });

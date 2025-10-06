@@ -44,7 +44,7 @@ export enum SimpleEnum {
 // Simple namespace
 export namespace SimpleNamespace {
   export const CONSTANT = 'constant';
-  
+
   export function helper(): void {
     console.log('Helper function');
   }

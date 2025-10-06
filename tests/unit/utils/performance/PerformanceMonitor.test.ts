@@ -4,21 +4,21 @@ import { PerformanceMonitor } from '../../../../src/utils/performance/Performanc
 const mockMemoryUsage = jest.fn();
 Object.defineProperty(process, 'memoryUsage', {
   value: mockMemoryUsage,
-  writable: true
+  writable: true,
 });
 
 // Mock process.hrtime
 const mockHrtime = jest.fn();
 Object.defineProperty(process, 'hrtime', {
   value: mockHrtime,
-  writable: true
+  writable: true,
 });
 
 // Mock process.cpuUsage
 const mockCpuUsage = jest.fn();
 Object.defineProperty(process, 'cpuUsage', {
   value: mockCpuUsage,
-  writable: true
+  writable: true,
 });
 
 describe('PerformanceMonitor', () => {
@@ -27,14 +27,14 @@ describe('PerformanceMonitor', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     performanceMonitor = new PerformanceMonitor({ enableAutoReporting: false });
-    
+
     // Default mock implementations
     mockMemoryUsage.mockReturnValue({
       rss: 1024 * 1024 * 100, // 100MB
       heapTotal: 1024 * 1024 * 50, // 50MB
       heapUsed: 1024 * 1024 * 30, // 30MB
       external: 1024 * 1024 * 10, // 10MB
-      arrayBuffers: 1024 * 1024 * 5 // 5MB
+      arrayBuffers: 1024 * 1024 * 5, // 5MB
     });
 
     mockHrtime.mockReturnValue([1, 500000000]); // 1.5 seconds
@@ -68,9 +68,9 @@ describe('PerformanceMonitor', () => {
         enableCpuTracking: true,
         enableDiskIOTracking: false,
         maxMetricsHistory: 1000,
-        reportInterval: 5000
+        reportInterval: 5000,
       };
-      
+
       const monitor = new PerformanceMonitor(options);
       expect(monitor).toBeInstanceOf(PerformanceMonitor);
     });
@@ -79,7 +79,7 @@ describe('PerformanceMonitor', () => {
   describe('startOperation', () => {
     it('should start timing an operation', () => {
       const operationId = performanceMonitor.startOperation('parseFile', 'test.ts');
-      
+
       expect(operationId).toBeDefined();
       expect(typeof operationId).toBe('string');
       expect(mockHrtime).toHaveBeenCalled();
@@ -87,14 +87,14 @@ describe('PerformanceMonitor', () => {
 
     it('should track memory usage when enabled', () => {
       const operationId = performanceMonitor.startOperation('parseFile', 'test.ts');
-      
+
       expect(mockMemoryUsage).toHaveBeenCalled();
       expect(operationId).toBeDefined();
     });
 
     it('should track CPU usage when enabled', () => {
       const operationId = performanceMonitor.startOperation('parseFile', 'test.ts');
-      
+
       expect(mockCpuUsage).toHaveBeenCalled();
       expect(operationId).toBeDefined();
     });
@@ -102,7 +102,7 @@ describe('PerformanceMonitor', () => {
     it('should generate unique operation IDs', () => {
       const id1 = performanceMonitor.startOperation('parseFile', 'test1.ts');
       const id2 = performanceMonitor.startOperation('parseFile', 'test2.ts');
-      
+
       expect(id1).not.toBe(id2);
     });
   });
@@ -110,12 +110,12 @@ describe('PerformanceMonitor', () => {
   describe('endOperation', () => {
     it('should end timing and record metrics', () => {
       const operationId = performanceMonitor.startOperation('parseFile', 'test.ts');
-      
+
       // Mock different end time - add 100ms
       mockHrtime.mockReturnValueOnce([1, 600000000]); // 1.6 seconds (100ms later)
-      
+
       const result = performanceMonitor.endOperation(operationId);
-      
+
       expect(result).toBeDefined();
       expect(result!.duration).toBeGreaterThan(0);
       expect(result!.operation).toBe('parseFile');
@@ -124,36 +124,36 @@ describe('PerformanceMonitor', () => {
 
     it('should calculate memory growth', () => {
       const operationId = performanceMonitor.startOperation('parseFile', 'test.ts');
-      
+
       // Mock different memory usage at end
       mockMemoryUsage.mockReturnValueOnce({
         rss: 1024 * 1024 * 120, // 120MB (20MB growth)
         heapTotal: 1024 * 1024 * 60, // 60MB
         heapUsed: 1024 * 1024 * 40, // 40MB
         external: 1024 * 1024 * 15, // 15MB
-        arrayBuffers: 1024 * 1024 * 5 // 5MB
+        arrayBuffers: 1024 * 1024 * 5, // 5MB
       });
-      
+
       const result = performanceMonitor.endOperation(operationId);
-      
+
       expect(result).toBeDefined();
       expect(result!.memoryGrowth).toBeGreaterThan(0);
     });
 
     it('should handle unknown operation ID', () => {
       const result = performanceMonitor.endOperation('unknown-id');
-      
+
       expect(result).toBeUndefined();
     });
 
     it('should update global metrics', () => {
       const operationId = performanceMonitor.startOperation('parseFile', 'test.ts');
-      
+
       // Mock different end time
       mockHrtime.mockReturnValueOnce([1, 600000000]); // 100ms later
-      
+
       performanceMonitor.endOperation(operationId);
-      
+
       const metrics = performanceMonitor.getMetrics();
       expect(metrics.totalOperations).toBe(1);
       expect(metrics.totalDuration).toBeGreaterThan(0);
@@ -163,7 +163,7 @@ describe('PerformanceMonitor', () => {
   describe('recordCacheHit', () => {
     it('should record cache hit', () => {
       performanceMonitor.recordCacheHit('test.ts');
-      
+
       const metrics = performanceMonitor.getMetrics();
       expect(metrics.cacheHitRate).toBeGreaterThan(0);
     });
@@ -171,7 +171,7 @@ describe('PerformanceMonitor', () => {
     it('should update cache statistics', () => {
       performanceMonitor.recordCacheHit('test.ts');
       performanceMonitor.recordCacheMiss('test.ts');
-      
+
       const metrics = performanceMonitor.getMetrics();
       expect(metrics.cacheHitRate).toBe(0.5); // 1 hit, 1 miss = 50%
     });
@@ -180,7 +180,7 @@ describe('PerformanceMonitor', () => {
   describe('recordCacheMiss', () => {
     it('should record cache miss', () => {
       performanceMonitor.recordCacheMiss('test.ts');
-      
+
       const metrics = performanceMonitor.getMetrics();
       expect(metrics.cacheHitRate).toBe(0); // 0 hits, 1 miss = 0%
     });
@@ -189,14 +189,14 @@ describe('PerformanceMonitor', () => {
   describe('recordFileProcessed', () => {
     it('should record file processing', () => {
       performanceMonitor.recordFileProcessed('test.ts', 1024);
-      
+
       const metrics = performanceMonitor.getMetrics();
       expect(metrics.fileProcessingRate).toBeGreaterThanOrEqual(0);
     });
 
     it('should track file size', () => {
       performanceMonitor.recordFileProcessed('test.ts', 2048);
-      
+
       const metrics = performanceMonitor.getMetrics();
       expect(metrics.fileProcessingRate).toBeGreaterThanOrEqual(0);
     });
@@ -205,7 +205,7 @@ describe('PerformanceMonitor', () => {
   describe('getMetrics', () => {
     it('should return current metrics', () => {
       const metrics = performanceMonitor.getMetrics();
-      
+
       expect(metrics).toHaveProperty('totalOperations');
       expect(metrics).toHaveProperty('totalDuration');
       expect(metrics).toHaveProperty('averageDuration');
@@ -222,11 +222,11 @@ describe('PerformanceMonitor', () => {
       const id1 = performanceMonitor.startOperation('parseFile', 'test1.ts');
       mockHrtime.mockReturnValueOnce([1, 600000000]); // 100ms later
       performanceMonitor.endOperation(id1);
-      
+
       const id2 = performanceMonitor.startOperation('parseFile', 'test2.ts');
       mockHrtime.mockReturnValueOnce([1, 700000000]); // 200ms later
       performanceMonitor.endOperation(id2);
-      
+
       const metrics = performanceMonitor.getMetrics();
       expect(metrics.averageDuration).toBeGreaterThan(0);
     });
@@ -235,7 +235,7 @@ describe('PerformanceMonitor', () => {
       const id1 = performanceMonitor.startOperation('parseFile', 'test1.ts');
       mockHrtime.mockReturnValueOnce([1, 600000000]); // 100ms later
       performanceMonitor.endOperation(id1);
-      
+
       const metrics = performanceMonitor.getMetrics();
       expect(metrics.operationsPerSecond).toBeGreaterThanOrEqual(0);
     });
@@ -245,10 +245,10 @@ describe('PerformanceMonitor', () => {
     it('should return operation history', () => {
       const id1 = performanceMonitor.startOperation('parseFile', 'test1.ts');
       performanceMonitor.endOperation(id1);
-      
+
       const id2 = performanceMonitor.startOperation('parseFile', 'test2.ts');
       performanceMonitor.endOperation(id2);
-      
+
       const history = performanceMonitor.getOperationHistory();
       expect(history).toHaveLength(2);
       expect(history[0]!.operation).toBe('parseFile');
@@ -258,144 +258,144 @@ describe('PerformanceMonitor', () => {
     it('should limit operation history size when exceeding maxMetricsHistory', () => {
       // Create a monitor with a small maxMetricsHistory limit
       const monitor = new PerformanceMonitor({ maxMetricsHistory: 3 });
-      
+
       // Start and end more operations than the limit
       const operationIds: string[] = [];
       for (let i = 0; i < 5; i++) {
         const id = monitor.startOperation(`operation${i}`, `file${i}.ts`);
         operationIds.push(id);
       }
-      
+
       // End all operations
       operationIds.forEach(id => monitor.endOperation(id));
-      
+
       // Check that history is limited to maxMetricsHistory
       const history = monitor.getOperationHistory();
       expect(history.length).toBeLessThanOrEqual(3);
       expect(history.length).toBe(3); // Should be exactly 3
-      
+
       // Verify that the most recent operations are kept (slice(-3) behavior)
       expect(history[0]!.operation).toBe('operation2'); // 3rd operation
-      expect(history[1]!.operation).toBe('operation3'); // 4th operation  
+      expect(history[1]!.operation).toBe('operation3'); // 4th operation
       expect(history[2]!.operation).toBe('operation4'); // 5th operation
-      
+
       monitor.dispose();
     });
 
     it('should handle operation history size limit with exact maxMetricsHistory count', () => {
       // Create a monitor with maxMetricsHistory = 2
       const monitor = new PerformanceMonitor({ maxMetricsHistory: 2 });
-      
+
       // Start and end exactly 2 operations
       const id1 = monitor.startOperation('operation1', 'file1.ts');
       monitor.endOperation(id1);
-      
+
       const id2 = monitor.startOperation('operation2', 'file2.ts');
       monitor.endOperation(id2);
-      
+
       // Check that history contains exactly 2 operations
       const history = monitor.getOperationHistory();
       expect(history.length).toBe(2);
-      
+
       // Add one more operation to trigger the limit
       const id3 = monitor.startOperation('operation3', 'file3.ts');
       monitor.endOperation(id3);
-      
+
       // Check that history is still limited to 2
       const updatedHistory = monitor.getOperationHistory();
       expect(updatedHistory.length).toBe(2);
-      
+
       // Verify that the most recent operations are kept
       expect(updatedHistory[0]!.operation).toBe('operation2');
       expect(updatedHistory[1]!.operation).toBe('operation3');
-      
+
       monitor.dispose();
     });
 
     it('should handle operation history size limit with large maxMetricsHistory', () => {
       // Create a monitor with a large maxMetricsHistory limit
       const monitor = new PerformanceMonitor({ maxMetricsHistory: 1000 });
-      
+
       // Start and end operations but not enough to trigger the limit
       for (let i = 0; i < 10; i++) {
         const id = monitor.startOperation(`operation${i}`, `file${i}.ts`);
         monitor.endOperation(id);
       }
-      
+
       // Check that all operations are kept since we're under the limit
       const history = monitor.getOperationHistory();
       expect(history.length).toBe(10);
-      
+
       monitor.dispose();
     });
 
     it('should handle operation history size limit with zero maxMetricsHistory', () => {
       // Create a monitor with maxMetricsHistory = 0
       const monitor = new PerformanceMonitor({ maxMetricsHistory: 0 });
-      
+
       // Verify that maxMetricsHistory is actually set to 0
       const options = (monitor as any).options;
       expect(options.maxMetricsHistory).toBe(0);
-      
+
       // Start and end an operation
       const id = monitor.startOperation('operation1', 'file1.ts');
       monitor.endOperation(id);
-      
+
       // Check that history is limited due to zero limit
       // The condition should trigger: 1 > 0, so slice(-0) should return empty array
       const history = monitor.getOperationHistory();
-      
+
       // The operation should be added but then immediately sliced to empty array
       expect(history.length).toBe(1);
-      
+
       monitor.dispose();
     });
 
     it('should handle operation history size limit with one maxMetricsHistory', () => {
       // Create a monitor with maxMetricsHistory = 1
       const monitor = new PerformanceMonitor({ maxMetricsHistory: 1 });
-      
+
       // Start and end multiple operations
       const id1 = monitor.startOperation('operation1', 'file1.ts');
       monitor.endOperation(id1);
-      
+
       const id2 = monitor.startOperation('operation2', 'file2.ts');
       monitor.endOperation(id2);
-      
+
       const id3 = monitor.startOperation('operation3', 'file3.ts');
       monitor.endOperation(id3);
-      
+
       // Check that only the last operation is kept
       const history = monitor.getOperationHistory();
       expect(history.length).toBe(1);
       expect(history[0]!.operation).toBe('operation3');
-      
+
       monitor.dispose();
     });
 
     it('should maintain operation history order when limiting size', () => {
       // Create a monitor with maxMetricsHistory = 3
       const monitor = new PerformanceMonitor({ maxMetricsHistory: 3 });
-      
+
       // Start and end 5 operations
       const operations = ['op1', 'op2', 'op3', 'op4', 'op5'];
       const operationIds: string[] = [];
-      
+
       operations.forEach(op => {
         const id = monitor.startOperation(op, `${op}.ts`);
         operationIds.push(id);
       });
-      
+
       // End all operations
       operationIds.forEach(id => monitor.endOperation(id));
-      
+
       // Check that the last 3 operations are kept in order
       const history = monitor.getOperationHistory();
       expect(history.length).toBe(3);
       expect(history[0]!.operation).toBe('op3');
       expect(history[1]!.operation).toBe('op4');
       expect(history[2]!.operation).toBe('op5');
-      
+
       monitor.dispose();
     });
   });
@@ -404,12 +404,12 @@ describe('PerformanceMonitor', () => {
     it('should generate performance report', () => {
       const id1 = performanceMonitor.startOperation('parseFile', 'test1.ts');
       performanceMonitor.endOperation(id1);
-      
+
       performanceMonitor.recordCacheHit('test.ts');
       performanceMonitor.recordFileProcessed('test.ts', 1024);
-      
+
       const report = performanceMonitor.generateReport();
-      
+
       expect(report).toHaveProperty('summary');
       expect(report).toHaveProperty('metrics');
       expect(report).toHaveProperty('recommendations');
@@ -418,7 +418,7 @@ describe('PerformanceMonitor', () => {
 
     it('should include performance insights', () => {
       const report = performanceMonitor.generateReport();
-      
+
       expect(report.summary).toHaveProperty('totalOperations');
       expect(report.summary).toHaveProperty('averageDuration');
       expect(report.summary).toHaveProperty('memoryUsage');
@@ -427,7 +427,7 @@ describe('PerformanceMonitor', () => {
 
     it('should provide optimization recommendations', () => {
       const report = performanceMonitor.generateReport();
-      
+
       expect(report.recommendations).toBeInstanceOf(Array);
       expect(report.recommendations.length).toBeGreaterThanOrEqual(0);
     });
@@ -437,9 +437,9 @@ describe('PerformanceMonitor', () => {
     it('should reset all metrics', () => {
       const id1 = performanceMonitor.startOperation('parseFile', 'test1.ts');
       performanceMonitor.endOperation(id1);
-      
+
       performanceMonitor.reset();
-      
+
       const metrics = performanceMonitor.getMetrics();
       expect(metrics.totalOperations).toBe(0);
       expect(metrics.totalDuration).toBe(0);
@@ -449,9 +449,9 @@ describe('PerformanceMonitor', () => {
     it('should clear operation history', () => {
       const id1 = performanceMonitor.startOperation('parseFile', 'test1.ts');
       performanceMonitor.endOperation(id1);
-      
+
       performanceMonitor.reset();
-      
+
       const history = performanceMonitor.getOperationHistory();
       expect(history).toHaveLength(0);
     });
@@ -460,7 +460,7 @@ describe('PerformanceMonitor', () => {
   describe('getMemoryUsage', () => {
     it('should return current memory usage', () => {
       const memoryUsage = performanceMonitor.getMemoryUsage();
-      
+
       expect(memoryUsage).toHaveProperty('rss');
       expect(memoryUsage).toHaveProperty('heapTotal');
       expect(memoryUsage).toHaveProperty('heapUsed');
@@ -470,7 +470,7 @@ describe('PerformanceMonitor', () => {
 
     it('should return memory usage in MB', () => {
       const memoryUsage = performanceMonitor.getMemoryUsage();
-      
+
       expect(memoryUsage.rss).toBeGreaterThan(0);
       expect(memoryUsage.heapTotal).toBeGreaterThan(0);
       expect(memoryUsage.heapUsed).toBeGreaterThan(0);
@@ -480,14 +480,14 @@ describe('PerformanceMonitor', () => {
   describe('getCpuUsage', () => {
     it('should return CPU usage', () => {
       const cpuUsage = performanceMonitor.getCpuUsage();
-      
+
       expect(cpuUsage).toHaveProperty('user');
       expect(cpuUsage).toHaveProperty('system');
     });
 
     it('should calculate CPU usage percentage', () => {
       const cpuUsage = performanceMonitor.getCpuUsage();
-      
+
       expect(cpuUsage.user).toBeGreaterThanOrEqual(0);
       expect(cpuUsage.system).toBeGreaterThanOrEqual(0);
     });
@@ -498,7 +498,7 @@ describe('PerformanceMonitor', () => {
       mockMemoryUsage.mockImplementation(() => {
         throw new Error('Memory usage error');
       });
-      
+
       expect(() => {
         performanceMonitor.startOperation('parseFile', 'test.ts');
       }).not.toThrow();
@@ -508,7 +508,7 @@ describe('PerformanceMonitor', () => {
       mockHrtime.mockImplementation(() => {
         throw new Error('Timing error');
       });
-      
+
       expect(() => {
         performanceMonitor.startOperation('parseFile', 'test.ts');
       }).not.toThrow();
@@ -521,7 +521,7 @@ describe('PerformanceMonitor', () => {
         ...console,
         warn: jest.fn().mockImplementation(() => {
           throw new Error('Console error');
-        })
+        }),
       };
 
       expect(() => {
@@ -538,7 +538,7 @@ describe('PerformanceMonitor', () => {
         ...console,
         warn: jest.fn().mockImplementation(() => {
           throw new Error('Console error');
-        })
+        }),
       };
 
       expect(() => {
@@ -566,7 +566,7 @@ describe('PerformanceMonitor', () => {
         heapTotal: 0, // This will cause division by zero
         heapUsed: 1024 * 1024 * 30,
         external: 1024 * 1024 * 10,
-        arrayBuffers: 1024 * 1024 * 5
+        arrayBuffers: 1024 * 1024 * 5,
       });
 
       const metrics = performanceMonitor.getMetrics();
@@ -608,11 +608,11 @@ describe('PerformanceMonitor', () => {
       (performanceMonitor as any).operationHistory = {
         get length() {
           throw new Error('Operation history access error');
-        }
+        },
       };
 
       const metrics = performanceMonitor.getMetrics();
-      
+
       // Should return default metrics when catch block is triggered
       expect(metrics).toBeDefined();
       expect(metrics.totalOperations).toBe(0);
@@ -699,11 +699,11 @@ describe('PerformanceMonitor', () => {
       const id1 = performanceMonitor.startOperation('parseFile', 'test1.ts');
       const id2 = performanceMonitor.startOperation('parseFile', 'test2.ts');
       const id3 = performanceMonitor.startOperation('parseFile', 'test3.ts');
-      
+
       performanceMonitor.endOperation(id1);
       performanceMonitor.endOperation(id2);
       performanceMonitor.endOperation(id3);
-      
+
       const metrics = performanceMonitor.getMetrics();
       expect(metrics.totalOperations).toBe(3);
     });
@@ -712,11 +712,11 @@ describe('PerformanceMonitor', () => {
       const id1 = performanceMonitor.startOperation('parseFile', 'test.ts');
       const id2 = performanceMonitor.startOperation('analyzeStructure', 'test.ts');
       const id3 = performanceMonitor.startOperation('generateDocumentation', 'test.ts');
-      
+
       performanceMonitor.endOperation(id1);
       performanceMonitor.endOperation(id2);
       performanceMonitor.endOperation(id3);
-      
+
       const history = performanceMonitor.getOperationHistory();
       expect(history).toHaveLength(3);
       expect(history.map(op => op.operation)).toContain('parseFile');
@@ -729,7 +729,7 @@ describe('PerformanceMonitor', () => {
     it('should track memory peak', () => {
       const id1 = performanceMonitor.startOperation('parseFile', 'test1.ts');
       performanceMonitor.endOperation(id1);
-      
+
       const metrics = performanceMonitor.getMetrics();
       expect(metrics.memoryPeak).toBeGreaterThan(0);
     });
@@ -737,7 +737,7 @@ describe('PerformanceMonitor', () => {
     it('should track memory growth', () => {
       const id1 = performanceMonitor.startOperation('parseFile', 'test1.ts');
       performanceMonitor.endOperation(id1);
-      
+
       const metrics = performanceMonitor.getMetrics();
       expect(metrics.memoryGrowth).toBeGreaterThanOrEqual(0);
     });
@@ -753,9 +753,9 @@ describe('PerformanceMonitor', () => {
       performanceMonitor.recordCacheHit('test1.ts');
       performanceMonitor.recordCacheHit('test2.ts');
       performanceMonitor.recordCacheMiss('test3.ts');
-      
+
       const metrics = performanceMonitor.getMetrics();
-      expect(metrics.cacheHitRate).toBe(2/3); // 2 hits out of 3 total
+      expect(metrics.cacheHitRate).toBe(2 / 3); // 2 hits out of 3 total
     });
 
     it('should handle zero cache operations', () => {
@@ -766,7 +766,7 @@ describe('PerformanceMonitor', () => {
     it('should handle only cache hits', () => {
       performanceMonitor.recordCacheHit('test1.ts');
       performanceMonitor.recordCacheHit('test2.ts');
-      
+
       const metrics = performanceMonitor.getMetrics();
       expect(metrics.cacheHitRate).toBe(1); // 100% hit rate
     });
@@ -774,7 +774,7 @@ describe('PerformanceMonitor', () => {
     it('should handle only cache misses', () => {
       performanceMonitor.recordCacheMiss('test1.ts');
       performanceMonitor.recordCacheMiss('test2.ts');
-      
+
       const metrics = performanceMonitor.getMetrics();
       expect(metrics.cacheHitRate).toBe(0); // 0% hit rate
     });
@@ -784,7 +784,7 @@ describe('PerformanceMonitor', () => {
     it('should calculate file processing rate', () => {
       performanceMonitor.recordFileProcessed('test1.ts', 1024);
       performanceMonitor.recordFileProcessed('test2.ts', 2048);
-      
+
       const metrics = performanceMonitor.getMetrics();
       expect(metrics.fileProcessingRate).toBeGreaterThanOrEqual(0);
     });
@@ -815,7 +815,7 @@ describe('PerformanceMonitor', () => {
   describe('report generation', () => {
     it('should generate report with performance score', () => {
       const report = performanceMonitor.generateReport();
-      
+
       expect(report.summary).toHaveProperty('performanceScore');
       expect(typeof report.summary.performanceScore).toBe('number');
       expect(report.summary.performanceScore).toBeGreaterThanOrEqual(0);
@@ -824,14 +824,14 @@ describe('PerformanceMonitor', () => {
 
     it('should include timestamp in report', () => {
       const report = performanceMonitor.generateReport();
-      
+
       expect(report.timestamp).toBeInstanceOf(Date);
       expect(report.timestamp.getTime()).toBeLessThanOrEqual(Date.now());
     });
 
     it('should provide actionable recommendations', () => {
       const report = performanceMonitor.generateReport();
-      
+
       expect(report.recommendations).toBeInstanceOf(Array);
       report.recommendations.forEach((rec: any) => {
         expect(rec).toHaveProperty('type');
@@ -848,7 +848,7 @@ describe('PerformanceMonitor', () => {
       mockHrtime.mockImplementation(() => {
         throw new Error('HR time error');
       });
-      
+
       const operationId = performanceMonitor.startOperation('test-operation', 'test.ts');
       expect(operationId).toBeDefined();
       expect(typeof operationId).toBe('string');
@@ -859,7 +859,7 @@ describe('PerformanceMonitor', () => {
       mockMemoryUsage.mockImplementation(() => {
         throw new Error('Memory usage error');
       });
-      
+
       const operationId = performanceMonitor.startOperation('test-operation', 'test.ts');
       expect(operationId).toBeDefined();
     });
@@ -869,7 +869,7 @@ describe('PerformanceMonitor', () => {
       mockCpuUsage.mockImplementation(() => {
         throw new Error('CPU usage error');
       });
-      
+
       const operationId = performanceMonitor.startOperation('test-operation', 'test.ts');
       expect(operationId).toBeDefined();
     });
@@ -879,7 +879,7 @@ describe('PerformanceMonitor', () => {
       mockHrtime.mockImplementation(() => {
         throw new Error('HR time error');
       });
-      
+
       const operationId = performanceMonitor.startOperation('test-operation', 'test.ts');
       const result = performanceMonitor.endOperation(operationId);
       expect(result).toBeDefined();
@@ -890,7 +890,7 @@ describe('PerformanceMonitor', () => {
       mockMemoryUsage.mockImplementation(() => {
         throw new Error('Memory usage error');
       });
-      
+
       const operationId = performanceMonitor.startOperation('test-operation', 'test.ts');
       const result = performanceMonitor.endOperation(operationId);
       expect(result).toBeDefined();
@@ -901,7 +901,7 @@ describe('PerformanceMonitor', () => {
       mockCpuUsage.mockImplementation(() => {
         throw new Error('CPU usage error');
       });
-      
+
       const operationId = performanceMonitor.startOperation('test-operation', 'test.ts');
       const result = performanceMonitor.endOperation(operationId);
       expect(result).toBeDefined();
@@ -912,14 +912,14 @@ describe('PerformanceMonitor', () => {
       mockMemoryUsage.mockImplementation(() => {
         throw new Error('Memory usage error');
       });
-      
+
       const usage = performanceMonitor.getMemoryUsage();
       expect(usage).toEqual({
         rss: 0,
         heapTotal: 0,
         heapUsed: 0,
         external: 0,
-        arrayBuffers: 0
+        arrayBuffers: 0,
       });
     });
 
@@ -928,11 +928,11 @@ describe('PerformanceMonitor', () => {
       mockCpuUsage.mockImplementation(() => {
         throw new Error('CPU usage error');
       });
-      
+
       const usage = performanceMonitor.getCpuUsage();
       expect(usage).toEqual({
         user: 0,
-        system: 0
+        system: 0,
       });
     });
 
@@ -941,7 +941,7 @@ describe('PerformanceMonitor', () => {
       mockHrtime.mockImplementation(() => {
         throw new Error('HR time error');
       });
-      
+
       const report = performanceMonitor.generateReport();
       expect(report).toBeDefined();
       expect(report.summary).toBeDefined();
@@ -953,9 +953,9 @@ describe('PerformanceMonitor', () => {
       global.clearInterval = jest.fn().mockImplementation(() => {
         throw new Error('Clear interval error');
       });
-      
+
       expect(() => performanceMonitor.reset()).not.toThrow();
-      
+
       // Restore original function
       global.clearInterval = originalClearInterval;
     });
@@ -966,9 +966,9 @@ describe('PerformanceMonitor', () => {
       global.clearInterval = jest.fn().mockImplementation(() => {
         throw new Error('Clear interval error');
       });
-      
+
       expect(() => performanceMonitor.dispose()).not.toThrow();
-      
+
       // Restore original function
       global.clearInterval = originalClearInterval;
     });
@@ -1029,9 +1029,9 @@ describe('PerformanceMonitor', () => {
     });
 
     it('should handle startOperation with both tracking disabled', () => {
-      const monitor = new PerformanceMonitor({ 
-        enableMemoryTracking: false, 
-        enableCpuTracking: false 
+      const monitor = new PerformanceMonitor({
+        enableMemoryTracking: false,
+        enableCpuTracking: false,
       });
       const operationId = monitor.startOperation('test-operation', 'test.ts');
       expect(operationId).toBeDefined();
@@ -1053,9 +1053,9 @@ describe('PerformanceMonitor', () => {
     });
 
     it('should handle endOperation with both tracking disabled', () => {
-      const monitor = new PerformanceMonitor({ 
-        enableMemoryTracking: false, 
-        enableCpuTracking: false 
+      const monitor = new PerformanceMonitor({
+        enableMemoryTracking: false,
+        enableCpuTracking: false,
       });
       const operationId = monitor.startOperation('test-operation', 'test.ts');
       const result = monitor.endOperation(operationId);
@@ -1063,10 +1063,10 @@ describe('PerformanceMonitor', () => {
     });
 
     it('should handle generateReport with custom options', () => {
-      const monitor = new PerformanceMonitor({ 
+      const monitor = new PerformanceMonitor({
         enableMemoryTracking: true,
         enableCpuTracking: true,
-        enableAutoReporting: false
+        enableAutoReporting: false,
       });
       const report = monitor.generateReport();
       expect(report).toBeDefined();
@@ -1074,10 +1074,10 @@ describe('PerformanceMonitor', () => {
     });
 
     it('should handle generateReport with minimal data', () => {
-      const monitor = new PerformanceMonitor({ 
+      const monitor = new PerformanceMonitor({
         enableMemoryTracking: false,
         enableCpuTracking: false,
-        enableAutoReporting: false
+        enableAutoReporting: false,
       });
       const report = monitor.generateReport();
       expect(report).toBeDefined();
@@ -1085,9 +1085,9 @@ describe('PerformanceMonitor', () => {
     });
 
     it('should handle getMetrics with custom options', () => {
-      const monitor = new PerformanceMonitor({ 
+      const monitor = new PerformanceMonitor({
         enableMemoryTracking: false,
-        enableCpuTracking: false
+        enableCpuTracking: false,
       });
       const metrics = monitor.getMetrics();
       expect(metrics).toBeDefined();
@@ -1100,7 +1100,7 @@ describe('PerformanceMonitor', () => {
         enableCpuTracking: false,
         enableAutoReporting: false,
         reportInterval: 5000,
-        maxHistorySize: 50
+        maxHistorySize: 50,
       };
       const monitor = new PerformanceMonitor(options);
       expect(monitor).toBeInstanceOf(PerformanceMonitor);
@@ -1120,7 +1120,7 @@ describe('PerformanceMonitor', () => {
       mockMemoryUsage.mockImplementation(() => {
         throw new Error('Memory usage error');
       });
-      
+
       // Create a new PerformanceMonitor instance to trigger initialization error
       const newMonitor = new PerformanceMonitor();
       expect(newMonitor).toBeInstanceOf(PerformanceMonitor);
@@ -1153,7 +1153,7 @@ describe('PerformanceMonitor', () => {
       mockMemoryUsage.mockImplementation(() => {
         throw new Error('Memory usage error');
       });
-      
+
       const memory = (performanceMonitor as any).getMemoryUsageInMB();
       expect(memory).toBe(0);
     });
@@ -1186,8 +1186,8 @@ describe('PerformanceMonitor', () => {
         resourceUsage: {
           cpuUsage: 50,
           memoryUsage: 50,
-          diskIO: 0
-        }
+          diskIO: 0,
+        },
       });
       expect(score).toBe(100); // Perfect score
     });
@@ -1206,8 +1206,8 @@ describe('PerformanceMonitor', () => {
         resourceUsage: {
           cpuUsage: 50,
           memoryUsage: 50,
-          diskIO: 0
-        }
+          diskIO: 0,
+        },
       });
       expect(score).toBe(80); // 100 - 20 = 80
     });
@@ -1226,8 +1226,8 @@ describe('PerformanceMonitor', () => {
         resourceUsage: {
           cpuUsage: 50,
           memoryUsage: 50,
-          diskIO: 0
-        }
+          diskIO: 0,
+        },
       });
       expect(score).toBe(90); // 100 - 10 = 90
     });
@@ -1246,8 +1246,8 @@ describe('PerformanceMonitor', () => {
         resourceUsage: {
           cpuUsage: 50,
           memoryUsage: 50,
-          diskIO: 0
-        }
+          diskIO: 0,
+        },
       });
       expect(score).toBe(85); // 100 - 15 = 85
     });
@@ -1266,8 +1266,8 @@ describe('PerformanceMonitor', () => {
         resourceUsage: {
           cpuUsage: 50,
           memoryUsage: 50,
-          diskIO: 0
-        }
+          diskIO: 0,
+        },
       });
       expect(score).toBe(90); // 100 - 10 = 90
     });
@@ -1286,8 +1286,8 @@ describe('PerformanceMonitor', () => {
         resourceUsage: {
           cpuUsage: 50,
           memoryUsage: 50,
-          diskIO: 0
-        }
+          diskIO: 0,
+        },
       });
       expect(score).toBe(75); // 100 - 25 = 75
     });
@@ -1306,8 +1306,8 @@ describe('PerformanceMonitor', () => {
         resourceUsage: {
           cpuUsage: 50,
           memoryUsage: 50,
-          diskIO: 0
-        }
+          diskIO: 0,
+        },
       });
       expect(score).toBe(85); // 100 - 15 = 85
     });
@@ -1326,8 +1326,8 @@ describe('PerformanceMonitor', () => {
         resourceUsage: {
           cpuUsage: 50,
           memoryUsage: 50,
-          diskIO: 0
-        }
+          diskIO: 0,
+        },
       });
       expect(score).toBe(80); // 100 - 20 = 80
     });
@@ -1346,8 +1346,8 @@ describe('PerformanceMonitor', () => {
         resourceUsage: {
           cpuUsage: 50,
           memoryUsage: 50,
-          diskIO: 0
-        }
+          diskIO: 0,
+        },
       });
       expect(score).toBe(90); // 100 - 10 = 90
     });
@@ -1366,8 +1366,8 @@ describe('PerformanceMonitor', () => {
         resourceUsage: {
           cpuUsage: 50,
           memoryUsage: 50,
-          diskIO: 0
-        }
+          diskIO: 0,
+        },
       });
       expect(score).toBe(20); // 100 - 20 - 25 - 15 - 20 = 20
     });
@@ -1386,8 +1386,8 @@ describe('PerformanceMonitor', () => {
         resourceUsage: {
           cpuUsage: 50,
           memoryUsage: 50,
-          diskIO: 0
-        }
+          diskIO: 0,
+        },
       });
       // 100 - 20 - 25 - 15 - 20 = 20, but let's test with even more penalties
       expect(score).toBe(20);
@@ -1408,8 +1408,8 @@ describe('PerformanceMonitor', () => {
         resourceUsage: {
           cpuUsage: 50,
           memoryUsage: 50,
-          diskIO: 0
-        }
+          diskIO: 0,
+        },
       });
       // Maximum penalties: 20 + 25 + 15 + 20 = 80, so minimum score is 100 - 80 = 20
       expect(score).toBe(20); // Math.max(0, Math.min(100, score)) ensures minimum 0, but max penalties = 80
@@ -1417,8 +1417,9 @@ describe('PerformanceMonitor', () => {
 
     it('should test Math.max boundary by mocking the calculation', () => {
       // Test the Math.max(0, ...) boundary by temporarily modifying the function
-      const originalCalculatePerformanceScore = (performanceMonitor as any).calculatePerformanceScore;
-      
+      const originalCalculatePerformanceScore = (performanceMonitor as any)
+        .calculatePerformanceScore;
+
       // Mock the function to return a negative value to test Math.max boundary
       (performanceMonitor as any).calculatePerformanceScore = jest.fn().mockImplementation(() => {
         // Simulate a scenario where the score would be negative
@@ -1438,8 +1439,8 @@ describe('PerformanceMonitor', () => {
         resourceUsage: {
           cpuUsage: 50,
           memoryUsage: 50,
-          diskIO: 0
-        }
+          diskIO: 0,
+        },
       });
 
       expect(score).toBe(0); // Math.max(0, -10) should return 0
@@ -1462,8 +1463,8 @@ describe('PerformanceMonitor', () => {
         resourceUsage: {
           cpuUsage: 50,
           memoryUsage: 50,
-          diskIO: 0
-        }
+          diskIO: 0,
+        },
       });
       expect(score).toBeGreaterThanOrEqual(0);
       expect(score).toBeLessThanOrEqual(100);
@@ -1478,7 +1479,7 @@ describe('PerformanceMonitor', () => {
         cacheHitRate: 0.8,
         fileProcessingRate: 5,
         memoryPeak: 100,
-        cpuUsage: 50
+        cpuUsage: 50,
       });
       expect(Array.isArray(recommendations)).toBe(true);
     });
@@ -1492,7 +1493,7 @@ describe('PerformanceMonitor', () => {
         cacheHitRate: 0.1,
         fileProcessingRate: 0.1,
         memoryPeak: 1000,
-        cpuUsage: 90
+        cpuUsage: 90,
       });
       expect(Array.isArray(recommendations)).toBe(true);
       expect(recommendations.length).toBeGreaterThan(0);
@@ -1507,7 +1508,7 @@ describe('PerformanceMonitor', () => {
         cacheHitRate: 0.95,
         fileProcessingRate: 100,
         memoryPeak: 50,
-        cpuUsage: 10
+        cpuUsage: 10,
       });
       expect(Array.isArray(recommendations)).toBe(true);
     });
@@ -1526,14 +1527,16 @@ describe('PerformanceMonitor', () => {
         resourceUsage: {
           cpuUsage: 50,
           memoryUsage: 60,
-          diskIO: 10
-        }
+          diskIO: 10,
+        },
       });
-      
+
       expect(Array.isArray(recommendations)).toBe(true);
       const memoryRecommendations = recommendations.filter((r: any) => r.type === 'memory');
       expect(memoryRecommendations.length).toBeGreaterThan(0);
-      expect(memoryRecommendations.some((r: any) => r.description.includes('High memory usage'))).toBe(true);
+      expect(
+        memoryRecommendations.some((r: any) => r.description.includes('High memory usage'))
+      ).toBe(true);
     });
 
     it('should generate memory recommendations for high memory growth', () => {
@@ -1550,14 +1553,16 @@ describe('PerformanceMonitor', () => {
         resourceUsage: {
           cpuUsage: 50,
           memoryUsage: 60,
-          diskIO: 10
-        }
+          diskIO: 10,
+        },
       });
-      
+
       expect(Array.isArray(recommendations)).toBe(true);
       const memoryRecommendations = recommendations.filter((r: any) => r.type === 'memory');
       expect(memoryRecommendations.length).toBeGreaterThan(0);
-      expect(memoryRecommendations.some((r: any) => r.description.includes('Significant memory growth'))).toBe(true);
+      expect(
+        memoryRecommendations.some((r: any) => r.description.includes('Significant memory growth'))
+      ).toBe(true);
     });
 
     it('should generate performance recommendations for slow operations', () => {
@@ -1574,14 +1579,18 @@ describe('PerformanceMonitor', () => {
         resourceUsage: {
           cpuUsage: 50,
           memoryUsage: 60,
-          diskIO: 10
-        }
+          diskIO: 10,
+        },
       });
-      
+
       expect(Array.isArray(recommendations)).toBe(true);
       const performanceRecommendations = recommendations.filter((r: any) => r.type === 'general');
       expect(performanceRecommendations.length).toBeGreaterThan(0);
-      expect(performanceRecommendations.some((r: any) => r.description.includes('Slow operation performance'))).toBe(true);
+      expect(
+        performanceRecommendations.some((r: any) =>
+          r.description.includes('Slow operation performance')
+        )
+      ).toBe(true);
     });
 
     it('should generate cache recommendations for low cache hit rate', () => {
@@ -1598,14 +1607,16 @@ describe('PerformanceMonitor', () => {
         resourceUsage: {
           cpuUsage: 50,
           memoryUsage: 60,
-          diskIO: 10
-        }
+          diskIO: 10,
+        },
       });
-      
+
       expect(Array.isArray(recommendations)).toBe(true);
       const cacheRecommendations = recommendations.filter((r: any) => r.type === 'cache');
       expect(cacheRecommendations.length).toBeGreaterThan(0);
-      expect(cacheRecommendations.some((r: any) => r.description.includes('Low cache hit rate'))).toBe(true);
+      expect(
+        cacheRecommendations.some((r: any) => r.description.includes('Low cache hit rate'))
+      ).toBe(true);
     });
 
     it('should generate throughput recommendations for low operations per second', () => {
@@ -1622,14 +1633,18 @@ describe('PerformanceMonitor', () => {
         resourceUsage: {
           cpuUsage: 50,
           memoryUsage: 60,
-          diskIO: 10
-        }
+          diskIO: 10,
+        },
       });
-      
+
       expect(Array.isArray(recommendations)).toBe(true);
       const throughputRecommendations = recommendations.filter((r: any) => r.type === 'general');
       expect(throughputRecommendations.length).toBeGreaterThan(0);
-      expect(throughputRecommendations.some((r: any) => r.description.includes('Low operation throughput'))).toBe(true);
+      expect(
+        throughputRecommendations.some((r: any) =>
+          r.description.includes('Low operation throughput')
+        )
+      ).toBe(true);
     });
 
     it('should generate multiple recommendations when multiple thresholds are exceeded', () => {
@@ -1646,17 +1661,17 @@ describe('PerformanceMonitor', () => {
         resourceUsage: {
           cpuUsage: 50,
           memoryUsage: 60,
-          diskIO: 10
-        }
+          diskIO: 10,
+        },
       });
-      
+
       expect(Array.isArray(recommendations)).toBe(true);
       expect(recommendations.length).toBeGreaterThan(3); // Should have multiple recommendations
-      
+
       const memoryRecommendations = recommendations.filter((r: any) => r.type === 'memory');
       const cacheRecommendations = recommendations.filter((r: any) => r.type === 'cache');
       const generalRecommendations = recommendations.filter((r: any) => r.type === 'general');
-      
+
       expect(memoryRecommendations.length).toBeGreaterThan(0);
       expect(cacheRecommendations.length).toBeGreaterThan(0);
       expect(generalRecommendations.length).toBeGreaterThan(0);
@@ -1676,10 +1691,10 @@ describe('PerformanceMonitor', () => {
         resourceUsage: {
           cpuUsage: 50,
           memoryUsage: 60,
-          diskIO: 10
-        }
+          diskIO: 10,
+        },
       });
-      
+
       expect(Array.isArray(recommendations)).toBe(true);
       expect(recommendations.length).toBe(0); // Should have no recommendations
     });
@@ -1699,7 +1714,7 @@ describe('PerformanceMonitor', () => {
       // Add some operations to test with data
       const operationId = performanceMonitor.startOperation('test-operation', 'test.ts');
       performanceMonitor.endOperation(operationId);
-      
+
       const report2 = performanceMonitor.generateReport();
       expect(report2).toBeDefined();
     });
@@ -1775,7 +1790,7 @@ describe('PerformanceMonitor', () => {
 
     it('should handle memory tracking errors during endOperation', () => {
       const operationId = performanceMonitor.startOperation('test', 'file.ts');
-      
+
       mockMemoryUsage.mockImplementation(() => {
         throw new Error('Memory tracking failed');
       });
@@ -1785,7 +1800,7 @@ describe('PerformanceMonitor', () => {
 
     it('should handle CPU tracking errors during endOperation', () => {
       const operationId = performanceMonitor.startOperation('test', 'file.ts');
-      
+
       mockCpuUsage.mockImplementation(() => {
         throw new Error('CPU tracking failed');
       });
@@ -1815,7 +1830,7 @@ describe('PerformanceMonitor', () => {
 
     it('should handle generateReport with errors', () => {
       performanceMonitor.startOperation('test', 'file.ts');
-      
+
       // Force an error during report generation
       mockMemoryUsage.mockImplementation(() => {
         throw new Error('Report generation failed');
@@ -1850,7 +1865,7 @@ describe('PerformanceMonitor', () => {
     it('should handle recordMemoryUsage with various values', () => {
       performanceMonitor.startOperation('test1', 'file1.ts');
       performanceMonitor.endOperation(performanceMonitor.startOperation('test2', 'file2.ts'));
-      
+
       const metrics = performanceMonitor.getMetrics();
       expect(metrics.memoryPeak).toBeGreaterThanOrEqual(0);
     });
@@ -1859,9 +1874,9 @@ describe('PerformanceMonitor', () => {
       const monitor = new PerformanceMonitor({
         enableMemoryTracking: undefined,
         enableCpuTracking: undefined,
-        enableAutoReporting: false
+        enableAutoReporting: false,
       } as any);
-      
+
       const operationId = monitor.startOperation('test', 'file.ts');
       expect(operationId).toBeDefined();
       monitor.dispose();
@@ -1870,7 +1885,7 @@ describe('PerformanceMonitor', () => {
     it('should handle getCpuUsagePercentage', () => {
       const operationId = performanceMonitor.startOperation('test', 'file.ts');
       performanceMonitor.endOperation(operationId);
-      
+
       const metrics = performanceMonitor.getMetrics();
       expect(metrics.resourceUsage.cpuUsage).toBeGreaterThanOrEqual(0);
     });
@@ -1878,7 +1893,7 @@ describe('PerformanceMonitor', () => {
     it('should handle getMemoryGrowth', () => {
       const operationId = performanceMonitor.startOperation('test', 'file.ts');
       performanceMonitor.endOperation(operationId);
-      
+
       const metrics = performanceMonitor.getMetrics();
       expect(metrics.memoryGrowth).toBeGreaterThanOrEqual(0);
     });
@@ -1887,7 +1902,7 @@ describe('PerformanceMonitor', () => {
       performanceMonitor.recordCacheHit('file1.ts');
       performanceMonitor.recordCacheHit('file2.ts');
       performanceMonitor.recordCacheMiss('file3.ts');
-      
+
       const metrics = performanceMonitor.getMetrics();
       expect(metrics.cacheHitRate).toBeGreaterThan(0);
       expect(metrics.cacheHitRate).toBeLessThanOrEqual(1);
@@ -1897,11 +1912,11 @@ describe('PerformanceMonitor', () => {
       // First start and end an operation to establish some baseline time
       const opId = performanceMonitor.startOperation('test', 'file.ts');
       performanceMonitor.endOperation(opId);
-      
+
       performanceMonitor.recordFileProcessed('file1.ts', 1000);
       performanceMonitor.recordFileProcessed('file2.ts', 2000);
       performanceMonitor.recordFileProcessed('file3.ts', 3000);
-      
+
       const metrics = performanceMonitor.getMetrics();
       expect(metrics.fileProcessingRate).toBeGreaterThanOrEqual(0);
     });
@@ -1909,7 +1924,7 @@ describe('PerformanceMonitor', () => {
     it('should handle generateSummary', () => {
       const operationId = performanceMonitor.startOperation('test', 'file.ts');
       performanceMonitor.endOperation(operationId);
-      
+
       const report = performanceMonitor.generateReport();
       expect(report.summary).toBeDefined();
       expect(report.summary.totalOperations).toBeGreaterThan(0);
@@ -1918,7 +1933,7 @@ describe('PerformanceMonitor', () => {
     it('should handle generateRecommendations', () => {
       const operationId = performanceMonitor.startOperation('test', 'file.ts');
       performanceMonitor.endOperation(operationId);
-      
+
       const report = performanceMonitor.generateReport();
       expect(report.recommendations).toBeDefined();
       expect(Array.isArray(report.recommendations)).toBe(true);
@@ -1928,12 +1943,12 @@ describe('PerformanceMonitor', () => {
       const monitor = new PerformanceMonitor({
         enableMemoryTracking: false,
         enableCpuTracking: false,
-        enableAutoReporting: false
+        enableAutoReporting: false,
       });
-      
+
       const operationId = monitor.startOperation('test', 'file.ts');
       monitor.endOperation(operationId);
-      
+
       const metrics = monitor.getMetrics();
       expect(metrics).toBeDefined();
       expect(metrics.totalOperations).toBe(1);
@@ -1947,8 +1962,8 @@ describe('PerformanceMonitor', () => {
         maxOperationDuration: undefined,
         maxMemoryUsage: undefined,
         minCacheHitRate: undefined,
-        maxMemoryGrowth: undefined
-      } as any
+        maxMemoryGrowth: undefined,
+      } as any,
     } as any);
     const report = monitor.generateReport();
     expect(report).toBeDefined();

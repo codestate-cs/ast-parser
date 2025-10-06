@@ -110,6 +110,33 @@ export interface VersionMetadata {
    * Custom version data (for custom versioning)
    */
   custom?: CustomVersionInfo;
+
+  /**
+   * Git information (for git-based versioning)
+   */
+  gitInfo?: GitInfo;
+}
+
+/**
+ * Git information
+ */
+export interface GitInfo {
+  /** Current branch name */
+  branch: string;
+  /** Current commit hash */
+  commitHash: string;
+  /** Short commit hash (8 characters) */
+  shortHash: string;
+  /** Commit message */
+  commitMessage: string;
+  /** Author name */
+  author: string;
+  /** Commit date */
+  commitDate: string;
+  /** Is working directory clean */
+  isClean: boolean;
+  /** Remote URL */
+  remoteUrl?: string;
 }
 
 /**
@@ -135,6 +162,37 @@ export interface BranchInfo {
    * Branch protection rules
    */
   protection?: BranchProtection;
+
+  /**
+   * Whether the branch is protected
+   */
+  isProtected?: boolean;
+
+  /**
+   * Branch priority (higher number = higher priority)
+   */
+  priority?: number;
+
+  /**
+   * Last commit information
+   */
+  lastCommit?: {
+    hash: string;
+    shortHash: string;
+    message: string;
+    author: string;
+    date: string;
+  };
+
+  /**
+   * Whether the working directory is clean
+   */
+  isClean?: boolean;
+
+  /**
+   * Remote URL
+   */
+  remoteUrl?: string | undefined;
 }
 
 /**

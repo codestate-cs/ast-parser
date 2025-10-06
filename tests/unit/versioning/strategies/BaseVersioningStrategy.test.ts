@@ -139,7 +139,7 @@ describe('BaseVersioningStrategy', () => {
 
       const newConfig = { defaultStrategy: 'branch' };
       strategy.setConfig(newConfig);
-      
+
       const updatedConfig = strategy.getConfig();
       expect(updatedConfig.defaultStrategy).toBe('branch');
     });
@@ -150,7 +150,7 @@ describe('BaseVersioningStrategy', () => {
       const validMetadata: VersionMetadata = {
         version: '1.0.0',
         createdAt: new Date().toISOString(),
-        tags: ['stable']
+        tags: ['stable'],
       };
 
       // Access protected method through reflection for testing
@@ -160,7 +160,7 @@ describe('BaseVersioningStrategy', () => {
       const invalidMetadata: VersionMetadata = {
         version: '',
         createdAt: 'invalid-date',
-        tags: 'not-an-array' as any
+        tags: 'not-an-array' as any,
       };
 
       const isInvalid = (strategy as any).validateMetadata(invalidMetadata);
@@ -210,7 +210,11 @@ describe('BaseVersioningStrategy', () => {
     });
 
     it('should generate comparison details', () => {
-      const details = (strategy as any).generateComparisonDetails('mock-1.0.0', 'mock-2.0.0', 'less');
+      const details = (strategy as any).generateComparisonDetails(
+        'mock-1.0.0',
+        'mock-2.0.0',
+        'less'
+      );
       expect(details).toBeDefined();
       expect(details.compatible).toBe(true);
       expect(details.information).toContain('mock-1.0.0');
@@ -227,7 +231,11 @@ describe('BaseVersioningStrategy', () => {
       const info3 = (strategy as any).generateComparisonInformation('1.0.0', '1.0.0', 'equal');
       expect(info3).toContain('equal to');
 
-      const info4 = (strategy as any).generateComparisonInformation('1.0.0', '2.0.0', 'incompatible');
+      const info4 = (strategy as any).generateComparisonInformation(
+        '1.0.0',
+        '2.0.0',
+        'incompatible'
+      );
       expect(info4).toContain('incompatible');
     });
 
@@ -236,7 +244,7 @@ describe('BaseVersioningStrategy', () => {
         defaultStrategy: 'semantic',
         storage: { type: 'local', path: './test' },
         retention: { maxVersions: 10 },
-        comparison: { enableDiff: true }
+        comparison: { enableDiff: true },
       };
 
       const isValid = (strategy as any).validateConfig(validConfig);
@@ -246,7 +254,7 @@ describe('BaseVersioningStrategy', () => {
         defaultStrategy: '',
         storage: { type: 'local' }, // missing path
         retention: { maxVersions: 'not-a-number' },
-        comparison: { enableDiff: 'not-a-boolean' }
+        comparison: { enableDiff: 'not-a-boolean' },
       };
 
       const isInvalid = (strategy as any).validateConfig(invalidConfig);
@@ -287,7 +295,7 @@ describe('BaseVersioningStrategy', () => {
       expect(error).toBeInstanceOf(Error);
       expect(error.message).toBe('Test error');
       expect(error.name).toBe('mockVersioningError');
-      expect((error as any).code).toBe('TEST_ERROR');
+      expect(error.code).toBe('TEST_ERROR');
     });
 
     it('should handle invalid metadata validation', () => {
@@ -299,7 +307,11 @@ describe('BaseVersioningStrategy', () => {
       const isValid2 = (strategy as any).validateMetadata(invalidMetadata2);
       expect(isValid2).toBe(false);
 
-      const invalidMetadata3 = { version: '1.0.0', createdAt: new Date().toISOString(), tags: null };
+      const invalidMetadata3 = {
+        version: '1.0.0',
+        createdAt: new Date().toISOString(),
+        tags: null,
+      };
       const isValid3 = (strategy as any).validateMetadata(invalidMetadata3);
       expect(isValid3).toBe(false);
 
@@ -409,11 +421,20 @@ describe('BaseVersioningStrategy', () => {
       const isValid1 = (strategy as any).validateConfig(config1);
       expect(isValid1).toBe(false); // Missing required properties
 
-      const config2 = { defaultStrategy: 'semantic', storage: { type: 'local', path: './test' }, retention: { maxVersions: 10 } };
+      const config2 = {
+        defaultStrategy: 'semantic',
+        storage: { type: 'local', path: './test' },
+        retention: { maxVersions: 10 },
+      };
       const isValid2 = (strategy as any).validateConfig(config2);
       expect(isValid2).toBe(false); // Missing comparison property
 
-      const config3 = { defaultStrategy: 'semantic', storage: { type: 'local', path: './test' }, retention: { maxVersions: 10 }, comparison: { enableDiff: true } };
+      const config3 = {
+        defaultStrategy: 'semantic',
+        storage: { type: 'local', path: './test' },
+        retention: { maxVersions: 10 },
+        comparison: { enableDiff: true },
+      };
       const isValid3 = (strategy as any).validateConfig(config3);
       expect(isValid3).toBe(true);
     });

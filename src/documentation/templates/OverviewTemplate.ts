@@ -1,4 +1,9 @@
-import { BaseTemplate, BaseTemplateOptions, TemplateProcessingResult, ConfigurationValidationResult } from './BaseTemplate';
+import {
+  BaseTemplate,
+  BaseTemplateOptions,
+  TemplateProcessingResult,
+  ConfigurationValidationResult,
+} from './BaseTemplate';
 
 /**
  * Options for OverviewTemplate
@@ -40,16 +45,16 @@ export class OverviewTemplate extends BaseTemplate {
       validateConfiguration: true,
       templateVariables: {},
       inheritance: {
-        enabled: false
+        enabled: false,
       },
       includeStatistics: true,
       includeComplexity: true,
       includeFileOverview: true,
       overviewStyle: 'detailed',
       maxFilesDisplay: 50,
-      ...options
+      ...options,
     };
-    
+
     super(defaultOptions);
     this.options = defaultOptions;
   }
@@ -57,7 +62,10 @@ export class OverviewTemplate extends BaseTemplate {
   /**
    * Process template with project overview data
    */
-  public override processTemplate(template: string, variables: Record<string, unknown>): TemplateProcessingResult {
+  public override processTemplate(
+    template: string,
+    variables: Record<string, unknown>
+  ): TemplateProcessingResult {
     const startTime = Date.now();
     const errors: string[] = [];
     const variablesUsed: string[] = [];
@@ -74,13 +82,13 @@ export class OverviewTemplate extends BaseTemplate {
 
       // Extract variables from template
       const templateVariables = this.extractVariables(template);
-      
+
       // Process template
       let processedContent = template;
-      
+
       for (const variable of templateVariables) {
         variablesUsed.push(variable);
-        
+
         if (variables.hasOwnProperty(variable)) {
           const value = this.getVariableValue(variables, variable);
           const regex = new RegExp(`\\{\\{${this.escapeRegex(variable)}\\}\\}`, 'g');
@@ -99,7 +107,7 @@ export class OverviewTemplate extends BaseTemplate {
         success: errors.length === 0,
         errors,
         variablesUsed,
-        variablesMissing
+        variablesMissing,
       };
     } catch (error) {
       return {
@@ -108,7 +116,7 @@ export class OverviewTemplate extends BaseTemplate {
         success: false,
         errors: [error instanceof Error ? error.message : 'Unknown error'],
         variablesUsed,
-        variablesMissing
+        variablesMissing,
       };
     }
   }
@@ -212,10 +220,16 @@ export class OverviewTemplate extends BaseTemplate {
         errors.push('Complexity must be an object');
       } else {
         const complexity = data.complexity;
-        if (complexity.averageComplexity !== undefined && typeof complexity.averageComplexity !== 'number') {
+        if (
+          complexity.averageComplexity !== undefined &&
+          typeof complexity.averageComplexity !== 'number'
+        ) {
           errors.push('averageComplexity must be a number');
         }
-        if (complexity.maxComplexity !== undefined && typeof complexity.maxComplexity !== 'number') {
+        if (
+          complexity.maxComplexity !== undefined &&
+          typeof complexity.maxComplexity !== 'number'
+        ) {
           errors.push('maxComplexity must be a number');
         }
       }
@@ -225,7 +239,7 @@ export class OverviewTemplate extends BaseTemplate {
       isValid: errors.length === 0,
       errors,
       warnings,
-      data
+      data,
     };
   }
 
@@ -235,7 +249,7 @@ export class OverviewTemplate extends BaseTemplate {
   private generateProjectHeader(data: any): string {
     const name = data.name || 'Unknown Project';
     const version = data.version || 'Unknown Version';
-    
+
     return `# ${name} v${version}\n\n`;
   }
 
@@ -245,7 +259,7 @@ export class OverviewTemplate extends BaseTemplate {
   private generateProjectDescription(data: any): string {
     const description = data.description || 'No description available';
     const rootPath = data.rootPath || 'Unknown path';
-    
+
     return `## Project Description\n\n${description}\n\n**Project Path:** \`${rootPath}\`\n\n`;
   }
 
@@ -254,11 +268,11 @@ export class OverviewTemplate extends BaseTemplate {
    */
   public generateStatisticsSection(data: any): string {
     const stats = data.statistics || {};
-    
+
     let content = '## Project Statistics\n\n';
     content += '| Metric | Value |\n';
     content += '|--------|-------|\n';
-    
+
     if (stats.totalFiles !== undefined) {
       content += `| Total Files | ${stats.totalFiles} |\n`;
     }
@@ -274,7 +288,7 @@ export class OverviewTemplate extends BaseTemplate {
     if (stats.totalInterfaces !== undefined) {
       content += `| Total Interfaces | ${stats.totalInterfaces} |\n`;
     }
-    
+
     content += '\n';
     return content;
   }
@@ -284,11 +298,11 @@ export class OverviewTemplate extends BaseTemplate {
    */
   public generateComplexitySection(data: any): string {
     const complexity = data.complexity || {};
-    
+
     let content = '## Complexity Metrics\n\n';
     content += '| Metric | Value |\n';
     content += '|--------|-------|\n';
-    
+
     if (complexity.averageComplexity !== undefined) {
       content += `| Average Complexity | ${complexity.averageComplexity.toFixed(2)} |\n`;
     }
@@ -298,7 +312,7 @@ export class OverviewTemplate extends BaseTemplate {
     if (complexity.highComplexityFiles !== undefined) {
       content += `| High Complexity Files | ${complexity.highComplexityFiles} |\n`;
     }
-    
+
     content += '\n';
     return content;
   }
@@ -309,28 +323,28 @@ export class OverviewTemplate extends BaseTemplate {
   public generateFileOverviewSection(data: any): string {
     const files = data.files || [];
     const maxFiles = this.options.maxFilesDisplay;
-    
+
     let content = '## File Overview\n\n';
-    
+
     if (files.length === 0) {
       content += 'No files found.\n\n';
       return content;
     }
-    
+
     content += '| File | Size |\n';
     content += '|------|------|\n';
-    
+
     const filesToShow = files.slice(0, maxFiles);
     for (const file of filesToShow) {
       const fileName = file.name || 'Unknown';
       const fileSize = file.size || 0;
       content += `| ${fileName} | ${fileSize} bytes |\n`;
     }
-    
+
     if (files.length > maxFiles) {
       content += `| ... and ${files.length - maxFiles} more files |\n`;
     }
-    
+
     content += '\n';
     return content;
   }
@@ -353,13 +367,13 @@ export class OverviewTemplate extends BaseTemplate {
       validateConfiguration: true,
       templateVariables: {},
       inheritance: {
-        enabled: false
+        enabled: false,
       },
       includeStatistics: true,
       includeComplexity: true,
       includeFileOverview: true,
       overviewStyle: 'detailed',
-      maxFilesDisplay: 50
+      maxFilesDisplay: 50,
     };
   }
 
@@ -380,7 +394,9 @@ export class OverviewTemplate extends BaseTemplate {
   /**
    * Validate configuration
    */
-  public override validateConfiguration(config: Partial<OverviewTemplateOptions> = this.options): ConfigurationValidationResult {
+  public override validateConfiguration(
+    config: Partial<OverviewTemplateOptions> = this.options
+  ): ConfigurationValidationResult {
     const errors: string[] = [];
 
     // Validate base configuration
@@ -390,30 +406,45 @@ export class OverviewTemplate extends BaseTemplate {
     }
 
     // Validate overview-specific options
-    if (this.options.includeStatistics !== undefined && typeof this.options.includeStatistics !== 'boolean') {
+    if (
+      this.options.includeStatistics !== undefined &&
+      typeof this.options.includeStatistics !== 'boolean'
+    ) {
       errors.push('includeStatistics must be a boolean');
     }
 
-    if (this.options.includeComplexity !== undefined && typeof this.options.includeComplexity !== 'boolean') {
+    if (
+      this.options.includeComplexity !== undefined &&
+      typeof this.options.includeComplexity !== 'boolean'
+    ) {
       errors.push('includeComplexity must be a boolean');
     }
 
-    if (this.options.includeFileOverview !== undefined && typeof this.options.includeFileOverview !== 'boolean') {
+    if (
+      this.options.includeFileOverview !== undefined &&
+      typeof this.options.includeFileOverview !== 'boolean'
+    ) {
       errors.push('includeFileOverview must be a boolean');
     }
 
-    if (this.options.overviewStyle && !['simple', 'detailed', 'comprehensive'].includes(this.options.overviewStyle)) {
+    if (
+      this.options.overviewStyle &&
+      !['simple', 'detailed', 'comprehensive'].includes(this.options.overviewStyle)
+    ) {
       errors.push('overviewStyle must be one of: simple, detailed, comprehensive');
     }
 
-    if (this.options.maxFilesDisplay !== undefined && (typeof this.options.maxFilesDisplay !== 'number' || this.options.maxFilesDisplay < 0)) {
+    if (
+      this.options.maxFilesDisplay !== undefined &&
+      (typeof this.options.maxFilesDisplay !== 'number' || this.options.maxFilesDisplay < 0)
+    ) {
       errors.push('maxFilesDisplay must be a non-negative number');
     }
 
     return {
       isValid: errors.length === 0,
       errors,
-      configuration: this.options
+      configuration: this.options,
     };
   }
 }

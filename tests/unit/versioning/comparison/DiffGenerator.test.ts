@@ -18,37 +18,37 @@ describe('DiffGenerator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [
-            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' }
+            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' },
           ],
           directories: [],
           totalFiles: 1,
           totalLines: 10,
-          totalSize: 100
+          totalSize: 100,
         },
         ast: {
           nodes: [],
           relations: [],
           entryPoints: [],
           publicExports: [],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 1, cognitive: 1, maintainability: 80 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 85, issues: [] }
+          quality: { score: 85, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 1000,
           cacheUsed: false,
-          filesProcessed: 1
-        }
+          filesProcessed: 1,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
@@ -58,16 +58,16 @@ describe('DiffGenerator', () => {
           ...version1.structure,
           files: [
             { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' },
-            { path: 'src/new.ts', size: 50, lines: 5, lastModified: '2024-01-02T00:00:00Z' }
+            { path: 'src/new.ts', size: 50, lines: 5, lastModified: '2024-01-02T00:00:00Z' },
           ],
           totalFiles: 2,
           totalLines: 15,
-          totalSize: 150
-        }
+          totalSize: 150,
+        },
       };
 
       const result = await diffGenerator.generateDiff(version1, version2);
-      
+
       expect(result.summary.totalFiles).toBe(1);
       expect(result.summary.filesAdded).toBe(1);
       expect(result.summary.filesModified).toBe(0);
@@ -85,37 +85,37 @@ describe('DiffGenerator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [
-            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' }
+            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' },
           ],
           directories: [],
           totalFiles: 1,
           totalLines: 10,
-          totalSize: 100
+          totalSize: 100,
         },
         ast: {
           nodes: [],
           relations: [],
           entryPoints: [],
           publicExports: [],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 1, cognitive: 1, maintainability: 80 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 85, issues: [] }
+          quality: { score: 85, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 1000,
           cacheUsed: false,
-          filesProcessed: 1
-        }
+          filesProcessed: 1,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
@@ -124,16 +124,16 @@ describe('DiffGenerator', () => {
         structure: {
           ...version1.structure,
           files: [
-            { path: 'src/index.ts', size: 120, lines: 12, lastModified: '2024-01-02T00:00:00Z' }
+            { path: 'src/index.ts', size: 120, lines: 12, lastModified: '2024-01-02T00:00:00Z' },
           ],
           totalFiles: 1,
           totalLines: 12,
-          totalSize: 120
-        }
+          totalSize: 120,
+        },
       };
 
       const result = await diffGenerator.generateDiff(version1, version2);
-      
+
       expect(result.summary.totalFiles).toBe(1);
       expect(result.summary.filesAdded).toBe(0);
       expect(result.summary.filesModified).toBe(1);
@@ -151,38 +151,38 @@ describe('DiffGenerator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [
             { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' },
-            { path: 'src/old.ts', size: 50, lines: 5, lastModified: '2024-01-01T00:00:00Z' }
+            { path: 'src/old.ts', size: 50, lines: 5, lastModified: '2024-01-01T00:00:00Z' },
           ],
           directories: [],
           totalFiles: 2,
           totalLines: 15,
-          totalSize: 150
+          totalSize: 150,
         },
         ast: {
           nodes: [],
           relations: [],
           entryPoints: [],
           publicExports: [],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 1, cognitive: 1, maintainability: 80 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 85, issues: [] }
+          quality: { score: 85, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 1000,
           cacheUsed: false,
-          filesProcessed: 2
-        }
+          filesProcessed: 2,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
@@ -191,20 +191,20 @@ describe('DiffGenerator', () => {
         structure: {
           ...version1.structure,
           files: [
-            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' }
+            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' },
           ],
           totalFiles: 1,
           totalLines: 10,
-          totalSize: 100
+          totalSize: 100,
         },
         metadata: {
           ...version1.metadata,
-          filesProcessed: 1
-        }
+          filesProcessed: 1,
+        },
       };
 
       const result = await diffGenerator.generateDiff(version1, version2);
-      
+
       expect(result.summary.totalFiles).toBe(1);
       expect(result.summary.filesAdded).toBe(0);
       expect(result.summary.filesModified).toBe(0);
@@ -222,41 +222,41 @@ describe('DiffGenerator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [
-            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' }
+            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' },
           ],
           directories: [],
           totalFiles: 1,
           totalLines: 10,
-          totalSize: 100
+          totalSize: 100,
         },
         ast: {
           nodes: [],
           relations: [],
           entryPoints: [],
           publicExports: [],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 1, cognitive: 1, maintainability: 80 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 85, issues: [] }
+          quality: { score: 85, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 1000,
           cacheUsed: false,
-          filesProcessed: 1
-        }
+          filesProcessed: 1,
+        },
       };
 
       const result = await diffGenerator.generateDiff(version, version);
-      
+
       expect(result.summary.totalFiles).toBe(0);
       expect(result.summary.filesAdded).toBe(0);
       expect(result.summary.filesModified).toBe(0);
@@ -273,35 +273,35 @@ describe('DiffGenerator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [],
           directories: [],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: {
           nodes: [],
           relations: [],
           entryPoints: [],
           publicExports: [],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 0, cognitive: 0, maintainability: 100 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 100, issues: [] }
+          quality: { score: 100, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 0,
           cacheUsed: false,
-          filesProcessed: 0
-        }
+          filesProcessed: 0,
+        },
       };
 
       await expect(diffGenerator.generateDiff(null as any, version)).rejects.toThrow();
@@ -319,37 +319,37 @@ describe('DiffGenerator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [
-            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' }
+            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' },
           ],
           directories: [],
           totalFiles: 1,
           totalLines: 10,
-          totalSize: 100
+          totalSize: 100,
         },
         ast: {
           nodes: [],
           relations: [],
           entryPoints: [],
           publicExports: [],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 1, cognitive: 1, maintainability: 80 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 85, issues: [] }
+          quality: { score: 85, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 1000,
           cacheUsed: false,
-          filesProcessed: 1
-        }
+          filesProcessed: 1,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
@@ -359,16 +359,16 @@ describe('DiffGenerator', () => {
           ...version1.structure,
           files: [
             { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' },
-            { path: 'src/new.ts', size: 50, lines: 5, lastModified: '2024-01-02T00:00:00Z' }
+            { path: 'src/new.ts', size: 50, lines: 5, lastModified: '2024-01-02T00:00:00Z' },
           ],
           totalFiles: 2,
           totalLines: 15,
-          totalSize: 150
-        }
+          totalSize: 150,
+        },
       };
 
       const result = await diffGenerator.generateUnifiedDiff(version1, version2);
-      
+
       expect(result).toContain('--- 1.0.0');
       expect(result).toContain('+++ 1.1.0');
       expect(result).toContain('diff --git');
@@ -385,37 +385,37 @@ describe('DiffGenerator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [
-            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' }
+            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' },
           ],
           directories: [],
           totalFiles: 1,
           totalLines: 10,
-          totalSize: 100
+          totalSize: 100,
         },
         ast: {
           nodes: [],
           relations: [],
           entryPoints: [],
           publicExports: [],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 1, cognitive: 1, maintainability: 80 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 85, issues: [] }
+          quality: { score: 85, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 1000,
           cacheUsed: false,
-          filesProcessed: 1
-        }
+          filesProcessed: 1,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
@@ -425,16 +425,16 @@ describe('DiffGenerator', () => {
           ...version1.structure,
           files: [
             { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' },
-            { path: 'src/new.ts', size: 50, lines: 5, lastModified: '2024-01-02T00:00:00Z' }
+            { path: 'src/new.ts', size: 50, lines: 5, lastModified: '2024-01-02T00:00:00Z' },
           ],
           totalFiles: 2,
           totalLines: 15,
-          totalSize: 150
-        }
+          totalSize: 150,
+        },
       };
 
       const result = await diffGenerator.generateContextDiff(version1, version2);
-      
+
       expect(result).toContain('***');
       expect(result).toContain('---');
     });
@@ -450,37 +450,37 @@ describe('DiffGenerator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [
-            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' }
+            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' },
           ],
           directories: [],
           totalFiles: 1,
           totalLines: 10,
-          totalSize: 100
+          totalSize: 100,
         },
         ast: {
           nodes: [],
           relations: [],
           entryPoints: [],
           publicExports: [],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 1, cognitive: 1, maintainability: 80 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 85, issues: [] }
+          quality: { score: 85, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 1000,
           cacheUsed: false,
-          filesProcessed: 1
-        }
+          filesProcessed: 1,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
@@ -490,16 +490,16 @@ describe('DiffGenerator', () => {
           ...version1.structure,
           files: [
             { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' },
-            { path: 'src/new.ts', size: 50, lines: 5, lastModified: '2024-01-02T00:00:00Z' }
+            { path: 'src/new.ts', size: 50, lines: 5, lastModified: '2024-01-02T00:00:00Z' },
           ],
           totalFiles: 2,
           totalLines: 15,
-          totalSize: 150
-        }
+          totalSize: 150,
+        },
       };
 
       const result = await diffGenerator.generateSideBySideDiff(version1, version2);
-      
+
       expect(result).toContain('File:');
       expect(result).toContain('='.repeat(80));
     });
@@ -519,12 +519,12 @@ describe('DiffGenerator', () => {
       const customConfig = {
         enableSyntaxHighlighting: true,
         contextLines: 5,
-        outputFormat: 'context' as const
+        outputFormat: 'context' as const,
       };
-      
+
       diffGenerator.setConfig(customConfig);
       const config = diffGenerator.getConfig();
-      
+
       expect(config.enableSyntaxHighlighting).toBe(true);
       expect(config.contextLines).toBe(5);
       expect(config.outputFormat).toBe('context');
@@ -543,35 +543,35 @@ describe('DiffGenerator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [],
           directories: [],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: {
           nodes: [],
           relations: [],
           entryPoints: [],
           publicExports: [],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 0, cognitive: 0, maintainability: 100 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 100, issues: [] }
+          quality: { score: 100, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 0,
           cacheUsed: false,
-          filesProcessed: 0
-        }
+          filesProcessed: 0,
+        },
       };
 
       // Test error handling in different methods
@@ -591,37 +591,37 @@ describe('DiffGenerator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [
-            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' }
+            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' },
           ],
           directories: [],
           totalFiles: 1,
           totalLines: 10,
-          totalSize: 100
+          totalSize: 100,
         },
         ast: {
           nodes: [],
           relations: [],
           entryPoints: [],
           publicExports: [],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 1, cognitive: 1, maintainability: 80 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 85, issues: [] }
+          quality: { score: 85, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 1000,
           cacheUsed: false,
-          filesProcessed: 1
-        }
+          filesProcessed: 1,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
@@ -630,12 +630,12 @@ describe('DiffGenerator', () => {
         structure: {
           ...version1.structure,
           files: [
-            { path: 'src/index.ts', size: 150, lines: 15, lastModified: '2024-01-01T00:00:00Z' }
+            { path: 'src/index.ts', size: 150, lines: 15, lastModified: '2024-01-01T00:00:00Z' },
           ],
           totalFiles: 1,
           totalLines: 15,
-          totalSize: 150
-        }
+          totalSize: 150,
+        },
       };
 
       const result = await diffGenerator.generateDiff(version1, version2);
@@ -651,37 +651,37 @@ describe('DiffGenerator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [
-            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' }
+            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' },
           ],
           directories: [],
           totalFiles: 1,
           totalLines: 10,
-          totalSize: 100
+          totalSize: 100,
         },
         ast: {
           nodes: [],
           relations: [],
           entryPoints: [],
           publicExports: [],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 1, cognitive: 1, maintainability: 80 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 85, issues: [] }
+          quality: { score: 85, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 1000,
           cacheUsed: false,
-          filesProcessed: 1
-        }
+          filesProcessed: 1,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
@@ -690,12 +690,12 @@ describe('DiffGenerator', () => {
         structure: {
           ...version1.structure,
           files: [
-            { path: 'src/index.ts', size: 100, lines: 12, lastModified: '2024-01-01T00:00:00Z' }
+            { path: 'src/index.ts', size: 100, lines: 12, lastModified: '2024-01-01T00:00:00Z' },
           ],
           totalFiles: 1,
           totalLines: 12,
-          totalSize: 100
-        }
+          totalSize: 100,
+        },
       };
 
       const result = await diffGenerator.generateDiff(version1, version2);
@@ -708,12 +708,12 @@ describe('DiffGenerator', () => {
         includeContext: false,
         contextLines: 5,
         maxDiffSize: 5000,
-        outputFormat: 'side-by-side' as const
+        outputFormat: 'side-by-side' as const,
       };
-      
+
       diffGenerator.setConfig(customConfig);
       const config = diffGenerator.getConfig();
-      
+
       expect(config.enableSyntaxHighlighting).toBe(true);
       expect(config.includeContext).toBe(false);
       expect(config.contextLines).toBe(5);
@@ -723,12 +723,12 @@ describe('DiffGenerator', () => {
 
     it('should handle mergeDefaults with partial config', () => {
       const partialConfig = {
-        contextLines: 7
+        contextLines: 7,
       };
-      
+
       diffGenerator.setConfig(partialConfig);
       const config = diffGenerator.getConfig();
-      
+
       expect(config.contextLines).toBe(7);
       expect(config.enableSyntaxHighlighting).toBe(false); // default
       expect(config.includeContext).toBe(true); // default
@@ -745,37 +745,37 @@ describe('DiffGenerator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [
-            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' }
+            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' },
           ],
           directories: [],
           totalFiles: 1,
           totalLines: 10,
-          totalSize: 100
+          totalSize: 100,
         },
         ast: {
           nodes: [],
           relations: [],
           entryPoints: [],
           publicExports: [],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 1, cognitive: 1, maintainability: 80 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 85, issues: [] }
+          quality: { score: 85, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 1000,
           cacheUsed: false,
-          filesProcessed: 1
-        }
+          filesProcessed: 1,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
@@ -785,12 +785,12 @@ describe('DiffGenerator', () => {
           ...version1.structure,
           files: [
             { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' },
-            { path: 'src/new.ts', size: 50, lines: 5, lastModified: '2024-01-02T00:00:00Z' }
+            { path: 'src/new.ts', size: 50, lines: 5, lastModified: '2024-01-02T00:00:00Z' },
           ],
           totalFiles: 2,
           totalLines: 15,
-          totalSize: 150
-        }
+          totalSize: 150,
+        },
       };
 
       // Test with options
@@ -798,9 +798,9 @@ describe('DiffGenerator', () => {
         format: 'unified',
         contextLines: 5,
         includeMetadata: true,
-        includeMetrics: true
+        includeMetrics: true,
       });
-      
+
       expect(result.summary.totalFiles).toBe(1);
       expect(result.summary.filesAdded).toBe(1);
     });
@@ -814,35 +814,35 @@ describe('DiffGenerator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [],
           directories: [],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: {
           nodes: [],
           relations: [],
           entryPoints: [],
           publicExports: [],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 0, cognitive: 0, maintainability: 100 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 100, issues: [] }
+          quality: { score: 100, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 0,
           cacheUsed: false,
-          filesProcessed: 0
-        }
+          filesProcessed: 0,
+        },
       };
 
       // Test error handling in different methods
@@ -860,38 +860,38 @@ describe('DiffGenerator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [
             { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' },
-            { path: 'src/old.ts', size: 50, lines: 5, lastModified: '2024-01-01T00:00:00Z' }
+            { path: 'src/old.ts', size: 50, lines: 5, lastModified: '2024-01-01T00:00:00Z' },
           ],
           directories: [],
           totalFiles: 2,
           totalLines: 15,
-          totalSize: 150
+          totalSize: 150,
         },
         ast: {
           nodes: [],
           relations: [],
           entryPoints: [],
           publicExports: [],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 1, cognitive: 1, maintainability: 80 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 85, issues: [] }
+          quality: { score: 85, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 1000,
           cacheUsed: false,
-          filesProcessed: 2
-        }
+          filesProcessed: 2,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
@@ -901,16 +901,16 @@ describe('DiffGenerator', () => {
           ...version1.structure,
           files: [
             { path: 'src/index.ts', size: 120, lines: 12, lastModified: '2024-01-02T00:00:00Z' },
-            { path: 'src/new.ts', size: 50, lines: 5, lastModified: '2024-01-02T00:00:00Z' }
+            { path: 'src/new.ts', size: 50, lines: 5, lastModified: '2024-01-02T00:00:00Z' },
           ],
           totalFiles: 2,
           totalLines: 17,
-          totalSize: 170
-        }
+          totalSize: 170,
+        },
       };
 
       const result = await diffGenerator.generateDiff(version1, version2);
-      
+
       expect(result.summary.totalFiles).toBe(3); // 1 added + 1 modified + 1 deleted
       expect(result.summary.filesAdded).toBe(1);
       expect(result.summary.filesModified).toBe(1);
@@ -926,37 +926,37 @@ describe('DiffGenerator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [
-            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' }
+            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' },
           ],
           directories: [],
           totalFiles: 1,
           totalLines: 10,
-          totalSize: 100
+          totalSize: 100,
         },
         ast: {
           nodes: [],
           relations: [],
           entryPoints: [],
           publicExports: [],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 1, cognitive: 1, maintainability: 80 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 85, issues: [] }
+          quality: { score: 85, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 1000,
           cacheUsed: false,
-          filesProcessed: 1
-        }
+          filesProcessed: 1,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
@@ -965,9 +965,9 @@ describe('DiffGenerator', () => {
         structure: {
           ...version1.structure,
           files: [
-            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-02T00:00:00Z' }
-          ]
-        }
+            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-02T00:00:00Z' },
+          ],
+        },
       };
 
       // Test with different context lines
@@ -984,35 +984,35 @@ describe('DiffGenerator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [],
           directories: [],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: {
           nodes: [],
           relations: [],
           entryPoints: [],
           publicExports: [],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 0, cognitive: 0, maintainability: 100 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 100, issues: [] }
+          quality: { score: 100, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 0,
           cacheUsed: false,
-          filesProcessed: 0
-        }
+          filesProcessed: 0,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
@@ -1021,12 +1021,12 @@ describe('DiffGenerator', () => {
         structure: {
           ...version1.structure,
           files: [
-            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-02T00:00:00Z' }
+            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-02T00:00:00Z' },
           ],
           totalFiles: 1,
           totalLines: 10,
-          totalSize: 100
-        }
+          totalSize: 100,
+        },
       };
 
       const result = await diffGenerator.generateDiff(version1, version2);
@@ -1044,40 +1044,40 @@ describe('DiffGenerator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [],
           directories: [],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: {
           nodes: [],
           relations: [],
           entryPoints: [],
           publicExports: [],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 0, cognitive: 0, maintainability: 100 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 100, issues: [] }
+          quality: { score: 100, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 0,
           cacheUsed: false,
-          filesProcessed: 0
-        }
+          filesProcessed: 0,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
         ...version1,
-        project: { ...version1.project, version: '1.1.0' }
+        project: { ...version1.project, version: '1.1.0' },
       };
 
       const result = await diffGenerator.generateUnifiedDiff(version1, version2);
@@ -1094,40 +1094,40 @@ describe('DiffGenerator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [],
           directories: [],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: {
           nodes: [],
           relations: [],
           entryPoints: [],
           publicExports: [],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 0, cognitive: 0, maintainability: 100 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 100, issues: [] }
+          quality: { score: 100, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 0,
           cacheUsed: false,
-          filesProcessed: 0
-        }
+          filesProcessed: 0,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
         ...version1,
-        project: { ...version1.project, version: '1.1.0' }
+        project: { ...version1.project, version: '1.1.0' },
       };
 
       const result = await diffGenerator.generateContextDiff(version1, version2);
@@ -1143,40 +1143,40 @@ describe('DiffGenerator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [],
           directories: [],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: {
           nodes: [],
           relations: [],
           entryPoints: [],
           publicExports: [],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 0, cognitive: 0, maintainability: 100 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 100, issues: [] }
+          quality: { score: 100, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 0,
           cacheUsed: false,
-          filesProcessed: 0
-        }
+          filesProcessed: 0,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
         ...version1,
-        project: { ...version1.project, version: '1.1.0' }
+        project: { ...version1.project, version: '1.1.0' },
       };
 
       const result = await diffGenerator.generateSideBySideDiff(version1, version2);
@@ -1192,37 +1192,37 @@ describe('DiffGenerator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [
-            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' }
+            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' },
           ],
           directories: [],
           totalFiles: 1,
           totalLines: 10,
-          totalSize: 100
+          totalSize: 100,
         },
         ast: {
           nodes: [],
           relations: [],
           entryPoints: [],
           publicExports: [],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 1, cognitive: 1, maintainability: 80 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 85, issues: [] }
+          quality: { score: 85, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 1000,
           cacheUsed: false,
-          filesProcessed: 1
-        }
+          filesProcessed: 1,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
@@ -1231,9 +1231,9 @@ describe('DiffGenerator', () => {
         structure: {
           ...version1.structure,
           files: [
-            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-02T00:00:00Z' }
-          ]
-        }
+            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-02T00:00:00Z' },
+          ],
+        },
       };
 
       // Test with contextLines = 0 to trigger edge cases
@@ -1250,37 +1250,37 @@ describe('DiffGenerator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [
-            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' }
+            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' },
           ],
           directories: [],
           totalFiles: 1,
           totalLines: 10,
-          totalSize: 100
+          totalSize: 100,
         },
         ast: {
           nodes: [],
           relations: [],
           entryPoints: [],
           publicExports: [],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 1, cognitive: 1, maintainability: 80 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 85, issues: [] }
+          quality: { score: 85, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 1000,
           cacheUsed: false,
-          filesProcessed: 1
-        }
+          filesProcessed: 1,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
@@ -1289,9 +1289,9 @@ describe('DiffGenerator', () => {
         structure: {
           ...version1.structure,
           files: [
-            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-02T00:00:00Z' }
-          ]
-        }
+            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-02T00:00:00Z' },
+          ],
+        },
       };
 
       // Test with very large contextLines to trigger edge cases
@@ -1308,37 +1308,37 @@ describe('DiffGenerator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [
-            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' }
+            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' },
           ],
           directories: [],
           totalFiles: 1,
           totalLines: 10,
-          totalSize: 100
+          totalSize: 100,
         },
         ast: {
           nodes: [],
           relations: [],
           entryPoints: [],
           publicExports: [],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 1, cognitive: 1, maintainability: 80 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 85, issues: [] }
+          quality: { score: 85, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 1000,
           cacheUsed: false,
-          filesProcessed: 1
-        }
+          filesProcessed: 1,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
@@ -1347,9 +1347,9 @@ describe('DiffGenerator', () => {
         structure: {
           ...version1.structure,
           files: [
-            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-02T00:00:00Z' }
-          ]
-        }
+            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-02T00:00:00Z' },
+          ],
+        },
       };
 
       // Test with contextLines = 1 to trigger edge cases in findNextHunk
@@ -1366,37 +1366,37 @@ describe('DiffGenerator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [
-            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' }
+            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' },
           ],
           directories: [],
           totalFiles: 1,
           totalLines: 10,
-          totalSize: 100
+          totalSize: 100,
         },
         ast: {
           nodes: [],
           relations: [],
           entryPoints: [],
           publicExports: [],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 1, cognitive: 1, maintainability: 80 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 85, issues: [] }
+          quality: { score: 85, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 1000,
           cacheUsed: false,
-          filesProcessed: 1
-        }
+          filesProcessed: 1,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
@@ -1405,9 +1405,9 @@ describe('DiffGenerator', () => {
         structure: {
           ...version1.structure,
           files: [
-            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-02T00:00:00Z' }
-          ]
-        }
+            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-02T00:00:00Z' },
+          ],
+        },
       };
 
       const result = await diffGenerator.generateUnifiedDiff(version1, version2);
@@ -1424,37 +1424,37 @@ describe('DiffGenerator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [
-            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' }
+            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' },
           ],
           directories: [],
           totalFiles: 1,
           totalLines: 10,
-          totalSize: 100
+          totalSize: 100,
         },
         ast: {
           nodes: [],
           relations: [],
           entryPoints: [],
           publicExports: [],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 1, cognitive: 1, maintainability: 80 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 85, issues: [] }
+          quality: { score: 85, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 1000,
           cacheUsed: false,
-          filesProcessed: 1
-        }
+          filesProcessed: 1,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
@@ -1463,9 +1463,9 @@ describe('DiffGenerator', () => {
         structure: {
           ...version1.structure,
           files: [
-            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-02T00:00:00Z' }
-          ]
-        }
+            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-02T00:00:00Z' },
+          ],
+        },
       };
 
       const result = await diffGenerator.generateContextDiff(version1, version2);
@@ -1481,37 +1481,37 @@ describe('DiffGenerator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [
-            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' }
+            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' },
           ],
           directories: [],
           totalFiles: 1,
           totalLines: 10,
-          totalSize: 100
+          totalSize: 100,
         },
         ast: {
           nodes: [],
           relations: [],
           entryPoints: [],
           publicExports: [],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 1, cognitive: 1, maintainability: 80 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 85, issues: [] }
+          quality: { score: 85, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 1000,
           cacheUsed: false,
-          filesProcessed: 1
-        }
+          filesProcessed: 1,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
@@ -1520,9 +1520,9 @@ describe('DiffGenerator', () => {
         structure: {
           ...version1.structure,
           files: [
-            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-02T00:00:00Z' }
-          ]
-        }
+            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-02T00:00:00Z' },
+          ],
+        },
       };
 
       const result = await diffGenerator.generateSideBySideDiff(version1, version2);
@@ -1538,37 +1538,37 @@ describe('DiffGenerator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [
-            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' }
+            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' },
           ],
           directories: [],
           totalFiles: 1,
           totalLines: 10,
-          totalSize: 100
+          totalSize: 100,
         },
         ast: {
           nodes: [],
           relations: [],
           entryPoints: [],
           publicExports: [],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 1, cognitive: 1, maintainability: 80 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 85, issues: [] }
+          quality: { score: 85, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 1000,
           cacheUsed: false,
-          filesProcessed: 1
-        }
+          filesProcessed: 1,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
@@ -1577,9 +1577,9 @@ describe('DiffGenerator', () => {
         structure: {
           ...version1.structure,
           files: [
-            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' }
-          ]
-        }
+            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' },
+          ],
+        },
       };
 
       // Test with identical content to trigger edge cases in generateFileHunks
@@ -1596,37 +1596,37 @@ describe('DiffGenerator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [
-            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' }
+            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' },
           ],
           directories: [],
           totalFiles: 1,
           totalLines: 10,
-          totalSize: 100
+          totalSize: 100,
         },
         ast: {
           nodes: [],
           relations: [],
           entryPoints: [],
           publicExports: [],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 1, cognitive: 1, maintainability: 80 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 85, issues: [] }
+          quality: { score: 85, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 1000,
           cacheUsed: false,
-          filesProcessed: 1
-        }
+          filesProcessed: 1,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
@@ -1635,12 +1635,12 @@ describe('DiffGenerator', () => {
         structure: {
           ...version1.structure,
           files: [
-            { path: 'src/index.ts', size: 120, lines: 12, lastModified: '2024-01-02T00:00:00Z' }
+            { path: 'src/index.ts', size: 120, lines: 12, lastModified: '2024-01-02T00:00:00Z' },
           ],
           totalFiles: 1,
           totalLines: 12,
-          totalSize: 120
-        }
+          totalSize: 120,
+        },
       };
 
       // Test with different content to trigger edge cases in generateFileHunks
@@ -1657,35 +1657,35 @@ describe('DiffGenerator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [],
           directories: [],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: {
           nodes: [],
           relations: [],
           entryPoints: [],
           publicExports: [],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 1, cognitive: 1, maintainability: 80 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 85, issues: [] }
+          quality: { score: 85, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 1000,
           cacheUsed: false,
-          filesProcessed: 1
-        }
+          filesProcessed: 1,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
@@ -1695,8 +1695,19 @@ describe('DiffGenerator', () => {
           complexity: { cyclomatic: 2, cognitive: 2, maintainability: 75 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 80, issues: [{ type: 'warning', message: 'Test warning', file: 'src/index.ts', line: 1, severity: 'low' }] }
-        }
+          quality: {
+            score: 80,
+            issues: [
+              {
+                type: 'warning',
+                message: 'Test warning',
+                file: 'src/index.ts',
+                line: 1,
+                severity: 'low',
+              },
+            ],
+          },
+        },
       };
 
       // Test with different quality metrics to trigger edge cases
@@ -1714,37 +1725,37 @@ describe('DiffGenerator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [
-            { path: 'src/index.ts', size: 100, lines: 3, lastModified: '2024-01-01T00:00:00Z' }
+            { path: 'src/index.ts', size: 100, lines: 3, lastModified: '2024-01-01T00:00:00Z' },
           ],
           directories: [],
           totalFiles: 1,
           totalLines: 3,
-          totalSize: 100
+          totalSize: 100,
         },
         ast: {
           nodes: [],
           relations: [],
           entryPoints: [],
           publicExports: [],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 1, cognitive: 1, maintainability: 80 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 85, issues: [] }
+          quality: { score: 85, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 1000,
           cacheUsed: false,
-          filesProcessed: 1
-        }
+          filesProcessed: 1,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
@@ -1753,12 +1764,12 @@ describe('DiffGenerator', () => {
         structure: {
           ...version1.structure,
           files: [
-            { path: 'src/index.ts', size: 120, lines: 4, lastModified: '2024-01-02T00:00:00Z' }
+            { path: 'src/index.ts', size: 120, lines: 4, lastModified: '2024-01-02T00:00:00Z' },
           ],
           totalFiles: 1,
           totalLines: 4,
-          totalSize: 120
-        }
+          totalSize: 120,
+        },
       };
 
       // Test with complex line differences to trigger edge cases in generateFileHunks
@@ -1776,37 +1787,37 @@ describe('DiffGenerator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [
-            { path: 'src/index.ts', size: 100, lines: 2, lastModified: '2024-01-01T00:00:00Z' }
+            { path: 'src/index.ts', size: 100, lines: 2, lastModified: '2024-01-01T00:00:00Z' },
           ],
           directories: [],
           totalFiles: 1,
           totalLines: 2,
-          totalSize: 100
+          totalSize: 100,
         },
         ast: {
           nodes: [],
           relations: [],
           entryPoints: [],
           publicExports: [],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 1, cognitive: 1, maintainability: 80 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 85, issues: [] }
+          quality: { score: 85, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 1000,
           cacheUsed: false,
-          filesProcessed: 1
-        }
+          filesProcessed: 1,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
@@ -1815,9 +1826,9 @@ describe('DiffGenerator', () => {
         structure: {
           ...version1.structure,
           files: [
-            { path: 'src/index.ts', size: 100, lines: 2, lastModified: '2024-01-01T00:00:00Z' }
-          ]
-        }
+            { path: 'src/index.ts', size: 100, lines: 2, lastModified: '2024-01-01T00:00:00Z' },
+          ],
+        },
       };
 
       // Test with identical content to trigger edge cases in generateFileHunks
@@ -1834,37 +1845,37 @@ describe('DiffGenerator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [
-            { path: 'src/index.ts', size: 50, lines: 1, lastModified: '2024-01-01T00:00:00Z' }
+            { path: 'src/index.ts', size: 50, lines: 1, lastModified: '2024-01-01T00:00:00Z' },
           ],
           directories: [],
           totalFiles: 1,
           totalLines: 1,
-          totalSize: 50
+          totalSize: 50,
         },
         ast: {
           nodes: [],
           relations: [],
           entryPoints: [],
           publicExports: [],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 1, cognitive: 1, maintainability: 80 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 85, issues: [] }
+          quality: { score: 85, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 1000,
           cacheUsed: false,
-          filesProcessed: 1
-        }
+          filesProcessed: 1,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
@@ -1873,12 +1884,12 @@ describe('DiffGenerator', () => {
         structure: {
           ...version1.structure,
           files: [
-            { path: 'src/index.ts', size: 100, lines: 3, lastModified: '2024-01-02T00:00:00Z' }
+            { path: 'src/index.ts', size: 100, lines: 3, lastModified: '2024-01-02T00:00:00Z' },
           ],
           totalFiles: 1,
           totalLines: 3,
-          totalSize: 100
-        }
+          totalSize: 100,
+        },
       };
 
       // Test with different line lengths to trigger edge cases in generateFileHunks
@@ -1895,37 +1906,37 @@ describe('DiffGenerator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [
-            { path: 'src/index.ts', size: 100, lines: 1, lastModified: '2024-01-01T00:00:00Z' }
+            { path: 'src/index.ts', size: 100, lines: 1, lastModified: '2024-01-01T00:00:00Z' },
           ],
           directories: [],
           totalFiles: 1,
           totalLines: 1,
-          totalSize: 100
+          totalSize: 100,
         },
         ast: {
           nodes: [],
           relations: [],
           entryPoints: [],
           publicExports: [],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 1, cognitive: 1, maintainability: 80 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 85, issues: [] }
+          quality: { score: 85, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 1000,
           cacheUsed: false,
-          filesProcessed: 1
-        }
+          filesProcessed: 1,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
@@ -1934,12 +1945,12 @@ describe('DiffGenerator', () => {
         structure: {
           ...version1.structure,
           files: [
-            { path: 'src/index.ts', size: 200, lines: 2, lastModified: '2024-01-02T00:00:00Z' }
+            { path: 'src/index.ts', size: 200, lines: 2, lastModified: '2024-01-02T00:00:00Z' },
           ],
           totalFiles: 1,
           totalLines: 2,
-          totalSize: 200
-        }
+          totalSize: 200,
+        },
       };
 
       // Test with boundary conditions to trigger edge cases in generateFileHunks
@@ -1956,37 +1967,37 @@ describe('DiffGenerator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [
-            { path: 'src/index.ts', size: 0, lines: 0, lastModified: '2024-01-01T00:00:00Z' }
+            { path: 'src/index.ts', size: 0, lines: 0, lastModified: '2024-01-01T00:00:00Z' },
           ],
           directories: [],
           totalFiles: 1,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: {
           nodes: [],
           relations: [],
           entryPoints: [],
           publicExports: [],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 1, cognitive: 1, maintainability: 80 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 85, issues: [] }
+          quality: { score: 85, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 1000,
           cacheUsed: false,
-          filesProcessed: 1
-        }
+          filesProcessed: 1,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
@@ -1995,12 +2006,12 @@ describe('DiffGenerator', () => {
         structure: {
           ...version1.structure,
           files: [
-            { path: 'src/index.ts', size: 50, lines: 1, lastModified: '2024-01-02T00:00:00Z' }
+            { path: 'src/index.ts', size: 50, lines: 1, lastModified: '2024-01-02T00:00:00Z' },
           ],
           totalFiles: 1,
           totalLines: 1,
-          totalSize: 50
-        }
+          totalSize: 50,
+        },
       };
 
       // Test with empty content to trigger edge cases in generateFileHunks
@@ -2017,37 +2028,37 @@ describe('DiffGenerator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [
-            { path: 'src/index.ts', size: 50, lines: 1, lastModified: '2024-01-01T00:00:00Z' }
+            { path: 'src/index.ts', size: 50, lines: 1, lastModified: '2024-01-01T00:00:00Z' },
           ],
           directories: [],
           totalFiles: 1,
           totalLines: 1,
-          totalSize: 50
+          totalSize: 50,
         },
         ast: {
           nodes: [],
           relations: [],
           entryPoints: [],
           publicExports: [],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 1, cognitive: 1, maintainability: 80 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 85, issues: [] }
+          quality: { score: 85, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 1000,
           cacheUsed: false,
-          filesProcessed: 1
-        }
+          filesProcessed: 1,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
@@ -2056,12 +2067,12 @@ describe('DiffGenerator', () => {
         structure: {
           ...version1.structure,
           files: [
-            { path: 'src/index.ts', size: 100, lines: 2, lastModified: '2024-01-02T00:00:00Z' }
+            { path: 'src/index.ts', size: 100, lines: 2, lastModified: '2024-01-02T00:00:00Z' },
           ],
           totalFiles: 1,
           totalLines: 2,
-          totalSize: 100
-        }
+          totalSize: 100,
+        },
       };
 
       // Test with single line changes to trigger edge cases in generateFileHunks
@@ -2078,37 +2089,37 @@ describe('DiffGenerator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [
-            { path: 'src/index.ts', size: 200, lines: 10, lastModified: '2024-01-01T00:00:00Z' }
+            { path: 'src/index.ts', size: 200, lines: 10, lastModified: '2024-01-01T00:00:00Z' },
           ],
           directories: [],
           totalFiles: 1,
           totalLines: 10,
-          totalSize: 200
+          totalSize: 200,
         },
         ast: {
           nodes: [],
           relations: [],
           entryPoints: [],
           publicExports: [],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 1, cognitive: 1, maintainability: 80 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 85, issues: [] }
+          quality: { score: 85, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 1000,
           cacheUsed: false,
-          filesProcessed: 1
-        }
+          filesProcessed: 1,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
@@ -2117,12 +2128,12 @@ describe('DiffGenerator', () => {
         structure: {
           ...version1.structure,
           files: [
-            { path: 'src/index.ts', size: 250, lines: 12, lastModified: '2024-01-02T00:00:00Z' }
+            { path: 'src/index.ts', size: 250, lines: 12, lastModified: '2024-01-02T00:00:00Z' },
           ],
           totalFiles: 1,
           totalLines: 12,
-          totalSize: 250
-        }
+          totalSize: 250,
+        },
       };
 
       // Test with maximum context lines to trigger edge cases in generateFileHunks
@@ -2139,37 +2150,37 @@ describe('DiffGenerator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [
-            { path: 'src/complex.ts', size: 300, lines: 20, lastModified: '2024-01-01T00:00:00Z' }
+            { path: 'src/complex.ts', size: 300, lines: 20, lastModified: '2024-01-01T00:00:00Z' },
           ],
           directories: [],
           totalFiles: 1,
           totalLines: 20,
-          totalSize: 300
+          totalSize: 300,
         },
         ast: {
           nodes: [],
           relations: [],
           entryPoints: [],
           publicExports: [],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 1, cognitive: 1, maintainability: 80 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 85, issues: [] }
+          quality: { score: 85, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 1000,
           cacheUsed: false,
-          filesProcessed: 1
-        }
+          filesProcessed: 1,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
@@ -2178,18 +2189,18 @@ describe('DiffGenerator', () => {
         structure: {
           ...version1.structure,
           files: [
-            { path: 'src/complex.ts', size: 400, lines: 25, lastModified: '2024-01-02T00:00:00Z' }
+            { path: 'src/complex.ts', size: 400, lines: 25, lastModified: '2024-01-02T00:00:00Z' },
           ],
           totalFiles: 1,
           totalLines: 25,
-          totalSize: 400
-        }
+          totalSize: 400,
+        },
       };
 
       // Test with complex diff scenarios to trigger edge cases in generateFileHunks
-      const result = await diffGenerator.generateDiff(version1, version2, { 
+      const result = await diffGenerator.generateDiff(version1, version2, {
         contextLines: 5,
-        includeMetrics: true
+        includeMetrics: true,
       });
       expect(result.summary.filesModified).toBe(1);
     });
@@ -2203,37 +2214,37 @@ describe('DiffGenerator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [
-            { path: 'src/minimal.ts', size: 100, lines: 5, lastModified: '2024-01-01T00:00:00Z' }
+            { path: 'src/minimal.ts', size: 100, lines: 5, lastModified: '2024-01-01T00:00:00Z' },
           ],
           directories: [],
           totalFiles: 1,
           totalLines: 5,
-          totalSize: 100
+          totalSize: 100,
         },
         ast: {
           nodes: [],
           relations: [],
           entryPoints: [],
           publicExports: [],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 1, cognitive: 1, maintainability: 80 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 85, issues: [] }
+          quality: { score: 85, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 1000,
           cacheUsed: false,
-          filesProcessed: 1
-        }
+          filesProcessed: 1,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
@@ -2242,18 +2253,18 @@ describe('DiffGenerator', () => {
         structure: {
           ...version1.structure,
           files: [
-            { path: 'src/minimal.ts', size: 120, lines: 6, lastModified: '2024-01-02T00:00:00Z' }
+            { path: 'src/minimal.ts', size: 120, lines: 6, lastModified: '2024-01-02T00:00:00Z' },
           ],
           totalFiles: 1,
           totalLines: 6,
-          totalSize: 120
-        }
+          totalSize: 120,
+        },
       };
 
       // Test with minimal context to trigger edge cases in generateFileHunks
-      const result = await diffGenerator.generateDiff(version1, version2, { 
+      const result = await diffGenerator.generateDiff(version1, version2, {
         contextLines: 0,
-        includeMetrics: false
+        includeMetrics: false,
       });
       expect(result.summary.filesModified).toBe(1);
     });

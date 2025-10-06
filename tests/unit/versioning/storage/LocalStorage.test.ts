@@ -20,7 +20,7 @@ describe('LocalStorage', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    
+
     mockConfig = {
       type: 'local',
       path: '/test/storage',
@@ -28,8 +28,8 @@ describe('LocalStorage', () => {
         createDirectories: true,
         atomicWrites: true,
         backupEnabled: true,
-        compressionEnabled: false
-      }
+        compressionEnabled: false,
+      },
     };
 
     mockVersionInfo = {
@@ -41,7 +41,7 @@ describe('LocalStorage', () => {
         version: '1.0.0',
         createdAt: '2023-01-01T00:00:00Z',
         tags: ['stable'],
-        description: 'Test version'
+        description: 'Test version',
       },
       data: {
         project: {
@@ -51,46 +51,46 @@ describe('LocalStorage', () => {
           rootPath: '/test/project',
           entryPoints: [],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [],
           directories: [],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: {
           nodes: [],
           relations: [],
           entryPoints: [],
           publicExports: [],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: {
             cyclomatic: 1,
             cognitive: 1,
-            maintainability: 1
+            maintainability: 1,
           },
           patterns: [],
           architecture: {
             layers: [],
-            modules: []
+            modules: [],
           },
           quality: {
             score: 1,
-            issues: []
-          }
+            issues: [],
+          },
         },
         metadata: {
           generatedAt: '2023-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 0,
           cacheUsed: false,
-          filesProcessed: 0
-        }
-      }
+          filesProcessed: 0,
+        },
+      },
     };
 
     localStorage = new LocalStorage(mockConfig);
@@ -158,8 +158,8 @@ describe('LocalStorage', () => {
         metadata: expect.objectContaining({
           storedAt: expect.any(String),
           size: expect.any(Number),
-          checksum: expect.any(String)
-        })
+          checksum: expect.any(String),
+        }),
       });
     });
 
@@ -184,8 +184,8 @@ describe('LocalStorage', () => {
       // Now store again with backup enabled
       const backupPath = '/test/storage/test-version-1.json.backup';
       mockedPath.join
-        .mockReturnValueOnce(expectedPath)  // First call for getVersionFilePath
-        .mockReturnValueOnce(backupPath);   // Second call for createBackup
+        .mockReturnValueOnce(expectedPath) // First call for getVersionFilePath
+        .mockReturnValueOnce(backupPath); // Second call for createBackup
       mockedFs.access.mockResolvedValueOnce(undefined); // File exists
       mockedFs.copyFile.mockResolvedValueOnce(undefined);
       mockedFs.writeFile.mockResolvedValueOnce(undefined);
@@ -193,7 +193,7 @@ describe('LocalStorage', () => {
       await storage.store(mockVersionInfo);
 
       expect(mockedFs.copyFile).toHaveBeenCalledWith(expectedPath, backupPath);
-      
+
       // Reset the mock to prevent affecting other tests
       mockedPath.join.mockReset();
     });
@@ -267,9 +267,9 @@ describe('LocalStorage', () => {
         { name: 'version-1.json', isFile: () => true },
         { name: 'version-2.json', isFile: () => true },
         { name: 'backup.json.backup', isFile: () => true },
-        { name: 'subdir', isFile: () => false }
+        { name: 'subdir', isFile: () => false },
       ];
-      
+
       mockedFs.readdir.mockResolvedValueOnce(mockFiles as any);
       mockedPath.join.mockReturnValue('/test/storage');
       mockedPath.extname.mockImplementation((file: string) => {
@@ -287,7 +287,7 @@ describe('LocalStorage', () => {
       // Mock fs.stat for each file
       mockedFs.stat.mockResolvedValue({
         mtime: new Date(),
-        size: 1024
+        size: 1024,
       } as any);
 
       // Mock checksum generation
@@ -353,9 +353,9 @@ describe('LocalStorage', () => {
       const mockStats = {
         size: 1024,
         mtime: new Date('2023-01-01T00:00:00Z'),
-        ctime: new Date('2023-01-01T00:00:00Z')
+        ctime: new Date('2023-01-01T00:00:00Z'),
       };
-      
+
       mockedPath.join.mockReturnValue(expectedPath);
       mockedFs.stat.mockResolvedValueOnce(mockStats as any);
 
@@ -364,7 +364,7 @@ describe('LocalStorage', () => {
       expect(result).toEqual({
         storedAt: mockStats.mtime.toISOString(),
         size: mockStats.size,
-        checksum: expect.any(String)
+        checksum: expect.any(String),
       });
     });
 
@@ -419,9 +419,9 @@ describe('LocalStorage', () => {
         { name: 'another-old-version.json', isFile: () => true },
         { name: 'yet-another-old-version.json', isFile: () => true },
         { name: 'one-more-old-version.json', isFile: () => true },
-        { name: 'latest-version.json', isFile: () => true }
+        { name: 'latest-version.json', isFile: () => true },
       ];
-      
+
       mockedFs.readdir.mockResolvedValueOnce(mockFiles as any);
       mockedPath.join.mockReturnValue('/test/storage');
       mockedPath.extname.mockImplementation((file: string) => {
@@ -434,16 +434,16 @@ describe('LocalStorage', () => {
         }
         return file;
       });
-      
+
       const oldStats = {
         mtime: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000), // 8 days ago
-        size: 1024
+        size: 1024,
       };
       const newStats = {
         mtime: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), // 1 day ago
-        size: 1024
+        size: 1024,
       };
-      
+
       mockedFs.stat
         .mockResolvedValueOnce(oldStats as any)
         .mockResolvedValueOnce(newStats as any)
@@ -451,10 +451,10 @@ describe('LocalStorage', () => {
         .mockResolvedValueOnce(oldStats as any)
         .mockResolvedValueOnce(oldStats as any)
         .mockResolvedValueOnce(newStats as any);
-      
+
       // Mock checksum generation
       mockedFs.readFile.mockResolvedValue('mock content');
-      
+
       mockedFs.unlink.mockResolvedValueOnce(undefined);
 
       const result = await localStorage.cleanup();
@@ -500,9 +500,9 @@ describe('LocalStorage', () => {
     it('should export all version data', async () => {
       const mockFiles = [
         { name: 'version-1.json', isFile: () => true },
-        { name: 'version-2.json', isFile: () => true }
+        { name: 'version-2.json', isFile: () => true },
       ];
-      
+
       mockedFs.readdir.mockResolvedValueOnce(mockFiles as any);
       mockedPath.join.mockReturnValue('/test/storage');
       mockedPath.extname.mockImplementation((file: string) => {
@@ -515,13 +515,13 @@ describe('LocalStorage', () => {
         }
         return file;
       });
-      
+
       // Mock fs.stat for each file
       mockedFs.stat.mockResolvedValue({
         mtime: new Date(),
-        size: 1024
+        size: 1024,
       } as any);
-      
+
       mockedFs.readFile
         .mockResolvedValueOnce('mock content') // For checksum generation in list()
         .mockResolvedValueOnce('mock content') // For checksum generation in list()
@@ -534,7 +534,7 @@ describe('LocalStorage', () => {
       expect(result.metadata).toEqual({
         exportedAt: expect.any(String),
         totalVersions: 2,
-        storageType: 'local'
+        storageType: 'local',
       });
     });
 
@@ -557,8 +557,8 @@ describe('LocalStorage', () => {
         metadata: {
           exportedAt: '2023-01-01T00:00:00Z',
           totalVersions: 1,
-          storageType: 'local'
-        }
+          storageType: 'local',
+        },
       };
 
       await expect(localStorage.importData(importData)).rejects.toThrow('Import not implemented');
@@ -570,8 +570,8 @@ describe('LocalStorage', () => {
         metadata: {
           exportedAt: '2023-01-01T00:00:00Z',
           totalVersions: 1,
-          storageType: 'local'
-        }
+          storageType: 'local',
+        },
       };
 
       await expect(localStorage.importData(importData)).rejects.toThrow('Import not implemented');
@@ -588,7 +588,7 @@ describe('LocalStorage', () => {
 
       const promises = [
         localStorage.store(mockVersionInfo),
-        localStorage.store({ ...mockVersionInfo, id: 'test-version-2' })
+        localStorage.store({ ...mockVersionInfo, id: 'test-version-2' }),
       ];
 
       await expect(Promise.all(promises)).resolves.toHaveLength(2);
@@ -607,9 +607,9 @@ describe('LocalStorage', () => {
             relations: new Array(10000).fill({ from: 'a', to: 'b' }),
             entryPoints: [],
             publicExports: [],
-            privateExports: []
-          }
-        }
+            privateExports: [],
+          },
+        },
       };
 
       mockedPath.join.mockReturnValue('/test/storage/test-version-1.json');
@@ -624,7 +624,7 @@ describe('LocalStorage', () => {
 
       const specialVersionInfo = {
         ...mockVersionInfo,
-        id: 'test-version-with-special-chars-@#$%'
+        id: 'test-version-with-special-chars-@#$%',
       };
 
       mockedPath.join.mockReturnValue('/test/storage/test-version-with-special-chars-@#$%.json');
@@ -641,9 +641,12 @@ describe('LocalStorage', () => {
     });
 
     it('should throw error when createDirectories is false and directory does not exist', async () => {
-      const config = { ...mockConfig, options: { ...mockConfig.options, createDirectories: false } };
+      const config = {
+        ...mockConfig,
+        options: { ...mockConfig.options, createDirectories: false },
+      };
       const storage = new LocalStorage(config);
-      
+
       mockedFs.access.mockRejectedValueOnce(new Error('ENOENT'));
 
       await expect(storage.initialize()).rejects.toThrow('Storage directory does not exist');
@@ -652,9 +655,9 @@ describe('LocalStorage', () => {
     it('should handle file read errors in list method', async () => {
       const mockFiles = [
         { name: 'version-1.json', isFile: () => true },
-        { name: 'version-2.json', isFile: () => true }
+        { name: 'version-2.json', isFile: () => true },
       ];
-      
+
       mockedFs.readdir.mockResolvedValueOnce(mockFiles as any);
       mockedPath.join.mockReturnValue('/test/storage');
       mockedPath.extname.mockImplementation((file: string) => {
@@ -685,20 +688,24 @@ describe('LocalStorage', () => {
       mockedFs.readFile.mockRejectedValueOnce(new Error('ENOENT')); // Simulate version not found
 
       const newMetadata = { tags: ['updated'] };
-      await expect(localStorage.updateMetadata('nonexistent', newMetadata)).rejects.toThrow('ENOENT');
+      await expect(localStorage.updateMetadata('nonexistent', newMetadata)).rejects.toThrow(
+        'ENOENT'
+      );
     });
 
     it('should throw error when retrieve returns null in updateMetadata', async () => {
       const expectedPath = '/test/storage/test-version-1.json';
       mockedPath.join.mockReturnValue(expectedPath);
-      
+
       // Mock retrieve to return null (simulating version not found)
       const originalRetrieve = localStorage.retrieve.bind(localStorage);
       (localStorage as any).retrieve = jest.fn().mockImplementation(() => Promise.resolve(null));
 
       const newMetadata = { tags: ['updated'] };
-      await expect(localStorage.updateMetadata('test-version-1', newMetadata)).rejects.toThrow('Version not found');
-      
+      await expect(localStorage.updateMetadata('test-version-1', newMetadata)).rejects.toThrow(
+        'Version not found'
+      );
+
       // Restore original method
       localStorage.retrieve = originalRetrieve;
     });
@@ -710,7 +717,9 @@ describe('LocalStorage', () => {
       mockedFs.writeFile.mockRejectedValueOnce(new Error('Write failed'));
 
       const newMetadata = { tags: ['updated'] };
-      await expect(localStorage.updateMetadata('test-version-1', newMetadata)).rejects.toThrow('Write failed');
+      await expect(localStorage.updateMetadata('test-version-1', newMetadata)).rejects.toThrow(
+        'Write failed'
+      );
     });
 
     it('should handle delete errors in cleanup method', async () => {
@@ -720,9 +729,9 @@ describe('LocalStorage', () => {
         { name: 'another-old-version.json', isFile: () => true },
         { name: 'yet-another-old-version.json', isFile: () => true },
         { name: 'one-more-old-version.json', isFile: () => true },
-        { name: 'latest-version.json', isFile: () => true }
+        { name: 'latest-version.json', isFile: () => true },
       ];
-      
+
       mockedFs.readdir.mockResolvedValueOnce(mockFiles as any);
       mockedPath.join.mockReturnValue('/test/storage');
       mockedPath.extname.mockImplementation((file: string) => {
@@ -735,16 +744,16 @@ describe('LocalStorage', () => {
         }
         return file;
       });
-      
+
       const oldStats = {
         mtime: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000), // 8 days ago
-        size: 1024
+        size: 1024,
       };
       const newStats = {
         mtime: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), // 1 day ago
-        size: 1024
+        size: 1024,
       };
-      
+
       mockedFs.stat
         .mockResolvedValueOnce(oldStats as any)
         .mockResolvedValueOnce(newStats as any)
@@ -752,10 +761,10 @@ describe('LocalStorage', () => {
         .mockResolvedValueOnce(oldStats as any)
         .mockResolvedValueOnce(oldStats as any)
         .mockResolvedValueOnce(newStats as any);
-      
+
       // Mock checksum generation
       mockedFs.readFile.mockResolvedValue('mock content');
-      
+
       // Mock delete to fail
       mockedFs.unlink.mockRejectedValueOnce(new Error('Delete failed'));
 
@@ -768,17 +777,28 @@ describe('LocalStorage', () => {
     it('should handle versions that do not meet cleanup criteria', async () => {
       // Mock list to return versions that don't meet cleanup criteria (age <= maxAge AND count <= maxVersions)
       const originalList = localStorage.list.bind(localStorage);
-      (localStorage as any).list = jest.fn().mockImplementation(() => Promise.resolve([
-        { versionId: 'version-1', metadata: { storedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString() } },
-        { versionId: 'version-2', metadata: { storedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString() } },
-        { versionId: 'version-3', metadata: { storedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString() } }
-      ]));
+      (localStorage as any).list = jest.fn().mockImplementation(() =>
+        Promise.resolve([
+          {
+            versionId: 'version-1',
+            metadata: { storedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString() },
+          },
+          {
+            versionId: 'version-2',
+            metadata: { storedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString() },
+          },
+          {
+            versionId: 'version-3',
+            metadata: { storedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString() },
+          },
+        ])
+      );
 
       const result = await localStorage.cleanup();
 
       // Should return 0 because no versions meet cleanup criteria (all are newer than 7 days and count is <= 10)
       expect(result).toBe(0);
-      
+
       // Restore original method
       localStorage.list = originalList;
     });
@@ -786,9 +806,9 @@ describe('LocalStorage', () => {
     it('should handle retrieve errors in exportData method', async () => {
       const mockFiles = [
         { name: 'version-1.json', isFile: () => true },
-        { name: 'version-2.json', isFile: () => true }
+        { name: 'version-2.json', isFile: () => true },
       ];
-      
+
       mockedFs.readdir.mockResolvedValueOnce(mockFiles as any);
       mockedPath.join.mockReturnValue('/test/storage');
       mockedPath.extname.mockImplementation((file: string) => {
@@ -801,13 +821,13 @@ describe('LocalStorage', () => {
         }
         return file;
       });
-      
+
       // Mock fs.stat for each file
       mockedFs.stat.mockResolvedValue({
         mtime: new Date(),
-        size: 1024
+        size: 1024,
       } as any);
-      
+
       mockedFs.readFile
         .mockResolvedValueOnce('mock content') // For checksum generation in list()
         .mockResolvedValueOnce('mock content') // For checksum generation in list()
@@ -827,7 +847,7 @@ describe('LocalStorage', () => {
 
       // This is a private method, so we'll test it indirectly through getMetadata
       mockedPath.join.mockReturnValue(filePath);
-      
+
       const result = await localStorage.getMetadata('test-file');
 
       // Should still return metadata even if checksum generation fails
@@ -838,8 +858,10 @@ describe('LocalStorage', () => {
 
     it('should throw error when storage is not initialized', async () => {
       const uninitializedStorage = new LocalStorage();
-      
-      await expect(uninitializedStorage.store(mockVersionInfo)).rejects.toThrow('Storage not initialized');
+
+      await expect(uninitializedStorage.store(mockVersionInfo)).rejects.toThrow(
+        'Storage not initialized'
+      );
     });
 
     it('should handle initialize when createDirectories is false and directory does not exist', async () => {
@@ -850,52 +872,55 @@ describe('LocalStorage', () => {
           createDirectories: false,
           atomicWrites: true,
           backupEnabled: false,
-          compressionEnabled: false
-        }
+          compressionEnabled: false,
+        },
       };
 
       const storage = new LocalStorage(config);
-      
+
       mockedFs.access.mockRejectedValue(new Error('Directory does not exist'));
-      
+
       await expect(storage.initialize()).rejects.toThrow('Storage directory does not exist');
     });
 
     it('should handle file read errors in list method', async () => {
       mockedFs.readdir.mockResolvedValue(['version1.json', 'version2.json'] as any);
       mockedFs.stat.mockRejectedValue(new Error('File read error'));
-      
+
       const result = await localStorage.list();
-      
+
       expect(result).toEqual([]);
     });
 
     it('should throw error when version not found in updateMetadata', async () => {
       // Mock retrieve to throw an error
       jest.spyOn(localStorage, 'retrieve').mockRejectedValue(new Error('File not found'));
-      
-      await expect(localStorage.updateMetadata('nonexistent', { test: 'value' }))
-        .rejects.toThrow('File not found');
+
+      await expect(localStorage.updateMetadata('nonexistent', { test: 'value' })).rejects.toThrow(
+        'File not found'
+      );
     });
 
     it('should throw error when retrieve returns null in updateMetadata', async () => {
       mockedFs.stat.mockResolvedValue({ mtime: new Date(), size: 100 } as any);
       mockedFs.readFile.mockResolvedValue('{"id":"test","version":"1.0.0"}');
-      
+
       // Mock retrieve to return null
       jest.spyOn(localStorage, 'retrieve').mockResolvedValue(null);
-      
-      await expect(localStorage.updateMetadata('test', { test: 'value' }))
-        .rejects.toThrow('Version not found');
+
+      await expect(localStorage.updateMetadata('test', { test: 'value' })).rejects.toThrow(
+        'Version not found'
+      );
     });
 
     it('should handle writeFile errors in updateMetadata', async () => {
       mockedFs.stat.mockResolvedValue({ mtime: new Date(), size: 100 } as any);
       mockedFs.readFile.mockResolvedValue('{"id":"test","version":"1.0.0"}');
       mockedFs.writeFile.mockRejectedValue(new Error('Write error'));
-      
-      await expect(localStorage.updateMetadata('test', { test: 'value' }))
-        .rejects.toThrow('Write error');
+
+      await expect(localStorage.updateMetadata('test', { test: 'value' })).rejects.toThrow(
+        'Write error'
+      );
     });
 
     it('should handle delete errors in cleanup method', async () => {
@@ -904,21 +929,21 @@ describe('LocalStorage', () => {
           id: 'storage-1',
           versionId: 'version-1',
           path: '/test/version1.json',
-          metadata: { storedAt: '2023-01-01T00:00:00Z' }
+          metadata: { storedAt: '2023-01-01T00:00:00Z' },
         },
         {
           id: 'storage-2',
           versionId: 'version-2',
           path: '/test/version2.json',
-          metadata: { storedAt: '2023-01-02T00:00:00Z' }
-        }
+          metadata: { storedAt: '2023-01-02T00:00:00Z' },
+        },
       ];
 
       jest.spyOn(localStorage, 'list').mockResolvedValue(mockVersions as any);
       jest.spyOn(localStorage, 'delete').mockRejectedValue(new Error('Delete error'));
-      
+
       const result = await localStorage.cleanup();
-      
+
       expect(result).toBe(0);
     });
 
@@ -929,14 +954,14 @@ describe('LocalStorage', () => {
           id: 'storage-1',
           versionId: 'version-1',
           path: '/test/version1.json',
-          metadata: { storedAt: recentDate }
-        }
+          metadata: { storedAt: recentDate },
+        },
       ];
 
       jest.spyOn(localStorage, 'list').mockResolvedValue(mockVersions as any);
-      
+
       const result = await localStorage.cleanup();
-      
+
       expect(result).toBe(0);
     });
 
@@ -946,15 +971,15 @@ describe('LocalStorage', () => {
           id: 'storage-1',
           versionId: 'version-1',
           path: '/test/version1.json',
-          metadata: { storedAt: '2023-01-01T00:00:00Z' }
-        }
+          metadata: { storedAt: '2023-01-01T00:00:00Z' },
+        },
       ];
 
       jest.spyOn(localStorage, 'list').mockResolvedValue(mockVersions as any);
       jest.spyOn(localStorage, 'retrieve').mockRejectedValue(new Error('Retrieve error'));
-      
+
       const result = await localStorage.exportData();
-      
+
       expect(result.versions).toEqual([]);
       expect(result.metadata.totalVersions).toBe(0);
     });

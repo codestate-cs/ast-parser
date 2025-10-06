@@ -1,6 +1,6 @@
 /**
  * Base Generator for documentation generation
- * 
+ *
  * This module provides the base class and interfaces for all documentation generators including:
  * - Abstract base class for documentation generators
  * - Common interfaces and types for documentation generation
@@ -104,7 +104,7 @@ export interface GeneratorValidationResult {
 
 /**
  * Abstract base class for documentation generators
- * 
+ *
  * Provides common functionality and interfaces for all documentation generators
  */
 export abstract class BaseGenerator {
@@ -118,13 +118,13 @@ export abstract class BaseGenerator {
       includeNavigation: true,
       includeMetadata: true,
       templateVariables: {},
-      ...options
+      ...options,
     };
   }
 
   /**
    * Generate documentation from AST nodes
-   * 
+   *
    * @param nodes - AST nodes to generate documentation from
    * @returns Documentation generation result
    */
@@ -132,7 +132,7 @@ export abstract class BaseGenerator {
 
   /**
    * Generate documentation from extracted data
-   * 
+   *
    * @param jsdocComments - JSDoc comments
    * @param typeInfo - Type information
    * @param examples - Example information
@@ -146,7 +146,7 @@ export abstract class BaseGenerator {
 
   /**
    * Validate generator configuration
-   * 
+   *
    * @returns Validation result
    */
   public validate(): GeneratorValidationResult {
@@ -176,13 +176,13 @@ export abstract class BaseGenerator {
     return {
       isValid: errors.length === 0,
       errors,
-      warnings
+      warnings,
     };
   }
 
   /**
    * Create documentation content structure
-   * 
+   *
    * @param nodes - AST nodes
    * @returns Documentation content
    */
@@ -202,19 +202,19 @@ export abstract class BaseGenerator {
       title: this.getProjectTitle(nodes),
       description: this.getProjectDescription(nodes),
       sections,
-      metadata: this.createContentMetadata(nodes)
+      metadata: this.createContentMetadata(nodes),
     };
   }
 
   /**
    * Create overview section
-   * 
+   *
    * @param nodes - AST nodes
    * @returns Overview section
    */
   protected createOverviewSection(nodes: ASTNode[]): DocumentationSection {
     const content = this.generateOverviewContent(nodes);
-    
+
     return {
       id: 'overview',
       title: 'Overview',
@@ -222,20 +222,20 @@ export abstract class BaseGenerator {
       level: 1,
       metadata: {
         type: 'overview',
-        nodeCount: nodes.length
-      }
+        nodeCount: nodes.length,
+      },
     };
   }
 
   /**
    * Create API reference section
-   * 
+   *
    * @param nodes - AST nodes
    * @returns API reference section
    */
   protected createAPIReferenceSection(nodes: ASTNode[]): DocumentationSection {
     const content = this.generateAPIReferenceContent(nodes);
-    
+
     return {
       id: 'api-reference',
       title: 'API Reference',
@@ -243,20 +243,20 @@ export abstract class BaseGenerator {
       level: 1,
       metadata: {
         type: 'api-reference',
-        nodeCount: nodes.length
-      }
+        nodeCount: nodes.length,
+      },
     };
   }
 
   /**
    * Create examples section
-   * 
+   *
    * @param nodes - AST nodes
    * @returns Examples section
    */
   protected createExamplesSection(nodes: ASTNode[]): DocumentationSection {
     const content = this.generateExamplesContent(nodes);
-    
+
     return {
       id: 'examples',
       title: 'Examples',
@@ -264,21 +264,21 @@ export abstract class BaseGenerator {
       level: 1,
       metadata: {
         type: 'examples',
-        nodeCount: nodes.length
-      }
+        nodeCount: nodes.length,
+      },
     };
   }
 
   /**
    * Generate overview content
-   * 
+   *
    * @param nodes - AST nodes
    * @returns Overview content
    */
   protected generateOverviewContent(nodes: ASTNode[]): string {
     const projectTitle = this.getProjectTitle(nodes);
     const projectDescription = this.getProjectDescription(nodes);
-    
+
     return `# ${projectTitle}
 
 ${projectDescription}
@@ -297,18 +297,18 @@ This documentation provides comprehensive information about the project's API, u
 
   /**
    * Generate API reference content
-   * 
+   *
    * @param nodes - AST nodes
    * @returns API reference content
    */
   protected generateAPIReferenceContent(nodes: ASTNode[]): string {
     let content = '# API Reference\n\n';
-    
+
     // Group nodes by type
     const functions = nodes.filter(n => n.nodeType === 'function');
     const classes = nodes.filter(n => n.nodeType === 'class');
     const interfaces = nodes.filter(n => n.nodeType === 'interface');
-    
+
     // Generate function documentation
     if (functions.length > 0) {
       content += '## Functions\n\n';
@@ -316,7 +316,7 @@ This documentation provides comprehensive information about the project's API, u
         content += this.generateFunctionDocumentation(func);
       }
     }
-    
+
     // Generate class documentation
     if (classes.length > 0) {
       content += '## Classes\n\n';
@@ -324,7 +324,7 @@ This documentation provides comprehensive information about the project's API, u
         content += this.generateClassDocumentation(cls);
       }
     }
-    
+
     // Generate interface documentation
     if (interfaces.length > 0) {
       content += '## Interfaces\n\n';
@@ -332,44 +332,44 @@ This documentation provides comprehensive information about the project's API, u
         content += this.generateInterfaceDocumentation(iface);
       }
     }
-    
+
     return content;
   }
 
   /**
    * Generate examples content
-   * 
+   *
    * @param nodes - AST nodes
    * @returns Examples content
    */
   protected generateExamplesContent(nodes: ASTNode[]): string {
     let content = '# Examples\n\n';
-    
+
     // Extract examples from nodes
     const examples = this.extractExamplesFromNodes(nodes);
-    
+
     if (examples.length === 0) {
       content += 'No examples found in the project.';
       return content;
     }
-    
+
     for (const example of examples) {
       content += this.generateExampleDocumentation(example);
     }
-    
+
     return content;
   }
 
   /**
    * Generate function documentation
-   * 
+   *
    * @param node - Function node
    * @returns Function documentation
    */
   protected generateFunctionDocumentation(node: ASTNode): string {
     const name = node.name;
     const description = this.getNodeDescription(node);
-    
+
     return `### ${name}
 
 ${description}
@@ -384,14 +384,14 @@ ${description}
 
   /**
    * Generate class documentation
-   * 
+   *
    * @param node - Class node
    * @returns Class documentation
    */
   protected generateClassDocumentation(node: ASTNode): string {
     const name = node.name;
     const description = this.getNodeDescription(node);
-    
+
     return `### ${name}
 
 ${description}
@@ -406,14 +406,14 @@ ${description}
 
   /**
    * Generate interface documentation
-   * 
+   *
    * @param node - Interface node
    * @returns Interface documentation
    */
   protected generateInterfaceDocumentation(node: ASTNode): string {
     const name = node.name;
     const description = this.getNodeDescription(node);
-    
+
     return `### ${name}
 
 ${description}
@@ -428,7 +428,7 @@ ${description}
 
   /**
    * Generate example documentation
-   * 
+   *
    * @param example - Example information
    * @returns Example documentation
    */
@@ -449,79 +449,79 @@ ${example.output ? `**Output:**\n\`\`\`\n${example.output}\n\`\`\`\n` : ''}
 
   /**
    * Extract examples from nodes
-   * 
+   *
    * @param nodes - AST nodes
    * @returns Array of example information
    */
   protected extractExamplesFromNodes(nodes: ASTNode[]): ExampleInfo[] {
     const examples: ExampleInfo[] = [];
-    
+
     for (const node of nodes) {
-      if (node.properties && node.properties['examples']) {
+      if (node.properties?.['examples']) {
         const nodeExamples = node.properties['examples'] as ExampleInfo[];
         examples.push(...nodeExamples);
       }
-      
+
       // Extract from child nodes
       for (const child of node.children) {
         const childExamples = this.extractExamplesFromNodes([child]);
         examples.push(...childExamples);
       }
     }
-    
+
     return examples;
   }
 
   /**
    * Get project title from nodes
-   * 
+   *
    * @param nodes - AST nodes
    * @returns Project title
    */
   protected getProjectTitle(nodes: ASTNode[]): string {
     // Try to find package.json or similar
     const packageNode = nodes.find(n => n.filePath.includes('package.json'));
-    if (packageNode && packageNode.properties && packageNode.properties['name']) {
+    if (packageNode?.properties?.['name']) {
       return packageNode.properties['name'] as string;
     }
-    
+
     // Fallback to first file name
     if (nodes.length > 0) {
       const firstFile = nodes[0]?.filePath.split('/').pop()?.split('.')[0];
       return firstFile || 'Project Documentation';
     }
-    
+
     return 'Project Documentation';
   }
 
   /**
    * Get project description from nodes
-   * 
+   *
    * @param nodes - AST nodes
    * @returns Project description
    */
   protected getProjectDescription(nodes: ASTNode[]): string {
     // Try to find package.json or similar
     const packageNode = nodes.find(n => n.filePath.includes('package.json'));
-    if (packageNode && packageNode.properties && packageNode.properties['description']) {
+    if (packageNode?.properties?.['description']) {
       return packageNode.properties['description'] as string;
     }
-    
+
     return 'Automatically generated documentation for the project.';
   }
 
   /**
    * Get node description
-   * 
+   *
    * @param node - AST node
    * @returns Node description
    */
   protected getNodeDescription(node: ASTNode): string {
-    if (node.properties && node.properties['description']) {
+    if (node.properties?.['description']) {
       return node.properties['description'] as string;
     }
-    
-    if (node.properties && node.properties['jsDocComments']) {
+
+    if (node.properties?.['jsDocComments']) {
       const comments = node.properties['jsDocComments'] as string[];
       for (const comment of comments) {
         const description = this.extractDescriptionFromJSDoc(comment);
@@ -530,39 +530,39 @@ ${example.output ? `**Output:**\n\`\`\`\n${example.output}\n\`\`\`\n` : ''}
         }
       }
     }
-    
+
     return `No description available for ${node.name}.`;
   }
 
   /**
    * Extract description from JSDoc comment
-   * 
+   *
    * @param comment - JSDoc comment
    * @returns Description text
    */
   protected extractDescriptionFromJSDoc(comment: string): string | null {
     const lines = comment.split('\n');
     const descriptionLines: string[] = [];
-    
+
     for (const line of lines) {
       const trimmed = line.replace(/^\s*\*\s?/, '').trim();
-      
+
       // Stop at first tag
       if (trimmed.startsWith('@')) {
         break;
       }
-      
+
       if (trimmed && !trimmed.startsWith('/**') && !trimmed.endsWith('*/')) {
         descriptionLines.push(trimmed);
       }
     }
-    
+
     return descriptionLines.length > 0 ? descriptionLines.join(' ') : null;
   }
 
   /**
    * Get file count from nodes
-   * 
+   *
    * @param nodes - AST nodes
    * @returns File count
    */
@@ -573,7 +573,7 @@ ${example.output ? `**Output:**\n\`\`\`\n${example.output}\n\`\`\`\n` : ''}
 
   /**
    * Get function count from nodes
-   * 
+   *
    * @param nodes - AST nodes
    * @returns Function count
    */
@@ -583,7 +583,7 @@ ${example.output ? `**Output:**\n\`\`\`\n${example.output}\n\`\`\`\n` : ''}
 
   /**
    * Get class count from nodes
-   * 
+   *
    * @param nodes - AST nodes
    * @returns Class count
    */
@@ -593,7 +593,7 @@ ${example.output ? `**Output:**\n\`\`\`\n${example.output}\n\`\`\`\n` : ''}
 
   /**
    * Get interface count from nodes
-   * 
+   *
    * @param nodes - AST nodes
    * @returns Interface count
    */
@@ -603,7 +603,7 @@ ${example.output ? `**Output:**\n\`\`\`\n${example.output}\n\`\`\`\n` : ''}
 
   /**
    * Create content metadata
-   * 
+   *
    * @param nodes - AST nodes
    * @returns Content metadata
    */
@@ -614,13 +614,13 @@ ${example.output ? `**Output:**\n\`\`\`\n${example.output}\n\`\`\`\n` : ''}
       fileCount: this.getFileCount(nodes),
       functionCount: this.getFunctionCount(nodes),
       classCount: this.getClassCount(nodes),
-      interfaceCount: this.getInterfaceCount(nodes)
+      interfaceCount: this.getInterfaceCount(nodes),
     };
   }
 
   /**
    * Write content to file
-   * 
+   *
    * @param content - Content to write
    * @param filePath - File path
    * @returns Promise that resolves when file is written
@@ -628,7 +628,7 @@ ${example.output ? `**Output:**\n\`\`\`\n${example.output}\n\`\`\`\n` : ''}
   protected async writeToFile(content: string, filePath: string): Promise<void> {
     // This is a placeholder - in a real implementation, you would use fs.promises.writeFile
     // For now, we'll just simulate the operation
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       setTimeout(() => {
         console.log(`Writing content to ${filePath} (${content.length} characters)`);
         resolve();
@@ -638,7 +638,7 @@ ${example.output ? `**Output:**\n\`\`\`\n${example.output}\n\`\`\`\n` : ''}
 
   /**
    * Update generation options
-   * 
+   *
    * @param options - New options to merge
    */
   public updateOptions(options: Partial<DocumentationGenerationOptions>): void {
@@ -647,7 +647,7 @@ ${example.output ? `**Output:**\n\`\`\`\n${example.output}\n\`\`\`\n` : ''}
 
   /**
    * Get current generation options
-   * 
+   *
    * @returns Current options
    */
   public getOptions(): DocumentationGenerationOptions {

@@ -13,6 +13,8 @@ import {
   ComplexityMetrics,
   QualityMetrics,
   PackageConfig,
+  EntryPointInfo,
+  ProjectStructure,
 } from '../types';
 import { ParsingOptions, DEFAULT_PARSING_OPTIONS } from '../types/options';
 import { ProjectDetector } from './ProjectDetector';
@@ -20,6 +22,10 @@ import { CacheManager } from './CacheManager';
 import { PerformanceMonitor } from '../utils/performance/PerformanceMonitor';
 import { MemoryManager } from '../utils/performance/MemoryManager';
 import { logInfo, logWarn, logError } from '../utils/error/ErrorLogger';
+import { EnhancedTypeScriptParser } from '../parsers/EnhancedTypeScriptParser';
+import { TypeScriptParser } from '../parsers/TypeScriptParser';
+import { EntryPointAnalyzer } from '../analyzers/EntryPointAnalyzer';
+import { ComplexityAnalyzer } from '../analyzers/ComplexityAnalyzer';
 
 /**
  * Project parser class
@@ -29,6 +35,8 @@ export class ProjectParser {
   private cacheManager: CacheManager;
   private performanceMonitor?: PerformanceMonitor;
   private memoryManager?: MemoryManager;
+  private entryPointAnalyzer: EntryPointAnalyzer;
+  private complexityAnalyzer: ComplexityAnalyzer;
 
   constructor(options: Partial<ParsingOptions> = {}) {
     this.options = this.mergeOptions(DEFAULT_PARSING_OPTIONS, options);
@@ -40,6 +48,10 @@ export class ProjectParser {
       cleanupInterval: 300000,
       defaultTTL: (this.options.cache?.cacheExpiration ?? 1) * 3600000,
     });
+
+    // Initialize analyzers
+    this.entryPointAnalyzer = new EntryPointAnalyzer();
+    this.complexityAnalyzer = new ComplexityAnalyzer();
 
     // Initialize performance components if enabled
     if (
@@ -54,6 +66,23 @@ export class ProjectParser {
       this.options.performance?.memoryManager
     ) {
       this.memoryManager = this.options.performance.memoryManager;
+    }
+
+    // Load existing cache
+    void this.initializeCache();
+  }
+
+  /**
+   * Initialize cache by loading existing cache file
+   */
+  private async initializeCache(): Promise<void> {
+    try {
+      await this.cacheManager.loadCache();
+      logInfo('Cache initialized successfully');
+    } catch (error) {
+      logWarn('Failed to load cache, starting with empty cache', {
+        error: (error as Error).message,
+      });
     }
   }
 
@@ -155,11 +184,13 @@ export class ProjectParser {
       }
 
       // Parse files
-      const astNodes = await this.parseFiles(files);
+      const parseResult = await this.parseFiles(files);
+      const astNodes = parseResult.nodes;
+      const parserRelations = parseResult.relations;
       logInfo(`Parsed ${astNodes.length} AST nodes`);
 
       // Build relationships
-      const relations = this.buildRelations(astNodes);
+      const relations = this.buildRelations(astNodes, parserRelations);
       logInfo(`Built ${relations.length} relationships`);
 
       // Analyze structure
@@ -170,6 +201,10 @@ export class ProjectParser {
       const complexity = this.calculateComplexity(astNodes);
       const quality = this.calculateQuality(astNodes, structure);
 
+      // Analyze entry points
+      const entryPointAnalysis = this.analyzeEntryPoints(astNodes, relations, structure);
+      logInfo(`Analyzed ${entryPointAnalysis.entryPoints.length} entry points`);
+
       // Build project info
       const config = detection.metadata['config'] as PackageConfig;
       const projectInfo: ProjectInfo = {
@@ -177,7 +212,7 @@ export class ProjectParser {
         rootPath: projectRoot,
         name: config?.name ?? FileUtils.getBaseName(projectRoot),
         version: config?.version ?? '1.0.0',
-        entryPoints: config?.entryPoints ?? [],
+        entryPoints: entryPointAnalysis.entryPoints,
         dependencies: config?.dependencies ?? [],
         devDependencies: config?.devDependencies ?? [],
         structure,
@@ -237,6 +272,14 @@ export class ProjectParser {
         } catch (error) {
           logWarn('Performance monitoring end failed', { error: (error as Error).message });
         }
+      }
+
+      // Persist cache
+      try {
+        await this.cacheManager.persistCache();
+        logInfo('Cache persisted successfully');
+      } catch (error) {
+        logWarn('Failed to persist cache', { error: (error as Error).message });
       }
 
       logInfo(`Project parsing completed: ${projectInfo.name}`);
@@ -355,10 +398,13 @@ export class ProjectParser {
   }
 
   /**
-   * Parse files to AST nodes
+   * Parse files to AST nodes and relations
    */
-  private async parseFiles(files: FileInfo[]): Promise<ASTNode[]> {
+  private async parseFiles(
+    files: FileInfo[]
+  ): Promise<{ nodes: ASTNode[]; relations: Relation[] }> {
     const astNodes: ASTNode[] = [];
+    const allRelations: Relation[] = [];
     const maxConcurrentFiles = this.options.performance?.maxConcurrentFiles ?? 10;
     const timeout = this.options.performance?.timeout ?? 300000; // 5 minutes default
     const enableProgress = this.options.performance?.enableProgress ?? false;
@@ -398,7 +444,7 @@ export class ProjectParser {
       const batchPromises = batch.map(file =>
         Promise.race([
           this.parseFileWithTimeout(file, timeout),
-          new Promise<ASTNode[]>((_, reject) =>
+          new Promise<{ nodes: ASTNode[]; relations: Relation[] }>((_, reject) =>
             setTimeout(() => reject(new Error(`File parsing timeout: ${file.path}`)), timeout)
           ),
         ])
@@ -410,7 +456,8 @@ export class ProjectParser {
         // Process results
         for (const result of batchResults) {
           if (result.status === 'fulfilled') {
-            astNodes.push(...result.value);
+            astNodes.push(...result.value.nodes);
+            allRelations.push(...result.value.relations);
           } else {
             logWarn(`Failed to parse file in batch: ${result.reason}`);
           }
@@ -434,16 +481,19 @@ export class ProjectParser {
       logInfo(`Completed parsing ${filesToParse.length} files`);
     }
 
-    return astNodes;
+    return { nodes: astNodes, relations: allRelations };
   }
 
   /**
    * Parse file with timeout and memory limit enforcement
    */
-  private async parseFileWithTimeout(file: FileInfo, timeout: number): Promise<ASTNode[]> {
+  private async parseFileWithTimeout(
+    file: FileInfo,
+    timeout: number
+  ): Promise<{ nodes: ASTNode[]; relations: Relation[] }> {
     const memoryLimit = this.options.performance?.memoryLimit ?? 1024; // MB
 
-    return new Promise<ASTNode[]>((resolve, reject) => {
+    return new Promise<{ nodes: ASTNode[]; relations: Relation[] }>((resolve, reject) => {
       const timer = setTimeout(() => {
         reject(new Error(`File parsing timeout: ${file.path}`));
       }, timeout);
@@ -475,118 +525,70 @@ export class ProjectParser {
   }
 
   /**
-   * Parse individual file
+   * Parse individual file using proper TypeScript parser
    */
-  private async parseFile(file: FileInfo): Promise<ASTNode[]> {
-    // This is a simplified implementation for Phase 1
-    // Full parsing will be implemented in Phase 1.5 with TypeScriptParser
+  private async parseFile(file: FileInfo): Promise<{ nodes: ASTNode[]; relations: Relation[] }> {
+    try {
+      // Determine which parser to use based on file type and options
+      const parser = this.createParser();
 
-    const content = await FileUtils.readFile(file.path);
-    const lines = content.split('\n');
-
-    // Create basic AST nodes for functions, classes, and interfaces
-    const nodes: ASTNode[] = [];
-
-    for (let i = 0; i < lines.length; i++) {
-      const line = lines[i]?.trim() ?? '';
-      const start = content.indexOf(line);
-      const end = start + line.length;
-
-      // Simple pattern matching for Phase 1
-      if (line.startsWith('class ')) {
-        const className = this.extractName(line, 'class ');
-        nodes.push({
-          id: `${file.path}:${i}`,
-          name: className,
-          type: 'class',
-          nodeType: 'class',
-          filePath: file.path,
-          start,
-          end,
-          children: [],
-          metadata: { line: i + 1 },
-          properties: {},
-        });
-      } else if (line.startsWith('interface ')) {
-        const interfaceName = this.extractName(line, 'interface ');
-        nodes.push({
-          id: `${file.path}:${i}`,
-          name: interfaceName,
-          type: 'interface',
-          nodeType: 'interface',
-          filePath: file.path,
-          start,
-          end,
-          children: [],
-          metadata: { line: i + 1 },
-          properties: {},
-        });
-      } else if (line.startsWith('function ')) {
-        const functionName = this.extractName(line, 'function ');
-        nodes.push({
-          id: `${file.path}:${i}`,
-          name: functionName,
-          type: 'function',
-          nodeType: 'function',
-          filePath: file.path,
-          start,
-          end,
-          children: [],
-          metadata: { line: i + 1 },
-          properties: {},
-        });
+      if (!parser.canParse(file)) {
+        logWarn(`Parser cannot handle file: ${file.path}`);
+        return { nodes: [], relations: [] };
       }
-    }
 
-    return nodes;
+      // Parse file with proper TypeScript parser
+      const result = await parser.parseFile(file);
+
+      // Convert parser result to ASTNode format
+      const nodes: ASTNode[] = result.nodes.map((node: ASTNode) => ({
+        id: node.id,
+        name: node.name,
+        type: node.type,
+        nodeType: node.nodeType,
+        filePath: node.filePath,
+        start: node.start,
+        end: node.end,
+        children: node.children || [],
+        metadata: node.metadata || {},
+        properties: node.properties || {},
+      }));
+
+      logInfo(
+        `Parsed file ${file.path}: ${nodes.length} nodes, ${result.relations.length} relations`
+      );
+      return { nodes, relations: result.relations };
+    } catch (error) {
+      logError(`Failed to parse file: ${file.path}`, error as Error);
+      return { nodes: [], relations: [] };
+    }
   }
 
   /**
-   * Extract name from declaration line
+   * Create appropriate parser based on options
    */
-  private extractName(line: string, prefix: string): string {
-    if (!line.includes(prefix)) {
-      return 'unknown';
-    }
-    const withoutPrefix = line.substring(line.indexOf(prefix) + prefix.length);
-    const nameMatch = withoutPrefix.match(/^(\w+)/);
-    return nameMatch?.[1] ?? 'unknown';
+  private createParser(): TypeScriptParser | EnhancedTypeScriptParser {
+    // Always use enhanced parser for better analysis
+    return new EnhancedTypeScriptParser(this.options);
   }
 
   /**
-   * Build relationships between AST nodes
+   * Build relationships between AST nodes using parser results
    */
-  private buildRelations(astNodes: ASTNode[]): Relation[] {
+  private buildRelations(astNodes: ASTNode[], parserRelations: Relation[]): Relation[] {
     const relations: Relation[] = [];
 
-    // Simple relationship building for Phase 1
-    // Full relationship analysis will be implemented in Phase 2
+    // Use relations directly from parser results
+    relations.push(...parserRelations);
 
-    for (let i = 0; i < astNodes.length; i++) {
-      const node = astNodes[i];
-
-      // Find parent-child relationships
-      for (let j = i + 1; j < astNodes.length; j++) {
-        const otherNode = astNodes[j];
-
-        if (
-          node &&
-          otherNode &&
-          node.filePath === otherNode.filePath &&
-          node.start < otherNode.start &&
-          node.end > otherNode.end
-        ) {
-          relations.push({
-            id: `parent-child-${node.id}-${otherNode.id}`,
-            type: 'references',
-            from: node.id,
-            to: otherNode.id,
-            metadata: { relationship: 'parent-child' },
-          });
-        }
+    // Also extract any additional relationships from node metadata
+    for (const node of astNodes) {
+      if (node.metadata?.['relations']) {
+        relations.push(...(node.metadata['relations'] as Relation[]));
       }
     }
 
+    logInfo(`Built ${relations.length} relationships`);
     return relations;
   }
 
@@ -643,33 +645,69 @@ export class ProjectParser {
   }
 
   /**
-   * Calculate complexity metrics
+   * Calculate complexity metrics using ComplexityAnalyzer
    */
   private calculateComplexity(astNodes: ASTNode[]): ComplexityMetrics {
-    const functionCount = astNodes.filter(node => node.nodeType === 'function').length;
-    const classCount = astNodes.filter(node => node.nodeType === 'class').length;
-    const interfaceCount = astNodes.filter(node => node.nodeType === 'interface').length;
+    try {
+      // Create a temporary ProjectInfo for analysis
+      const tempProjectInfo: ProjectInfo = {
+        type: 'typescript',
+        rootPath: '',
+        name: '',
+        version: '1.0.0',
+        entryPoints: [],
+        dependencies: [],
+        devDependencies: [],
+        structure: {
+          files: [],
+          directories: [],
+          totalFiles: 0,
+          totalLines: 0,
+          totalSize: 0,
+        },
+        ast: astNodes,
+        relations: [],
+        publicExports: [],
+        privateExports: [],
+        complexity: {
+          cyclomaticComplexity: 0,
+          cognitiveComplexity: 0,
+          linesOfCode: 0,
+          functionCount: 0,
+          classCount: 0,
+          interfaceCount: 0,
+        },
+        quality: {
+          score: 0,
+          maintainabilityIndex: 0,
+          technicalDebtRatio: 0,
+          duplicationPercentage: 0,
+          testCoveragePercentage: 0,
+        },
+      };
 
-    // Simple complexity calculation for Phase 1
-    const cyclomaticComplexity = functionCount * 2 + classCount * 3;
-    const cognitiveComplexity = functionCount * 1.5 + classCount * 2;
-    const linesOfCode = astNodes.reduce((sum, node) => sum + (node.end - node.start), 0);
-
-    return {
-      cyclomaticComplexity,
-      cognitiveComplexity,
-      linesOfCode,
-      functionCount,
-      classCount,
-      interfaceCount,
-    };
+      // Use ComplexityAnalyzer to calculate metrics
+      const analysisResult = this.complexityAnalyzer.analyze(tempProjectInfo);
+      return analysisResult.complexityMetrics;
+    } catch (error) {
+      logError('Failed to calculate complexity metrics', error as Error);
+      // Return default metrics on error
+      return {
+        cyclomaticComplexity: 0,
+        cognitiveComplexity: 0,
+        linesOfCode: 0,
+        functionCount: 0,
+        classCount: 0,
+        interfaceCount: 0,
+      };
+    }
   }
 
   /**
    * Calculate quality metrics
    */
   private calculateQuality(astNodes: ASTNode[], structure: { totalFiles: number }): QualityMetrics {
-    // Simple quality calculation for Phase 1
+    // Basic quality calculation - can be enhanced with dedicated QualityAnalyzer later
     const totalNodes = astNodes.length;
     const documentedNodes = astNodes.filter(
       node => node.metadata && Object.keys(node.metadata).length > 1
@@ -844,23 +882,24 @@ export class ProjectParser {
 
           if (!useCache) {
             // Parse file fresh
-            const fileASTs = await this.parseFile(file);
-            if (fileASTs && fileASTs.length > 0) {
-              astNodes.push(...fileASTs);
+            const parseResult = await this.parseFile(file);
+            if (parseResult.nodes && parseResult.nodes.length > 0) {
+              astNodes.push(...parseResult.nodes);
+              relations.push(...parseResult.relations);
 
               // Extract dependencies from all AST nodes
               const dependencies: string[] = [];
-              for (const ast of fileASTs) {
+              for (const ast of parseResult.nodes) {
                 dependencies.push(...this.extractDependencies(ast));
               }
 
               // Cache the result (use first AST node as representative)
-              if (fileASTs[0]) {
+              if (parseResult.nodes[0]) {
                 this.cacheManager.setCache(filePath, {
                   hash: file.hash,
                   lastModified: file.lastModified.toISOString(),
-                  ast: fileASTs[0], // Use first AST node as representative
-                  relations: [],
+                  ast: parseResult.nodes[0], // Use first AST node as representative
+                  relations: parseResult.relations,
                   dependencies: [...new Set(dependencies)], // Remove duplicates
                 });
               }
@@ -874,7 +913,7 @@ export class ProjectParser {
       }
 
       // Build relationships
-      const allRelations = this.buildRelations(astNodes);
+      const allRelations = this.buildRelations(astNodes, relations);
       logInfo(`Built ${allRelations.length} relationships`);
 
       // Analyze structure
@@ -885,6 +924,10 @@ export class ProjectParser {
       const complexity = this.calculateComplexity(astNodes);
       const quality = this.calculateQuality(astNodes, structure);
 
+      // Analyze entry points
+      const entryPointAnalysis = this.analyzeEntryPoints(astNodes, allRelations, structure);
+      logInfo(`Analyzed ${entryPointAnalysis.entryPoints.length} entry points`);
+
       // Build project info
       const config = detection.metadata['config'] as PackageConfig;
       const projectInfo: ProjectInfo = {
@@ -892,7 +935,7 @@ export class ProjectParser {
         rootPath: projectRoot,
         name: config?.name ?? FileUtils.getBaseName(projectRoot),
         version: config?.version ?? '1.0.0',
-        entryPoints: config?.entryPoints ?? [],
+        entryPoints: entryPointAnalysis.entryPoints,
         dependencies: config?.dependencies ?? [],
         devDependencies: config?.devDependencies ?? [],
         structure,
@@ -955,7 +998,12 @@ export class ProjectParser {
       }
 
       // Persist cache
-      await this.cacheManager.persistCache();
+      try {
+        await this.cacheManager.persistCache();
+        logInfo('Cache persisted successfully');
+      } catch (error) {
+        logWarn('Failed to persist cache', { error: (error as Error).message });
+      }
 
       logInfo(
         `Incremental parsing completed. Changed files: ${changedFiles.length}, Cache hits: ${cacheHits}, Cache misses: ${cacheMisses}`
@@ -1046,6 +1094,58 @@ export class ProjectParser {
    */
   getCacheManager(): CacheManager {
     return this.cacheManager;
+  }
+
+  /**
+   * Analyze entry points using EntryPointAnalyzer
+   */
+  private analyzeEntryPoints(
+    astNodes: ASTNode[],
+    relations: Relation[],
+    structure: ProjectStructure
+  ): { entryPoints: EntryPointInfo[] } {
+    try {
+      // Create a temporary ProjectInfo for analysis
+      const tempProjectInfo: ProjectInfo = {
+        type: 'typescript',
+        rootPath: '',
+        name: '',
+        version: '1.0.0',
+        entryPoints: [],
+        dependencies: [],
+        devDependencies: [],
+        structure,
+        ast: astNodes,
+        relations,
+        publicExports: [],
+        privateExports: [],
+        complexity: {
+          cyclomaticComplexity: 0,
+          cognitiveComplexity: 0,
+          linesOfCode: 0,
+          functionCount: 0,
+          classCount: 0,
+          interfaceCount: 0,
+        },
+        quality: {
+          score: 0,
+          maintainabilityIndex: 0,
+          technicalDebtRatio: 0,
+          duplicationPercentage: 0,
+          testCoveragePercentage: 0,
+        },
+      };
+
+      // Use EntryPointAnalyzer to find entry points
+      const analysisResult = this.entryPointAnalyzer.analyze(tempProjectInfo);
+
+      return {
+        entryPoints: analysisResult.entryPoints,
+      };
+    } catch (error) {
+      logError('Failed to analyze entry points', error as Error);
+      return { entryPoints: [] };
+    }
   }
 
   /**

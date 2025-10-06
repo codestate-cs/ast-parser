@@ -111,7 +111,7 @@ export class BaseTemplate {
 
   /**
    * Constructor
-   * 
+   *
    * @param options - Template options
    */
   constructor(options: Partial<BaseTemplateOptions> = {}) {
@@ -120,7 +120,7 @@ export class BaseTemplate {
 
   /**
    * Process template with variable substitution
-   * 
+   *
    * @param template - Template content
    * @param variables - Variables for substitution
    * @returns Processing result
@@ -145,13 +145,13 @@ export class BaseTemplate {
 
       // Extract variables from template
       const templateVariables = this.extractVariables(template);
-      
+
       // Process template
       let processedContent = template;
-      
+
       for (const variable of templateVariables) {
         variablesUsed.push(variable);
-        
+
         if (variables.hasOwnProperty(variable)) {
           const value = this.getVariableValue(variables, variable);
           const regex = new RegExp(`\\{\\{${this.escapeRegex(variable)}\\}\\}`, 'g');
@@ -170,25 +170,25 @@ export class BaseTemplate {
         variablesUsed,
         variablesMissing,
         errors,
-        success: errors.length === 0
+        success: errors.length === 0,
       };
     } catch (error) {
       errors.push(error instanceof Error ? error.message : 'Unknown processing error');
-      
+
       return {
         content: template,
         processingTime: Date.now() - startTime,
         variablesUsed,
         variablesMissing,
         errors,
-        success: false
+        success: false,
       };
     }
   }
 
   /**
    * Generate content from structured data
-   * 
+   *
    * @param data - Structured data
    * @returns Generated content
    */
@@ -212,7 +212,7 @@ export class BaseTemplate {
 
   /**
    * Validate template syntax
-   * 
+   *
    * @param template - Template content
    * @returns Validation result
    */
@@ -229,15 +229,15 @@ export class BaseTemplate {
           metadata: {
             variables,
             complexity: 0,
-            size: 0
-          }
+            size: 0,
+          },
         };
       }
 
       // Check for balanced braces
       const openBraces = (template.match(/\{\{/g) || []).length;
       const closeBraces = (template.match(/\}\}/g) || []).length;
-      
+
       if (openBraces !== closeBraces) {
         errors.push('Unbalanced template braces');
       }
@@ -247,10 +247,10 @@ export class BaseTemplate {
       variables.push(...templateVariables);
 
       // Check for invalid variable syntax
-      const invalidVariables = templateVariables.filter(variable => 
-        !/^[a-zA-Z_][a-zA-Z0-9_.]*$/.test(variable)
+      const invalidVariables = templateVariables.filter(
+        variable => !/^[a-zA-Z_][a-zA-Z0-9_.]*$/.test(variable)
       );
-      
+
       if (invalidVariables.length > 0) {
         errors.push(`Invalid variable names: ${invalidVariables.join(', ')}`);
       }
@@ -261,27 +261,27 @@ export class BaseTemplate {
         metadata: {
           variables,
           complexity: this.calculateComplexity(template),
-          size: template.length
-        }
+          size: template.length,
+        },
       };
     } catch (error) {
       errors.push(error instanceof Error ? error.message : 'Unknown validation error');
-      
+
       return {
         isValid: false,
         errors,
         metadata: {
           variables,
           complexity: 0,
-          size: template.length
-        }
+          size: template.length,
+        },
       };
     }
   }
 
   /**
    * Load template from string
-   * 
+   *
    * @param templateContent - Template content
    * @returns Loading result
    */
@@ -290,7 +290,7 @@ export class BaseTemplate {
       if (!templateContent) {
         return {
           success: false,
-          error: 'Template content is empty'
+          error: 'Template content is empty',
         };
       }
 
@@ -300,7 +300,7 @@ export class BaseTemplate {
         if (!validation.isValid) {
           return {
             success: false,
-            error: `Template validation failed: ${validation.errors.join(', ')}`
+            error: `Template validation failed: ${validation.errors.join(', ')}`,
           };
         }
       }
@@ -311,7 +311,7 @@ export class BaseTemplate {
         complexity: this.calculateComplexity(templateContent),
         size: templateContent.length,
         format: this.options.format,
-        lastModified: Date.now()
+        lastModified: Date.now(),
       };
 
       return {
@@ -320,20 +320,20 @@ export class BaseTemplate {
         metadata: {
           variables: this.templateMetadata.variables,
           size: this.templateMetadata.size,
-          format: this.templateMetadata.format
-        }
+          format: this.templateMetadata.format,
+        },
       };
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown loading error'
+        error: error instanceof Error ? error.message : 'Unknown loading error',
       };
     }
   }
 
   /**
    * Get template metadata
-   * 
+   *
    * @returns Template metadata
    */
   public getTemplateMetadata(): TemplateMetadata {
@@ -343,7 +343,7 @@ export class BaseTemplate {
         complexity: 0,
         size: 0,
         format: this.options.format,
-        lastModified: 0
+        lastModified: 0,
       };
     }
 
@@ -352,7 +352,7 @@ export class BaseTemplate {
 
   /**
    * Extend template with inheritance
-   * 
+   *
    * @param childTemplate - Child template content
    * @returns Extension result
    */
@@ -365,28 +365,25 @@ export class BaseTemplate {
       if (!this.currentTemplate) {
         return {
           success: false,
-          error: 'No base template loaded for inheritance'
+          error: 'No base template loaded for inheritance',
         };
       }
 
       // Simple template inheritance - replace {{content}} in base template
-      const extendedTemplate = this.currentTemplate.replace(
-        /\{\{content\}\}/g,
-        childTemplate
-      );
+      const extendedTemplate = this.currentTemplate.replace(/\{\{content\}\}/g, childTemplate);
 
       return this.loadTemplate(extendedTemplate);
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown extension error'
+        error: error instanceof Error ? error.message : 'Unknown extension error',
       };
     }
   }
 
   /**
    * Update template options
-   * 
+   *
    * @param newOptions - New options
    */
   public updateOptions(newOptions: Partial<BaseTemplateOptions>): void {
@@ -395,7 +392,7 @@ export class BaseTemplate {
 
   /**
    * Get current options
-   * 
+   *
    * @returns Current options
    */
   public getOptions(): BaseTemplateOptions {
@@ -404,11 +401,13 @@ export class BaseTemplate {
 
   /**
    * Validate configuration
-   * 
+   *
    * @param config - Configuration to validate
    * @returns Validation result
    */
-  public validateConfiguration(config: Partial<BaseTemplateOptions>): ConfigurationValidationResult {
+  public validateConfiguration(
+    config: Partial<BaseTemplateOptions>
+  ): ConfigurationValidationResult {
     const errors: string[] = [];
 
     try {
@@ -427,7 +426,10 @@ export class BaseTemplate {
         errors.push('validateTemplate must be a boolean');
       }
 
-      if (config.validateConfiguration !== undefined && typeof config.validateConfiguration !== 'boolean') {
+      if (
+        config.validateConfiguration !== undefined &&
+        typeof config.validateConfiguration !== 'boolean'
+      ) {
         errors.push('validateConfiguration must be a boolean');
       }
 
@@ -441,10 +443,16 @@ export class BaseTemplate {
         if (typeof config.inheritance !== 'object') {
           errors.push('inheritance must be an object');
         } else {
-          if (config.inheritance.enabled !== undefined && typeof config.inheritance.enabled !== 'boolean') {
+          if (
+            config.inheritance.enabled !== undefined &&
+            typeof config.inheritance.enabled !== 'boolean'
+          ) {
             errors.push('inheritance.enabled must be a boolean');
           }
-          if (config.inheritance.baseTemplate !== undefined && typeof config.inheritance.baseTemplate !== 'string') {
+          if (
+            config.inheritance.baseTemplate !== undefined &&
+            typeof config.inheritance.baseTemplate !== 'string'
+          ) {
             errors.push('inheritance.baseTemplate must be a string');
           }
         }
@@ -453,21 +461,21 @@ export class BaseTemplate {
       return {
         isValid: errors.length === 0,
         errors,
-        configuration: errors.length === 0 ? this.mergeOptions(config) : undefined
+        configuration: errors.length === 0 ? this.mergeOptions(config) : undefined,
       };
     } catch (error) {
       errors.push(error instanceof Error ? error.message : 'Unknown validation error');
-      
+
       return {
         isValid: false,
-        errors
+        errors,
       };
     }
   }
 
   /**
    * Extract variables from template
-   * 
+   *
    * @param template - Template content
    * @returns Array of variable names
    */
@@ -488,7 +496,7 @@ export class BaseTemplate {
 
   /**
    * Get variable value from nested object
-   * 
+   *
    * @param variables - Variables object
    * @param variablePath - Variable path (e.g., 'user.name')
    * @returns Variable value
@@ -510,14 +518,14 @@ export class BaseTemplate {
 
   /**
    * Process nested variables in template
-   * 
+   *
    * @param template - Template content
    * @param variables - Variables object
    * @returns Processed template
    */
   protected processNestedVariables(template: string, variables: Record<string, unknown>): string {
     const nestedVariableRegex = /\{\{([^}]+(?:\.[^}]+)*)\}\}/g;
-    
+
     return template.replace(nestedVariableRegex, (match, variablePath) => {
       const value = this.getVariableValue(variables, variablePath);
       return value !== undefined ? String(value) : match;
@@ -526,7 +534,7 @@ export class BaseTemplate {
 
   /**
    * Escape regex special characters
-   * 
+   *
    * @param string - String to escape
    * @returns Escaped string
    */
@@ -536,7 +544,7 @@ export class BaseTemplate {
 
   /**
    * Calculate template complexity
-   * 
+   *
    * @param template - Template content
    * @returns Complexity score
    */
@@ -544,20 +552,20 @@ export class BaseTemplate {
     const variables = this.extractVariables(template);
     const nestedVariables = variables.filter(v => v.includes('.'));
     const conditionalBlocks = (template.match(/\{\{#[^}]+\}\}/g) || []).length;
-    
+
     return variables.length + nestedVariables.length * 2 + conditionalBlocks * 3;
   }
 
   /**
    * Generate HTML content
-   * 
+   *
    * @param data - Data object
    * @returns HTML content
    */
   protected generateHTMLContent(data: Record<string, unknown>): string {
     const title = data['title'] || 'Document';
     const content = data['content'] || '';
-    
+
     return `<!DOCTYPE html>
 <html>
 <head>
@@ -572,33 +580,33 @@ export class BaseTemplate {
 
   /**
    * Generate Markdown content
-   * 
+   *
    * @param data - Data object
    * @returns Markdown content
    */
   protected generateMarkdownContent(data: Record<string, unknown>): string {
     const title = data['title'] || 'Document';
     const content = data['content'] || '';
-    
+
     return `# ${title}\n\n${content}`;
   }
 
   /**
    * Generate text content
-   * 
+   *
    * @param data - Data object
    * @returns Text content
    */
   protected generateTextContent(data: Record<string, unknown>): string {
     const title = data['title'] || 'Document';
     const content = data['content'] || '';
-    
+
     return `${title}\n\n${content}`;
   }
 
   /**
    * Merge options with defaults
-   * 
+   *
    * @param options - Options to merge
    * @returns Merged options
    */
@@ -610,9 +618,9 @@ export class BaseTemplate {
       validateConfiguration: true,
       templateVariables: {},
       inheritance: {
-        enabled: false
+        enabled: false,
       },
-      ...options
+      ...options,
     };
   }
 }
