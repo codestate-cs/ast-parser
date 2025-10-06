@@ -39,7 +39,7 @@ describe('ConfigLoader', () => {
       const options = {
         envPrefix: 'TEST_',
         mergeWithDefaults: true,
-        validate: true
+        validate: true,
       };
       const config = loader.load(options);
       expect(config).toBeDefined();
@@ -50,20 +50,55 @@ describe('ConfigLoader', () => {
     it('should load configuration from file', () => {
       const mockConfig = {
         analyzers: {
-          dependency: { includeExternal: true, includeInternal: true, maxDepth: 10, includeCircular: true },
-          entryPoint: { includeMain: true, includeTypes: true, includePatterns: true, maxEntryPoints: 100 },
-          structure: { includeFiles: true, includeDirectories: true, maxDepth: 20, includeSize: true },
-          complexity: { includeCyclomatic: true, includeCognitive: true, includeLinesOfCode: true, includeFunctionCount: true, includeClassCount: true, includeInterfaceCount: true }
+          dependency: {
+            includeExternal: true,
+            includeInternal: true,
+            maxDepth: 10,
+            includeCircular: true,
+          },
+          entryPoint: {
+            includeMain: true,
+            includeTypes: true,
+            includePatterns: true,
+            maxEntryPoints: 100,
+          },
+          structure: {
+            includeFiles: true,
+            includeDirectories: true,
+            maxDepth: 20,
+            includeSize: true,
+          },
+          complexity: {
+            includeCyclomatic: true,
+            includeCognitive: true,
+            includeLinesOfCode: true,
+            includeFunctionCount: true,
+            includeClassCount: true,
+            includeInterfaceCount: true,
+          },
         },
         parsers: {
-          typescript: { includeTypes: true, includeJSDoc: true, includeDecorators: true, includeGenerics: true, maxDepth: 15 },
-          enhancedTypeScript: { includeAdvancedTypes: true, includeMethodSignatures: true, includeProperties: true, includeParameters: true, includeExports: true, maxDepth: 20 }
+          typescript: {
+            includeTypes: true,
+            includeJSDoc: true,
+            includeDecorators: true,
+            includeGenerics: true,
+            maxDepth: 15,
+          },
+          enhancedTypeScript: {
+            includeAdvancedTypes: true,
+            includeMethodSignatures: true,
+            includeProperties: true,
+            includeParameters: true,
+            includeExports: true,
+            maxDepth: 20,
+          },
         },
         output: {
           formats: { default: 'json', available: ['json', 'xml'], options: {} },
-          naming: { default: 'project', available: ['project', 'timestamp'], options: {} }
+          naming: { default: 'project', available: ['project', 'timestamp'], options: {} },
         },
-        global: { verbose: false, debug: false, maxProcessingTime: 300000, parallel: true }
+        global: { verbose: false, debug: false, maxProcessingTime: 300000, parallel: true },
       };
 
       // Mock fs module
@@ -301,12 +336,13 @@ describe('ConfigLoader', () => {
     });
 
     it('should handle complex nested objects in environment variables', () => {
-      process.env['CODESTATE_OUTPUT_FORMATS_OPTIONS'] = '{"json": {"prettyPrint": true, "indent": 2}, "xml": {"includeDeclaration": true}}';
+      process.env['CODESTATE_OUTPUT_FORMATS_OPTIONS'] =
+        '{"json": {"prettyPrint": true, "indent": 2}, "xml": {"includeDeclaration": true}}';
 
       const config = loader.loadFromEnvironment();
       expect(config.output.formats.options).toEqual({
         json: { prettyPrint: true, indent: 2 },
-        xml: { includeDeclaration: true }
+        xml: { includeDeclaration: true },
       });
     });
 

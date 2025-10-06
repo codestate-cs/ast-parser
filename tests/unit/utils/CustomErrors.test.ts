@@ -21,7 +21,7 @@ describe('CustomErrors', () => {
   describe('CodestateASTError', () => {
     it('should create error with message and code', () => {
       const error = new CodestateASTError('Test error', 'TEST_ERROR');
-      
+
       expect(error.message).toBe('Test error');
       expect(error.code).toBe('TEST_ERROR');
       expect(error.name).toBe('CodestateASTError');
@@ -31,7 +31,7 @@ describe('CustomErrors', () => {
     it('should create error with context', () => {
       const context = { filePath: '/test/file.ts', line: 10 };
       const error = new CodestateASTError('Test error', 'TEST_ERROR', context);
-      
+
       expect(error.message).toBe('Test error');
       expect(error.code).toBe('TEST_ERROR');
       expect(error.context).toEqual(context);
@@ -39,20 +39,20 @@ describe('CustomErrors', () => {
 
     it('should create error without context', () => {
       const error = new CodestateASTError('Test error', 'TEST_ERROR');
-      
+
       expect(error.context).toEqual({});
     });
 
     it('should maintain proper stack trace', () => {
       const error = new CodestateASTError('Test error', 'TEST_ERROR');
-      
+
       expect(error.stack).toBeDefined();
       expect(error.stack).toContain('CodestateASTError');
     });
 
     it('should be instance of Error', () => {
       const error = new CodestateASTError('Test error', 'TEST_ERROR');
-      
+
       expect(error).toBeInstanceOf(Error);
       expect(error).toBeInstanceOf(CodestateASTError);
     });
@@ -61,7 +61,7 @@ describe('CustomErrors', () => {
   describe('ProjectParsingError', () => {
     it('should create project parsing error', () => {
       const error = new ProjectParsingError('Failed to parse project');
-      
+
       expect(error.message).toBe('Failed to parse project');
       expect(error.code).toBe(ErrorCodes.PROJECT_PARSING_ERROR);
       expect(error.name).toBe('ProjectParsingError');
@@ -71,7 +71,7 @@ describe('CustomErrors', () => {
     it('should create project parsing error with context', () => {
       const context = { projectPath: '/test/project', reason: 'Invalid config' };
       const error = new ProjectParsingError('Failed to parse project', context);
-      
+
       expect(error.message).toBe('Failed to parse project');
       expect(error.code).toBe(ErrorCodes.PROJECT_PARSING_ERROR);
       expect(error.context).toEqual(context);
@@ -79,7 +79,7 @@ describe('CustomErrors', () => {
 
     it('should be instance of CodestateASTError', () => {
       const error = new ProjectParsingError('Test error');
-      
+
       expect(error).toBeInstanceOf(CodestateASTError);
       expect(error).toBeInstanceOf(ProjectParsingError);
     });
@@ -88,7 +88,7 @@ describe('CustomErrors', () => {
   describe('FileOperationError', () => {
     it('should create file operation error', () => {
       const error = new FileOperationError('Failed to read file', '/test/file.ts');
-      
+
       expect(error.message).toBe('Failed to read file');
       expect(error.code).toBe(ErrorCodes.FILE_OPERATION_ERROR);
       expect(error.name).toBe('FileOperationError');
@@ -98,7 +98,7 @@ describe('CustomErrors', () => {
     it('should create file operation error with context', () => {
       const context = { operation: 'read', reason: 'Permission denied' };
       const error = new FileOperationError('Failed to read file', '/test/file.ts', context);
-      
+
       expect(error.message).toBe('Failed to read file');
       expect(error.code).toBe(ErrorCodes.FILE_OPERATION_ERROR);
       expect(error.context).toEqual({ filePath: '/test/file.ts', ...context });
@@ -106,7 +106,7 @@ describe('CustomErrors', () => {
 
     it('should be instance of CodestateASTError', () => {
       const error = new FileOperationError('Test error', '/test/file.ts');
-      
+
       expect(error).toBeInstanceOf(CodestateASTError);
       expect(error).toBeInstanceOf(FileOperationError);
     });
@@ -115,7 +115,7 @@ describe('CustomErrors', () => {
   describe('ConfigurationError', () => {
     it('should create configuration error', () => {
       const error = new ConfigurationError('Invalid configuration');
-      
+
       expect(error.message).toBe('Invalid configuration');
       expect(error.code).toBe(ErrorCodes.CONFIGURATION_ERROR);
       expect(error.name).toBe('ConfigurationError');
@@ -125,7 +125,7 @@ describe('CustomErrors', () => {
     it('should create configuration error with context', () => {
       const context = { configFile: 'tsconfig.json', property: 'compilerOptions' };
       const error = new ConfigurationError('Invalid configuration', context);
-      
+
       expect(error.message).toBe('Invalid configuration');
       expect(error.code).toBe(ErrorCodes.CONFIGURATION_ERROR);
       expect(error.context).toEqual(context);
@@ -133,7 +133,7 @@ describe('CustomErrors', () => {
 
     it('should be instance of CodestateASTError', () => {
       const error = new ConfigurationError('Test error');
-      
+
       expect(error).toBeInstanceOf(CodestateASTError);
       expect(error).toBeInstanceOf(ConfigurationError);
     });
@@ -142,7 +142,7 @@ describe('CustomErrors', () => {
   describe('ParserError', () => {
     it('should create parser error', () => {
       const error = new ParserError('Failed to parse file', 'TypeScript');
-      
+
       expect(error.message).toBe('Failed to parse file');
       expect(error.code).toBe(ErrorCodes.PARSER_ERROR);
       expect(error.name).toBe('ParserError');
@@ -152,7 +152,7 @@ describe('CustomErrors', () => {
     it('should create parser error with context', () => {
       const context = { filePath: '/test/file.ts', line: 5 };
       const error = new ParserError('Failed to parse file', 'TypeScript', context);
-      
+
       expect(error.message).toBe('Failed to parse file');
       expect(error.code).toBe(ErrorCodes.PARSER_ERROR);
       expect(error.context).toEqual({ parserType: 'TypeScript', ...context });
@@ -160,7 +160,7 @@ describe('CustomErrors', () => {
 
     it('should be instance of CodestateASTError', () => {
       const error = new ParserError('Test error', 'TypeScript');
-      
+
       expect(error).toBeInstanceOf(CodestateASTError);
       expect(error).toBeInstanceOf(ParserError);
     });
@@ -169,7 +169,7 @@ describe('CustomErrors', () => {
   describe('ValidationError', () => {
     it('should create validation error', () => {
       const error = new ValidationError('Invalid value', 'name');
-      
+
       expect(error.message).toBe('Invalid value');
       expect(error.code).toBe(ErrorCodes.VALIDATION_ERROR);
       expect(error.name).toBe('ValidationError');
@@ -179,7 +179,7 @@ describe('CustomErrors', () => {
     it('should create validation error with context', () => {
       const context = { value: 'invalid', expected: 'string' };
       const error = new ValidationError('Invalid value', 'name', context);
-      
+
       expect(error.message).toBe('Invalid value');
       expect(error.code).toBe(ErrorCodes.VALIDATION_ERROR);
       expect(error.context).toEqual({ field: 'name', ...context });
@@ -187,7 +187,7 @@ describe('CustomErrors', () => {
 
     it('should be instance of CodestateASTError', () => {
       const error = new ValidationError('Test error', 'field');
-      
+
       expect(error).toBeInstanceOf(CodestateASTError);
       expect(error).toBeInstanceOf(ValidationError);
     });
@@ -196,7 +196,7 @@ describe('CustomErrors', () => {
   describe('CacheError', () => {
     it('should create cache error', () => {
       const error = new CacheError('Failed to cache data');
-      
+
       expect(error.message).toBe('Failed to cache data');
       expect(error.code).toBe(ErrorCodes.CACHE_ERROR);
       expect(error.name).toBe('CacheError');
@@ -206,7 +206,7 @@ describe('CustomErrors', () => {
     it('should create cache error with context', () => {
       const context = { key: 'user:123', operation: 'set' };
       const error = new CacheError('Failed to cache data', context);
-      
+
       expect(error.message).toBe('Failed to cache data');
       expect(error.code).toBe(ErrorCodes.CACHE_ERROR);
       expect(error.context).toEqual(context);
@@ -214,7 +214,7 @@ describe('CustomErrors', () => {
 
     it('should be instance of CodestateASTError', () => {
       const error = new CacheError('Test error');
-      
+
       expect(error).toBeInstanceOf(CodestateASTError);
       expect(error).toBeInstanceOf(CacheError);
     });
@@ -223,7 +223,7 @@ describe('CustomErrors', () => {
   describe('OutputError', () => {
     it('should create output error', () => {
       const error = new OutputError('Failed to generate output', 'json');
-      
+
       expect(error.message).toBe('Failed to generate output');
       expect(error.code).toBe(ErrorCodes.OUTPUT_ERROR);
       expect(error.name).toBe('OutputError');
@@ -233,7 +233,7 @@ describe('CustomErrors', () => {
     it('should create output error with context', () => {
       const context = { format: 'json', destination: '/output/file.json' };
       const error = new OutputError('Failed to generate output', 'json', context);
-      
+
       expect(error.message).toBe('Failed to generate output');
       expect(error.code).toBe(ErrorCodes.OUTPUT_ERROR);
       expect(error.context).toEqual({ outputType: 'json', ...context });
@@ -241,7 +241,7 @@ describe('CustomErrors', () => {
 
     it('should be instance of CodestateASTError', () => {
       const error = new OutputError('Test error', 'json');
-      
+
       expect(error).toBeInstanceOf(CodestateASTError);
       expect(error).toBeInstanceOf(OutputError);
     });
@@ -250,7 +250,7 @@ describe('CustomErrors', () => {
   describe('DocumentationError', () => {
     it('should create documentation error', () => {
       const error = new DocumentationError('Failed to generate documentation');
-      
+
       expect(error.message).toBe('Failed to generate documentation');
       expect(error.code).toBe(ErrorCodes.DOCUMENTATION_ERROR);
       expect(error.name).toBe('DocumentationError');
@@ -260,7 +260,7 @@ describe('CustomErrors', () => {
     it('should create documentation error with context', () => {
       const context = { template: 'api.md', source: '/src/api.ts' };
       const error = new DocumentationError('Failed to generate documentation', context);
-      
+
       expect(error.message).toBe('Failed to generate documentation');
       expect(error.code).toBe(ErrorCodes.DOCUMENTATION_ERROR);
       expect(error.context).toEqual(context);
@@ -268,7 +268,7 @@ describe('CustomErrors', () => {
 
     it('should be instance of CodestateASTError', () => {
       const error = new DocumentationError('Test error');
-      
+
       expect(error).toBeInstanceOf(CodestateASTError);
       expect(error).toBeInstanceOf(DocumentationError);
     });
@@ -363,8 +363,10 @@ describe('CustomErrors', () => {
 
     it('should maintain error chain', () => {
       const originalError = new Error('Original error');
-      const wrappedError = new ProjectParsingError('Wrapped error', { original: originalError.message });
-      
+      const wrappedError = new ProjectParsingError('Wrapped error', {
+        original: originalError.message,
+      });
+
       expect(wrappedError).toBeInstanceOf(CodestateASTError);
       expect(wrappedError.context?.['original']).toBe('Original error');
     });
@@ -373,13 +375,13 @@ describe('CustomErrors', () => {
   describe('Error serialization', () => {
     it('should serialize error to JSON', () => {
       const error = new ProjectParsingError('Test error', { key: 'value' });
-      
+
       // Test that error properties are accessible
       expect(error.message).toBe('Test error');
       expect(error.code).toBe(ErrorCodes.PROJECT_PARSING_ERROR);
       expect(error.name).toBe('ProjectParsingError');
       expect(error.context).toEqual({ key: 'value' });
-      
+
       // Test manual serialization
       const serialized = JSON.stringify({
         message: error.message,
@@ -388,7 +390,7 @@ describe('CustomErrors', () => {
         context: error.context,
       });
       const parsed = JSON.parse(serialized);
-      
+
       expect(parsed.message).toBe('Test error');
       expect(parsed.code).toBe(ErrorCodes.PROJECT_PARSING_ERROR);
       expect(parsed.name).toBe('ProjectParsingError');
@@ -398,9 +400,9 @@ describe('CustomErrors', () => {
     it('should handle circular references in context', () => {
       const context: any = { key: 'value' };
       context.self = context; // Create circular reference
-      
+
       const error = new ProjectParsingError('Test error', context);
-      
+
       // Should not throw when accessing context
       expect(error.context).toBeDefined();
       expect(error.context?.['key']).toBe('value');
@@ -410,20 +412,20 @@ describe('CustomErrors', () => {
   describe('Edge cases', () => {
     it('should handle empty message', () => {
       const error = new CodestateASTError('', 'TEST_ERROR');
-      
+
       expect(error.message).toBe('');
       expect(error.code).toBe('TEST_ERROR');
     });
 
     it('should handle null context', () => {
       const error = new CodestateASTError('Test error', 'TEST_ERROR', null as any);
-      
+
       expect(error.context).toEqual({});
     });
 
     it('should handle undefined context', () => {
       const error = new CodestateASTError('Test error', 'TEST_ERROR', undefined);
-      
+
       expect(error.context).toEqual({});
     });
 
@@ -434,9 +436,9 @@ describe('CustomErrors', () => {
         nullValue: null,
         undefinedValue: undefined,
       };
-      
+
       const error = new CodestateASTError('Test error', 'TEST_ERROR', context);
-      
+
       expect(error.context).toEqual(context);
     });
   });

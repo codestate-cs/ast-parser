@@ -4,14 +4,14 @@ import { MemoryManager } from '../../../../src/utils/performance/MemoryManager';
 const mockMemoryUsage = jest.fn();
 Object.defineProperty(process, 'memoryUsage', {
   value: mockMemoryUsage,
-  writable: true
+  writable: true,
 });
 
 // Mock gc function
 const mockGc = jest.fn();
 Object.defineProperty(global, 'gc', {
   value: mockGc,
-  writable: true
+  writable: true,
 });
 
 // Mock timer functions to prevent real timers from running
@@ -27,7 +27,7 @@ describe('MemoryManager', () => {
     // Store original timer functions
     originalSetInterval = global.setInterval;
     originalClearInterval = global.clearInterval;
-    
+
     // Mock timer functions
     global.setInterval = mockSetInterval;
     global.clearInterval = mockClearInterval;
@@ -42,14 +42,14 @@ describe('MemoryManager', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     memoryManager = new MemoryManager();
-    
+
     // Default mock implementations
     mockMemoryUsage.mockReturnValue({
       rss: 1024 * 1024 * 100, // 100MB
       heapTotal: 1024 * 1024 * 50, // 50MB
       heapUsed: 1024 * 1024 * 30, // 30MB
       external: 1024 * 1024 * 10, // 10MB
-      arrayBuffers: 1024 * 1024 * 5 // 5MB
+      arrayBuffers: 1024 * 1024 * 5, // 5MB
     });
 
     mockGc.mockImplementation(() => {});
@@ -60,7 +60,7 @@ describe('MemoryManager', () => {
     if (memoryManager) {
       memoryManager.dispose();
     }
-    
+
     // Clear mocked timers
     mockSetInterval.mockClear();
     mockClearInterval.mockClear();
@@ -82,9 +82,9 @@ describe('MemoryManager', () => {
         gcThreshold: 0.8,
         monitoringInterval: 5000,
         enableAutoGC: true,
-        enableLeakDetection: false
+        enableLeakDetection: false,
       };
-      
+
       const manager = new MemoryManager(options);
       expect(manager).toBeInstanceOf(MemoryManager);
     });
@@ -93,7 +93,7 @@ describe('MemoryManager', () => {
   describe('getMemoryUsage', () => {
     it('should return current memory usage', () => {
       const usage = memoryManager.getMemoryUsage();
-      
+
       expect(usage).toHaveProperty('rss');
       expect(usage).toHaveProperty('heapTotal');
       expect(usage).toHaveProperty('heapUsed');
@@ -103,7 +103,7 @@ describe('MemoryManager', () => {
 
     it('should return memory usage in MB', () => {
       const usage = memoryManager.getMemoryUsage();
-      
+
       expect(usage.rss).toBeGreaterThan(0);
       expect(usage.heapTotal).toBeGreaterThan(0);
       expect(usage.heapUsed).toBeGreaterThan(0);
@@ -113,7 +113,7 @@ describe('MemoryManager', () => {
       mockMemoryUsage.mockImplementation(() => {
         throw new Error('Memory usage error');
       });
-      
+
       expect(() => {
         memoryManager.getMemoryUsage();
       }).not.toThrow();
@@ -123,7 +123,7 @@ describe('MemoryManager', () => {
   describe('getMemoryStats', () => {
     it('should return memory statistics', () => {
       const stats = memoryManager.getMemoryStats();
-      
+
       expect(stats).toHaveProperty('current');
       expect(stats).toHaveProperty('peak');
       expect(stats).toHaveProperty('growth');
@@ -134,13 +134,13 @@ describe('MemoryManager', () => {
 
     it('should calculate memory growth', () => {
       const stats = memoryManager.getMemoryStats();
-      
+
       expect(stats.growth).toBeGreaterThanOrEqual(0);
     });
 
     it('should track peak memory usage', () => {
       const stats = memoryManager.getMemoryStats();
-      
+
       expect(stats.peak).toBeGreaterThanOrEqual(stats.current);
     });
   });
@@ -148,7 +148,7 @@ describe('MemoryManager', () => {
   describe('forceGarbageCollection', () => {
     it('should trigger garbage collection when available', () => {
       const result = memoryManager.forceGarbageCollection();
-      
+
       expect(result).toBeDefined();
       expect(typeof result).toBe('boolean');
     });
@@ -157,20 +157,20 @@ describe('MemoryManager', () => {
       // Set gc to undefined instead of deleting
       const originalGc = (global as any).gc;
       (global as any).gc = undefined;
-      
+
       // Create a new MemoryManager instance after removing gc
       const newMemoryManager = new MemoryManager();
       const result = newMemoryManager.forceGarbageCollection();
-      
+
       expect(result).toBe(false);
-      
+
       // Restore gc function
       (global as any).gc = originalGc;
     });
 
     it('should update GC statistics', () => {
       memoryManager.forceGarbageCollection();
-      
+
       const stats = memoryManager.getMemoryStats();
       expect(stats.gcCount).toBeGreaterThanOrEqual(0);
     });
@@ -184,11 +184,11 @@ describe('MemoryManager', () => {
         heapTotal: 1024 * 1024 * 400, // 400MB
         heapUsed: 1024 * 1024 * 350, // 350MB
         external: 1024 * 1024 * 50, // 50MB
-        arrayBuffers: 1024 * 1024 * 10 // 10MB
+        arrayBuffers: 1024 * 1024 * 10, // 10MB
       });
-      
+
       const pressure = memoryManager.checkMemoryPressure();
-      
+
       expect(pressure).toHaveProperty('level');
       expect(pressure).toHaveProperty('heapUsage');
       expect(pressure).toHaveProperty('rssUsage');
@@ -202,11 +202,11 @@ describe('MemoryManager', () => {
         heapTotal: 1024 * 1024 * 30, // 30MB
         heapUsed: 1024 * 1024 * 15, // 15MB
         external: 1024 * 1024 * 5, // 5MB
-        arrayBuffers: 1024 * 1024 * 2 // 2MB
+        arrayBuffers: 1024 * 1024 * 2, // 2MB
       });
-      
+
       const pressure = memoryManager.checkMemoryPressure();
-      
+
       expect(pressure.level).toBe('low');
     });
 
@@ -217,11 +217,11 @@ describe('MemoryManager', () => {
         heapTotal: 1024 * 1024 * 400, // 400MB
         heapUsed: 1024 * 1024 * 350, // 350MB
         external: 1024 * 1024 * 50, // 50MB
-        arrayBuffers: 1024 * 1024 * 10 // 10MB
+        arrayBuffers: 1024 * 1024 * 10, // 10MB
       });
-      
+
       const pressure = memoryManager.checkMemoryPressure();
-      
+
       expect(pressure.recommendations).toBeInstanceOf(Array);
       expect(pressure.recommendations.length).toBeGreaterThan(0);
     });
@@ -230,7 +230,7 @@ describe('MemoryManager', () => {
   describe('optimizeMemory', () => {
     it('should perform memory optimization', () => {
       const result = memoryManager.optimizeMemory();
-      
+
       expect(result).toHaveProperty('success');
       expect(result).toHaveProperty('actions');
       expect(result).toHaveProperty('memorySaved');
@@ -238,14 +238,14 @@ describe('MemoryManager', () => {
 
     it('should return optimization actions', () => {
       const result = memoryManager.optimizeMemory();
-      
+
       expect(result.actions).toBeInstanceOf(Array);
       expect(result.actions.length).toBeGreaterThanOrEqual(0);
     });
 
     it('should calculate memory saved', () => {
       const result = memoryManager.optimizeMemory();
-      
+
       expect(result.memorySaved).toBeGreaterThanOrEqual(0);
     });
   });
@@ -253,7 +253,7 @@ describe('MemoryManager', () => {
   describe('detectMemoryLeaks', () => {
     it('should detect potential memory leaks', () => {
       const leaks = memoryManager.detectMemoryLeaks();
-      
+
       expect(leaks).toHaveProperty('detected');
       expect(leaks).toHaveProperty('patterns');
       expect(leaks).toHaveProperty('severity');
@@ -261,13 +261,13 @@ describe('MemoryManager', () => {
 
     it('should return leak patterns', () => {
       const leaks = memoryManager.detectMemoryLeaks();
-      
+
       expect(leaks.patterns).toBeInstanceOf(Array);
     });
 
     it('should assess leak severity', () => {
       const leaks = memoryManager.detectMemoryLeaks();
-      
+
       expect(['low', 'medium', 'high']).toContain(leaks.severity);
     });
   });
@@ -275,7 +275,7 @@ describe('MemoryManager', () => {
   describe('generateMemoryReport', () => {
     it('should generate comprehensive memory report', () => {
       const report = memoryManager.generateMemoryReport();
-      
+
       expect(report).toHaveProperty('timestamp');
       expect(report).toHaveProperty('summary');
       expect(report).toHaveProperty('details');
@@ -284,7 +284,7 @@ describe('MemoryManager', () => {
 
     it('should include memory summary', () => {
       const report = memoryManager.generateMemoryReport();
-      
+
       expect(report.summary).toHaveProperty('current');
       expect(report.summary).toHaveProperty('peak');
       expect(report.summary).toHaveProperty('growth');
@@ -293,7 +293,7 @@ describe('MemoryManager', () => {
 
     it('should include detailed memory information', () => {
       const report = memoryManager.generateMemoryReport();
-      
+
       expect(report.details).toHaveProperty('heap');
       expect(report.details).toHaveProperty('rss');
       expect(report.details).toHaveProperty('external');
@@ -302,7 +302,7 @@ describe('MemoryManager', () => {
 
     it('should provide optimization recommendations', () => {
       const report = memoryManager.generateMemoryReport();
-      
+
       expect(report.recommendations).toBeInstanceOf(Array);
       report.recommendations.forEach((rec: any) => {
         expect(rec).toHaveProperty('type');
@@ -315,13 +315,13 @@ describe('MemoryManager', () => {
   describe('startMonitoring', () => {
     it('should start memory monitoring', () => {
       memoryManager.startMonitoring();
-      
+
       expect(memoryManager.isMonitoring()).toBe(true);
     });
 
     it('should start monitoring with custom interval', () => {
       memoryManager.startMonitoring(1000);
-      
+
       expect(memoryManager.isMonitoring()).toBe(true);
     });
   });
@@ -330,7 +330,7 @@ describe('MemoryManager', () => {
     it('should stop memory monitoring', () => {
       memoryManager.startMonitoring();
       memoryManager.stopMonitoring();
-      
+
       expect(memoryManager.isMonitoring()).toBe(false);
     });
   });
@@ -349,7 +349,7 @@ describe('MemoryManager', () => {
   describe('reset', () => {
     it('should reset memory statistics', () => {
       memoryManager.reset();
-      
+
       const stats = memoryManager.getMemoryStats();
       expect(stats.gcCount).toBe(0);
       expect(stats.peak).toBeGreaterThanOrEqual(0);
@@ -358,7 +358,7 @@ describe('MemoryManager', () => {
     it('should stop monitoring', () => {
       memoryManager.startMonitoring();
       memoryManager.reset();
-      
+
       expect(memoryManager.isMonitoring()).toBe(false);
     });
   });
@@ -373,7 +373,7 @@ describe('MemoryManager', () => {
     it('should stop monitoring on dispose', () => {
       memoryManager.startMonitoring();
       memoryManager.dispose();
-      
+
       expect(memoryManager.isMonitoring()).toBe(false);
     });
   });
@@ -383,7 +383,7 @@ describe('MemoryManager', () => {
       mockMemoryUsage.mockImplementation(() => {
         throw new Error('Memory usage error');
       });
-      
+
       expect(() => {
         memoryManager.getMemoryStats();
       }).not.toThrow();
@@ -393,7 +393,7 @@ describe('MemoryManager', () => {
       mockGc.mockImplementation(() => {
         throw new Error('GC error');
       });
-      
+
       expect(() => {
         memoryManager.forceGarbageCollection();
       }).not.toThrow();
@@ -419,9 +419,9 @@ describe('MemoryManager', () => {
         heapTotal: 0,
         heapUsed: 0,
         external: 0,
-        arrayBuffers: 0
+        arrayBuffers: 0,
       });
-      
+
       const stats = memoryManager.getMemoryStats();
       expect(stats.current).toBe(0);
     });
@@ -432,9 +432,9 @@ describe('MemoryManager', () => {
         heapTotal: Number.MAX_SAFE_INTEGER,
         heapUsed: Number.MAX_SAFE_INTEGER,
         external: Number.MAX_SAFE_INTEGER,
-        arrayBuffers: Number.MAX_SAFE_INTEGER
+        arrayBuffers: Number.MAX_SAFE_INTEGER,
       });
-      
+
       expect(() => {
         memoryManager.getMemoryStats();
       }).not.toThrow();
@@ -446,9 +446,9 @@ describe('MemoryManager', () => {
         heapTotal: -50,
         heapUsed: -30,
         external: -10,
-        arrayBuffers: -5
+        arrayBuffers: -5,
       });
-      
+
       expect(() => {
         memoryManager.getMemoryStats();
       }).not.toThrow();
@@ -462,9 +462,9 @@ describe('MemoryManager', () => {
         heapTotal: 1024 * 1024 * 30, // 30MB
         heapUsed: 1024 * 1024 * 15, // 15MB
         external: 1024 * 1024 * 5, // 5MB
-        arrayBuffers: 1024 * 1024 * 2 // 2MB
+        arrayBuffers: 1024 * 1024 * 2, // 2MB
       });
-      
+
       const pressure = memoryManager.checkMemoryPressure();
       expect(pressure.level).toBe('low');
     });
@@ -475,9 +475,9 @@ describe('MemoryManager', () => {
         heapTotal: 1024 * 1024 * 100, // 100MB
         heapUsed: 1024 * 1024 * 75, // 75MB (75% heap usage)
         external: 1024 * 1024 * 20, // 20MB
-        arrayBuffers: 1024 * 1024 * 5 // 5MB
+        arrayBuffers: 1024 * 1024 * 5, // 5MB
       });
-      
+
       const pressure = memoryManager.checkMemoryPressure();
       expect(pressure.level).toBe('medium');
     });
@@ -488,9 +488,9 @@ describe('MemoryManager', () => {
         heapTotal: 1024 * 1024 * 100, // 100MB
         heapUsed: 1024 * 1024 * 90, // 90MB (90% heap usage - above 85% threshold)
         external: 1024 * 1024 * 50, // 50MB
-        arrayBuffers: 1024 * 1024 * 10 // 10MB
+        arrayBuffers: 1024 * 1024 * 10, // 10MB
       });
-      
+
       const pressure = memoryManager.checkMemoryPressure();
       expect(pressure.level).toBe('high');
     });
@@ -499,19 +499,19 @@ describe('MemoryManager', () => {
   describe('memory optimization strategies', () => {
     it('should suggest garbage collection', () => {
       const result = memoryManager.optimizeMemory();
-      
+
       expect(result.actions).toBeInstanceOf(Array);
     });
 
     it('should suggest memory cleanup', () => {
       const result = memoryManager.optimizeMemory();
-      
+
       expect(result.actions).toBeInstanceOf(Array);
     });
 
     it('should suggest cache optimization', () => {
       const result = memoryManager.optimizeMemory();
-      
+
       expect(result.actions).toBeInstanceOf(Array);
     });
   });
@@ -519,19 +519,19 @@ describe('MemoryManager', () => {
   describe('memory leak patterns', () => {
     it('should detect growing heap usage', () => {
       const leaks = memoryManager.detectMemoryLeaks();
-      
+
       expect(leaks.patterns).toBeInstanceOf(Array);
     });
 
     it('should detect growing RSS usage', () => {
       const leaks = memoryManager.detectMemoryLeaks();
-      
+
       expect(leaks.patterns).toBeInstanceOf(Array);
     });
 
     it('should detect external memory growth', () => {
       const leaks = memoryManager.detectMemoryLeaks();
-      
+
       expect(leaks.patterns).toBeInstanceOf(Array);
     });
   });
@@ -539,7 +539,7 @@ describe('MemoryManager', () => {
   describe('monitoring functionality', () => {
     it('should track memory over time', () => {
       memoryManager.startMonitoring(100);
-      
+
       // Wait a bit for monitoring to collect data
       setTimeout(() => {
         const stats = memoryManager.getMemoryStats();
@@ -555,9 +555,9 @@ describe('MemoryManager', () => {
         heapTotal: 1024 * 1024 * 100, // 100MB
         heapUsed: 1024 * 1024 * 90, // 90MB (90% heap usage - above 85% threshold)
         external: 1024 * 1024 * 100, // 100MB
-        arrayBuffers: 1024 * 1024 * 20 // 20MB
+        arrayBuffers: 1024 * 1024 * 20, // 20MB
       });
-      
+
       const pressure = memoryManager.checkMemoryPressure();
       expect(pressure.level).toBe('high');
     });
@@ -570,7 +570,7 @@ describe('MemoryManager', () => {
       mockMemoryUsage.mockImplementation(() => {
         throw new Error('Memory usage error');
       });
-      
+
       const stats = memoryManager.getMemoryStats();
       expect(stats).toBeDefined();
       expect(stats.current).toBe(0);
@@ -585,7 +585,7 @@ describe('MemoryManager', () => {
       (global as any).gc = jest.fn().mockImplementation(() => {
         throw new Error('GC error');
       });
-      
+
       const result = memoryManager.forceGarbageCollection();
       expect(result).toBe(false);
     });
@@ -595,7 +595,7 @@ describe('MemoryManager', () => {
       jest.spyOn(memoryManager as any, 'getMemoryUsage').mockImplementation(() => {
         throw new Error('Memory usage error');
       });
-      
+
       const pressure = memoryManager.checkMemoryPressure();
       expect(pressure.level).toBe('low');
       expect(pressure.recommendations).toEqual([]);
@@ -606,7 +606,7 @@ describe('MemoryManager', () => {
       jest.spyOn(memoryManager as any, 'getMemoryStats').mockImplementation(() => {
         throw new Error('Memory stats error');
       });
-      
+
       const result = memoryManager.optimizeMemory();
       expect(result.success).toBe(true); // The method handles errors gracefully and still returns success
       expect(result.actions).toBeDefined();
@@ -618,7 +618,7 @@ describe('MemoryManager', () => {
       jest.spyOn(memoryManager as any, 'getMemoryStats').mockImplementation(() => {
         throw new Error('Memory stats error');
       });
-      
+
       const leaks = memoryManager.detectMemoryLeaks();
       expect(leaks).toBeDefined();
       expect(leaks.detected).toBe(false);
@@ -630,7 +630,7 @@ describe('MemoryManager', () => {
       jest.spyOn(memoryManager as any, 'getMemoryStats').mockImplementation(() => {
         throw new Error('Memory stats error');
       });
-      
+
       const report = memoryManager.generateMemoryReport();
       expect(report.summary).toBeDefined();
       expect(report.details).toBeDefined();
@@ -642,7 +642,7 @@ describe('MemoryManager', () => {
       mockSetInterval.mockImplementation(() => {
         throw new Error('Timer error');
       });
-      
+
       expect(() => memoryManager.startMonitoring()).not.toThrow();
     });
 
@@ -651,7 +651,7 @@ describe('MemoryManager', () => {
       mockClearInterval.mockImplementation(() => {
         throw new Error('Clear timer error');
       });
-      
+
       expect(() => memoryManager.stopMonitoring()).not.toThrow();
     });
 
@@ -660,7 +660,7 @@ describe('MemoryManager', () => {
       jest.spyOn(memoryManager as any, 'stopMonitoring').mockImplementation(() => {
         throw new Error('Stop monitoring error');
       });
-      
+
       expect(() => memoryManager.reset()).not.toThrow();
     });
 
@@ -669,7 +669,7 @@ describe('MemoryManager', () => {
       jest.spyOn(memoryManager as any, 'stopMonitoring').mockImplementation(() => {
         throw new Error('Stop monitoring error');
       });
-      
+
       expect(() => memoryManager.dispose()).not.toThrow();
     });
 
@@ -691,9 +691,9 @@ describe('MemoryManager', () => {
         growth: 50,
         leaks: [],
         gcCount: 5,
-        pressure: 'medium' as const
+        pressure: 'medium' as const,
       };
-      
+
       const efficiency = (memoryManager as any).calculateMemoryEfficiency(stats);
       expect(efficiency).toBeGreaterThan(0);
       expect(efficiency).toBeLessThanOrEqual(100);
@@ -723,13 +723,17 @@ describe('MemoryManager', () => {
         growth: 50,
         leaks: [],
         gcCount: 5,
-        pressure: 'medium' as const
+        pressure: 'medium' as const,
       };
-      
+
       const pressure = { level: 'medium' as const, recommendations: [] };
       const leaks: any[] = [];
-      
-      const recommendations = (memoryManager as any).generateRecommendations(stats, pressure, leaks);
+
+      const recommendations = (memoryManager as any).generateRecommendations(
+        stats,
+        pressure,
+        leaks
+      );
       expect(Array.isArray(recommendations)).toBe(true);
     });
 
@@ -739,9 +743,9 @@ describe('MemoryManager', () => {
         heapTotal: 1024 * 1024 * 100, // 100MB
         heapUsed: 1024 * 1024 * 50, // 50MB (50% heap usage)
         external: 1024 * 1024 * 20, // 20MB
-        arrayBuffers: 1024 * 1024 * 5 // 5MB
+        arrayBuffers: 1024 * 1024 * 5, // 5MB
       });
-      
+
       const pressure = memoryManager.checkMemoryPressure();
       expect(pressure.level).toBe('high');
       expect(pressure.recommendations.length).toBeGreaterThan(0);
@@ -753,9 +757,9 @@ describe('MemoryManager', () => {
         heapTotal: 1024 * 1024 * 100, // 100MB
         heapUsed: 1024 * 1024 * 75, // 75MB (75% heap usage)
         external: 1024 * 1024 * 20, // 20MB
-        arrayBuffers: 1024 * 1024 * 5 // 5MB
+        arrayBuffers: 1024 * 1024 * 5, // 5MB
       });
-      
+
       const pressure = memoryManager.checkMemoryPressure();
       expect(pressure.level).toBe('medium');
       expect(pressure.recommendations.length).toBeGreaterThan(0);
@@ -767,9 +771,9 @@ describe('MemoryManager', () => {
         heapTotal: 1024 * 1024 * 100, // 100MB
         heapUsed: 1024 * 1024 * 90, // 90MB (90% heap usage)
         external: 1024 * 1024 * 20, // 20MB
-        arrayBuffers: 1024 * 1024 * 5 // 5MB
+        arrayBuffers: 1024 * 1024 * 5, // 5MB
       });
-      
+
       const pressure = memoryManager.checkMemoryPressure();
       expect(pressure.level).toBe('high');
       expect(pressure.recommendations.length).toBeGreaterThan(0);
@@ -781,9 +785,9 @@ describe('MemoryManager', () => {
         heapTotal: 1024 * 1024 * 100, // 100MB
         heapUsed: 1024 * 1024 * 90, // 90MB (90% heap usage)
         external: 1024 * 1024 * 20, // 20MB
-        arrayBuffers: 1024 * 1024 * 5 // 5MB
+        arrayBuffers: 1024 * 1024 * 5, // 5MB
       });
-      
+
       const result = memoryManager.optimizeMemory();
       expect(result.success).toBe(true);
       expect(result.actions.length).toBeGreaterThan(0);
@@ -797,16 +801,16 @@ describe('MemoryManager', () => {
           heapTotal: 1024 * 1024 * 50, // 50MB
           heapUsed: 1024 * 1024 * 30, // 30MB
           external: 1024 * 1024 * 10, // 10MB
-          arrayBuffers: 1024 * 1024 * 5 // 5MB
+          arrayBuffers: 1024 * 1024 * 5, // 5MB
         })
         .mockReturnValue({
           rss: 1024 * 1024 * 200, // 200MB (doubled)
           heapTotal: 1024 * 1024 * 100, // 100MB
           heapUsed: 1024 * 1024 * 80, // 80MB
           external: 1024 * 1024 * 20, // 20MB
-          arrayBuffers: 1024 * 1024 * 10 // 10MB
+          arrayBuffers: 1024 * 1024 * 10, // 10MB
         });
-      
+
       const leaks = memoryManager.detectMemoryLeaks();
       expect(leaks).toBeDefined();
       expect(leaks.detected).toBeDefined();
@@ -820,9 +824,9 @@ describe('MemoryManager', () => {
         heapTotal: 1024 * 1024 * 100, // 100MB
         heapUsed: 1024 * 1024 * 80, // 80MB
         external: 1024 * 1024 * 20, // 20MB
-        arrayBuffers: 1024 * 1024 * 10 // 10MB
+        arrayBuffers: 1024 * 1024 * 10, // 10MB
       });
-      
+
       const report = memoryManager.generateMemoryReport();
       expect(report.summary).toBeDefined();
       expect(report.details).toBeDefined();
@@ -835,7 +839,7 @@ describe('MemoryManager', () => {
       mockMemoryUsage.mockImplementation(() => {
         throw new Error('Memory usage error');
       });
-      
+
       // Create a new MemoryManager instance to trigger initialization error
       const newMemoryManager = new MemoryManager();
       expect(newMemoryManager).toBeInstanceOf(MemoryManager);
@@ -846,7 +850,7 @@ describe('MemoryManager', () => {
         maxMemoryUsage: 300,
         // Other options will use defaults
       };
-      
+
       const manager = new MemoryManager(options);
       expect(manager).toBeInstanceOf(MemoryManager);
     });
@@ -861,16 +865,16 @@ describe('MemoryManager', () => {
         pressureThresholds: {
           low: 40,
           medium: 60,
-          high: 80
+          high: 80,
         },
         optimizationStrategies: {
           enableGC: false,
           enableCleanup: false,
           enableCompression: true,
-          enableCaching: false
-        }
+          enableCaching: false,
+        },
       };
-      
+
       const manager = new MemoryManager(options);
       expect(manager).toBeInstanceOf(MemoryManager);
     });
@@ -882,9 +886,9 @@ describe('MemoryManager', () => {
         growth: 50,
         leaks: [],
         gcCount: 5,
-        pressure: 'low' as const
+        pressure: 'low' as const,
       };
-      
+
       const efficiency = (memoryManager as any).calculateMemoryEfficiency(stats);
       expect(efficiency).toBeLessThan(100); // Should be penalized
     });
@@ -896,9 +900,9 @@ describe('MemoryManager', () => {
         growth: 150, // Above 100MB growth threshold
         leaks: [],
         gcCount: 5,
-        pressure: 'low' as const
+        pressure: 'low' as const,
       };
-      
+
       const efficiency = (memoryManager as any).calculateMemoryEfficiency(stats);
       expect(efficiency).toBeLessThan(100); // Should be penalized
     });
@@ -909,13 +913,25 @@ describe('MemoryManager', () => {
         peak: 200,
         growth: 50,
         leaks: [
-          { type: 'heap' as const, severity: 'medium' as const, description: 'test', growthRate: 5, detectedAt: new Date() },
-          { type: 'rss' as const, severity: 'high' as const, description: 'test', growthRate: 10, detectedAt: new Date() }
+          {
+            type: 'heap' as const,
+            severity: 'medium' as const,
+            description: 'test',
+            growthRate: 5,
+            detectedAt: new Date(),
+          },
+          {
+            type: 'rss' as const,
+            severity: 'high' as const,
+            description: 'test',
+            growthRate: 10,
+            detectedAt: new Date(),
+          },
         ],
         gcCount: 5,
-        pressure: 'low' as const
+        pressure: 'low' as const,
       };
-      
+
       const efficiency = (memoryManager as any).calculateMemoryEfficiency(stats);
       expect(efficiency).toBeLessThan(100); // Should be penalized for each leak
     });
@@ -927,9 +943,9 @@ describe('MemoryManager', () => {
         growth: 50,
         leaks: [],
         gcCount: 5,
-        pressure: 'high' as const
+        pressure: 'high' as const,
       };
-      
+
       const efficiency = (memoryManager as any).calculateMemoryEfficiency(stats);
       expect(efficiency).toBeLessThan(100); // Should be penalized for high pressure
     });
@@ -941,9 +957,9 @@ describe('MemoryManager', () => {
         growth: 50,
         leaks: [],
         gcCount: 5,
-        pressure: 'medium' as const
+        pressure: 'medium' as const,
       };
-      
+
       const efficiency = (memoryManager as any).calculateMemoryEfficiency(stats);
       expect(efficiency).toBeLessThan(100); // Should be penalized for medium pressure
     });
@@ -954,21 +970,21 @@ describe('MemoryManager', () => {
       (memoryManager as any).calculateMemoryEfficiency = jest.fn().mockImplementation(() => {
         throw new Error('Efficiency calculation error');
       });
-      
+
       const stats = {
         current: 100,
         peak: 200,
         growth: 50,
         leaks: [],
         gcCount: 5,
-        pressure: 'low' as const
+        pressure: 'low' as const,
       };
-      
+
       // Test the error handling by calling the method directly
       expect(() => {
         (memoryManager as any).calculateMemoryEfficiency(stats);
       }).toThrow('Efficiency calculation error');
-      
+
       // Restore original method
       (memoryManager as any).calculateMemoryEfficiency = originalMethod;
     });
@@ -978,9 +994,9 @@ describe('MemoryManager', () => {
       (memoryManager as any).memoryHistory = [
         { timestamp: new Date(Date.now() - 30000) },
         { timestamp: new Date(Date.now() - 20000) },
-        { timestamp: new Date(Date.now() - 10000) }
+        { timestamp: new Date(Date.now() - 10000) },
       ];
-      
+
       const frequency = (memoryManager as any).calculateGCFrequency();
       expect(frequency).toBeGreaterThanOrEqual(0);
     });
@@ -991,12 +1007,12 @@ describe('MemoryManager', () => {
       (memoryManager as any).calculateGCFrequency = jest.fn().mockImplementation(() => {
         throw new Error('GC frequency calculation error');
       });
-      
+
       // Test the error handling by calling the method directly
       expect(() => {
         (memoryManager as any).calculateGCFrequency();
       }).toThrow('GC frequency calculation error');
-      
+
       // Restore original method
       (memoryManager as any).calculateGCFrequency = originalMethod;
     });
@@ -1008,18 +1024,22 @@ describe('MemoryManager', () => {
         growth: 50,
         leaks: [],
         gcCount: 5,
-        pressure: 'high' as const
+        pressure: 'high' as const,
       };
-      
-      const pressure = { 
-        level: 'high' as const, 
+
+      const pressure = {
+        level: 'high' as const,
         heapUsage: 90,
         rssUsage: 85,
-        recommendations: [] 
+        recommendations: [],
       };
       const leaks = { detected: false, patterns: [], severity: 'low' as const, confidence: 0.2 };
-      
-      const recommendations = (memoryManager as any).generateRecommendations(stats, pressure, leaks);
+
+      const recommendations = (memoryManager as any).generateRecommendations(
+        stats,
+        pressure,
+        leaks
+      );
       expect(recommendations.length).toBeGreaterThan(0);
       expect(recommendations.some((rec: any) => rec.type === 'gc')).toBe(true);
     });
@@ -1031,23 +1051,35 @@ describe('MemoryManager', () => {
         growth: 50,
         leaks: [],
         gcCount: 5,
-        pressure: 'low' as const
+        pressure: 'low' as const,
       };
-      
-      const pressure = { 
-        level: 'low' as const, 
+
+      const pressure = {
+        level: 'low' as const,
         heapUsage: 30,
         rssUsage: 20,
-        recommendations: [] 
+        recommendations: [],
       };
-      const leaks = { 
-        detected: true, 
-        patterns: [{ type: 'linear', description: 'test', memoryType: 'heap', severity: 'medium', growthRate: 5 }], 
-        severity: 'medium' as const, 
-        confidence: 0.8 
+      const leaks = {
+        detected: true,
+        patterns: [
+          {
+            type: 'linear',
+            description: 'test',
+            memoryType: 'heap',
+            severity: 'medium',
+            growthRate: 5,
+          },
+        ],
+        severity: 'medium' as const,
+        confidence: 0.8,
       };
-      
-      const recommendations = (memoryManager as any).generateRecommendations(stats, pressure, leaks);
+
+      const recommendations = (memoryManager as any).generateRecommendations(
+        stats,
+        pressure,
+        leaks
+      );
       expect(recommendations.length).toBeGreaterThan(0);
       expect(recommendations.some((rec: any) => rec.type === 'cleanup')).toBe(true);
     });
@@ -1059,18 +1091,22 @@ describe('MemoryManager', () => {
         growth: 75, // Above 50MB growth threshold
         leaks: [],
         gcCount: 5,
-        pressure: 'low' as const
+        pressure: 'low' as const,
       };
-      
-      const pressure = { 
-        level: 'low' as const, 
+
+      const pressure = {
+        level: 'low' as const,
         heapUsage: 30,
         rssUsage: 20,
-        recommendations: [] 
+        recommendations: [],
       };
       const leaks = { detected: false, patterns: [], severity: 'low' as const, confidence: 0.2 };
-      
-      const recommendations = (memoryManager as any).generateRecommendations(stats, pressure, leaks);
+
+      const recommendations = (memoryManager as any).generateRecommendations(
+        stats,
+        pressure,
+        leaks
+      );
       expect(recommendations.length).toBeGreaterThan(0);
       expect(recommendations.some((rec: any) => rec.type === 'optimization')).toBe(true);
     });
@@ -1078,25 +1114,29 @@ describe('MemoryManager', () => {
     it('should handle generateRecommendations with low efficiency', () => {
       // Mock calculateMemoryEfficiency to return low efficiency
       jest.spyOn(memoryManager as any, 'calculateMemoryEfficiency').mockReturnValue(60);
-      
+
       const stats = {
         current: 100,
         peak: 200,
         growth: 50,
         leaks: [],
         gcCount: 5,
-        pressure: 'low' as const
+        pressure: 'low' as const,
       };
-      
-      const pressure = { 
-        level: 'low' as const, 
+
+      const pressure = {
+        level: 'low' as const,
         heapUsage: 30,
         rssUsage: 20,
-        recommendations: [] 
+        recommendations: [],
       };
       const leaks = { detected: false, patterns: [], severity: 'low' as const, confidence: 0.2 };
-      
-      const recommendations = (memoryManager as any).generateRecommendations(stats, pressure, leaks);
+
+      const recommendations = (memoryManager as any).generateRecommendations(
+        stats,
+        pressure,
+        leaks
+      );
       expect(recommendations.length).toBeGreaterThan(0);
       expect(recommendations.some((rec: any) => rec.type === 'monitoring')).toBe(true);
     });
@@ -1104,11 +1144,11 @@ describe('MemoryManager', () => {
     it('should handle startMonitoring when already active', () => {
       // Mock setInterval to return a timer ID
       mockSetInterval.mockReturnValue(123);
-      
+
       // Start monitoring first time
       memoryManager.startMonitoring();
       expect(memoryManager.isMonitoring()).toBe(true);
-      
+
       // Try to start again - should not throw and should log warning
       memoryManager.startMonitoring();
       expect(memoryManager.isMonitoring()).toBe(true);
@@ -1117,16 +1157,16 @@ describe('MemoryManager', () => {
     it('should handle monitoring timer callback error', () => {
       // Mock setInterval to return a timer ID
       mockSetInterval.mockReturnValue(123);
-      
+
       // Mock getMemoryUsage to throw an error in the monitoring callback
       jest.spyOn(memoryManager as any, 'getMemoryUsage').mockImplementation(() => {
         throw new Error('Memory usage error in callback');
       });
-      
+
       // Start monitoring - the callback should handle the error gracefully
       memoryManager.startMonitoring(100);
       expect(memoryManager.isMonitoring()).toBe(true);
-      
+
       // Clean up
       memoryManager.stopMonitoring();
     });
@@ -1134,19 +1174,25 @@ describe('MemoryManager', () => {
     it('should handle memory history trimming', () => {
       // Mock setInterval to return a timer ID
       mockSetInterval.mockReturnValue(123);
-      
+
       // Add more than 100 entries to memory history
       (memoryManager as any).memoryHistory = Array.from({ length: 150 }, (_, i) => ({
         timestamp: new Date(Date.now() - (150 - i) * 1000),
-        usage: { rss: 1000000, heapTotal: 500000, heapUsed: 300000, external: 100000, arrayBuffers: 50000 },
+        usage: {
+          rss: 1000000,
+          heapTotal: 500000,
+          heapUsed: 300000,
+          external: 100000,
+          arrayBuffers: 50000,
+        },
         pressure: { level: 'low', heapUsage: 60, rssUsage: 20, recommendations: [] },
-        leaks: []
+        leaks: [],
       }));
-      
+
       // Start monitoring to trigger history trimming
       memoryManager.startMonitoring(100);
       expect(memoryManager.isMonitoring()).toBe(true);
-      
+
       // Clean up
       memoryManager.stopMonitoring();
     });
@@ -1154,19 +1200,19 @@ describe('MemoryManager', () => {
     it('should handle auto GC when pressure is high', () => {
       // Mock setInterval to return a timer ID
       mockSetInterval.mockReturnValue(123);
-      
+
       // Mock high memory pressure
       jest.spyOn(memoryManager as any, 'checkMemoryPressure').mockReturnValue({
         level: 'high',
         heapUsage: 90,
         rssUsage: 85,
-        recommendations: []
+        recommendations: [],
       });
-      
+
       // Start monitoring with auto GC enabled
       memoryManager.startMonitoring(100);
       expect(memoryManager.isMonitoring()).toBe(true);
-      
+
       // Clean up
       memoryManager.stopMonitoring();
     });
@@ -1188,7 +1234,7 @@ describe('MemoryManager', () => {
     it('should handle detectMemoryLeaks with insufficient history', () => {
       // Clear memory history to have less than 10 entries
       (memoryManager as any).memoryHistory = [];
-      
+
       const leaks = memoryManager.detectMemoryLeaks();
       expect(leaks.detected).toBe(false);
       expect(leaks.patterns).toEqual([]);
@@ -1199,17 +1245,17 @@ describe('MemoryManager', () => {
       const now = Date.now();
       (memoryManager as any).memoryHistory = Array.from({ length: 15 }, (_, i) => ({
         timestamp: new Date(now - (15 - i) * 1000),
-        usage: { 
+        usage: {
           rss: 100000000 + i * 10000000, // Growing RSS
           heapTotal: 50000000,
           heapUsed: 30000000 + i * 6000000, // Growing heap (60MB growth over 10 measurements)
           external: 10000000,
-          arrayBuffers: 5000000
+          arrayBuffers: 5000000,
         },
         pressure: { level: 'low', heapUsage: 60, rssUsage: 20, recommendations: [] },
-        leaks: []
+        leaks: [],
       }));
-      
+
       const leaks = memoryManager.detectMemoryLeaks();
       expect(leaks.detected).toBe(true);
       expect(leaks.patterns.length).toBeGreaterThan(0);
@@ -1221,17 +1267,17 @@ describe('MemoryManager', () => {
       const now = Date.now();
       (memoryManager as any).memoryHistory = Array.from({ length: 15 }, (_, i) => ({
         timestamp: new Date(now - (15 - i) * 1000),
-        usage: { 
+        usage: {
           rss: 100000000 + i * 20000000, // Growing RSS
           heapTotal: 50000000,
           heapUsed: 30000000 + i * 12000000, // High heap growth (120MB growth over 10 measurements)
           external: 10000000,
-          arrayBuffers: 5000000
+          arrayBuffers: 5000000,
         },
         pressure: { level: 'low', heapUsage: 60, rssUsage: 20, recommendations: [] },
-        leaks: []
+        leaks: [],
       }));
-      
+
       const leaks = memoryManager.detectMemoryLeaks();
       expect(leaks.detected).toBe(true);
       expect(leaks.patterns.length).toBeGreaterThan(0);
@@ -1243,17 +1289,17 @@ describe('MemoryManager', () => {
       const now = Date.now();
       (memoryManager as any).memoryHistory = Array.from({ length: 15 }, (_, i) => ({
         timestamp: new Date(now - (15 - i) * 1000),
-        usage: { 
+        usage: {
           rss: 100000000 + i * 15000000, // Growing RSS (150MB growth over 10 measurements)
           heapTotal: 50000000,
           heapUsed: 30000000,
           external: 10000000,
-          arrayBuffers: 5000000
+          arrayBuffers: 5000000,
         },
         pressure: { level: 'low', heapUsage: 60, rssUsage: 20, recommendations: [] },
-        leaks: []
+        leaks: [],
       }));
-      
+
       const leaks = memoryManager.detectMemoryLeaks();
       expect(leaks.detected).toBe(true);
       expect(leaks.patterns.length).toBeGreaterThan(0);
@@ -1265,17 +1311,17 @@ describe('MemoryManager', () => {
       const now = Date.now();
       (memoryManager as any).memoryHistory = Array.from({ length: 15 }, (_, i) => ({
         timestamp: new Date(now - (15 - i) * 1000),
-        usage: { 
+        usage: {
           rss: 100000000 + i * 25000000, // High RSS growth (250MB growth over 10 measurements)
           heapTotal: 50000000,
           heapUsed: 30000000,
           external: 10000000,
-          arrayBuffers: 5000000
+          arrayBuffers: 5000000,
         },
         pressure: { level: 'low', heapUsage: 60, rssUsage: 20, recommendations: [] },
-        leaks: []
+        leaks: [],
       }));
-      
+
       const leaks = memoryManager.detectMemoryLeaks();
       expect(leaks.detected).toBe(true);
       expect(leaks.patterns.length).toBeGreaterThan(0);

@@ -81,7 +81,7 @@ describe('NamingStrategy', () => {
         directories: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       },
       complexity: {
         cyclomaticComplexity: 10,
@@ -89,14 +89,14 @@ describe('NamingStrategy', () => {
         linesOfCode: 1000,
         functionCount: 50,
         classCount: 10,
-        interfaceCount: 5
+        interfaceCount: 5,
       },
       quality: {
         score: 80,
         maintainabilityIndex: 80,
         technicalDebtRatio: 0.1,
         duplicationPercentage: 2,
-        testCoveragePercentage: 85
+        testCoveragePercentage: 85,
       },
       ast: [],
       relations: [],
@@ -104,7 +104,7 @@ describe('NamingStrategy', () => {
       devDependencies: [],
       publicExports: [],
       privateExports: [],
-      entryPoints: []
+      entryPoints: [],
     };
   });
 
@@ -117,7 +117,7 @@ describe('NamingStrategy', () => {
     it('should create naming strategy instance with custom options', () => {
       const customOptions = { prefix: 'custom', suffix: 'output' };
       const customStrategy = new TestNamingStrategy(customOptions);
-      
+
       expect(customStrategy).toBeDefined();
       const options = customStrategy.getOptions();
       expect(options.prefix).toBe('custom');
@@ -126,7 +126,7 @@ describe('NamingStrategy', () => {
 
     it('should generate file name for project', () => {
       const fileName = namingStrategy.generateFileName(mockProjectInfo);
-      
+
       expect(fileName).toBe('test-test-project.json');
       expect(typeof fileName).toBe('string');
       expect(fileName.length).toBeGreaterThan(0);
@@ -134,7 +134,7 @@ describe('NamingStrategy', () => {
 
     it('should generate directory name for project', () => {
       const dirName = namingStrategy.generateDirectoryName(mockProjectInfo);
-      
+
       expect(dirName).toBe('test-test-project-output');
       expect(typeof dirName).toBe('string');
       expect(dirName.length).toBeGreaterThan(0);
@@ -142,7 +142,7 @@ describe('NamingStrategy', () => {
 
     it('should generate timestamp', () => {
       const timestamp = namingStrategy.generateTimestamp();
-      
+
       expect(timestamp).toBe('2024-01-01T00:00:00.000Z');
       expect(typeof timestamp).toBe('string');
       expect(timestamp).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/);
@@ -155,7 +155,9 @@ describe('NamingStrategy', () => {
     });
 
     it('should sanitize names correctly', () => {
-      expect(namingStrategy.sanitizeName('test@name#with$special%chars')).toBe('test-name-with-special-chars');
+      expect(namingStrategy.sanitizeName('test@name#with$special%chars')).toBe(
+        'test-name-with-special-chars'
+      );
       expect(namingStrategy.sanitizeName('name with spaces')).toBe('name-with-spaces');
       expect(namingStrategy.sanitizeName('name-with-dashes')).toBe('name-with-dashes');
     });
@@ -163,7 +165,7 @@ describe('NamingStrategy', () => {
     it('should generate names with custom options', () => {
       const customOptions = { format: 'xml', prefix: 'custom' };
       const fileName = namingStrategy.generateFileName(mockProjectInfo, customOptions);
-      
+
       expect(fileName).toBe('test-test-project.json');
     });
   });
@@ -184,7 +186,7 @@ describe('NamingStrategy', () => {
     it('should handle project info without name', () => {
       const projectWithoutName = { ...mockProjectInfo, name: '' };
       const fileName = namingStrategy.generateFileName(projectWithoutName);
-      
+
       expect(fileName).toBe('test-project.json');
     });
 
@@ -203,7 +205,7 @@ describe('NamingStrategy', () => {
     it('should handle extremely long project names', () => {
       const longName = 'a'.repeat(1000);
       const projectWithLongName = { ...mockProjectInfo, name: longName };
-      
+
       expect(() => {
         namingStrategy.generateFileName(projectWithLongName);
       }).not.toThrow();
@@ -212,7 +214,7 @@ describe('NamingStrategy', () => {
     it('should handle project names with special characters', () => {
       const specialName = 'project@#$%^&*()_+{}|:"<>?[]\\;\'.,/`~';
       const projectWithSpecialName = { ...mockProjectInfo, name: specialName };
-      
+
       expect(() => {
         namingStrategy.generateFileName(projectWithSpecialName);
       }).not.toThrow();
@@ -221,17 +223,17 @@ describe('NamingStrategy', () => {
     it('should handle unicode project names', () => {
       const unicodeName = '项目名称-测试-中文-日本語-한국어';
       const projectWithUnicodeName = { ...mockProjectInfo, name: unicodeName };
-      
+
       expect(() => {
         namingStrategy.generateFileName(projectWithUnicodeName);
       }).not.toThrow();
     });
 
     it('should handle concurrent name generation', async () => {
-      const promises = Array.from({ length: 100 }, () => 
+      const promises = Array.from({ length: 100 }, () =>
         Promise.resolve(namingStrategy.generateFileName(mockProjectInfo))
       );
-      
+
       const results = await Promise.all(promises);
       expect(results).toHaveLength(100);
       expect(results.every(name => typeof name === 'string')).toBe(true);
@@ -242,7 +244,7 @@ describe('NamingStrategy', () => {
     it('should handle project names with only spaces', () => {
       const spaceName = '   ';
       const projectWithSpaceName = { ...mockProjectInfo, name: spaceName };
-      
+
       expect(() => {
         namingStrategy.generateFileName(projectWithSpaceName);
       }).not.toThrow();
@@ -251,7 +253,7 @@ describe('NamingStrategy', () => {
     it('should handle project names with only numbers', () => {
       const numberName = '123456789';
       const projectWithNumberName = { ...mockProjectInfo, name: numberName };
-      
+
       expect(() => {
         namingStrategy.generateFileName(projectWithNumberName);
       }).not.toThrow();
@@ -260,7 +262,7 @@ describe('NamingStrategy', () => {
     it('should handle project names with mixed case', () => {
       const mixedCaseName = 'TestProject-Name_123';
       const projectWithMixedCaseName = { ...mockProjectInfo, name: mixedCaseName };
-      
+
       expect(() => {
         namingStrategy.generateFileName(projectWithMixedCaseName);
       }).not.toThrow();
@@ -269,7 +271,7 @@ describe('NamingStrategy', () => {
     it('should handle sanitization of names with multiple consecutive special chars', () => {
       const nameWithMultipleSpecialChars = 'test@@@name###with$$$special';
       const sanitized = namingStrategy.sanitizeName(nameWithMultipleSpecialChars);
-      
+
       expect(sanitized).toBe('test---name---with---special');
       expect(sanitized).not.toContain('@');
       expect(sanitized).not.toContain('#');
@@ -286,30 +288,30 @@ describe('NamingStrategy', () => {
   describe('Performance and Memory', () => {
     it('should not leak memory with repeated operations', () => {
       const initialMemory = process.memoryUsage().heapUsed;
-      
+
       for (let i = 0; i < 1000; i++) {
         namingStrategy.generateFileName(mockProjectInfo);
         namingStrategy.generateDirectoryName(mockProjectInfo);
         namingStrategy.sanitizeName(`test-name-${i}`);
       }
-      
+
       const finalMemory = process.memoryUsage().heapUsed;
       const memoryIncrease = finalMemory - initialMemory;
-      
+
       // Memory increase should be reasonable (less than 10MB)
       expect(memoryIncrease).toBeLessThan(10 * 1024 * 1024);
     });
 
     it('should handle memory-efficient processing', () => {
       const startTime = Date.now();
-      
+
       for (let i = 0; i < 10000; i++) {
         namingStrategy.generateFileName(mockProjectInfo);
       }
-      
+
       const endTime = Date.now();
       const processingTime = endTime - startTime;
-      
+
       // Should process 10000 operations in less than 1 second
       expect(processingTime).toBeLessThan(1000);
     });
@@ -324,7 +326,7 @@ describe('NamingStrategy', () => {
     it('should merge provided options with defaults', () => {
       const customOptions = { prefix: 'custom', newOption: 'value' };
       const strategy = new TestNamingStrategy(customOptions);
-      
+
       const options = strategy.getOptions();
       expect(options.prefix).toBe('custom');
       expect((options as any).newOption).toBe('value');
@@ -352,14 +354,28 @@ describe('NamingStrategy', () => {
         rootPath: '/real/project',
         structure: {
           files: [
-            { name: 'index.ts', path: '/real/project/index.ts', size: 1024, lines: 50, extension: '.ts', lastModified: new Date(), hash: 'abc123' }
+            {
+              name: 'index.ts',
+              path: '/real/project/index.ts',
+              size: 1024,
+              lines: 50,
+              extension: '.ts',
+              lastModified: new Date(),
+              hash: 'abc123',
+            },
           ],
           directories: [
-            { name: 'src', path: '/real/project/src', fileCount: 0, subdirectoryCount: 0, totalSize: 0 }
+            {
+              name: 'src',
+              path: '/real/project/src',
+              fileCount: 0,
+              subdirectoryCount: 0,
+              totalSize: 0,
+            },
           ],
           totalFiles: 1,
           totalLines: 50,
-          totalSize: 1024
+          totalSize: 1024,
         },
         complexity: {
           cyclomaticComplexity: 25,
@@ -367,14 +383,14 @@ describe('NamingStrategy', () => {
           linesOfCode: 5000,
           functionCount: 100,
           classCount: 20,
-          interfaceCount: 15
+          interfaceCount: 15,
         },
         quality: {
           score: 75,
           maintainabilityIndex: 75,
           technicalDebtRatio: 0.15,
           duplicationPercentage: 5,
-          testCoveragePercentage: 80
+          testCoveragePercentage: 80,
         },
         ast: [],
         relations: [],
@@ -382,12 +398,12 @@ describe('NamingStrategy', () => {
         devDependencies: [],
         publicExports: [],
         privateExports: [],
-        entryPoints: []
+        entryPoints: [],
       };
 
       const fileName = namingStrategy.generateFileName(realProjectInfo);
       const dirName = namingStrategy.generateDirectoryName(realProjectInfo);
-      
+
       expect(fileName).toBe('test-real-project.json');
       expect(dirName).toBe('test-real-project-output');
     });
@@ -396,13 +412,13 @@ describe('NamingStrategy', () => {
       const strategies = [
         new TestNamingStrategy({ prefix: 'strategy1' }),
         new TestNamingStrategy({ prefix: 'strategy2' }),
-        new TestNamingStrategy({ prefix: 'strategy3' })
+        new TestNamingStrategy({ prefix: 'strategy3' }),
       ];
 
       strategies.forEach(strategy => {
         const fileName = strategy.generateFileName(mockProjectInfo);
         const dirName = strategy.generateDirectoryName(mockProjectInfo);
-        
+
         expect(typeof fileName).toBe('string');
         expect(typeof dirName).toBe('string');
         expect(fileName.length).toBeGreaterThan(0);
@@ -430,15 +446,28 @@ describe('NamingStrategy', () => {
         type: 'typescript' as const,
         rootPath: '/minimal',
         structure: { files: [], directories: [], totalFiles: 0, totalLines: 0, totalSize: 0 },
-        complexity: { cyclomaticComplexity: 0, cognitiveComplexity: 0, linesOfCode: 0, functionCount: 0, classCount: 0, interfaceCount: 0 },
-        quality: { score: 0, maintainabilityIndex: 0, technicalDebtRatio: 0, duplicationPercentage: 0, testCoveragePercentage: 0 },
+        complexity: {
+          cyclomaticComplexity: 0,
+          cognitiveComplexity: 0,
+          linesOfCode: 0,
+          functionCount: 0,
+          classCount: 0,
+          interfaceCount: 0,
+        },
+        quality: {
+          score: 0,
+          maintainabilityIndex: 0,
+          technicalDebtRatio: 0,
+          duplicationPercentage: 0,
+          testCoveragePercentage: 0,
+        },
         ast: [],
         relations: [],
         dependencies: [],
         devDependencies: [],
         publicExports: [],
         privateExports: [],
-        entryPoints: []
+        entryPoints: [],
       };
 
       expect(() => {
@@ -461,7 +490,7 @@ describe('NamingStrategy', () => {
 
     it('should handle options property access', () => {
       expect(namingStrategy.getOptions()).toBeDefined();
-      
+
       const customStrategy = new TestNamingStrategy({ test: 'value' });
       const options = customStrategy.getOptions();
       expect((options as any).test).toBe('value');
@@ -613,7 +642,7 @@ describe('NamingStrategy', () => {
       });
 
       it('should remove trailing separator after truncation', () => {
-        const longName = 'a'.repeat(250) + '---';
+        const longName = `${'a'.repeat(250)}---`;
         const sanitized = originalStrategy.sanitizeName(longName);
         expect(sanitized.length).toBeLessThanOrEqual(255);
         expect(sanitized).not.toMatch(/-+$/);
@@ -641,7 +670,7 @@ describe('NamingStrategy', () => {
           name: 'test',
           version: '1.0.0',
           timestamp: '2024-01-01',
-          suffix: '.json'
+          suffix: '.json',
         };
         const formatted = originalStrategy.testFormatName(parts);
         expect(formatted).toBe('pretest1.0.02024-01-01.json');
@@ -650,20 +679,20 @@ describe('NamingStrategy', () => {
       it('should format name with missing placeholders', () => {
         const parts = {
           name: 'test',
-          suffix: '.json'
+          suffix: '.json',
         };
         const formatted = originalStrategy.testFormatName(parts);
         expect(formatted).toBe('test.json');
       });
 
       it('should handle custom format string', () => {
-        const customStrategy = new TestNamingStrategyOriginal({ 
-          format: '{name}-{version}-{timestamp}' 
+        const customStrategy = new TestNamingStrategyOriginal({
+          format: '{name}-{version}-{timestamp}',
         });
         const parts = {
           name: 'test',
           version: '1.0.0',
-          timestamp: '2024-01-01'
+          timestamp: '2024-01-01',
         };
         const formatted = customStrategy.testFormatName(parts);
         expect(formatted).toBe('test-1.0.0-2024-01-01');
@@ -671,7 +700,7 @@ describe('NamingStrategy', () => {
 
       it('should remove unreplaced placeholders', () => {
         const parts = {
-          name: 'test'
+          name: 'test',
         };
         const formatted = originalStrategy.testFormatName(parts);
         expect(formatted).toBe('test');
@@ -682,7 +711,7 @@ describe('NamingStrategy', () => {
       it('should sanitize formatted name', () => {
         const parts = {
           name: 'test<file',
-          suffix: '.json'
+          suffix: '.json',
         };
         const formatted = originalStrategy.testFormatName(parts);
         expect(formatted).toBe('test-file.json');
@@ -744,24 +773,24 @@ describe('NamingStrategy', () => {
   describe('Error Scenarios', () => {
     it('it should add options and give back the options', () => {
       const options = {
-        prefix: 'custom'
+        prefix: 'custom',
       };
       const namingStrategy = new TestNamingStrategy();
       namingStrategy.setOptions(options);
       expect(namingStrategy.getOptions().prefix).toEqual(options.prefix);
-      expect(namingStrategy.validateName("name_1234")).toEqual(true);
+      expect(namingStrategy.validateName('name_1234')).toEqual(true);
     });
 
     it('it should add options and give back the options', () => {
       const options = {
         prefix: 'custom',
         format: undefined,
-        type: 'typescript'
+        type: 'typescript',
       };
-      const namingStrategy = new TestNamingStrategy({...options});
+      const namingStrategy = new TestNamingStrategy({ ...options });
       expect(namingStrategy.getOptions().prefix).toEqual(options.prefix);
-      expect(namingStrategy.validateName("name_1234")).toEqual(true);
-    })
+      expect(namingStrategy.validateName('name_1234')).toEqual(true);
+    });
   });
 
   it('it should add undefined options and give back the options', () => {
@@ -770,12 +799,16 @@ describe('NamingStrategy', () => {
       format: undefined,
       type: 'typescript',
       maxLength: undefined,
-      separator: undefined
+      separator: undefined,
     };
     const namingStrategy = new TestNamingStrategy(options as any);
     expect(namingStrategy.getOptions().prefix).toEqual(options.prefix);
-    expect(namingStrategy.sanitizeName("PKsxGOOkPFTYThozSyN31flX3AV99bOgxBmmJlf2CUZG12GKbE4u6NE2gYQj1Q9aiueTFqVxgpFBmG0TFMBx24mxJ5YNIUMY8Ue8eaPaOdDRRHrDkVuERIwwq2dMYs3HDp9qI3mKyfHN6Sgc6XuzrpV90ZI7R9MY5RnXit3nDijoVIMIyM2AtTmMtTreYMZGsEmn2DOGQhvLX7lvN2Mj5IXxzTOWgENbr3VhtOVu4LO39Q2jW7DLz7fQhWpwQrLvABC<>")).toEqual("PKsxGOOkPFTYThozSyN31flX3AV99bOgxBmmJlf2CUZG12GKbE4u6NE2gYQj1Q9aiueTFqVxgpFBmG0TFMBx24mxJ5YNIUMY8Ue8eaPaOdDRRHrDkVuERIwwq2dMYs3HDp9qI3mKyfHN6Sgc6XuzrpV90ZI7R9MY5RnXit3nDijoVIMIyM2AtTmMtTreYMZGsEmn2DOGQhvLX7lvN2Mj5IXxzTOWgENbr3VhtOVu4LO39Q2jW7DLz7fQhWpwQrLvABC--");
+    expect(
+      namingStrategy.sanitizeName(
+        'PKsxGOOkPFTYThozSyN31flX3AV99bOgxBmmJlf2CUZG12GKbE4u6NE2gYQj1Q9aiueTFqVxgpFBmG0TFMBx24mxJ5YNIUMY8Ue8eaPaOdDRRHrDkVuERIwwq2dMYs3HDp9qI3mKyfHN6Sgc6XuzrpV90ZI7R9MY5RnXit3nDijoVIMIyM2AtTmMtTreYMZGsEmn2DOGQhvLX7lvN2Mj5IXxzTOWgENbr3VhtOVu4LO39Q2jW7DLz7fQhWpwQrLvABC<>'
+      )
+    ).toEqual(
+      'PKsxGOOkPFTYThozSyN31flX3AV99bOgxBmmJlf2CUZG12GKbE4u6NE2gYQj1Q9aiueTFqVxgpFBmG0TFMBx24mxJ5YNIUMY8Ue8eaPaOdDRRHrDkVuERIwwq2dMYs3HDp9qI3mKyfHN6Sgc6XuzrpV90ZI7R9MY5RnXit3nDijoVIMIyM2AtTmMtTreYMZGsEmn2DOGQhvLX7lvN2Mj5IXxzTOWgENbr3VhtOVu4LO39Q2jW7DLz7fQhWpwQrLvABC--'
+    );
   });
-
-  
 });

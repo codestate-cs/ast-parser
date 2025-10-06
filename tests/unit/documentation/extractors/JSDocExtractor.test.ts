@@ -1,10 +1,13 @@
 /**
  * Tests for JSDocExtractor
- * 
+ *
  * Following TDD approach - tests define expected behavior
  */
 
-import { JSDocExtractor, JSDocExtractionOptions } from '../../../../src/documentation/extractors/JSDocExtractor';
+import {
+  JSDocExtractor,
+  JSDocExtractionOptions,
+} from '../../../../src/documentation/extractors/JSDocExtractor';
 import { ASTNode, ASTNodeType } from '../../../../src/types/core';
 
 describe('JSDocExtractor', () => {
@@ -20,7 +23,7 @@ describe('JSDocExtractor', () => {
       validateSyntax: true,
       extractTypes: true,
       extractExamples: true,
-      customTags: []
+      customTags: [],
     };
     extractor = new JSDocExtractor();
   });
@@ -34,20 +37,21 @@ describe('JSDocExtractor', () => {
       const customOptions = {
         includePrivate: true,
         validateSyntax: false,
-        customTags: ['custom']
+        customTags: ['custom'],
       };
       const customExtractor = new JSDocExtractor(customOptions);
-      
+
       expect(customExtractor.getOptions()).toEqual({
         ...defaultOptions,
-        ...customOptions
+        ...customOptions,
       });
     });
   });
 
   describe('parseJSDocComment', () => {
     it('should parse simple JSDoc comment', () => {
-      const commentText = '/**\n * This is a simple function\n * @param name The name parameter\n * @returns A greeting string\n */';
+      const commentText =
+        '/**\n * This is a simple function\n * @param name The name parameter\n * @returns A greeting string\n */';
       const result = extractor.parseJSDocComment(commentText, 0, 100);
 
       expect(result.description).toBe('This is a simple function');
@@ -69,7 +73,8 @@ describe('JSDocExtractor', () => {
     });
 
     it('should parse JSDoc comment with returns tag', () => {
-      const commentText = '/**\n * @returns {Promise<string>} A promise that resolves to a string\n */';
+      const commentText =
+        '/**\n * @returns {Promise<string>} A promise that resolves to a string\n */';
       const result = extractor.parseJSDocComment(commentText, 0, 50);
 
       const returnsTag = result.tags.find((t: any) => t.type === 'returns');
@@ -88,7 +93,7 @@ describe('JSDocExtractor', () => {
        * @since 1.0.0
        * @author John Doe
        */`;
-      
+
       const result = extractor.parseJSDocComment(commentText, 0, 200);
 
       expect(result.tags).toHaveLength(6);
@@ -125,7 +130,7 @@ describe('JSDocExtractor', () => {
        * that spans multiple lines
        * @param name The parameter
        */`;
-      
+
       const result = extractor.parseJSDocComment(commentText, 0, 100);
 
       expect(result.description).toBe('This is the main description that spans multiple lines');
@@ -145,9 +150,9 @@ describe('JSDocExtractor', () => {
         end: 100,
         children: [],
         properties: {
-          jsDocComments: ['/**\n * Test function\n * @param name The name\n */']
+          jsDocComments: ['/**\n * Test function\n * @param name The name\n */'],
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -168,9 +173,9 @@ describe('JSDocExtractor', () => {
         end: 80,
         children: [],
         properties: {
-          jsDocComments: ['/**\n * Child function\n */']
+          jsDocComments: ['/**\n * Child function\n */'],
         },
-        metadata: {}
+        metadata: {},
       };
 
       const parentNode: ASTNode = {
@@ -183,7 +188,7 @@ describe('JSDocExtractor', () => {
         end: 100,
         children: [childNode],
         properties: {},
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(parentNode);
@@ -203,7 +208,7 @@ describe('JSDocExtractor', () => {
         end: 100,
         children: [],
         properties: {},
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -225,9 +230,9 @@ describe('JSDocExtractor', () => {
           end: 50,
           children: [],
           properties: {
-            jsDocComments: ['/**\n * First function\n */']
+            jsDocComments: ['/**\n * First function\n */'],
           },
-          metadata: {}
+          metadata: {},
         },
         {
           id: 'node2',
@@ -239,10 +244,10 @@ describe('JSDocExtractor', () => {
           end: 50,
           children: [],
           properties: {
-            jsDocComments: ['/**\n * Second function\n */']
+            jsDocComments: ['/**\n * Second function\n */'],
           },
-          metadata: {}
-        }
+          metadata: {},
+        },
       ];
 
       const result = extractor.extractFromNodes(nodes);
@@ -266,10 +271,10 @@ describe('JSDocExtractor', () => {
           end: 100,
           children: [],
           properties: {
-            jsDocComments: ['/**\n * Test function\n */']
+            jsDocComments: ['/**\n * Test function\n */'],
           },
-          metadata: {}
-        }
+          metadata: {},
+        },
       ];
 
       const result = extractor.extractFromNodes(nodes);
@@ -283,7 +288,7 @@ describe('JSDocExtractor', () => {
   describe('filtering options', () => {
     it('should filter out private comments when includePrivate is false', () => {
       const privateExtractor = new JSDocExtractor({ includePrivate: false });
-      
+
       const commentText = '/**\n * Private function\n * @private\n */';
       const result = privateExtractor.parseJSDocComment(commentText, 0, 50);
 
@@ -292,7 +297,7 @@ describe('JSDocExtractor', () => {
 
     it('should include private comments when includePrivate is true', () => {
       const privateExtractor = new JSDocExtractor({ includePrivate: true });
-      
+
       const node: ASTNode = {
         id: 'test-node',
         name: 'privateFunction',
@@ -303,9 +308,9 @@ describe('JSDocExtractor', () => {
         end: 100,
         children: [],
         properties: {
-          jsDocComments: ['/**\n * Private function\n * @private\n */']
+          jsDocComments: ['/**\n * Private function\n * @private\n */'],
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = privateExtractor.extractFromNode(node);
@@ -315,7 +320,7 @@ describe('JSDocExtractor', () => {
 
     it('should filter out deprecated comments when includeDeprecated is false', () => {
       const deprecatedExtractor = new JSDocExtractor({ includeDeprecated: false });
-      
+
       const node: ASTNode = {
         id: 'test-node',
         name: 'deprecatedFunction',
@@ -326,9 +331,9 @@ describe('JSDocExtractor', () => {
         end: 100,
         children: [],
         properties: {
-          jsDocComments: ['/**\n * Deprecated function\n * @deprecated\n */']
+          jsDocComments: ['/**\n * Deprecated function\n * @deprecated\n */'],
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = deprecatedExtractor.extractFromNode(node);
@@ -341,7 +346,7 @@ describe('JSDocExtractor', () => {
     it('should update options correctly', () => {
       const newOptions = {
         includePrivate: true,
-        validateSyntax: false
+        validateSyntax: false,
       };
 
       extractor.updateOptions(newOptions);
@@ -381,7 +386,8 @@ describe('JSDocExtractor', () => {
     });
 
     it('should handle JSDoc comment with complex type information', () => {
-      const commentText = '/**\n * @param {Array<{name: string, age: number}>} users Array of user objects\n */';
+      const commentText =
+        '/**\n * @param {Array<{name: string, age: number}>} users Array of user objects\n */';
       const result = extractor.parseJSDocComment(commentText, 0, 80);
 
       const paramTag = result.tags.find((t: any) => t.type === 'param');
@@ -450,7 +456,7 @@ describe('JSDocExtractor', () => {
 
       const sinceTag = result.tags.find((t: any) => t.type === 'since');
       const authorTag = result.tags.find((t: any) => t.type === 'author');
-      
+
       expect(sinceTag?.description).toBe('1.0.0');
       expect(authorTag?.description).toBe('John Doe');
     });
@@ -484,7 +490,7 @@ describe('JSDocExtractor', () => {
   describe('filtering and validation', () => {
     it('should filter out private comments when includePrivate is false', () => {
       const privateExtractor = new JSDocExtractor({ includePrivate: false });
-      
+
       const node: ASTNode = {
         id: 'test-function',
         name: 'testFunction',
@@ -495,11 +501,9 @@ describe('JSDocExtractor', () => {
         end: 100,
         children: [],
         properties: {
-          jsDocComments: [
-            '/**\n * @private\n * Private function\n */'
-          ]
+          jsDocComments: ['/**\n * @private\n * Private function\n */'],
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = privateExtractor.extractFromNode(node);
@@ -508,7 +512,7 @@ describe('JSDocExtractor', () => {
 
     it('should include private comments when includePrivate is true', () => {
       const privateExtractor = new JSDocExtractor({ includePrivate: true });
-      
+
       const node: ASTNode = {
         id: 'test-function',
         name: 'testFunction',
@@ -519,11 +523,9 @@ describe('JSDocExtractor', () => {
         end: 100,
         children: [],
         properties: {
-          jsDocComments: [
-            '/**\n * @private\n * Private function\n */'
-          ]
+          jsDocComments: ['/**\n * @private\n * Private function\n */'],
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = privateExtractor.extractFromNode(node);
@@ -532,7 +534,7 @@ describe('JSDocExtractor', () => {
 
     it('should filter out deprecated comments when includeDeprecated is false', () => {
       const deprecatedExtractor = new JSDocExtractor({ includeDeprecated: false });
-      
+
       const node: ASTNode = {
         id: 'test-function',
         name: 'testFunction',
@@ -543,11 +545,9 @@ describe('JSDocExtractor', () => {
         end: 100,
         children: [],
         properties: {
-          jsDocComments: [
-            '/**\n * @deprecated\n * Deprecated function\n */'
-          ]
+          jsDocComments: ['/**\n * @deprecated\n * Deprecated function\n */'],
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = deprecatedExtractor.extractFromNode(node);
@@ -556,7 +556,7 @@ describe('JSDocExtractor', () => {
 
     it('should validate JSDoc syntax when enabled', () => {
       const validatingExtractor = new JSDocExtractor({ validateSyntax: true });
-      
+
       const commentText = '/**\n * @param {string} name\n */';
       const result = validatingExtractor.parseJSDocComment(commentText, 0, 40);
 
@@ -566,7 +566,7 @@ describe('JSDocExtractor', () => {
 
     it('should detect malformed JSDoc syntax', () => {
       const validatingExtractor = new JSDocExtractor({ validateSyntax: true });
-      
+
       const commentText = '/**\n * @param {invalid syntax\n */';
       const result = validatingExtractor.parseJSDocComment(commentText, 0, 40);
 
@@ -577,7 +577,7 @@ describe('JSDocExtractor', () => {
 
     it('should detect empty JSDoc comments', () => {
       const validatingExtractor = new JSDocExtractor({ validateSyntax: true });
-      
+
       const commentText = '/**\n */';
       const result = validatingExtractor.parseJSDocComment(commentText, 0, 10);
 
@@ -596,18 +596,19 @@ describe('JSDocExtractor', () => {
       const result = extractor.parseJSDocComment(commentText, 0, 100);
 
       expect(result.tags).toHaveLength(3);
-      
+
       const nameTag = result.tags.find((t: any) => t.name === 'name');
       const ageTag = result.tags.find((t: any) => t.name === 'age');
       const emailTag = result.tags.find((t: any) => t.name === 'email');
-      
+
       expect(nameTag?.typeInfo).toBe('string');
       expect(ageTag?.typeInfo).toBe('number');
       expect(emailTag?.typeInfo).toBeUndefined();
     });
 
     it('should handle nested type information in param tags', () => {
-      const commentText = '/**\n * @param {Map<string, {id: number, name: string}>} data Complex data structure\n */';
+      const commentText =
+        '/**\n * @param {Map<string, {id: number, name: string}>} data Complex data structure\n */';
       const result = extractor.parseJSDocComment(commentText, 0, 80);
 
       const paramTag = result.tags.find((t: any) => t.type === 'param');
@@ -635,9 +636,9 @@ describe('JSDocExtractor', () => {
   describe('branch coverage improvements', () => {
     it('should handle tag parsing errors gracefully', () => {
       const commentText = '/**\n * Test function\n * @param {invalid syntax\n */';
-      
+
       const result = extractor.parseJSDocComment(commentText, 0, commentText.length);
-      
+
       expect(result).toBeDefined();
       expect(result.errors).toBeDefined();
       // The current implementation doesn't throw errors for malformed syntax, it just parses what it can
@@ -647,9 +648,9 @@ describe('JSDocExtractor', () => {
 
     it('should parse simple tag format', () => {
       const commentText = '/**\n * Test function\n * @param name description\n */';
-      
+
       const result = extractor.parseJSDocComment(commentText, 0, commentText.length);
-      
+
       expect(result).toBeDefined();
       expect(result.tags).toBeDefined();
       const paramTag = result.tags.find((t: any) => t.type === 'param');
@@ -660,13 +661,13 @@ describe('JSDocExtractor', () => {
 
     it('should filter experimental comments when includeExperimental is false', () => {
       const extractorWithOptions = new JSDocExtractor({
-        includeExperimental: false
+        includeExperimental: false,
       });
-      
+
       const commentText = '/**\n * Test function\n * @experimental\n */';
-      
+
       const result = extractorWithOptions.parseJSDocComment(commentText, 0, commentText.length);
-      
+
       expect(result).toBeDefined();
       expect(result.tags).toBeDefined();
       const experimentalTag = result.tags.find((t: any) => t.type === 'experimental');
@@ -675,13 +676,13 @@ describe('JSDocExtractor', () => {
 
     it('should filter internal comments when includeInternal is false', () => {
       const extractorWithOptions = new JSDocExtractor({
-        includeInternal: false
+        includeInternal: false,
       });
-      
+
       const commentText = '/**\n * Test function\n * @internal\n */';
-      
+
       const result = extractorWithOptions.parseJSDocComment(commentText, 0, commentText.length);
-      
+
       expect(result).toBeDefined();
       expect(result.tags).toBeDefined();
       const internalTag = result.tags.find((t: any) => t.type === 'internal');

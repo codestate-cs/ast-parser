@@ -92,9 +92,9 @@ export class DiffGenerator {
             filePath: path as string,
             changeType: 'added',
             newContent: await this.getFileContent(path as string, version2),
-            linesAdded: (file2 as any).lines || 0,
+            linesAdded: file2.lines || 0,
             linesRemoved: 0,
-            hunks: []
+            hunks: [],
           };
           filesAdded.push(fileDiff);
           totalLinesAdded += fileDiff.linesAdded;
@@ -107,10 +107,20 @@ export class DiffGenerator {
         if (file2 && this.hasFileChanged(file1, file2)) {
           const oldContent = await this.getFileContent(path as string, version1);
           const newContent = await this.getFileContent(path as string, version2);
-          
-          const hunks = this.generateHunks(oldContent, newContent, options?.contextLines || this.config.contextLines);
-          const linesAdded = hunks.reduce((sum, hunk) => sum + hunk.changes.filter(c => c.type === 'added').length, 0);
-          const linesRemoved = hunks.reduce((sum, hunk) => sum + hunk.changes.filter(c => c.type === 'removed').length, 0);
+
+          const hunks = this.generateHunks(
+            oldContent,
+            newContent,
+            options?.contextLines || this.config.contextLines
+          );
+          const linesAdded = hunks.reduce(
+            (sum, hunk) => sum + hunk.changes.filter(c => c.type === 'added').length,
+            0
+          );
+          const linesRemoved = hunks.reduce(
+            (sum, hunk) => sum + hunk.changes.filter(c => c.type === 'removed').length,
+            0
+          );
 
           const fileDiff: FileDiff = {
             filePath: path as string,
@@ -119,7 +129,7 @@ export class DiffGenerator {
             newContent,
             linesAdded,
             linesRemoved,
-            hunks
+            hunks,
           };
           filesModified.push(fileDiff);
           totalLinesAdded += linesAdded;
@@ -135,8 +145,8 @@ export class DiffGenerator {
             changeType: 'deleted',
             oldContent: await this.getFileContent(path as string, version1),
             linesAdded: 0,
-            linesRemoved: (file1 as any).lines || 0,
-            hunks: []
+            linesRemoved: file1.lines || 0,
+            hunks: [],
           };
           filesDeleted.push(fileDiff);
           totalLinesRemoved += fileDiff.linesRemoved;
@@ -152,15 +162,15 @@ export class DiffGenerator {
           filesModified: filesModified.length,
           filesDeleted: filesDeleted.length,
           totalLinesAdded,
-          totalLinesRemoved
+          totalLinesRemoved,
         },
         files: allFiles,
         metadata: {
           generatedAt: new Date().toISOString(),
           version1: version1.project.version,
           version2: version2.project.version,
-          generatorVersion: '1.0.0'
-        }
+          generatorVersion: '1.0.0',
+        },
       };
     } catch (error) {
       this.handleError(error as Error, 'generateDiff');
@@ -219,9 +229,11 @@ export class DiffGenerator {
   }
 
   private hasFileChanged(file1: any, file2: any): boolean {
-    return file1.lastModified !== file2.lastModified ||
-           file1.size !== file2.size ||
-           file1.lines !== file2.lines;
+    return (
+      file1.lastModified !== file2.lastModified ||
+      file1.size !== file2.size ||
+      file1.lines !== file2.lines
+    );
   }
 
   private async getFileContent(filePath: string, version: ProjectAnalysisOutput): Promise<string> {
@@ -233,7 +245,7 @@ export class DiffGenerator {
   private generateHunks(oldContent: string, newContent: string, contextLines: number): DiffHunk[] {
     const oldLines = oldContent.split('\n');
     const newLines = newContent.split('\n');
-    
+
     const hunks: DiffHunk[] = [];
     let oldIndex = 0;
     let newIndex = 0;
@@ -264,15 +276,15 @@ export class DiffGenerator {
       for (let j = startNew; j < newLines.length; j++) {
         if (oldLines[i] !== newLines[j]) {
           const changes: LineChange[] = [];
-          let oldStart = Math.max(0, i - contextLines);
-          let newStart = Math.max(0, j - contextLines);
+          const oldStart = Math.max(0, i - contextLines);
+          const newStart = Math.max(0, j - contextLines);
 
           // Add context before
           for (let k = oldStart; k < i; k++) {
             changes.push({
               type: 'unchanged',
               content: oldLines[k] || '',
-              lineNumber: k + 1
+              lineNumber: k + 1,
             });
           }
 
@@ -280,12 +292,12 @@ export class DiffGenerator {
           changes.push({
             type: 'removed',
             content: oldLines[i] || '',
-            lineNumber: i + 1
+            lineNumber: i + 1,
           });
           changes.push({
             type: 'added',
             content: newLines[j] || '',
-            lineNumber: j + 1
+            lineNumber: j + 1,
           });
 
           return {
@@ -294,7 +306,7 @@ export class DiffGenerator {
             newStart: newStart + 1,
             newLines: 1,
             content: `@@ -${oldStart + 1},1 +${newStart + 1},1 @@`,
-            changes
+            changes,
           };
         }
       }
@@ -305,16 +317,16 @@ export class DiffGenerator {
 
   private formatUnifiedDiff(diffReport: DiffReport): string {
     const lines: string[] = [];
-    
+
     lines.push(`--- ${diffReport.metadata.version1}`);
     lines.push(`+++ ${diffReport.metadata.version2}`);
-    
+
     for (const file of diffReport.files) {
       lines.push(`diff --git a/${file.filePath} b/${file.filePath}`);
       lines.push(`index 0000000..1111111 100644`);
       lines.push(`--- a/${file.filePath}`);
       lines.push(`+++ b/${file.filePath}`);
-      
+
       for (const hunk of file.hunks) {
         lines.push(hunk.content);
         for (const change of hunk.changes) {
@@ -323,17 +335,17 @@ export class DiffGenerator {
         }
       }
     }
-    
+
     return lines.join('\n');
   }
 
   private formatContextDiff(diffReport: DiffReport): string {
     const lines: string[] = [];
-    
+
     for (const file of diffReport.files) {
       lines.push(`*** ${file.filePath} ${diffReport.metadata.version1}`);
       lines.push(`--- ${file.filePath} ${diffReport.metadata.version2}`);
-      
+
       for (const hunk of file.hunks) {
         lines.push(`***************`);
         lines.push(`*** ${hunk.oldStart},${hunk.oldLines} ****`);
@@ -350,20 +362,20 @@ export class DiffGenerator {
         }
       }
     }
-    
+
     return lines.join('\n');
   }
 
   private formatSideBySideDiff(diffReport: DiffReport): string {
     const lines: string[] = [];
-    
+
     lines.push(`File: ${diffReport.files[0]?.filePath || 'unknown'}`);
     lines.push(`${'='.repeat(80)}`);
-    
+
     for (const file of diffReport.files) {
       lines.push(`Changes in ${file.filePath}:`);
       lines.push(`${'-'.repeat(40)} | ${'-'.repeat(40)}`);
-      
+
       for (const hunk of file.hunks) {
         for (const change of hunk.changes) {
           const left = change.type === 'removed' ? change.content : '';
@@ -372,7 +384,7 @@ export class DiffGenerator {
         }
       }
     }
-    
+
     return lines.join('\n');
   }
 
@@ -382,7 +394,7 @@ export class DiffGenerator {
       includeContext: config.includeContext ?? true,
       contextLines: config.contextLines ?? 3,
       maxDiffSize: config.maxDiffSize ?? 10000,
-      outputFormat: config.outputFormat ?? 'unified'
+      outputFormat: config.outputFormat ?? 'unified',
     };
   }
 

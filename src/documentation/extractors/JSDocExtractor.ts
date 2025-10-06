@@ -1,6 +1,6 @@
 /**
  * JSDoc Extractor for extracting and parsing JSDoc comments from TypeScript/JavaScript files
- * 
+ *
  * This module provides comprehensive JSDoc extraction capabilities including:
  * - JSDoc comment extraction from AST nodes
  * - JSDoc tag parsing (@param, @returns, @throws, etc.)
@@ -13,7 +13,7 @@ import { ASTNode } from '../../types/core';
 /**
  * JSDoc tag types
  */
-export type JSDocTagType = 
+export type JSDocTagType =
   | 'param'
   | 'returns'
   | 'throws'
@@ -145,7 +145,7 @@ export interface JSDocExtractionOptions {
 
 /**
  * JSDoc Extractor class
- * 
+ *
  * Provides comprehensive JSDoc extraction and parsing capabilities
  */
 export class JSDocExtractor {
@@ -161,13 +161,13 @@ export class JSDocExtractor {
       extractTypes: true,
       extractExamples: true,
       customTags: [],
-      ...options
+      ...options,
     };
   }
 
   /**
    * Extract JSDoc comments from AST nodes
-   * 
+   *
    * @param nodes - AST nodes to extract JSDoc from
    * @returns JSDoc extraction result
    */
@@ -180,7 +180,7 @@ export class JSDocExtractor {
     for (const node of nodes) {
       const nodeComments = this.extractFromNode(node);
       comments.push(...nodeComments);
-      
+
       if (node.filePath) {
         filesProcessed++;
         totalLines += this.getNodeLineCount(node);
@@ -199,14 +199,14 @@ export class JSDocExtractor {
       metadata: {
         filesProcessed,
         totalLines,
-        extractionTime: Math.max(1, endTime - startTime) // Ensure at least 1ms
-      }
+        extractionTime: Math.max(1, endTime - startTime), // Ensure at least 1ms
+      },
     };
   }
 
   /**
    * Extract JSDoc comments from a single AST node
-   * 
+   *
    * @param node - AST node to extract JSDoc from
    * @returns Array of JSDoc comments
    */
@@ -214,7 +214,7 @@ export class JSDocExtractor {
     const comments: JSDocComment[] = [];
 
     // Extract JSDoc from node properties
-    if (node.properties && node.properties['jsDocComments']) {
+    if (node.properties?.['jsDocComments']) {
       const jsDocComments = node.properties['jsDocComments'] as string[];
       for (const commentText of jsDocComments) {
         const comment = this.parseJSDocComment(commentText, node.start, node.end);
@@ -235,7 +235,7 @@ export class JSDocExtractor {
 
   /**
    * Parse a JSDoc comment string
-   * 
+   *
    * @param commentText - Raw JSDoc comment text
    * @param start - Start position in source
    * @param end - End position in source
@@ -247,13 +247,13 @@ export class JSDocExtractor {
 
     // Clean up comment text
     const cleanedText = this.cleanJSDocText(commentText);
-    
+
     // Extract description and summary
     const { description, summary } = this.extractDescription(cleanedText);
-    
+
     // Extract tags
     const tags = this.extractTags(cleanedText, errors);
-    
+
     // Validate JSDoc syntax if enabled
     if (this.options.validateSyntax) {
       isValid = this.validateJSDocSyntax(cleanedText, errors);
@@ -268,13 +268,13 @@ export class JSDocExtractor {
       end,
       lineNumber: this.calculateLineNumber(start),
       isValid,
-      errors
+      errors,
     };
   }
 
   /**
    * Clean JSDoc comment text by removing comment markers
-   * 
+   *
    * @param text - Raw comment text
    * @returns Cleaned comment text
    */
@@ -289,14 +289,14 @@ export class JSDocExtractor {
 
   /**
    * Extract description and summary from JSDoc text
-   * 
+   *
    * @param text - Cleaned JSDoc text
    * @returns Description and summary
    */
   private extractDescription(text: string): { description: string; summary: string } {
     const lines = text.split('\n');
     const descriptionLines: string[] = [];
-    
+
     for (const line of lines) {
       // Stop at first tag
       if (line.trim().startsWith('@')) {
@@ -304,16 +304,16 @@ export class JSDocExtractor {
       }
       descriptionLines.push(line.trim());
     }
-    
+
     const description = descriptionLines.join(' ').trim();
     const summary = descriptionLines[0] || '';
-    
+
     return { description, summary };
   }
 
   /**
    * Extract JSDoc tags from text
-   * 
+   *
    * @param text - Cleaned JSDoc text
    * @param errors - Array to collect parsing errors
    * @returns Array of parsed JSDoc tags
@@ -321,11 +321,11 @@ export class JSDocExtractor {
   private extractTags(text: string, errors: string[]): JSDocTag[] {
     const tags: JSDocTag[] = [];
     const lines = text.split('\n');
-    
+
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i]?.trim();
       if (!line) continue;
-      
+
       if (line.startsWith('@')) {
         try {
           const tag = this.parseTag(line);
@@ -337,13 +337,13 @@ export class JSDocExtractor {
         }
       }
     }
-    
+
     return tags;
   }
 
   /**
    * Parse a single JSDoc tag
-   * 
+   *
    * @param line - Line containing the tag
    * @returns Parsed JSDoc tag
    */
@@ -352,15 +352,15 @@ export class JSDocExtractor {
     if (!tagMatch) {
       return null;
     }
-    
+
     const [, tagType, content] = tagMatch;
     const tagTypeEnum = tagType as JSDocTagType;
-    
+
     // Parse tag content based on tag type
     let name: string | undefined;
     let description: string;
     let typeInfo: string | undefined;
-    
+
     if (tagTypeEnum === 'param' && content) {
       // Match: {type} name description (handle nested braces)
       const typeFirstMatch = content.match(/^\{([^}]*(?:\{[^}]*\}[^}]*)*)\}\s+(\w+)(?:\s+(.+))?$/);
@@ -370,7 +370,9 @@ export class JSDocExtractor {
         description = typeFirstMatch[3] || '';
       } else {
         // Match: name {type} description (handle nested braces)
-        const nameFirstMatch = content.match(/^(\w+)(?:\s*\{([^}]*(?:\{[^}]*\}[^}]*)*)\})?(?:\s+(.+))?$/);
+        const nameFirstMatch = content.match(
+          /^(\w+)(?:\s*\{([^}]*(?:\{[^}]*\}[^}]*)*)\})?(?:\s+(.+))?$/
+        );
         if (nameFirstMatch) {
           name = nameFirstMatch[1];
           typeInfo = nameFirstMatch[2];
@@ -397,57 +399,57 @@ export class JSDocExtractor {
     } else {
       description = content || '';
     }
-    
+
     return {
       type: tagTypeEnum,
       name: name || undefined,
       description,
       typeInfo: typeInfo || undefined,
-      metadata: {}
+      metadata: {},
     };
   }
 
   /**
    * Validate JSDoc syntax
-   * 
+   *
    * @param text - Cleaned JSDoc text
    * @param errors - Array to collect validation errors
    * @returns Whether JSDoc syntax is valid
    */
   private validateJSDocSyntax(text: string, errors: string[]): boolean {
     let isValid = true;
-    
+
     // Check for proper JSDoc structure
     if (!text.trim()) {
       errors.push('Empty JSDoc comment');
       isValid = false;
     }
-    
+
     // Check for common syntax issues
     const lines = text.split('\n');
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
       if (!line) continue;
-      
+
       // Check for malformed tags
       if (line.includes('@') && !line.match(/^@\w+/)) {
         errors.push(`Malformed tag at line ${i + 1}: ${line}`);
         isValid = false;
       }
-      
+
       // Check for invalid tag syntax
       if (line.startsWith('@') && !line.match(/^@\w+(?:\s|$)/)) {
         errors.push(`Invalid tag syntax at line ${i + 1}: ${line}`);
         isValid = false;
       }
     }
-    
+
     return isValid;
   }
 
   /**
    * Check if comment should be included based on options
-   * 
+   *
    * @param comment - JSDoc comment to check
    * @returns Whether comment should be included
    */
@@ -456,28 +458,28 @@ export class JSDocExtractor {
     if (!this.options.includePrivate && comment.tags.some(t => t.type === 'private')) {
       return false;
     }
-    
+
     // Check for deprecated comments
     if (!this.options.includeDeprecated && comment.tags.some(t => t.type === 'deprecated')) {
       return false;
     }
-    
+
     // Check for experimental comments
     if (!this.options.includeExperimental && comment.tags.some(t => t.type === 'experimental')) {
       return false;
     }
-    
+
     // Check for internal comments
     if (!this.options.includeInternal && comment.tags.some(t => t.type === 'internal')) {
       return false;
     }
-    
+
     return true;
   }
 
   /**
    * Calculate line number from position
-   * 
+   *
    * @param position - Character position
    * @returns Line number
    */
@@ -489,7 +491,7 @@ export class JSDocExtractor {
 
   /**
    * Get line count for a node
-   * 
+   *
    * @param node - AST node
    * @returns Number of lines
    */
@@ -499,7 +501,7 @@ export class JSDocExtractor {
 
   /**
    * Update extraction options
-   * 
+   *
    * @param options - New options to merge
    */
   public updateOptions(options: Partial<JSDocExtractionOptions>): void {
@@ -508,7 +510,7 @@ export class JSDocExtractor {
 
   /**
    * Get current extraction options
-   * 
+   *
    * @returns Current options
    */
   public getOptions(): JSDocExtractionOptions {

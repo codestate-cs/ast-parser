@@ -177,7 +177,7 @@ describe('TypeScriptParser', () => {
       jest.spyOn(FileUtils, 'readFile').mockResolvedValue(mockContent);
 
       const result = await parser.parseFile(file);
-      
+
       expect(result).toBeDefined();
       expect(result.nodes).toBeDefined();
       expect(result.relations).toBeDefined();
@@ -297,11 +297,11 @@ describe('TypeScriptParser', () => {
       jest.spyOn(FileUtils, 'readFile').mockResolvedValue(mockContent);
 
       const result = await parser.parseFile(file);
-      
+
       expect(result).toBeDefined();
       expect(result.nodes).toBeDefined();
       expect(result.nodes.length).toBeGreaterThan(0);
-      
+
       // Check for class node
       const classNode = result.nodes.find(node => node.nodeType === 'class');
       expect(classNode).toBeDefined();
@@ -337,11 +337,11 @@ describe('TypeScriptParser', () => {
       jest.spyOn(FileUtils, 'readFile').mockResolvedValue(mockContent);
 
       const result = await parser.parseFile(file);
-      
+
       expect(result).toBeDefined();
       expect(result.nodes).toBeDefined();
       expect(result.nodes.length).toBeGreaterThan(0);
-      
+
       // Check for interface node
       const interfaceNode = result.nodes.find(node => node.nodeType === 'interface');
       expect(interfaceNode).toBeDefined();
@@ -378,11 +378,11 @@ describe('TypeScriptParser', () => {
       jest.spyOn(FileUtils, 'readFile').mockResolvedValue(mockContent);
 
       const result = await parser.parseFile(file);
-      
+
       expect(result).toBeDefined();
       expect(result.nodes).toBeDefined();
       expect(result.nodes.length).toBeGreaterThan(0);
-      
+
       // Check for enum nodes
       const enumNodes = result.nodes.filter(node => node.nodeType === 'enum');
       expect(enumNodes.length).toBeGreaterThan(0);
@@ -413,11 +413,11 @@ describe('TypeScriptParser', () => {
       jest.spyOn(FileUtils, 'readFile').mockResolvedValue(mockContent);
 
       const result = await parser.parseFile(file);
-      
+
       expect(result).toBeDefined();
       expect(result.nodes).toBeDefined();
       expect(result.nodes.length).toBeGreaterThan(0);
-      
+
       // Check for import/export nodes
       const importNodes = result.nodes.filter(node => node.nodeType === 'import');
       const exportNodes = result.nodes.filter(node => node.nodeType === 'export');
@@ -452,11 +452,11 @@ describe('TypeScriptParser', () => {
       jest.spyOn(FileUtils, 'readFile').mockResolvedValue(mockContent);
 
       const result = await parser.parseFile(file);
-      
+
       expect(result).toBeDefined();
       expect(result.nodes).toBeDefined();
       expect(result.nodes.length).toBeGreaterThan(0);
-      
+
       // Check for arrow function nodes
       const arrowNodes = result.nodes.filter(node => node.nodeType === 'function');
       expect(arrowNodes.length).toBeGreaterThan(0);
@@ -495,11 +495,11 @@ describe('TypeScriptParser', () => {
       jest.spyOn(FileUtils, 'readFile').mockResolvedValue(mockContent);
 
       const result = await parser.parseFile(file);
-      
+
       expect(result).toBeDefined();
       expect(result.nodes).toBeDefined();
       expect(result.nodes.length).toBeGreaterThan(0);
-      
+
       // Check for type alias nodes
       const typeNodes = result.nodes.filter(node => node.nodeType === 'type');
       expect(typeNodes.length).toBeGreaterThan(0);
@@ -533,10 +533,10 @@ describe('TypeScriptParser', () => {
       jest.spyOn(FileUtils, 'readFile').mockResolvedValue(mockContent);
 
       const result = await parser.parseFile(file);
-      
+
       expect(result).toBeDefined();
       expect(result.nodes).toBeDefined();
-      
+
       // Check class properties
       const classNode = result.nodes.find(node => node.nodeType === 'class');
       expect(classNode).toBeDefined();
@@ -570,14 +570,12 @@ describe('TypeScriptParser', () => {
       jest.spyOn(FileUtils, 'readFile').mockResolvedValue(mockContent);
 
       const result = await parser.parseFile(file);
-      
+
       expect(result).toBeDefined();
       expect(result.nodes).toBeDefined();
-      
+
       // Should handle anonymous functions gracefully
-      const functionNodes = result.nodes.filter(node => 
-        node.nodeType === 'function'
-      );
+      const functionNodes = result.nodes.filter(node => node.nodeType === 'function');
       expect(functionNodes.length).toBeGreaterThan(0);
     });
   });
@@ -614,16 +612,16 @@ describe('TypeScriptParser', () => {
       jest.spyOn(FileUtils, 'readFile').mockResolvedValue(mockContent);
 
       const result = await parser.parseFile(file);
-      
+
       expect(result).toBeDefined();
       expect(result.nodes).toBeDefined();
       expect(result.relations).toBeDefined();
-      
+
       // Should have parent-child relations
       expect(result.relations.length).toBeGreaterThan(0);
-      
-      const parentChildRelations = result.relations.filter(rel => 
-        rel.metadata?.['relationship'] === 'parent-child'
+
+      const parentChildRelations = result.relations.filter(
+        rel => rel.metadata?.['relationship'] === 'parent-child'
       );
       expect(parentChildRelations.length).toBeGreaterThan(0);
     });

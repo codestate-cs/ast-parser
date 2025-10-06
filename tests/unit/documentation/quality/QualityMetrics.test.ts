@@ -19,7 +19,7 @@ describe('QualityMetrics', () => {
           properties: {
             complexity: 5,
             linesOfCode: 50,
-            documentation: 'Test class documentation'
+            documentation: 'Test class documentation',
           },
           children: [
             {
@@ -29,22 +29,22 @@ describe('QualityMetrics', () => {
               properties: {
                 complexity: 3,
                 linesOfCode: 20,
-                documentation: 'Test method documentation'
-              }
-            }
-          ]
-        }
+                documentation: 'Test method documentation',
+              },
+            },
+          ],
+        },
       ],
       complexity: {
         cyclomatic: 8,
         cognitive: 12,
-        maintainabilityIndex: 75
+        maintainabilityIndex: 75,
       },
       quality: {
         technicalDebt: 2.5,
         codeSmells: 3,
-        testCoverage: 85
-      }
+        testCoverage: 85,
+      },
     };
   });
 
@@ -62,8 +62,8 @@ describe('QualityMetrics', () => {
           excellent: 90,
           good: 80,
           fair: 70,
-          poor: 60
-        }
+          poor: 60,
+        },
       };
       const customQualityMetrics = new QualityMetrics(customOptions);
       expect(customQualityMetrics).toBeDefined();
@@ -126,7 +126,7 @@ describe('QualityMetrics', () => {
       const metrics = {
         complexity: { score: 80 },
         maintainability: { score: 75 },
-        readability: { score: 90 }
+        readability: { score: 90 },
       };
       const result = qualityMetrics.calculateQualityScore(metrics);
 
@@ -139,12 +139,12 @@ describe('QualityMetrics', () => {
       const metrics = {
         complexity: { score: 80 },
         maintainability: { score: 75 },
-        readability: { score: 90 }
+        readability: { score: 90 },
       };
       const weights = {
         complexity: 0.4,
         maintainability: 0.3,
-        readability: 0.3
+        readability: 0.3,
       };
       const result = qualityMetrics.calculateQualityScore(metrics, weights);
 
@@ -154,7 +154,7 @@ describe('QualityMetrics', () => {
 
     it('should handle missing metrics gracefully', () => {
       const partialMetrics = {
-        complexity: { score: 80 }
+        complexity: { score: 80 },
       };
       const result = qualityMetrics.calculateQualityScore(partialMetrics);
 
@@ -184,8 +184,8 @@ describe('QualityMetrics', () => {
           excellent: 95,
           good: 85,
           fair: 75,
-          poor: 65
-        }
+          poor: 65,
+        },
       });
 
       expect(customQualityMetrics.generateQualityRating(90)).toBe('B');
@@ -225,8 +225,8 @@ describe('QualityMetrics', () => {
           excellent: 95,
           good: 85,
           fair: 75,
-          poor: 65
-        }
+          poor: 65,
+        },
       };
       const customQualityMetrics = new QualityMetrics(customOptions);
 
@@ -238,8 +238,8 @@ describe('QualityMetrics', () => {
         metricWeights: {
           complexity: 0.5,
           maintainability: 0.3,
-          readability: 0.2
-        }
+          readability: 0.2,
+        },
       };
       const customQualityMetrics = new QualityMetrics(customOptions);
 
@@ -248,7 +248,7 @@ describe('QualityMetrics', () => {
 
     it('should support different quality standards', () => {
       const customOptions = {
-        qualityStandard: 'enterprise' as const
+        qualityStandard: 'enterprise' as const,
       };
       const customQualityMetrics = new QualityMetrics(customOptions);
 
@@ -282,12 +282,14 @@ describe('QualityMetrics', () => {
     it('should handle very large project data', () => {
       const largeData = {
         ...mockProjectData,
-        ast: Array(1000).fill(null).map((_, i) => ({
-          id: i.toString(),
-          name: `Node${i}`,
-          type: 'ClassDeclaration',
-          properties: { complexity: Math.random() * 10 }
-        }))
+        ast: Array(1000)
+          .fill(null)
+          .map((_, i) => ({
+            id: i.toString(),
+            name: `Node${i}`,
+            type: 'ClassDeclaration',
+            properties: { complexity: Math.random() * 10 },
+          })),
       };
 
       const result = qualityMetrics.calculateQualityMetrics(largeData);
@@ -300,12 +302,14 @@ describe('QualityMetrics', () => {
       const specialData = {
         ...mockProjectData,
         name: 'Test Project with Special Chars: @#$%^&*()',
-        ast: [{
-          id: '1',
-          name: 'Test@Class#Special',
-          type: 'ClassDeclaration',
-          properties: { complexity: 5 }
-        }]
+        ast: [
+          {
+            id: '1',
+            name: 'Test@Class#Special',
+            type: 'ClassDeclaration',
+            properties: { complexity: 5 },
+          },
+        ],
       };
 
       const result = qualityMetrics.calculateQualityMetrics(specialData);
@@ -318,12 +322,14 @@ describe('QualityMetrics', () => {
       const unicodeData = {
         ...mockProjectData,
         name: '测试项目',
-        ast: [{
-          id: '1',
-          name: '测试类',
-          type: 'ClassDeclaration',
-          properties: { complexity: 5 }
-        }]
+        ast: [
+          {
+            id: '1',
+            name: '测试类',
+            type: 'ClassDeclaration',
+            properties: { complexity: 5 },
+          },
+        ],
       };
 
       const result = qualityMetrics.calculateQualityMetrics(unicodeData);
@@ -333,9 +339,9 @@ describe('QualityMetrics', () => {
     });
 
     it('should handle concurrent quality calculations', async () => {
-      const promises = Array(5).fill(null).map(() => 
-        Promise.resolve(qualityMetrics.calculateQualityMetrics(mockProjectData))
-      );
+      const promises = Array(5)
+        .fill(null)
+        .map(() => Promise.resolve(qualityMetrics.calculateQualityMetrics(mockProjectData)));
 
       const results = await Promise.all(promises);
 
@@ -389,7 +395,7 @@ describe('QualityMetrics', () => {
         const metrics = {
           complexity: { score: null },
           maintainability: { score: undefined },
-          readability: { score: 80 }
+          readability: { score: 80 },
         };
 
         const result = qualityMetrics.calculateQualityScore(metrics);
@@ -401,11 +407,11 @@ describe('QualityMetrics', () => {
       it('should handle invalid weights', () => {
         const metrics = {
           complexity: { score: 80 },
-          maintainability: { score: 75 }
+          maintainability: { score: 75 },
         };
         const invalidWeights = {
           complexity: 'invalid',
-          maintainability: -1
+          maintainability: -1,
         };
 
         const result = qualityMetrics.calculateQualityScore(metrics, invalidWeights);
@@ -492,10 +498,10 @@ describe('QualityMetrics', () => {
       });
 
       it('should handle invalid complexity object', () => {
-        const data = { 
-          name: 'Test Project', 
-          version: '1.0.0', 
-          complexity: 'invalid' 
+        const data = {
+          name: 'Test Project',
+          version: '1.0.0',
+          complexity: 'invalid',
         };
         const result = qualityMetrics.validateProjectData(data);
 
@@ -504,10 +510,10 @@ describe('QualityMetrics', () => {
       });
 
       it('should handle invalid quality object', () => {
-        const data = { 
-          name: 'Test Project', 
-          version: '1.0.0', 
-          quality: 'invalid' 
+        const data = {
+          name: 'Test Project',
+          version: '1.0.0',
+          quality: 'invalid',
         };
         const result = qualityMetrics.validateProjectData(data);
 

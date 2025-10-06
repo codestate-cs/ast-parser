@@ -18,16 +18,16 @@ describe('VersionComparator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [
-            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' }
+            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' },
           ],
           directories: [],
           totalFiles: 1,
           totalLines: 10,
-          totalSize: 100
+          totalSize: 100,
         },
         ast: {
           nodes: [
@@ -39,8 +39,8 @@ describe('VersionComparator', () => {
               start: 0,
               end: 50,
               children: [],
-              metadata: {}
-            }
+              metadata: {},
+            },
           ],
           relations: [],
           entryPoints: [],
@@ -50,25 +50,25 @@ describe('VersionComparator', () => {
               type: 'FunctionDeclaration',
               file: 'src/index.ts',
               isDefault: false,
-              
-              usage: []
-            }
+
+              usage: [],
+            },
           ],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 1, cognitive: 1, maintainability: 80 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 85, issues: [] }
+          quality: { score: 85, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 1000,
           cacheUsed: false,
-          filesProcessed: 1
-        }
+          filesProcessed: 1,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
@@ -78,11 +78,11 @@ describe('VersionComparator', () => {
           ...version1.structure,
           files: [
             ...version1.structure.files,
-            { path: 'src/new.ts', size: 200, lines: 20, lastModified: '2024-01-02T00:00:00Z' }
+            { path: 'src/new.ts', size: 200, lines: 20, lastModified: '2024-01-02T00:00:00Z' },
           ],
           totalFiles: 2,
           totalLines: 30,
-          totalSize: 300
+          totalSize: 300,
         },
         ast: {
           ...version1.ast,
@@ -96,8 +96,8 @@ describe('VersionComparator', () => {
               start: 0,
               end: 50,
               children: [],
-              metadata: {}
-            }
+              metadata: {},
+            },
           ],
           publicExports: [
             ...version1.ast.publicExports,
@@ -106,22 +106,22 @@ describe('VersionComparator', () => {
               type: 'FunctionDeclaration',
               file: 'src/new.ts',
               isDefault: false,
-              
-              usage: []
-            }
-          ]
+
+              usage: [],
+            },
+          ],
         },
         analysis: {
           ...version1.analysis,
           complexity: { cyclomatic: 2, cognitive: 2, maintainability: 75 },
-          quality: { score: 80, issues: [] }
+          quality: { score: 80, issues: [] },
         },
         metadata: {
           ...version1.metadata,
           generatedAt: '2024-01-02T00:00:00Z',
           processingTime: 1500,
-          filesProcessed: 2
-        }
+          filesProcessed: 2,
+        },
       };
 
       const result = await comparator.compareVersions(version1, version2);
@@ -144,37 +144,37 @@ describe('VersionComparator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [
-            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' }
+            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' },
           ],
           directories: [],
           totalFiles: 1,
           totalLines: 10,
-          totalSize: 100
+          totalSize: 100,
         },
         ast: {
           nodes: [],
           relations: [],
           entryPoints: [],
           publicExports: [],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 1, cognitive: 1, maintainability: 80 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 85, issues: [] }
+          quality: { score: 85, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 1000,
           cacheUsed: false,
-          filesProcessed: 1
-        }
+          filesProcessed: 1,
+        },
       };
 
       const result = await comparator.compareVersions(version, version);
@@ -197,16 +197,16 @@ describe('VersionComparator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [
-            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' }
+            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' },
           ],
           directories: [],
           totalFiles: 1,
           totalLines: 10,
-          totalSize: 100
+          totalSize: 100,
         },
         ast: {
           nodes: [
@@ -218,8 +218,8 @@ describe('VersionComparator', () => {
               start: 0,
               end: 50,
               children: [],
-              metadata: { isExported: true, isPublic: true }
-            }
+              metadata: { isExported: true, isPublic: true },
+            },
           ],
           relations: [],
           entryPoints: [],
@@ -229,25 +229,25 @@ describe('VersionComparator', () => {
               type: 'FunctionDeclaration',
               file: 'src/index.ts',
               isDefault: false,
-              
-              usage: []
-            }
+
+              usage: [],
+            },
           ],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 1, cognitive: 1, maintainability: 80 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 85, issues: [] }
+          quality: { score: 85, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 1000,
           cacheUsed: false,
-          filesProcessed: 1
-        }
+          filesProcessed: 1,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
@@ -264,8 +264,8 @@ describe('VersionComparator', () => {
               start: 0,
               end: 50,
               children: [],
-              metadata: { isExported: true, isPublic: true, signature: 'changed' }
-            }
+              metadata: { isExported: true, isPublic: true, signature: 'changed' },
+            },
           ],
           publicExports: [
             {
@@ -273,12 +273,12 @@ describe('VersionComparator', () => {
               type: 'FunctionDeclaration',
               file: 'src/index.ts',
               isDefault: false,
-              
+
               usage: [],
-              metadata: { signature: 'changed' }
-            }
-          ]
-        }
+              metadata: { signature: 'changed' },
+            },
+          ],
+        },
       };
 
       const result = await comparator.compareVersions(version1, version2);
@@ -296,35 +296,35 @@ describe('VersionComparator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [],
           directories: [],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: {
           nodes: [],
           relations: [],
           entryPoints: [],
           publicExports: [],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 0, cognitive: 0, maintainability: 100 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 100, issues: [] }
+          quality: { score: 100, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 0,
           cacheUsed: false,
-          filesProcessed: 0
-        }
+          filesProcessed: 0,
+        },
       };
 
       await expect(comparator.compareVersions(null as any, version)).rejects.toThrow();
@@ -344,42 +344,42 @@ describe('VersionComparator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [
-            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' }
+            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' },
           ],
           directories: [],
           totalFiles: 1,
           totalLines: 10,
-          totalSize: 100
+          totalSize: 100,
         },
         ast: {
           nodes: [],
           relations: [],
           entryPoints: [],
           publicExports: [],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 1, cognitive: 1, maintainability: 80 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 85, issues: [] }
+          quality: { score: 85, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 1000,
           cacheUsed: false,
-          filesProcessed: 1
-        }
+          filesProcessed: 1,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
         ...version1,
-        project: { ...version1.project, version: '1.1.0' }
+        project: { ...version1.project, version: '1.1.0' },
       };
 
       const result = await comparator.generateDiffReport(version1, version2, 'markdown');
@@ -399,40 +399,40 @@ describe('VersionComparator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [],
           directories: [],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: {
           nodes: [],
           relations: [],
           entryPoints: [],
           publicExports: [],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 0, cognitive: 0, maintainability: 100 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 100, issues: [] }
+          quality: { score: 100, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 0,
           cacheUsed: false,
-          filesProcessed: 0
-        }
+          filesProcessed: 0,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
         ...version1,
-        project: { ...version1.project, version: '1.1.0' }
+        project: { ...version1.project, version: '1.1.0' },
       };
 
       const markdownResult = await comparator.generateDiffReport(version1, version2, 'markdown');
@@ -455,14 +455,14 @@ describe('VersionComparator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [],
           directories: [],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: {
           nodes: [],
@@ -474,25 +474,25 @@ describe('VersionComparator', () => {
               type: 'FunctionDeclaration',
               file: 'src/index.ts',
               isDefault: false,
-              
-              usage: []
-            }
+
+              usage: [],
+            },
           ],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 0, cognitive: 0, maintainability: 100 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 100, issues: [] }
+          quality: { score: 100, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 0,
           cacheUsed: false,
-          filesProcessed: 0
-        }
+          filesProcessed: 0,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
@@ -500,8 +500,8 @@ describe('VersionComparator', () => {
         project: { ...version1.project, version: '2.0.0' },
         ast: {
           ...version1.ast,
-          publicExports: []
-        }
+          publicExports: [],
+        },
       };
 
       const breakingChanges = await comparator.detectBreakingChanges(version1, version2);
@@ -520,14 +520,14 @@ describe('VersionComparator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [],
           directories: [],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: {
           nodes: [],
@@ -539,25 +539,25 @@ describe('VersionComparator', () => {
               type: 'FunctionDeclaration',
               file: 'src/index.ts',
               isDefault: false,
-              
-              usage: []
-            }
+
+              usage: [],
+            },
           ],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 0, cognitive: 0, maintainability: 100 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 100, issues: [] }
+          quality: { score: 100, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 0,
           cacheUsed: false,
-          filesProcessed: 0
-        }
+          filesProcessed: 0,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
@@ -571,12 +571,12 @@ describe('VersionComparator', () => {
               type: 'FunctionDeclaration',
               file: 'src/index.ts',
               isDefault: false,
-              
+
               usage: [],
-              metadata: { signature: 'changed' }
-            }
-          ]
-        }
+              metadata: { signature: 'changed' },
+            },
+          ],
+        },
       };
 
       const breakingChanges = await comparator.detectBreakingChanges(version1, version2);
@@ -597,35 +597,35 @@ describe('VersionComparator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [],
           directories: [],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: {
           nodes: [],
           relations: [],
           entryPoints: [],
           publicExports: [],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 5, cognitive: 10, maintainability: 80 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 85, issues: [] }
+          quality: { score: 85, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 0,
           cacheUsed: false,
-          filesProcessed: 0
-        }
+          filesProcessed: 0,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
@@ -634,8 +634,8 @@ describe('VersionComparator', () => {
         analysis: {
           ...version1.analysis,
           complexity: { cyclomatic: 3, cognitive: 8, maintainability: 85 },
-          quality: { score: 90, issues: [] }
-        }
+          quality: { score: 90, issues: [] },
+        },
       };
 
       const metricsDiff = await comparator.compareQualityMetrics(version1, version2);
@@ -661,7 +661,7 @@ describe('VersionComparator', () => {
         enableDiff: false,
         diffFormat: 'markdown',
         includeMetrics: false,
-        includeBreakingChanges: false
+        includeBreakingChanges: false,
       });
 
       const config = customComparator.getConfig();
@@ -682,39 +682,41 @@ describe('VersionComparator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [],
           directories: [],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: {
           nodes: [],
           relations: [],
           entryPoints: [],
           publicExports: [],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 0, cognitive: 0, maintainability: 100 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 100, issues: [] }
+          quality: { score: 100, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 0,
           cacheUsed: false,
-          filesProcessed: 0
-        }
+          filesProcessed: 0,
+        },
       };
 
       // Test with invalid format
-      await expect(comparator.generateDiffReport(version, version, 'invalid' as any)).rejects.toThrow();
+      await expect(
+        comparator.generateDiffReport(version, version, 'invalid' as any)
+      ).rejects.toThrow();
     });
   });
 
@@ -728,37 +730,37 @@ describe('VersionComparator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [
-            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' }
+            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' },
           ],
           directories: [],
           totalFiles: 1,
           totalLines: 10,
-          totalSize: 100
+          totalSize: 100,
         },
         ast: {
           nodes: [],
           relations: [],
           entryPoints: [],
           publicExports: [],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 1, cognitive: 1, maintainability: 80 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 85, issues: [] }
+          quality: { score: 85, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 1000,
           cacheUsed: false,
-          filesProcessed: 1
-        }
+          filesProcessed: 1,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
@@ -767,9 +769,9 @@ describe('VersionComparator', () => {
         structure: {
           ...version1.structure,
           files: [
-            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-02T00:00:00Z' }
-          ]
-        }
+            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-02T00:00:00Z' },
+          ],
+        },
       };
 
       const result = await comparator.compareVersions(version1, version2);
@@ -785,14 +787,14 @@ describe('VersionComparator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [],
           directories: [],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: {
           nodes: [],
@@ -804,25 +806,25 @@ describe('VersionComparator', () => {
               type: 'FunctionDeclaration',
               file: 'src/index.ts',
               isDefault: false,
-              
-              usage: []
-            }
+
+              usage: [],
+            },
           ],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 0, cognitive: 0, maintainability: 100 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 100, issues: [] }
+          quality: { score: 100, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 0,
           cacheUsed: false,
-          filesProcessed: 0
-        }
+          filesProcessed: 0,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
@@ -836,11 +838,11 @@ describe('VersionComparator', () => {
               type: 'ClassDeclaration',
               file: 'src/index.ts',
               isDefault: false,
-              
-              usage: []
-            }
-          ]
-        }
+
+              usage: [],
+            },
+          ],
+        },
       };
 
       const result = await comparator.compareVersions(version1, version2);
@@ -856,14 +858,14 @@ describe('VersionComparator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [],
           directories: [],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: {
           nodes: [],
@@ -875,25 +877,25 @@ describe('VersionComparator', () => {
               type: 'FunctionDeclaration',
               file: 'src/index.ts',
               isDefault: false,
-              
-              usage: []
-            }
+
+              usage: [],
+            },
           ],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 0, cognitive: 0, maintainability: 100 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 100, issues: [] }
+          quality: { score: 100, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 0,
           cacheUsed: false,
-          filesProcessed: 0
-        }
+          filesProcessed: 0,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
@@ -907,11 +909,11 @@ describe('VersionComparator', () => {
               type: 'FunctionDeclaration',
               file: 'src/new.ts',
               isDefault: false,
-              
-              usage: []
-            }
-          ]
-        }
+
+              usage: [],
+            },
+          ],
+        },
       };
 
       const result = await comparator.compareVersions(version1, version2);
@@ -927,14 +929,14 @@ describe('VersionComparator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [],
           directories: [],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: {
           nodes: [],
@@ -946,25 +948,25 @@ describe('VersionComparator', () => {
               type: 'FunctionDeclaration',
               file: 'src/index.ts',
               isDefault: false,
-              
-              usage: []
-            }
+
+              usage: [],
+            },
           ],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 0, cognitive: 0, maintainability: 100 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 100, issues: [] }
+          quality: { score: 100, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 0,
           cacheUsed: false,
-          filesProcessed: 0
-        }
+          filesProcessed: 0,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
@@ -978,11 +980,11 @@ describe('VersionComparator', () => {
               type: 'FunctionDeclaration',
               file: 'src/index.ts',
               isDefault: true,
-              
-              usage: []
-            }
-          ]
-        }
+
+              usage: [],
+            },
+          ],
+        },
       };
 
       const result = await comparator.compareVersions(version1, version2);
@@ -998,14 +1000,14 @@ describe('VersionComparator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [],
           directories: [],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: {
           nodes: [],
@@ -1017,26 +1019,26 @@ describe('VersionComparator', () => {
               type: 'FunctionDeclaration',
               file: 'src/index.ts',
               isDefault: false,
-              
+
               usage: [],
-              metadata: { signature: 'old' }
-            }
+              metadata: { signature: 'old' },
+            },
           ],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 0, cognitive: 0, maintainability: 100 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 100, issues: [] }
+          quality: { score: 100, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 0,
           cacheUsed: false,
-          filesProcessed: 0
-        }
+          filesProcessed: 0,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
@@ -1050,12 +1052,12 @@ describe('VersionComparator', () => {
               type: 'FunctionDeclaration',
               file: 'src/index.ts',
               isDefault: false,
-              
+
               usage: [],
-              metadata: { signature: 'new' }
-            }
-          ]
-        }
+              metadata: { signature: 'new' },
+            },
+          ],
+        },
       };
 
       const result = await comparator.compareVersions(version1, version2);
@@ -1071,14 +1073,14 @@ describe('VersionComparator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [],
           directories: [],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: {
           nodes: [],
@@ -1090,25 +1092,25 @@ describe('VersionComparator', () => {
               type: 'FunctionDeclaration',
               file: 'src/index.ts',
               isDefault: false,
-              
-              usage: []
-            }
+
+              usage: [],
+            },
           ],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 0, cognitive: 0, maintainability: 100 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 100, issues: [] }
+          quality: { score: 100, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 0,
           cacheUsed: false,
-          filesProcessed: 0
-        }
+          filesProcessed: 0,
+        },
       };
 
       const result = await comparator.compareVersions(version, version);
@@ -1124,35 +1126,35 @@ describe('VersionComparator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [],
           directories: [],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: {
           nodes: [],
           relations: [],
           entryPoints: [],
           publicExports: [],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 0, cognitive: 0, maintainability: 100 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 100, issues: [] }
+          quality: { score: 100, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 0,
           cacheUsed: false,
-          filesProcessed: 0
-        }
+          filesProcessed: 0,
+        },
       };
 
       const result = await comparator.compareVersions(version, version);
@@ -1164,12 +1166,12 @@ describe('VersionComparator', () => {
         enableDiff: false,
         diffFormat: 'html' as const,
         includeMetrics: false,
-        includeBreakingChanges: false
+        includeBreakingChanges: false,
       };
 
       comparator.setConfig(newConfig);
       const config = comparator.getConfig();
-      
+
       expect(config.enableDiff).toBe(false);
       expect(config.diffFormat).toBe('html');
       expect(config.includeMetrics).toBe(false);
@@ -1181,7 +1183,7 @@ describe('VersionComparator', () => {
         enableDiff: false,
         diffFormat: 'html',
         includeMetrics: false,
-        includeBreakingChanges: false
+        includeBreakingChanges: false,
       });
 
       const config = customComparator.getConfig();
@@ -1193,7 +1195,7 @@ describe('VersionComparator', () => {
 
     it('should handle mergeDefaults with partial config', () => {
       const customComparator = new VersionComparator({
-        enableDiff: false
+        enableDiff: false,
       });
 
       const config = customComparator.getConfig();
@@ -1212,35 +1214,35 @@ describe('VersionComparator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [],
           directories: [],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: {
           nodes: [],
           relations: [],
           entryPoints: [],
           publicExports: [],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 0, cognitive: 0, maintainability: 100 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 100, issues: [] }
+          quality: { score: 100, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 0,
           cacheUsed: false,
-          filesProcessed: 0
-        }
+          filesProcessed: 0,
+        },
       };
 
       const result = await comparator.compareVersions(version, version);
@@ -1256,35 +1258,35 @@ describe('VersionComparator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [],
           directories: [],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: {
           nodes: [],
           relations: [],
           entryPoints: [],
           publicExports: [],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 0, cognitive: 0, maintainability: 100 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 100, issues: [] }
+          quality: { score: 100, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 0,
           cacheUsed: false,
-          filesProcessed: 0
-        }
+          filesProcessed: 0,
+        },
       };
 
       // Test with no changes
@@ -1302,11 +1304,11 @@ describe('VersionComparator', () => {
               type: 'FunctionDeclaration',
               file: 'src/index.ts',
               isDefault: false,
-              
-              usage: []
-            }
-          ]
-        }
+
+              usage: [],
+            },
+          ],
+        },
       };
 
       const result2 = await comparator.compareVersions(version, version2);
@@ -1322,16 +1324,16 @@ describe('VersionComparator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [
-            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' }
+            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' },
           ],
           directories: [],
           totalFiles: 1,
           totalLines: 10,
-          totalSize: 100
+          totalSize: 100,
         },
         ast: {
           nodes: [],
@@ -1343,26 +1345,26 @@ describe('VersionComparator', () => {
               type: 'FunctionDeclaration',
               file: 'src/index.ts',
               isDefault: false,
-              
+
               usage: [],
-              metadata: { signature: '() => void' }
-            }
+              metadata: { signature: '() => void' },
+            },
           ],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 1, cognitive: 1, maintainability: 80 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 85, issues: [] }
+          quality: { score: 85, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 1000,
           cacheUsed: false,
-          filesProcessed: 1
-        }
+          filesProcessed: 1,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
@@ -1372,11 +1374,11 @@ describe('VersionComparator', () => {
           ...version1.structure,
           files: [
             { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' },
-            { path: 'src/new.ts', size: 50, lines: 5, lastModified: '2024-01-02T00:00:00Z' }
+            { path: 'src/new.ts', size: 50, lines: 5, lastModified: '2024-01-02T00:00:00Z' },
           ],
           totalFiles: 2,
           totalLines: 15,
-          totalSize: 150
+          totalSize: 150,
         },
         ast: {
           ...version1.ast,
@@ -1386,30 +1388,41 @@ describe('VersionComparator', () => {
               type: 'FunctionDeclaration',
               file: 'src/index.ts',
               isDefault: false,
-              
+
               usage: [],
-              metadata: { signature: '() => void' }
+              metadata: { signature: '() => void' },
             },
             {
               name: 'newFunction',
               type: 'FunctionDeclaration',
               file: 'src/new.ts',
               isDefault: false,
-              
+
               usage: [],
-              metadata: { signature: '() => string' }
-            }
-          ]
+              metadata: { signature: '() => string' },
+            },
+          ],
         },
         analysis: {
           ...version1.analysis,
           complexity: { cyclomatic: 2, cognitive: 2, maintainability: 75 },
-          quality: { score: 80, issues: [{ type: 'warning', message: 'Test warning', file: 'src/new.ts', line: 1, severity: 'low' }] }
+          quality: {
+            score: 80,
+            issues: [
+              {
+                type: 'warning',
+                message: 'Test warning',
+                file: 'src/new.ts',
+                line: 1,
+                severity: 'low',
+              },
+            ],
+          },
         },
         metadata: {
           ...version1.metadata,
-          filesProcessed: 2
-        }
+          filesProcessed: 2,
+        },
       };
 
       // Test with added files, modified files, and API changes
@@ -1428,35 +1441,35 @@ describe('VersionComparator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [],
           directories: [],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: {
           nodes: [],
           relations: [],
           entryPoints: [],
           publicExports: [],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 0, cognitive: 0, maintainability: 100 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 100, issues: [] }
+          quality: { score: 100, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 0,
           cacheUsed: false,
-          filesProcessed: 0
-        }
+          filesProcessed: 0,
+        },
       };
 
       // Test with null versions to trigger error handling
@@ -1482,16 +1495,16 @@ describe('VersionComparator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [
-            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' }
+            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' },
           ],
           directories: [],
           totalFiles: 1,
           totalLines: 10,
-          totalSize: 100
+          totalSize: 100,
         },
         ast: {
           nodes: [],
@@ -1503,26 +1516,26 @@ describe('VersionComparator', () => {
               type: 'FunctionDeclaration',
               file: 'src/index.ts',
               isDefault: false,
-              
+
               usage: [],
-              metadata: { signature: '() => void' }
-            }
+              metadata: { signature: '() => void' },
+            },
           ],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 1, cognitive: 1, maintainability: 80 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 85, issues: [] }
+          quality: { score: 85, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 1000,
           cacheUsed: false,
-          filesProcessed: 1
-        }
+          filesProcessed: 1,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
@@ -1532,11 +1545,11 @@ describe('VersionComparator', () => {
           ...version1.structure,
           files: [
             { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' },
-            { path: 'src/new.ts', size: 50, lines: 5, lastModified: '2024-01-02T00:00:00Z' }
+            { path: 'src/new.ts', size: 50, lines: 5, lastModified: '2024-01-02T00:00:00Z' },
           ],
           totalFiles: 2,
           totalLines: 15,
-          totalSize: 150
+          totalSize: 150,
         },
         ast: {
           ...version1.ast,
@@ -1546,30 +1559,41 @@ describe('VersionComparator', () => {
               type: 'FunctionDeclaration',
               file: 'src/index.ts',
               isDefault: false,
-              
+
               usage: [],
-              metadata: { signature: '() => void' }
+              metadata: { signature: '() => void' },
             },
             {
               name: 'newFunction',
               type: 'FunctionDeclaration',
               file: 'src/new.ts',
               isDefault: false,
-              
+
               usage: [],
-              metadata: { signature: '() => string' }
-            }
-          ]
+              metadata: { signature: '() => string' },
+            },
+          ],
         },
         analysis: {
           ...version1.analysis,
           complexity: { cyclomatic: 2, cognitive: 2, maintainability: 75 },
-          quality: { score: 80, issues: [{ type: 'warning', message: 'Test warning', file: 'src/new.ts', line: 1, severity: 'low' }] }
+          quality: {
+            score: 80,
+            issues: [
+              {
+                type: 'warning',
+                message: 'Test warning',
+                file: 'src/new.ts',
+                line: 1,
+                severity: 'low',
+              },
+            ],
+          },
         },
         metadata: {
           ...version1.metadata,
-          filesProcessed: 2
-        }
+          filesProcessed: 2,
+        },
       };
 
       // Test with added files, modified files, and API changes
@@ -1588,44 +1612,46 @@ describe('VersionComparator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [],
           directories: [],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: {
           nodes: [],
           relations: [],
           entryPoints: [],
           publicExports: [],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 0, cognitive: 0, maintainability: 100 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 100, issues: [] }
+          quality: { score: 100, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 0,
           cacheUsed: false,
-          filesProcessed: 0
-        }
+          filesProcessed: 0,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
         ...version1,
-        project: { ...version1.project, version: '1.1.0' }
+        project: { ...version1.project, version: '1.1.0' },
       };
 
       // Test with unsupported format
-      await expect(comparator.generateDiffReport(version1, version2, 'unsupported' as any)).rejects.toThrow();
+      await expect(
+        comparator.generateDiffReport(version1, version2, 'unsupported' as any)
+      ).rejects.toThrow();
     });
 
     it('should handle exports with isExported property changes', async () => {
@@ -1637,14 +1663,14 @@ describe('VersionComparator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [],
           directories: [],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: {
           nodes: [],
@@ -1656,26 +1682,26 @@ describe('VersionComparator', () => {
               type: 'FunctionDeclaration',
               file: 'src/index.ts',
               isDefault: false,
-              
+
               usage: [],
-              metadata: { signature: '() => void' }
-            }
+              metadata: { signature: '() => void' },
+            },
           ],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 1, cognitive: 1, maintainability: 80 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 85, issues: [] }
+          quality: { score: 85, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 1000,
           cacheUsed: false,
-          filesProcessed: 1
-        }
+          filesProcessed: 1,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
@@ -1689,12 +1715,12 @@ describe('VersionComparator', () => {
               type: 'FunctionDeclaration',
               file: 'src/index.ts',
               isDefault: false,
-              
+
               usage: [],
-              metadata: { signature: '() => void' }
-            }
-          ]
-        }
+              metadata: { signature: '() => void' },
+            },
+          ],
+        },
       };
 
       const result = await comparator.compareVersions(version1, version2);
@@ -1710,35 +1736,46 @@ describe('VersionComparator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [],
           directories: [],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: {
           nodes: [],
           relations: [],
           entryPoints: [],
           publicExports: [],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 5, cognitive: 5, maintainability: 60 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 70, issues: [{ type: 'error', message: 'Test error', file: 'src/index.ts', line: 1, severity: 'high' }] }
+          quality: {
+            score: 70,
+            issues: [
+              {
+                type: 'error',
+                message: 'Test error',
+                file: 'src/index.ts',
+                line: 1,
+                severity: 'high',
+              },
+            ],
+          },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 1000,
           cacheUsed: false,
-          filesProcessed: 1
-        }
+          filesProcessed: 1,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
@@ -1748,8 +1785,8 @@ describe('VersionComparator', () => {
           complexity: { cyclomatic: 3, cognitive: 3, maintainability: 80 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 85, issues: [] }
-        }
+          quality: { score: 85, issues: [] },
+        },
       };
 
       const result = await comparator.compareQualityMetrics(version1, version2);
@@ -1770,14 +1807,14 @@ describe('VersionComparator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [],
           directories: [],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: {
           nodes: [],
@@ -1789,26 +1826,26 @@ describe('VersionComparator', () => {
               type: 'FunctionDeclaration',
               file: 'src/index.ts',
               isDefault: false,
-              
+
               usage: [],
-              metadata: { signature: '() => void' }
-            }
+              metadata: { signature: '() => void' },
+            },
           ],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 1, cognitive: 1, maintainability: 80 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 85, issues: [] }
+          quality: { score: 85, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 1000,
           cacheUsed: false,
-          filesProcessed: 1
-        }
+          filesProcessed: 1,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
@@ -1822,12 +1859,12 @@ describe('VersionComparator', () => {
               type: 'FunctionDeclaration',
               file: 'src/index.ts',
               isDefault: false,
-              
+
               usage: [],
-              metadata: { signature: '() => string' }
-            }
-          ]
-        }
+              metadata: { signature: '() => string' },
+            },
+          ],
+        },
       };
 
       const result = await comparator.compareVersions(version1, version2);
@@ -1844,17 +1881,17 @@ describe('VersionComparator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [
             { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' },
-            { path: 'src/old.ts', size: 50, lines: 5, lastModified: '2024-01-01T00:00:00Z' }
+            { path: 'src/old.ts', size: 50, lines: 5, lastModified: '2024-01-01T00:00:00Z' },
           ],
           directories: [],
           totalFiles: 2,
           totalLines: 15,
-          totalSize: 150
+          totalSize: 150,
         },
         ast: {
           nodes: [],
@@ -1866,26 +1903,26 @@ describe('VersionComparator', () => {
               type: 'FunctionDeclaration',
               file: 'src/index.ts',
               isDefault: false,
-              
+
               usage: [],
-              metadata: { signature: '() => void' }
-            }
+              metadata: { signature: '() => void' },
+            },
           ],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 1, cognitive: 1, maintainability: 80 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 85, issues: [] }
+          quality: { score: 85, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 1000,
           cacheUsed: false,
-          filesProcessed: 2
-        }
+          filesProcessed: 2,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
@@ -1895,11 +1932,11 @@ describe('VersionComparator', () => {
           ...version1.structure,
           files: [
             { path: 'src/index.ts', size: 120, lines: 12, lastModified: '2024-01-02T00:00:00Z' },
-            { path: 'src/new.ts', size: 50, lines: 5, lastModified: '2024-01-02T00:00:00Z' }
+            { path: 'src/new.ts', size: 50, lines: 5, lastModified: '2024-01-02T00:00:00Z' },
           ],
           totalFiles: 2,
           totalLines: 17,
-          totalSize: 170
+          totalSize: 170,
         },
         ast: {
           ...version1.ast,
@@ -1909,21 +1946,32 @@ describe('VersionComparator', () => {
               type: 'FunctionDeclaration',
               file: 'src/new.ts',
               isDefault: false,
-              
+
               usage: [],
-              metadata: { signature: '() => string' }
-            }
-          ]
+              metadata: { signature: '() => string' },
+            },
+          ],
         },
         analysis: {
           ...version1.analysis,
           complexity: { cyclomatic: 2, cognitive: 2, maintainability: 75 },
-          quality: { score: 80, issues: [{ type: 'warning', message: 'Test warning', file: 'src/new.ts', line: 1, severity: 'low' }] }
+          quality: {
+            score: 80,
+            issues: [
+              {
+                type: 'warning',
+                message: 'Test warning',
+                file: 'src/new.ts',
+                line: 1,
+                severity: 'low',
+              },
+            ],
+          },
         },
         metadata: {
           ...version1.metadata,
-          filesProcessed: 2
-        }
+          filesProcessed: 2,
+        },
       };
 
       const result = await comparator.compareVersions(version1, version2);
@@ -1939,35 +1987,35 @@ describe('VersionComparator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [],
           directories: [],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: {
           nodes: [],
           relations: [],
           entryPoints: [],
           publicExports: [],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 0, cognitive: 0, maintainability: 100 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 100, issues: [] }
+          quality: { score: 100, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 0,
           cacheUsed: false,
-          filesProcessed: 0
-        }
+          filesProcessed: 0,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
@@ -1981,12 +2029,12 @@ describe('VersionComparator', () => {
               type: 'FunctionDeclaration',
               file: 'src/index.ts',
               isDefault: false,
-              
+
               usage: [],
-              metadata: { signature: '() => string' }
-            }
-          ]
-        }
+              metadata: { signature: '() => string' },
+            },
+          ],
+        },
       };
 
       const result = await comparator.compareVersions(version1, version2);
@@ -1998,12 +2046,12 @@ describe('VersionComparator', () => {
         enableDiff: false,
         diffFormat: 'markdown' as const,
         includeMetrics: false,
-        includeBreakingChanges: false
+        includeBreakingChanges: false,
       };
 
       const comparator = new VersionComparator(config);
       const result = comparator.getConfig();
-      
+
       expect(result.enableDiff).toBe(false);
       expect(result.diffFormat).toBe('markdown');
       expect(result.includeMetrics).toBe(false);
@@ -2012,12 +2060,12 @@ describe('VersionComparator', () => {
 
     it('should handle edge cases in mergeDefaults with partial config', async () => {
       const config = {
-        enableDiff: true
+        enableDiff: true,
       };
 
       const comparator = new VersionComparator(config);
       const result = comparator.getConfig();
-      
+
       expect(result.enableDiff).toBe(true);
       expect(result.diffFormat).toBe('json'); // default
       expect(result.includeMetrics).toBe(true); // default
@@ -2033,14 +2081,14 @@ describe('VersionComparator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [],
           directories: [],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: {
           nodes: [],
@@ -2052,35 +2100,35 @@ describe('VersionComparator', () => {
               type: 'FunctionDeclaration',
               file: 'src/index.ts',
               isDefault: false,
-              
+
               usage: [],
-              metadata: { signature: '() => void' }
+              metadata: { signature: '() => void' },
             },
             {
               name: 'function2',
               type: 'FunctionDeclaration',
               file: 'src/index.ts',
               isDefault: true,
-              
+
               usage: [],
-              metadata: { signature: '() => string' }
-            }
+              metadata: { signature: '() => string' },
+            },
           ],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 2, cognitive: 2, maintainability: 80 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 85, issues: [] }
+          quality: { score: 85, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 1000,
           cacheUsed: false,
-          filesProcessed: 1
-        }
+          filesProcessed: 1,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
@@ -2094,21 +2142,21 @@ describe('VersionComparator', () => {
               type: 'FunctionDeclaration',
               file: 'src/index.ts',
               isDefault: false,
-              
+
               usage: [],
-              metadata: { signature: '() => void' }
+              metadata: { signature: '() => void' },
             },
             {
               name: 'function3',
               type: 'FunctionDeclaration',
               file: 'src/index.ts',
               isDefault: false,
-              
+
               usage: [],
-              metadata: { signature: '() => number' }
-            }
-          ]
-        }
+              metadata: { signature: '() => number' },
+            },
+          ],
+        },
       };
 
       const result = await comparator.compareVersions(version1, version2);
@@ -2125,14 +2173,14 @@ describe('VersionComparator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [],
           directories: [],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: {
           nodes: [],
@@ -2144,26 +2192,26 @@ describe('VersionComparator', () => {
               type: 'FunctionDeclaration',
               file: 'src/index.ts',
               isDefault: false,
-              
+
               usage: [],
-              metadata: { signature: '() => void', version: '1.0.0' }
-            }
+              metadata: { signature: '() => void', version: '1.0.0' },
+            },
           ],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 1, cognitive: 1, maintainability: 80 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 85, issues: [] }
+          quality: { score: 85, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 1000,
           cacheUsed: false,
-          filesProcessed: 1
-        }
+          filesProcessed: 1,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
@@ -2177,12 +2225,12 @@ describe('VersionComparator', () => {
               type: 'FunctionDeclaration',
               file: 'src/index.ts',
               isDefault: false,
-              
+
               usage: [],
-              metadata: { signature: '() => void', version: '1.1.0' }
-            }
-          ]
-        }
+              metadata: { signature: '() => void', version: '1.1.0' },
+            },
+          ],
+        },
       };
 
       const result = await comparator.compareVersions(version1, version2);
@@ -2198,14 +2246,14 @@ describe('VersionComparator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [],
           directories: [],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: {
           nodes: [],
@@ -2217,26 +2265,26 @@ describe('VersionComparator', () => {
               type: 'FunctionDeclaration',
               file: 'src/index.ts',
               isDefault: false,
-              
+
               usage: [],
-              metadata: { signature: '() => void' }
-            }
+              metadata: { signature: '() => void' },
+            },
           ],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 1, cognitive: 1, maintainability: 80 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 85, issues: [] }
+          quality: { score: 85, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 1000,
           cacheUsed: false,
-          filesProcessed: 1
-        }
+          filesProcessed: 1,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
@@ -2250,12 +2298,12 @@ describe('VersionComparator', () => {
               type: 'FunctionDeclaration',
               file: 'src/index.ts',
               isDefault: false,
-              
+
               usage: [],
-              metadata: { signature: '() => string' }
-            }
-          ]
-        }
+              metadata: { signature: '() => string' },
+            },
+          ],
+        },
       };
 
       const result = await comparator.compareVersions(version1, version2);
@@ -2271,35 +2319,35 @@ describe('VersionComparator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [],
           directories: [],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: {
           nodes: [],
           relations: [],
           entryPoints: [],
           publicExports: [],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 1, cognitive: 1, maintainability: 80 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 85, issues: [] }
+          quality: { score: 85, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 1000,
           cacheUsed: false,
-          filesProcessed: 1
-        }
+          filesProcessed: 1,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
@@ -2309,8 +2357,19 @@ describe('VersionComparator', () => {
           complexity: { cyclomatic: 2, cognitive: 2, maintainability: 75 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 80, issues: [{ type: 'warning', message: 'Test warning', file: 'src/index.ts', line: 1, severity: 'low' }] }
-        }
+          quality: {
+            score: 80,
+            issues: [
+              {
+                type: 'warning',
+                message: 'Test warning',
+                file: 'src/index.ts',
+                line: 1,
+                severity: 'low',
+              },
+            ],
+          },
+        },
       };
 
       const comparator = new VersionComparator({ includeMetrics: true });
@@ -2327,40 +2386,40 @@ describe('VersionComparator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [],
           directories: [],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: {
           nodes: [],
           relations: [],
           entryPoints: [],
           publicExports: [],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 1, cognitive: 1, maintainability: 80 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 85, issues: [] }
+          quality: { score: 85, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 1000,
           cacheUsed: false,
-          filesProcessed: 1
-        }
+          filesProcessed: 1,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
         ...version1,
-        project: { ...version1.project, version: '1.1.0' }
+        project: { ...version1.project, version: '1.1.0' },
       };
 
       const result = await comparator.generateDiffReport(version1, version2, 'html');
@@ -2376,40 +2435,40 @@ describe('VersionComparator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [],
           directories: [],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: {
           nodes: [],
           relations: [],
           entryPoints: [],
           publicExports: [],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 1, cognitive: 1, maintainability: 80 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 85, issues: [] }
+          quality: { score: 85, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 1000,
           cacheUsed: false,
-          filesProcessed: 1
-        }
+          filesProcessed: 1,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
         ...version1,
-        project: { ...version1.project, version: '1.1.0' }
+        project: { ...version1.project, version: '1.1.0' },
       };
 
       const result = await comparator.compareVersions(version1, version2);
@@ -2425,14 +2484,14 @@ describe('VersionComparator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [],
           directories: [],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: {
           nodes: [],
@@ -2444,26 +2503,26 @@ describe('VersionComparator', () => {
               type: 'FunctionDeclaration',
               file: 'src/index.ts',
               isDefault: false,
-              
+
               usage: [],
-              metadata: { signature: '() => void' }
-            }
+              metadata: { signature: '() => void' },
+            },
           ],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 1, cognitive: 1, maintainability: 80 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 85, issues: [] }
+          quality: { score: 85, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 1000,
           cacheUsed: false,
-          filesProcessed: 1
-        }
+          filesProcessed: 1,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
@@ -2471,8 +2530,8 @@ describe('VersionComparator', () => {
         project: { ...version1.project, version: '1.1.0' },
         ast: {
           ...version1.ast,
-          publicExports: []
-        }
+          publicExports: [],
+        },
       };
 
       const result = await comparator.compareVersions(version1, version2);
@@ -2488,35 +2547,35 @@ describe('VersionComparator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [],
           directories: [],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: {
           nodes: [],
           relations: [],
           entryPoints: [],
           publicExports: [],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 1, cognitive: 1, maintainability: 80 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 85, issues: [] }
+          quality: { score: 85, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 1000,
           cacheUsed: false,
-          filesProcessed: 1
-        }
+          filesProcessed: 1,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
@@ -2530,12 +2589,12 @@ describe('VersionComparator', () => {
               type: 'FunctionDeclaration',
               file: 'src/index.ts',
               isDefault: false,
-              
+
               usage: [],
-              metadata: { signature: '() => string' }
-            }
-          ]
-        }
+              metadata: { signature: '() => string' },
+            },
+          ],
+        },
       };
 
       const result = await comparator.compareVersions(version1, version2);
@@ -2551,37 +2610,37 @@ describe('VersionComparator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [
-            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' }
+            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' },
           ],
           directories: [],
           totalFiles: 1,
           totalLines: 10,
-          totalSize: 100
+          totalSize: 100,
         },
         ast: {
           nodes: [],
           relations: [],
           entryPoints: [],
           publicExports: [],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 1, cognitive: 1, maintainability: 80 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 85, issues: [] }
+          quality: { score: 85, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 1000,
           cacheUsed: false,
-          filesProcessed: 1
-        }
+          filesProcessed: 1,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
@@ -2590,12 +2649,12 @@ describe('VersionComparator', () => {
         structure: {
           ...version1.structure,
           files: [
-            { path: 'src/index.ts', size: 120, lines: 12, lastModified: '2024-01-02T00:00:00Z' }
+            { path: 'src/index.ts', size: 120, lines: 12, lastModified: '2024-01-02T00:00:00Z' },
           ],
           totalFiles: 1,
           totalLines: 12,
-          totalSize: 120
-        }
+          totalSize: 120,
+        },
       };
 
       const result = await comparator.compareVersions(version1, version2);
@@ -2611,35 +2670,35 @@ describe('VersionComparator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [],
           directories: [],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: {
           nodes: [],
           relations: [],
           entryPoints: [],
           publicExports: [],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 1, cognitive: 1, maintainability: 80 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 85, issues: [] }
+          quality: { score: 85, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 1000,
           cacheUsed: false,
-          filesProcessed: 1
-        }
+          filesProcessed: 1,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
@@ -2647,13 +2706,11 @@ describe('VersionComparator', () => {
         project: { ...version1.project, version: '1.1.0' },
         structure: {
           ...version1.structure,
-          files: [
-            { path: 'src/new.ts', size: 50, lines: 5, lastModified: '2024-01-02T00:00:00Z' }
-          ],
+          files: [{ path: 'src/new.ts', size: 50, lines: 5, lastModified: '2024-01-02T00:00:00Z' }],
           totalFiles: 1,
           totalLines: 5,
-          totalSize: 50
-        }
+          totalSize: 50,
+        },
       };
 
       const result = await comparator.compareVersions(version1, version2);
@@ -2669,37 +2726,35 @@ describe('VersionComparator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
-          files: [
-            { path: 'src/old.ts', size: 50, lines: 5, lastModified: '2024-01-01T00:00:00Z' }
-          ],
+          files: [{ path: 'src/old.ts', size: 50, lines: 5, lastModified: '2024-01-01T00:00:00Z' }],
           directories: [],
           totalFiles: 1,
           totalLines: 5,
-          totalSize: 50
+          totalSize: 50,
         },
         ast: {
           nodes: [],
           relations: [],
           entryPoints: [],
           publicExports: [],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 1, cognitive: 1, maintainability: 80 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 85, issues: [] }
+          quality: { score: 85, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 1000,
           cacheUsed: false,
-          filesProcessed: 1
-        }
+          filesProcessed: 1,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
@@ -2710,8 +2765,8 @@ describe('VersionComparator', () => {
           files: [],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
-        }
+          totalSize: 0,
+        },
       };
 
       const result = await comparator.compareVersions(version1, version2);
@@ -2727,14 +2782,14 @@ describe('VersionComparator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [],
           directories: [],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: {
           nodes: [],
@@ -2746,35 +2801,35 @@ describe('VersionComparator', () => {
               type: 'FunctionDeclaration',
               file: 'src/index.ts',
               isDefault: false,
-              
+
               usage: [],
-              metadata: { signature: '() => void' }
+              metadata: { signature: '() => void' },
             },
             {
               name: 'function2',
               type: 'FunctionDeclaration',
               file: 'src/index.ts',
               isDefault: false,
-              
+
               usage: [],
-              metadata: { signature: '() => string' }
-            }
+              metadata: { signature: '() => string' },
+            },
           ],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 2, cognitive: 2, maintainability: 80 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 85, issues: [] }
+          quality: { score: 85, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 1000,
           cacheUsed: false,
-          filesProcessed: 1
-        }
+          filesProcessed: 1,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
@@ -2788,21 +2843,21 @@ describe('VersionComparator', () => {
               type: 'FunctionDeclaration',
               file: 'src/index.ts',
               isDefault: false,
-              
+
               usage: [],
-              metadata: { signature: '() => void' }
+              metadata: { signature: '() => void' },
             },
             {
               name: 'function2',
               type: 'FunctionDeclaration',
               file: 'src/index.ts',
               isDefault: false,
-              
+
               usage: [],
-              metadata: { signature: '() => number' }
-            }
-          ]
-        }
+              metadata: { signature: '() => number' },
+            },
+          ],
+        },
       };
 
       const result = await comparator.compareVersions(version1, version2);
@@ -2818,16 +2873,14 @@ describe('VersionComparator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
-          files: [
-            { path: 'src/old.ts', size: 50, lines: 5, lastModified: '2024-01-01T00:00:00Z' }
-          ],
+          files: [{ path: 'src/old.ts', size: 50, lines: 5, lastModified: '2024-01-01T00:00:00Z' }],
           directories: [],
           totalFiles: 1,
           totalLines: 5,
-          totalSize: 50
+          totalSize: 50,
         },
         ast: {
           nodes: [],
@@ -2839,26 +2892,26 @@ describe('VersionComparator', () => {
               type: 'FunctionDeclaration',
               file: 'src/old.ts',
               isDefault: false,
-              
+
               usage: [],
-              metadata: { signature: '() => void' }
-            }
+              metadata: { signature: '() => void' },
+            },
           ],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 1, cognitive: 1, maintainability: 80 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 85, issues: [] }
+          quality: { score: 85, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 1000,
           cacheUsed: false,
-          filesProcessed: 1
-        }
+          filesProcessed: 1,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
@@ -2868,11 +2921,11 @@ describe('VersionComparator', () => {
           ...version1.structure,
           files: [
             { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-02T00:00:00Z' },
-            { path: 'src/new.ts', size: 50, lines: 5, lastModified: '2024-01-02T00:00:00Z' }
+            { path: 'src/new.ts', size: 50, lines: 5, lastModified: '2024-01-02T00:00:00Z' },
           ],
           totalFiles: 2,
           totalLines: 15,
-          totalSize: 150
+          totalSize: 150,
         },
         ast: {
           ...version1.ast,
@@ -2882,12 +2935,12 @@ describe('VersionComparator', () => {
               type: 'FunctionDeclaration',
               file: 'src/new.ts',
               isDefault: false,
-              
+
               usage: [],
-              metadata: { signature: '() => string' }
-            }
-          ]
-        }
+              metadata: { signature: '() => string' },
+            },
+          ],
+        },
       };
 
       const result = await comparator.compareVersions(version1, version2);
@@ -2903,17 +2956,17 @@ describe('VersionComparator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [
             { path: 'src/old.ts', size: 50, lines: 5, lastModified: '2024-01-01T00:00:00Z' },
-            { path: 'src/modified.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' }
+            { path: 'src/modified.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' },
           ],
           directories: [],
           totalFiles: 2,
           totalLines: 15,
-          totalSize: 150
+          totalSize: 150,
         },
         ast: {
           nodes: [],
@@ -2925,35 +2978,35 @@ describe('VersionComparator', () => {
               type: 'FunctionDeclaration',
               file: 'src/old.ts',
               isDefault: false,
-              
+
               usage: [],
-              metadata: { signature: '() => void' }
+              metadata: { signature: '() => void' },
             },
             {
               name: 'modifiedFunction',
               type: 'FunctionDeclaration',
               file: 'src/modified.ts',
               isDefault: false,
-              
+
               usage: [],
-              metadata: { signature: '() => string' }
-            }
+              metadata: { signature: '() => string' },
+            },
           ],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 2, cognitive: 2, maintainability: 80 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 85, issues: [] }
+          quality: { score: 85, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 1000,
           cacheUsed: false,
-          filesProcessed: 1
-        }
+          filesProcessed: 1,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
@@ -2963,11 +3016,11 @@ describe('VersionComparator', () => {
           ...version1.structure,
           files: [
             { path: 'src/modified.ts', size: 120, lines: 12, lastModified: '2024-01-02T00:00:00Z' },
-            { path: 'src/new.ts', size: 50, lines: 5, lastModified: '2024-01-02T00:00:00Z' }
+            { path: 'src/new.ts', size: 50, lines: 5, lastModified: '2024-01-02T00:00:00Z' },
           ],
           totalFiles: 2,
           totalLines: 17,
-          totalSize: 170
+          totalSize: 170,
         },
         ast: {
           ...version1.ast,
@@ -2977,21 +3030,21 @@ describe('VersionComparator', () => {
               type: 'FunctionDeclaration',
               file: 'src/modified.ts',
               isDefault: false,
-              
+
               usage: [],
-              metadata: { signature: '() => number' }
+              metadata: { signature: '() => number' },
             },
             {
               name: 'newFunction',
               type: 'FunctionDeclaration',
               file: 'src/new.ts',
               isDefault: false,
-              
+
               usage: [],
-              metadata: { signature: '() => boolean' }
-            }
-          ]
-        }
+              metadata: { signature: '() => boolean' },
+            },
+          ],
+        },
       };
 
       const result = await comparator.compareVersions(version1, version2);
@@ -3007,16 +3060,16 @@ describe('VersionComparator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [
-            { path: 'src/api.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' }
+            { path: 'src/api.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' },
           ],
           directories: [],
           totalFiles: 1,
           totalLines: 10,
-          totalSize: 100
+          totalSize: 100,
         },
         ast: {
           nodes: [],
@@ -3028,35 +3081,35 @@ describe('VersionComparator', () => {
               type: 'FunctionDeclaration',
               file: 'src/api.ts',
               isDefault: false,
-              
+
               usage: [],
-              metadata: { signature: '() => void' }
+              metadata: { signature: '() => void' },
             },
             {
               name: 'nonBreakingFunction',
               type: 'FunctionDeclaration',
               file: 'src/api.ts',
               isDefault: false,
-              
+
               usage: [],
-              metadata: { signature: '() => string' }
-            }
+              metadata: { signature: '() => string' },
+            },
           ],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 2, cognitive: 2, maintainability: 80 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 85, issues: [] }
+          quality: { score: 85, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 1000,
           cacheUsed: false,
-          filesProcessed: 1
-        }
+          filesProcessed: 1,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
@@ -3070,30 +3123,30 @@ describe('VersionComparator', () => {
               type: 'FunctionDeclaration',
               file: 'src/api.ts',
               isDefault: false,
-              
+
               usage: [],
-              metadata: { signature: '() => number' }
+              metadata: { signature: '() => number' },
             },
             {
               name: 'nonBreakingFunction',
               type: 'FunctionDeclaration',
               file: 'src/api.ts',
               isDefault: false,
-              
+
               usage: [],
-              metadata: { signature: '() => string' }
+              metadata: { signature: '() => string' },
             },
             {
               name: 'newFunction',
               type: 'FunctionDeclaration',
               file: 'src/api.ts',
               isDefault: false,
-              
+
               usage: [],
-              metadata: { signature: '() => boolean' }
-            }
-          ]
-        }
+              metadata: { signature: '() => boolean' },
+            },
+          ],
+        },
       };
 
       const result = await comparator.compareVersions(version1, version2);
@@ -3109,18 +3162,18 @@ describe('VersionComparator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [
             { path: 'src/file1.ts', size: 50, lines: 5, lastModified: '2024-01-01T00:00:00Z' },
             { path: 'src/file2.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' },
-            { path: 'src/file3.ts', size: 75, lines: 8, lastModified: '2024-01-01T00:00:00Z' }
+            { path: 'src/file3.ts', size: 75, lines: 8, lastModified: '2024-01-01T00:00:00Z' },
           ],
           directories: [],
           totalFiles: 3,
           totalLines: 23,
-          totalSize: 225
+          totalSize: 225,
         },
         ast: {
           nodes: [],
@@ -3132,35 +3185,35 @@ describe('VersionComparator', () => {
               type: 'FunctionDeclaration',
               file: 'src/file1.ts',
               isDefault: false,
-              
+
               usage: [],
-              metadata: { signature: '() => void' }
+              metadata: { signature: '() => void' },
             },
             {
               name: 'function2',
               type: 'FunctionDeclaration',
               file: 'src/file2.ts',
               isDefault: false,
-              
+
               usage: [],
-              metadata: { signature: '() => string' }
-            }
+              metadata: { signature: '() => string' },
+            },
           ],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 2, cognitive: 2, maintainability: 80 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 85, issues: [] }
+          quality: { score: 85, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 1000,
           cacheUsed: false,
-          filesProcessed: 1
-        }
+          filesProcessed: 1,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
@@ -3171,11 +3224,11 @@ describe('VersionComparator', () => {
           files: [
             { path: 'src/file2.ts', size: 120, lines: 12, lastModified: '2024-01-02T00:00:00Z' },
             { path: 'src/file4.ts', size: 60, lines: 6, lastModified: '2024-01-02T00:00:00Z' },
-            { path: 'src/file5.ts', size: 80, lines: 8, lastModified: '2024-01-02T00:00:00Z' }
+            { path: 'src/file5.ts', size: 80, lines: 8, lastModified: '2024-01-02T00:00:00Z' },
           ],
           totalFiles: 3,
           totalLines: 26,
-          totalSize: 260
+          totalSize: 260,
         },
         ast: {
           ...version1.ast,
@@ -3185,30 +3238,30 @@ describe('VersionComparator', () => {
               type: 'FunctionDeclaration',
               file: 'src/file2.ts',
               isDefault: false,
-              
+
               usage: [],
-              metadata: { signature: '() => number' }
+              metadata: { signature: '() => number' },
             },
             {
               name: 'function4',
               type: 'FunctionDeclaration',
               file: 'src/file4.ts',
               isDefault: false,
-              
+
               usage: [],
-              metadata: { signature: '() => boolean' }
+              metadata: { signature: '() => boolean' },
             },
             {
               name: 'function5',
               type: 'FunctionDeclaration',
               file: 'src/file5.ts',
               isDefault: false,
-              
+
               usage: [],
-              metadata: { signature: '() => object' }
-            }
-          ]
-        }
+              metadata: { signature: '() => object' },
+            },
+          ],
+        },
       };
 
       const result = await comparator.compareVersions(version1, version2);
@@ -3224,17 +3277,17 @@ describe('VersionComparator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [
             { path: 'src/old.ts', size: 50, lines: 5, lastModified: '2024-01-01T00:00:00Z' },
-            { path: 'src/modified.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' }
+            { path: 'src/modified.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' },
           ],
           directories: [],
           totalFiles: 2,
           totalLines: 15,
-          totalSize: 150
+          totalSize: 150,
         },
         ast: {
           nodes: [],
@@ -3246,35 +3299,35 @@ describe('VersionComparator', () => {
               type: 'FunctionDeclaration',
               file: 'src/old.ts',
               isDefault: false,
-              
+
               usage: [],
-              metadata: { signature: '() => void' }
+              metadata: { signature: '() => void' },
             },
             {
               name: 'modifiedFunction',
               type: 'FunctionDeclaration',
               file: 'src/modified.ts',
               isDefault: false,
-              
+
               usage: [],
-              metadata: { signature: '() => string' }
-            }
+              metadata: { signature: '() => string' },
+            },
           ],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 2, cognitive: 2, maintainability: 80 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 85, issues: [] }
+          quality: { score: 85, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 1000,
           cacheUsed: false,
-          filesProcessed: 1
-        }
+          filesProcessed: 1,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
@@ -3284,11 +3337,11 @@ describe('VersionComparator', () => {
           ...version1.structure,
           files: [
             { path: 'src/modified.ts', size: 120, lines: 12, lastModified: '2024-01-02T00:00:00Z' },
-            { path: 'src/new.ts', size: 50, lines: 5, lastModified: '2024-01-02T00:00:00Z' }
+            { path: 'src/new.ts', size: 50, lines: 5, lastModified: '2024-01-02T00:00:00Z' },
           ],
           totalFiles: 2,
           totalLines: 17,
-          totalSize: 170
+          totalSize: 170,
         },
         ast: {
           ...version1.ast,
@@ -3298,21 +3351,21 @@ describe('VersionComparator', () => {
               type: 'FunctionDeclaration',
               file: 'src/modified.ts',
               isDefault: false,
-              
+
               usage: [],
-              metadata: { signature: '() => number' }
+              metadata: { signature: '() => number' },
             },
             {
               name: 'newFunction',
               type: 'FunctionDeclaration',
               file: 'src/new.ts',
               isDefault: false,
-              
+
               usage: [],
-              metadata: { signature: '() => boolean' }
-            }
-          ]
-        }
+              metadata: { signature: '() => boolean' },
+            },
+          ],
+        },
       };
 
       const result = await comparator.compareVersions(version1, version2);
@@ -3330,39 +3383,40 @@ describe('VersionComparator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [],
           directories: [],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: {
           nodes: [],
           relations: [],
           entryPoints: [],
           publicExports: [],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 1, cognitive: 1, maintainability: 80 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 85, issues: [] }
+          quality: { score: 85, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 1000,
           cacheUsed: false,
-          filesProcessed: 1
-        }
+          filesProcessed: 1,
+        },
       };
 
-      await expect(comparator.detectBreakingChanges(null as any, version2))
-        .rejects.toThrow('INVALID_VERSIONS');
+      await expect(comparator.detectBreakingChanges(null as any, version2)).rejects.toThrow(
+        'INVALID_VERSIONS'
+      );
     });
 
     it('should handle null version2 in detectBreakingChanges', async () => {
@@ -3374,39 +3428,40 @@ describe('VersionComparator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [],
           directories: [],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: {
           nodes: [],
           relations: [],
           entryPoints: [],
           publicExports: [],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 1, cognitive: 1, maintainability: 80 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 85, issues: [] }
+          quality: { score: 85, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 1000,
           cacheUsed: false,
-          filesProcessed: 1
-        }
+          filesProcessed: 1,
+        },
       };
 
-      await expect(comparator.detectBreakingChanges(version1, null as any))
-        .rejects.toThrow('INVALID_VERSIONS');
+      await expect(comparator.detectBreakingChanges(version1, null as any)).rejects.toThrow(
+        'INVALID_VERSIONS'
+      );
     });
 
     it('should handle null version1 in compareQualityMetrics', async () => {
@@ -3418,39 +3473,40 @@ describe('VersionComparator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [],
           directories: [],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: {
           nodes: [],
           relations: [],
           entryPoints: [],
           publicExports: [],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 1, cognitive: 1, maintainability: 80 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 85, issues: [] }
+          quality: { score: 85, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 1000,
           cacheUsed: false,
-          filesProcessed: 1
-        }
+          filesProcessed: 1,
+        },
       };
 
-      await expect(comparator.compareQualityMetrics(null as any, version2))
-        .rejects.toThrow('INVALID_VERSIONS');
+      await expect(comparator.compareQualityMetrics(null as any, version2)).rejects.toThrow(
+        'INVALID_VERSIONS'
+      );
     });
 
     it('should handle null version2 in compareQualityMetrics', async () => {
@@ -3462,39 +3518,40 @@ describe('VersionComparator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [],
           directories: [],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: {
           nodes: [],
           relations: [],
           entryPoints: [],
           publicExports: [],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 1, cognitive: 1, maintainability: 80 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 85, issues: [] }
+          quality: { score: 85, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 1000,
           cacheUsed: false,
-          filesProcessed: 1
-        }
+          filesProcessed: 1,
+        },
       };
 
-      await expect(comparator.compareQualityMetrics(version1, null as any))
-        .rejects.toThrow('INVALID_VERSIONS');
+      await expect(comparator.compareQualityMetrics(version1, null as any)).rejects.toThrow(
+        'INVALID_VERSIONS'
+      );
     });
 
     it('should handle exports with isExported property changes', async () => {
@@ -3506,16 +3563,16 @@ describe('VersionComparator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [
-            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' }
+            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' },
           ],
           directories: [],
           totalFiles: 1,
           totalLines: 10,
-          totalSize: 100
+          totalSize: 100,
         },
         ast: {
           nodes: [],
@@ -3527,26 +3584,26 @@ describe('VersionComparator', () => {
               type: 'FunctionDeclaration',
               file: 'src/index.ts',
               isDefault: false,
-              
+
               usage: [],
-              metadata: { signature: '() => void' }
-            }
+              metadata: { signature: '() => void' },
+            },
           ],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 1, cognitive: 1, maintainability: 80 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 85, issues: [] }
+          quality: { score: 85, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 1000,
           cacheUsed: false,
-          filesProcessed: 1
-        }
+          filesProcessed: 1,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
@@ -3560,12 +3617,12 @@ describe('VersionComparator', () => {
               type: 'FunctionDeclaration',
               file: 'src/index.ts',
               isDefault: false,
-              
+
               usage: [],
-              metadata: { signature: '() => string' }
-            }
-          ]
-        }
+              metadata: { signature: '() => string' },
+            },
+          ],
+        },
       };
 
       const result = await comparator.compareVersions(version1, version2);
@@ -3581,35 +3638,46 @@ describe('VersionComparator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [],
           directories: [],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: {
           nodes: [],
           relations: [],
           entryPoints: [],
           publicExports: [],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 5, cognitive: 5, maintainability: 60 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 70, issues: [{ type: 'warning', message: 'test issue', file: 'src/test.ts', line: 1, severity: 'medium' }] }
+          quality: {
+            score: 70,
+            issues: [
+              {
+                type: 'warning',
+                message: 'test issue',
+                file: 'src/test.ts',
+                line: 1,
+                severity: 'medium',
+              },
+            ],
+          },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 1000,
           cacheUsed: false,
-          filesProcessed: 1
-        }
+          filesProcessed: 1,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
@@ -3619,8 +3687,8 @@ describe('VersionComparator', () => {
           complexity: { cyclomatic: 3, cognitive: 3, maintainability: 80 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 90, issues: [] }
-        }
+          quality: { score: 90, issues: [] },
+        },
       };
 
       const result = await comparator.compareQualityMetrics(version1, version2);
@@ -3641,44 +3709,45 @@ describe('VersionComparator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [],
           directories: [],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: {
           nodes: [],
           relations: [],
           entryPoints: [],
           publicExports: [],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 1, cognitive: 1, maintainability: 80 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 85, issues: [] }
+          quality: { score: 85, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 1000,
           cacheUsed: false,
-          filesProcessed: 1
-        }
+          filesProcessed: 1,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
         ...version1,
-        project: { ...version1.project, version: '1.1.0' }
+        project: { ...version1.project, version: '1.1.0' },
       };
 
-      await expect(comparator.generateDiffReport(version1, version2, 'unsupported' as any))
-        .rejects.toThrow('INVALID_FORMAT');
+      await expect(
+        comparator.generateDiffReport(version1, version2, 'unsupported' as any)
+      ).rejects.toThrow('INVALID_FORMAT');
     });
 
     it('should handle generateMarkdownDiff with metrics', async () => {
@@ -3690,37 +3759,37 @@ describe('VersionComparator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [
-            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' }
+            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' },
           ],
           directories: [],
           totalFiles: 1,
           totalLines: 10,
-          totalSize: 100
+          totalSize: 100,
         },
         ast: {
           nodes: [],
           relations: [],
           entryPoints: [],
           publicExports: [],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 1, cognitive: 1, maintainability: 80 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 85, issues: [] }
+          quality: { score: 85, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 1000,
           cacheUsed: false,
-          filesProcessed: 1
-        }
+          filesProcessed: 1,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
@@ -3730,11 +3799,11 @@ describe('VersionComparator', () => {
           ...version1.structure,
           files: [
             ...version1.structure.files,
-            { path: 'src/new.ts', size: 200, lines: 20, lastModified: '2024-01-02T00:00:00Z' }
+            { path: 'src/new.ts', size: 200, lines: 20, lastModified: '2024-01-02T00:00:00Z' },
           ],
           totalFiles: 2,
           totalLines: 30,
-          totalSize: 300
+          totalSize: 300,
         },
         ast: {
           ...version1.ast,
@@ -3744,15 +3813,15 @@ describe('VersionComparator', () => {
               type: 'FunctionDeclaration',
               file: 'src/new.ts',
               isDefault: false,
-              
-              usage: []
-            }
-          ]
-        }
+
+              usage: [],
+            },
+          ],
+        },
       };
 
       const diffReport = await comparator.generateDiffReport(version1, version2, 'markdown');
-      
+
       expect(diffReport.format).toBe('markdown');
       expect(diffReport.content).toContain('# Version Comparison Report');
       expect(diffReport.content).toContain('Files Added');
@@ -3768,44 +3837,44 @@ describe('VersionComparator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [],
           directories: [],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: {
           nodes: [],
           relations: [],
           entryPoints: [],
           publicExports: [],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 1, cognitive: 1, maintainability: 80 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 85, issues: [] }
+          quality: { score: 85, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 1000,
           cacheUsed: false,
-          filesProcessed: 1
-        }
+          filesProcessed: 1,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
         ...version1,
-        project: { ...version1.project, version: '1.1.0' }
+        project: { ...version1.project, version: '1.1.0' },
       };
 
       const diffReport = await comparator.generateDiffReport(version1, version2, 'html');
-      
+
       expect(diffReport.format).toBe('html');
       expect(diffReport.content).toContain('<!DOCTYPE html>');
       expect(diffReport.content).toContain('<h1>Version Comparison Report</h1>');
@@ -3820,38 +3889,38 @@ describe('VersionComparator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [
             { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' },
-            { path: 'src/old.ts', size: 50, lines: 5, lastModified: '2024-01-01T00:00:00Z' }
+            { path: 'src/old.ts', size: 50, lines: 5, lastModified: '2024-01-01T00:00:00Z' },
           ],
           directories: [],
           totalFiles: 2,
           totalLines: 15,
-          totalSize: 150
+          totalSize: 150,
         },
         ast: {
           nodes: [],
           relations: [],
           entryPoints: [],
           publicExports: [],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 1, cognitive: 1, maintainability: 80 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 85, issues: [] }
+          quality: { score: 85, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 1000,
           cacheUsed: false,
-          filesProcessed: 1
-        }
+          filesProcessed: 1,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
@@ -3860,16 +3929,16 @@ describe('VersionComparator', () => {
         structure: {
           ...version1.structure,
           files: [
-            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' }
+            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' },
           ],
           totalFiles: 1,
           totalLines: 10,
-          totalSize: 100
-        }
+          totalSize: 100,
+        },
       };
 
       const diffReport = await comparator.generateDiffReport(version1, version2, 'markdown');
-      
+
       expect(diffReport.content).toContain('Files Deleted');
       expect(diffReport.content).toContain('src/old.ts');
     });
@@ -3883,37 +3952,37 @@ describe('VersionComparator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [
-            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' }
+            { path: 'src/index.ts', size: 100, lines: 10, lastModified: '2024-01-01T00:00:00Z' },
           ],
           directories: [],
           totalFiles: 1,
           totalLines: 10,
-          totalSize: 100
+          totalSize: 100,
         },
         ast: {
           nodes: [],
           relations: [],
           entryPoints: [],
           publicExports: [],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 1, cognitive: 1, maintainability: 80 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 85, issues: [] }
+          quality: { score: 85, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 1000,
           cacheUsed: false,
-          filesProcessed: 1
-        }
+          filesProcessed: 1,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
@@ -3922,13 +3991,13 @@ describe('VersionComparator', () => {
         structure: {
           ...version1.structure,
           files: [
-            { path: 'src/index.ts', size: 150, lines: 15, lastModified: '2024-01-02T00:00:00Z' }
-          ]
-        }
+            { path: 'src/index.ts', size: 150, lines: 15, lastModified: '2024-01-02T00:00:00Z' },
+          ],
+        },
       };
 
       const diffReport = await comparator.generateDiffReport(version1, version2, 'markdown');
-      
+
       expect(diffReport.content).toContain('Files Modified');
       expect(diffReport.content).toContain('src/index.ts');
     });
@@ -3942,14 +4011,14 @@ describe('VersionComparator', () => {
           rootPath: '/test',
           entryPoints: ['src/index.ts'],
           dependencies: [],
-          devDependencies: []
+          devDependencies: [],
         },
         structure: {
           files: [],
           directories: [],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: {
           nodes: [],
@@ -3961,25 +4030,25 @@ describe('VersionComparator', () => {
               type: 'FunctionDeclaration',
               file: 'src/index.ts',
               isDefault: false,
-              
-              usage: []
-            }
+
+              usage: [],
+            },
           ],
-          privateExports: []
+          privateExports: [],
         },
         analysis: {
           complexity: { cyclomatic: 1, cognitive: 1, maintainability: 80 },
           patterns: [],
           architecture: { layers: [], modules: [] },
-          quality: { score: 85, issues: [] }
+          quality: { score: 85, issues: [] },
         },
         metadata: {
           generatedAt: '2024-01-01T00:00:00Z',
           parserVersion: '1.0.0',
           processingTime: 1000,
           cacheUsed: false,
-          filesProcessed: 1
-        }
+          filesProcessed: 1,
+        },
       };
 
       const version2: ProjectAnalysisOutput = {
@@ -3993,15 +4062,15 @@ describe('VersionComparator', () => {
               type: 'FunctionDeclaration',
               file: 'src/index.ts',
               isDefault: false,
-              
-              usage: []
-            }
-          ]
-        }
+
+              usage: [],
+            },
+          ],
+        },
       };
 
       const diffReport = await comparator.generateDiffReport(version1, version2, 'markdown');
-      
+
       expect(diffReport.content).toContain('API Changes');
       expect(diffReport.content).toContain('oldFunction');
       expect(diffReport.content).toContain('newFunction');

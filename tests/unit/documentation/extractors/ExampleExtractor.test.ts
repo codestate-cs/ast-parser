@@ -1,10 +1,13 @@
 /**
  * Tests for ExampleExtractor
- * 
+ *
  * Following TDD approach - tests define expected behavior
  */
 
-import { ExampleExtractor, ExampleExtractionOptions } from '../../../../src/documentation/extractors/ExampleExtractor';
+import {
+  ExampleExtractor,
+  ExampleExtractionOptions,
+} from '../../../../src/documentation/extractors/ExampleExtractor';
 import { ASTNode, ASTNodeType } from '../../../../src/types/core';
 
 describe('ExampleExtractor', () => {
@@ -20,7 +23,7 @@ describe('ExampleExtractor', () => {
       validateSyntax: true,
       extractOutput: true,
       extractMetadata: true,
-      customTypes: []
+      customTypes: [],
     };
     extractor = new ExampleExtractor();
   });
@@ -34,13 +37,13 @@ describe('ExampleExtractor', () => {
       const customOptions = {
         includeJSDoc: false,
         includeTest: true,
-        customTypes: ['custom']
+        customTypes: ['custom'],
       };
       const customExtractor = new ExampleExtractor(customOptions);
-      
+
       expect(customExtractor.getOptions()).toEqual({
         ...defaultOptions,
-        ...customOptions
+        ...customOptions,
       });
     });
   });
@@ -63,10 +66,10 @@ describe('ExampleExtractor', () => {
              * @example
              * const result = testFunction('hello');
              * console.log(result);
-             */`
-          ]
+             */`,
+          ],
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -95,10 +98,10 @@ describe('ExampleExtractor', () => {
              * @example {javascript}
              * const result = testFunction('hello');
              * console.log(result);
-             */`
-          ]
+             */`,
+          ],
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -126,11 +129,11 @@ describe('ExampleExtractor', () => {
               description: 'How to use the function',
               code: 'const result = testFunction("hello");',
               language: 'typescript',
-              output: 'Hello World'
-            }
-          ]
+              output: 'Hello World',
+            },
+          ],
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -145,7 +148,7 @@ describe('ExampleExtractor', () => {
 
     it('should extract test examples when enabled', () => {
       const testExtractor = new ExampleExtractor({ includeTest: true });
-      
+
       const node: ASTNode = {
         id: 'test-function',
         name: 'testFunction',
@@ -161,11 +164,11 @@ describe('ExampleExtractor', () => {
               title: 'Unit Test',
               description: 'Test the function',
               code: 'expect(testFunction("hello")).toBe("Hello World");',
-              language: 'typescript'
-            }
-          ]
+              language: 'typescript',
+            },
+          ],
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = testExtractor.extractFromNode(node);
@@ -192,10 +195,10 @@ describe('ExampleExtractor', () => {
              * Child function
              * @example
              * childFunction();
-             */`
-          ]
+             */`,
+          ],
         },
-        metadata: {}
+        metadata: {},
       };
 
       const parentNode: ASTNode = {
@@ -208,7 +211,7 @@ describe('ExampleExtractor', () => {
         end: 100,
         children: [childNode],
         properties: {},
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(parentNode);
@@ -229,7 +232,7 @@ describe('ExampleExtractor', () => {
         end: 100,
         children: [],
         properties: {},
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -256,10 +259,10 @@ describe('ExampleExtractor', () => {
                * Function 1
                * @example
                * function1();
-               */`
-            ]
+               */`,
+            ],
           },
-          metadata: {}
+          metadata: {},
         },
         {
           id: 'node2',
@@ -274,12 +277,12 @@ describe('ExampleExtractor', () => {
             usageExamples: [
               {
                 code: 'function2();',
-                title: 'Usage'
-              }
-            ]
+                title: 'Usage',
+              },
+            ],
           },
-          metadata: {}
-        }
+          metadata: {},
+        },
       ];
 
       const result = extractor.extractFromNodes(nodes);
@@ -308,11 +311,11 @@ describe('ExampleExtractor', () => {
                * Test function
                * @example
                * testFunction();
-               */`
-            ]
+               */`,
+            ],
           },
-          metadata: {}
-        }
+          metadata: {},
+        },
       ];
 
       const result = extractor.extractFromNodes(nodes);
@@ -342,10 +345,10 @@ describe('ExampleExtractor', () => {
              * function test() {
              *   return "hello";
              * }
-             */`
-          ]
+             */`,
+          ],
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -373,10 +376,10 @@ describe('ExampleExtractor', () => {
              * function test() {
              *   return "hello";
              * // Missing closing brace
-             */`
-          ]
+             */`,
+          ],
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -405,10 +408,10 @@ describe('ExampleExtractor', () => {
              *   "name": "test",
              *   "value": 123
              * }
-             */`
-          ]
+             */`,
+          ],
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -438,10 +441,10 @@ describe('ExampleExtractor', () => {
              *   "name": "test",
              *   "value": 123
              * // Missing closing brace
-             */`
-          ]
+             */`,
+          ],
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -455,7 +458,7 @@ describe('ExampleExtractor', () => {
   describe('filtering options', () => {
     it('should filter out JSDoc examples when includeJSDoc is false', () => {
       const noJSDocExtractor = new ExampleExtractor({ includeJSDoc: false });
-      
+
       const node: ASTNode = {
         id: 'test-function',
         name: 'testFunction',
@@ -471,10 +474,10 @@ describe('ExampleExtractor', () => {
              * Test function
              * @example
              * testFunction();
-             */`
-          ]
+             */`,
+          ],
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = noJSDocExtractor.extractFromNode(node);
@@ -484,7 +487,7 @@ describe('ExampleExtractor', () => {
 
     it('should filter out usage examples when includeUsage is false', () => {
       const noUsageExtractor = new ExampleExtractor({ includeUsage: false });
-      
+
       const node: ASTNode = {
         id: 'test-function',
         name: 'testFunction',
@@ -498,11 +501,11 @@ describe('ExampleExtractor', () => {
           usageExamples: [
             {
               code: 'testFunction();',
-              title: 'Usage'
-            }
-          ]
+              title: 'Usage',
+            },
+          ],
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = noUsageExtractor.extractFromNode(node);
@@ -512,7 +515,7 @@ describe('ExampleExtractor', () => {
 
     it('should include test examples when includeTest is true', () => {
       const testExtractor = new ExampleExtractor({ includeTest: true });
-      
+
       const node: ASTNode = {
         id: 'test-function',
         name: 'testFunction',
@@ -526,11 +529,11 @@ describe('ExampleExtractor', () => {
           testExamples: [
             {
               code: 'expect(testFunction()).toBe("hello");',
-              title: 'Test'
-            }
-          ]
+              title: 'Test',
+            },
+          ],
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = testExtractor.extractFromNode(node);
@@ -544,7 +547,7 @@ describe('ExampleExtractor', () => {
     it('should update options correctly', () => {
       const newOptions = {
         includeJSDoc: false,
-        includeTest: true
+        includeTest: true,
       };
 
       extractor.updateOptions(newOptions);
@@ -571,10 +574,10 @@ describe('ExampleExtractor', () => {
             `/**
              * Test function
              * @example
-             */`
-          ]
+             */`,
+          ],
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -600,10 +603,10 @@ describe('ExampleExtractor', () => {
              * testFunction('hello');
              * @example {javascript}
              * const result = testFunction('world');
-             */`
-          ]
+             */`,
+          ],
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -632,12 +635,12 @@ describe('ExampleExtractor', () => {
               metadata: {
                 category: 'advanced',
                 difficulty: 'medium',
-                tags: ['async', 'promise']
-              }
-            }
-          ]
+                tags: ['async', 'promise'],
+              },
+            },
+          ],
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -664,10 +667,10 @@ describe('ExampleExtractor', () => {
              * Test function
              * @example
              * testFunction('hello');
-             */`
-          ]
+             */`,
+          ],
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -690,11 +693,11 @@ describe('ExampleExtractor', () => {
           usageExamples: [
             {
               title: 'No Code Example',
-              description: 'Example without code'
-            }
-          ]
+              description: 'Example without code',
+            },
+          ],
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -704,7 +707,7 @@ describe('ExampleExtractor', () => {
 
     it('should handle test example without code', () => {
       const testExtractor = new ExampleExtractor({ includeTest: true });
-      
+
       const node: ASTNode = {
         id: 'test-function',
         name: 'testFunction',
@@ -718,11 +721,11 @@ describe('ExampleExtractor', () => {
           testExamples: [
             {
               title: 'No Code Test',
-              description: 'Test without code'
-            }
-          ]
+              description: 'Test without code',
+            },
+          ],
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = testExtractor.extractFromNode(node);
@@ -741,9 +744,9 @@ describe('ExampleExtractor', () => {
         end: 100,
         children: [],
         properties: {
-          usageExamples: [null]
+          usageExamples: [null],
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -753,7 +756,7 @@ describe('ExampleExtractor', () => {
 
     it('should handle null test example', () => {
       const testExtractor = new ExampleExtractor({ includeTest: true });
-      
+
       const node: ASTNode = {
         id: 'test-function',
         name: 'testFunction',
@@ -764,9 +767,9 @@ describe('ExampleExtractor', () => {
         end: 100,
         children: [],
         properties: {
-          testExamples: [null]
+          testExamples: [null],
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = testExtractor.extractFromNode(node);
@@ -792,10 +795,10 @@ describe('ExampleExtractor', () => {
              * Test function
              * @example {ts}
              * const result = testFunction();
-             */`
-          ]
+             */`,
+          ],
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -820,10 +823,10 @@ describe('ExampleExtractor', () => {
              * Test function
              * @example {js}
              * const result = testFunction();
-             */`
-          ]
+             */`,
+          ],
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -848,10 +851,10 @@ describe('ExampleExtractor', () => {
              * Test function
              * @example {html}
              * <div>Hello World</div>
-             */`
-          ]
+             */`,
+          ],
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -876,10 +879,10 @@ describe('ExampleExtractor', () => {
              * Test function
              * @example {css}
              * .test { color: red; }
-             */`
-          ]
+             */`,
+          ],
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -905,10 +908,10 @@ describe('ExampleExtractor', () => {
              * @example {md}
              * # Test
              * This is a test
-             */`
-          ]
+             */`,
+          ],
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -933,10 +936,10 @@ describe('ExampleExtractor', () => {
              * Test function
              * @example {bash}
              * echo "Hello World"
-             */`
-          ]
+             */`,
+          ],
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -961,10 +964,10 @@ describe('ExampleExtractor', () => {
              * Test function
              * @example {sql}
              * SELECT * FROM users;
-             */`
-          ]
+             */`,
+          ],
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -989,10 +992,10 @@ describe('ExampleExtractor', () => {
              * Test function
              * @example {unknown}
              * some unknown code
-             */`
-          ]
+             */`,
+          ],
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -1019,10 +1022,10 @@ describe('ExampleExtractor', () => {
              * Test function
              * @example {html}
              * <img src="test.jpg" />
-             */`
-          ]
+             */`,
+          ],
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -1047,10 +1050,10 @@ describe('ExampleExtractor', () => {
              * Test function
              * @example {html}
              * <div><span>Hello</div>
-             */`
-          ]
+             */`,
+          ],
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -1076,10 +1079,10 @@ describe('ExampleExtractor', () => {
              * Test function
              * @example {html}
              * <div>Hello World
-             */`
-          ]
+             */`,
+          ],
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -1105,10 +1108,10 @@ describe('ExampleExtractor', () => {
              * Test function
              * @example {css}
              * .test { color: red; }
-             */`
-          ]
+             */`,
+          ],
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -1133,10 +1136,10 @@ describe('ExampleExtractor', () => {
              * Test function
              * @example {css}
              * .test { color: red;
-             */`
-          ]
+             */`,
+          ],
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -1164,10 +1167,10 @@ describe('ExampleExtractor', () => {
              * function test( {
              *   return "hello";
              * }
-             */`
-          ]
+             */`,
+          ],
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -1193,10 +1196,10 @@ describe('ExampleExtractor', () => {
              * Test function
              * @example
              * const arr = [1, 2, 3;
-             */`
-          ]
+             */`,
+          ],
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -1222,10 +1225,10 @@ describe('ExampleExtractor', () => {
              * Test function
              * @example {unknown}
              * 
-             */`
-          ]
+             */`,
+          ],
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -1250,11 +1253,11 @@ describe('ExampleExtractor', () => {
             {
               code: 'testFunction();',
               title: 'Demo',
-              type: 'demo'
-            }
-          ]
+              type: 'demo',
+            },
+          ],
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = extractor.extractFromNode(node);
@@ -1264,13 +1267,13 @@ describe('ExampleExtractor', () => {
     });
 
     it('should include custom types when specified', () => {
-      const customExtractor = new ExampleExtractor({ 
+      const customExtractor = new ExampleExtractor({
         customTypes: ['custom'],
         includeJSDoc: false,
         includeUsage: false,
-        includeTest: false
+        includeTest: false,
       });
-      
+
       const node: ASTNode = {
         id: 'test-function',
         name: 'testFunction',
@@ -1285,11 +1288,11 @@ describe('ExampleExtractor', () => {
             {
               code: 'testFunction();',
               title: 'Custom',
-              type: 'custom'
-            }
-          ]
+              type: 'custom',
+            },
+          ],
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = customExtractor.extractFromNode(node);
@@ -1299,7 +1302,7 @@ describe('ExampleExtractor', () => {
 
     it('should handle syntax validation disabled', () => {
       const noValidationExtractor = new ExampleExtractor({ validateSyntax: false });
-      
+
       const node: ASTNode = {
         id: 'test-function',
         name: 'testFunction',
@@ -1317,10 +1320,10 @@ describe('ExampleExtractor', () => {
              * function test() {
              *   return "hello";
              * // Missing closing brace
-             */`
-          ]
+             */`,
+          ],
         },
-        metadata: {}
+        metadata: {},
       };
 
       const result = noValidationExtractor.extractFromNode(node);

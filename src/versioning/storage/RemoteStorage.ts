@@ -59,7 +59,11 @@ export class RemoteStorage extends BaseStorage {
     this.ensureInitialized();
 
     try {
-      const response = await this.makeRequest('POST', '', versionInfo as unknown as Record<string, unknown>);
+      const response = await this.makeRequest(
+        'POST',
+        '',
+        versionInfo as unknown as Record<string, unknown>
+      );
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
@@ -79,7 +83,7 @@ export class RemoteStorage extends BaseStorage {
         id: result.id ?? this.generateStorageId(versionInfo.id),
         versionId: versionInfo.id,
         path: result.path ?? `${this.apiBaseUrl}/${versionInfo.id}`,
-        metadata: result.metadata ?? (this.createStorageMetadata(versionInfo) as any),
+        metadata: result.metadata ?? this.createStorageMetadata(versionInfo),
       };
     } catch (error) {
       const errorObj = error instanceof Error ? error : new Error(String(error));

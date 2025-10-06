@@ -15,18 +15,18 @@ describe('CodestateAST Integration', () => {
     performanceMonitor = new PerformanceMonitor({
       enableMemoryTracking: true,
       enableCpuTracking: true,
-      enableAutoReporting: false
+      enableAutoReporting: false,
     });
 
     memoryManager = new MemoryManager({
       enableAutoGC: true,
-      maxMemoryUsage: 100 * 1024 * 1024 // 100MB
+      maxMemoryUsage: 100 * 1024 * 1024, // 100MB
     });
 
     cacheManager = new CacheManager({
       cacheFile: './test-cache.json',
       maxCacheSize: 1000,
-      defaultTTL: 300000 // 5 minutes
+      defaultTTL: 300000, // 5 minutes
     });
 
     // Initialize CodestateAST with performance integration
@@ -37,8 +37,8 @@ describe('CodestateAST Integration', () => {
         enableCaching: true,
         performanceMonitor,
         memoryManager,
-        cacheManager
-      }
+        cacheManager,
+      },
     });
   });
 
@@ -51,36 +51,36 @@ describe('CodestateAST Integration', () => {
   describe('Performance Monitoring Integration', () => {
     it('should start performance monitoring when parsing project', async () => {
       const startSpy = jest.spyOn(performanceMonitor, 'startOperation');
-      
+
       await codestateAST.parseProject('/test/project');
-      
+
       expect(startSpy).toHaveBeenCalledWith('parseProject', '/test/project', {
-        projectName: 'project'
+        projectName: 'project',
       });
     });
 
     it('should end performance monitoring when parsing completes', async () => {
       const endSpy = jest.spyOn(performanceMonitor, 'endOperation');
-      
+
       await codestateAST.parseProject('/test/project');
-      
+
       expect(endSpy).toHaveBeenCalled();
     });
 
     it('should track project detection performance', async () => {
       const startSpy = jest.spyOn(performanceMonitor, 'startOperation');
-      
+
       await codestateAST.detectProjectType('/test/project');
-      
+
       // Project detection doesn't use performance monitoring in CodestateAST
       expect(startSpy).not.toHaveBeenCalled();
     });
 
     it('should generate performance report after parsing', async () => {
       const reportSpy = jest.spyOn(performanceMonitor, 'generateReport');
-      
+
       await codestateAST.parseProject('/test/project');
-      
+
       expect(reportSpy).toHaveBeenCalled();
     });
   });
@@ -88,17 +88,17 @@ describe('CodestateAST Integration', () => {
   describe('Memory Management Integration', () => {
     it('should start memory monitoring when parsing begins', async () => {
       const startSpy = jest.spyOn(memoryManager, 'startMonitoring');
-      
+
       await codestateAST.parseProject('/test/project');
-      
+
       expect(startSpy).toHaveBeenCalled();
     });
 
     it('should check memory pressure during parsing', async () => {
       const checkSpy = jest.spyOn(memoryManager, 'checkMemoryPressure');
-      
+
       await codestateAST.parseProject('/test/project');
-      
+
       expect(checkSpy).toHaveBeenCalled();
     });
 
@@ -107,21 +107,21 @@ describe('CodestateAST Integration', () => {
         level: 'high',
         heapUsage: 100 * 1024 * 1024,
         rssUsage: 200 * 1024 * 1024,
-        recommendations: ['force-gc' as any, 'clear-cache' as any]
+        recommendations: ['force-gc' as any, 'clear-cache' as any],
       });
-      
+
       const optimizeSpy = jest.spyOn(memoryManager, 'optimizeMemory');
-      
+
       await codestateAST.parseProject('/test/project');
-      
+
       expect(optimizeSpy).toHaveBeenCalled();
     });
 
     it('should generate memory report after parsing', async () => {
       const reportSpy = jest.spyOn(memoryManager, 'generateMemoryReport');
-      
+
       await codestateAST.parseProject('/test/project');
-      
+
       expect(reportSpy).toHaveBeenCalled();
     });
   });
@@ -130,27 +130,27 @@ describe('CodestateAST Integration', () => {
     it('should use cache for project parsing', async () => {
       // CodestateAST delegates to ProjectParser, so we test that ProjectParser is called
       const parseProjectSpy = jest.spyOn(ProjectParser.prototype, 'parseProject');
-      
+
       await codestateAST.parseProject('/test/project');
-      
+
       expect(parseProjectSpy).toHaveBeenCalledWith('/test/project');
     });
 
     it('should invalidate cache when project changes', async () => {
       // CodestateAST delegates to ProjectParser, so we test that ProjectParser is called
       const parseProjectSpy = jest.spyOn(ProjectParser.prototype, 'parseProject');
-      
+
       await codestateAST.parseProject('/test/project');
-      
+
       expect(parseProjectSpy).toHaveBeenCalledWith('/test/project');
     });
 
     it('should record cache hits and misses', async () => {
       // CodestateAST delegates to ProjectParser, so we test that ProjectParser is called
       const parseProjectSpy = jest.spyOn(ProjectParser.prototype, 'parseProject');
-      
+
       await codestateAST.parseProject('/test/project');
-      
+
       expect(parseProjectSpy).toHaveBeenCalledWith('/test/project');
     });
   });
@@ -160,14 +160,14 @@ describe('CodestateAST Integration', () => {
       const disabledAST = new CodestateAST({
         performance: {
           enablePerformanceMonitoring: false,
-        performanceMonitor
-        }
+          performanceMonitor,
+        },
       });
-      
+
       const startSpy = jest.spyOn(performanceMonitor, 'startOperation');
-      
+
       await disabledAST.parseProject('/test/project');
-      
+
       expect(startSpy).not.toHaveBeenCalled();
     });
 
@@ -175,14 +175,14 @@ describe('CodestateAST Integration', () => {
       const disabledAST = new CodestateAST({
         performance: {
           enableMemoryManagement: false,
-        memoryManager
-        }
+          memoryManager,
+        },
       });
-      
+
       const startSpy = jest.spyOn(memoryManager, 'startMonitoring');
-      
+
       await disabledAST.parseProject('/test/project');
-      
+
       expect(startSpy).not.toHaveBeenCalled();
     });
 
@@ -190,14 +190,14 @@ describe('CodestateAST Integration', () => {
       const disabledAST = new CodestateAST({
         performance: {
           enableCaching: false,
-        cacheManager
-        }
+          cacheManager,
+        },
       });
-      
+
       const getSpy = jest.spyOn(cacheManager, 'getCache');
-      
+
       await disabledAST.parseProject('/test/project');
-      
+
       expect(getSpy).not.toHaveBeenCalled();
     });
   });
@@ -205,7 +205,7 @@ describe('CodestateAST Integration', () => {
   describe('Performance Reports', () => {
     it('should include performance metrics in parse result', async () => {
       const result = await codestateAST.parseProject('/test/project');
-      
+
       expect(result.performance).toBeDefined();
       expect(result.performance?.metrics).toBeDefined();
       expect(result.performance?.report).toBeDefined();
@@ -214,7 +214,7 @@ describe('CodestateAST Integration', () => {
 
     it('should include memory usage in performance report', async () => {
       const result = await codestateAST.parseProject('/test/project');
-      
+
       expect(result.performance?.memory).toBeDefined();
       expect(result.performance?.memory?.usage).toBeDefined();
       expect(result.performance?.memory?.report).toBeDefined();
@@ -222,7 +222,7 @@ describe('CodestateAST Integration', () => {
 
     it('should include cache statistics in performance report', async () => {
       const result = await codestateAST.parseProject('/test/project');
-      
+
       expect(result.performance?.cache).toBeDefined();
       expect(result.performance?.cache?.hitRate).toBeDefined();
       expect(result.performance?.cache?.statistics).toBeDefined();
@@ -234,7 +234,7 @@ describe('CodestateAST Integration', () => {
       jest.spyOn(performanceMonitor, 'startOperation').mockImplementation(() => {
         throw new Error('Performance monitoring error');
       });
-      
+
       await expect(codestateAST.parseProject('/test/project')).resolves.not.toThrow();
     });
 
@@ -242,7 +242,7 @@ describe('CodestateAST Integration', () => {
       jest.spyOn(memoryManager, 'startMonitoring').mockImplementation(() => {
         throw new Error('Memory management error');
       });
-      
+
       await expect(codestateAST.parseProject('/test/project')).resolves.not.toThrow();
     });
 
@@ -250,7 +250,7 @@ describe('CodestateAST Integration', () => {
       jest.spyOn(cacheManager, 'getCache').mockImplementation(() => {
         throw new Error('Cache error');
       });
-      
+
       await expect(codestateAST.parseProject('/test/project')).resolves.not.toThrow();
     });
   });
@@ -260,10 +260,10 @@ describe('CodestateAST Integration', () => {
       const astWithoutComponents = new CodestateAST({
         performance: {
           enablePerformanceMonitoring: true,
-          performanceMonitor: null as any
-        }
+          performanceMonitor: null as any,
+        },
       });
-      
+
       await expect(astWithoutComponents.parseProject('/test/project')).resolves.not.toThrow();
     });
 
@@ -277,9 +277,9 @@ describe('CodestateAST Integration', () => {
       const promises = [
         codestateAST.parseProject('/test/project1'),
         codestateAST.parseProject('/test/project2'),
-        codestateAST.parseProject('/test/project3')
+        codestateAST.parseProject('/test/project3'),
       ];
-      
+
       await expect(Promise.all(promises)).resolves.not.toThrow();
     });
   });

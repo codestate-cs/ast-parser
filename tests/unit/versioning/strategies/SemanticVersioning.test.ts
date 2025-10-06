@@ -54,8 +54,8 @@ describe('SemanticVersioning', () => {
           major: 1,
           minor: 0,
           patch: 0,
-          full: '1.0.0'
-        }
+          full: '1.0.0',
+        },
       };
 
       const result = await strategy.generateVersion(metadata);
@@ -72,8 +72,8 @@ describe('SemanticVersioning', () => {
           minor: 0,
           patch: 0,
           prerelease: 'alpha',
-          full: '1.0.0-alpha'
-        }
+          full: '1.0.0-alpha',
+        },
       };
 
       const result = await strategy.generateVersion(metadata);
@@ -90,8 +90,8 @@ describe('SemanticVersioning', () => {
           minor: 0,
           patch: 0,
           build: 'build.1',
-          full: '1.0.0+build.1'
-        }
+          full: '1.0.0+build.1',
+        },
       };
 
       const result = await strategy.generateVersion(metadata);
@@ -109,8 +109,8 @@ describe('SemanticVersioning', () => {
           patch: 0,
           prerelease: 'alpha.1',
           build: 'build.1',
-          full: '1.0.0-alpha.1+build.1'
-        }
+          full: '1.0.0-alpha.1+build.1',
+        },
       };
 
       const result = await strategy.generateVersion(metadata);
@@ -121,7 +121,7 @@ describe('SemanticVersioning', () => {
       const metadata: VersionMetadata = {
         version: 'invalid',
         createdAt: '2024-01-15T10:30:00Z',
-        tags: []
+        tags: [],
       };
 
       await expect(strategy.generateVersion(metadata)).rejects.toThrow();
@@ -131,10 +131,12 @@ describe('SemanticVersioning', () => {
       const metadata: VersionMetadata = {
         version: '1.0.0',
         createdAt: '2024-01-15T10:30:00Z',
-        tags: []
+        tags: [],
       };
 
-      await expect(strategy.generateVersion(metadata)).rejects.toThrow('Semantic version information is required');
+      await expect(strategy.generateVersion(metadata)).rejects.toThrow(
+        'Semantic version information is required'
+      );
     });
 
     it('should throw error for invalid version components', async () => {
@@ -146,11 +148,13 @@ describe('SemanticVersioning', () => {
           major: 'invalid' as any,
           minor: 0,
           patch: 0,
-          full: '1.0.0'
-        }
+          full: '1.0.0',
+        },
       };
 
-      await expect(strategy.generateVersion(metadata)).rejects.toThrow('Major, minor, and patch must be numbers');
+      await expect(strategy.generateVersion(metadata)).rejects.toThrow(
+        'Major, minor, and patch must be numbers'
+      );
     });
 
     it('should throw error for negative version components', async () => {
@@ -162,56 +166,58 @@ describe('SemanticVersioning', () => {
           major: -1,
           minor: 0,
           patch: 0,
-          full: '1.0.0'
-        }
+          full: '1.0.0',
+        },
       };
 
-      await expect(strategy.generateVersion(metadata)).rejects.toThrow('Version components must be non-negative');
+      await expect(strategy.generateVersion(metadata)).rejects.toThrow(
+        'Version components must be non-negative'
+      );
     });
   });
 
   describe('parseVersion', () => {
     it('should parse basic semantic version', async () => {
       const result = await strategy.parseVersion('1.0.0');
-      
+
       expect(result.version).toBe('1.0.0');
       expect(result.semantic).toEqual({
         major: 1,
         minor: 0,
         patch: 0,
-        full: '1.0.0'
+        full: '1.0.0',
       });
     });
 
     it('should parse semantic version with prerelease', async () => {
       const result = await strategy.parseVersion('1.0.0-alpha');
-      
+
       expect(result.version).toBe('1.0.0-alpha');
       expect(result.semantic).toEqual({
         major: 1,
         minor: 0,
         patch: 0,
         prerelease: 'alpha',
-        full: '1.0.0-alpha'
+        full: '1.0.0-alpha',
       });
     });
 
     it('should parse semantic version with build', async () => {
       const result = await strategy.parseVersion('1.0.0+build.1');
-      
+
       expect(result.version).toBe('1.0.0+build.1');
       expect(result.semantic).toEqual({
         major: 1,
         minor: 0,
         patch: 0,
         build: 'build.1',
-        full: '1.0.0+build.1'
+        full: '1.0.0+build.1',
       });
     });
 
     it('should parse semantic version with prerelease and build', async () => {
       const result = await strategy.parseVersion('1.0.0-alpha.1+build.1');
-      
+
       expect(result.version).toBe('1.0.0-alpha.1+build.1');
       expect(result.semantic).toEqual({
         major: 1,
@@ -219,7 +225,7 @@ describe('SemanticVersioning', () => {
         patch: 0,
         prerelease: 'alpha.1',
         build: 'build.1',
-        full: '1.0.0-alpha.1+build.1'
+        full: '1.0.0-alpha.1+build.1',
       });
     });
 
@@ -289,8 +295,8 @@ describe('SemanticVersioning', () => {
           major: 1,
           minor: 0,
           patch: 0,
-          full: '1.0.0'
-        }
+          full: '1.0.0',
+        },
       };
 
       const result = await strategy.bumpVersion(metadata, 'major');
@@ -306,8 +312,8 @@ describe('SemanticVersioning', () => {
           major: 1,
           minor: 0,
           patch: 0,
-          full: '1.0.0'
-        }
+          full: '1.0.0',
+        },
       };
 
       const result = await strategy.bumpVersion(metadata, 'minor');
@@ -323,8 +329,8 @@ describe('SemanticVersioning', () => {
           major: 1,
           minor: 0,
           patch: 0,
-          full: '1.0.0'
-        }
+          full: '1.0.0',
+        },
       };
 
       const result = await strategy.bumpVersion(metadata, 'patch');
@@ -340,8 +346,8 @@ describe('SemanticVersioning', () => {
           major: 1,
           minor: 0,
           patch: 0,
-          full: '1.0.0'
-        }
+          full: '1.0.0',
+        },
       };
 
       const result = await strategy.bumpVersion(metadata, 'prerelease', 'alpha');
@@ -357,8 +363,8 @@ describe('SemanticVersioning', () => {
           major: 1,
           minor: 0,
           patch: 0,
-          full: '1.0.0'
-        }
+          full: '1.0.0',
+        },
       };
 
       await expect(strategy.bumpVersion(metadata, 'invalid' as any)).rejects.toThrow();
@@ -374,8 +380,8 @@ describe('SemanticVersioning', () => {
           minor: 0,
           patch: 0,
           prerelease: 'alpha',
-          full: '1.0.0-alpha'
-        }
+          full: '1.0.0-alpha',
+        },
       };
 
       const result = await strategy.bumpVersion(metadata, 'prerelease');
@@ -392,8 +398,8 @@ describe('SemanticVersioning', () => {
           minor: 0,
           patch: 0,
           prerelease: 'alpha.1',
-          full: '1.0.0-alpha.1'
-        }
+          full: '1.0.0-alpha.1',
+        },
       };
 
       const result = await strategy.bumpVersion(metadata, 'prerelease');
@@ -404,17 +410,19 @@ describe('SemanticVersioning', () => {
       const metadata: VersionMetadata = {
         version: '1.0.0',
         createdAt: '2024-01-15T10:30:00Z',
-        tags: []
+        tags: [],
       };
 
-      await expect(strategy.bumpVersion(metadata, 'patch')).rejects.toThrow('Semantic version information is required for bumping');
+      await expect(strategy.bumpVersion(metadata, 'patch')).rejects.toThrow(
+        'Semantic version information is required for bumping'
+      );
     });
   });
 
   describe('edge cases', () => {
     it('should handle zero versions', async () => {
       expect(strategy.isValidVersion('0.0.0')).toBe(true);
-      
+
       const result = await strategy.parseVersion('0.0.0');
       expect(result.semantic?.major).toBe(0);
       expect(result.semantic?.minor).toBe(0);
@@ -423,7 +431,7 @@ describe('SemanticVersioning', () => {
 
     it('should handle large version numbers', async () => {
       expect(strategy.isValidVersion('999.999.999')).toBe(true);
-      
+
       const result = await strategy.parseVersion('999.999.999');
       expect(result.semantic?.major).toBe(999);
       expect(result.semantic?.minor).toBe(999);
@@ -433,7 +441,7 @@ describe('SemanticVersioning', () => {
     it('should handle complex prerelease identifiers', async () => {
       const version = '1.0.0-alpha.1.beta.2+exp.sha.5114f85';
       expect(strategy.isValidVersion(version)).toBe(true);
-      
+
       const result = await strategy.parseVersion(version);
       expect(result.semantic?.prerelease).toBe('alpha.1.beta.2');
       expect(result.semantic?.build).toBe('exp.sha.5114f85');
@@ -466,8 +474,8 @@ describe('SemanticVersioning', () => {
           minor: 0,
           patch: 0,
           prerelease: 'beta',
-          full: '1.0.0-beta'
-        }
+          full: '1.0.0-beta',
+        },
       };
 
       const result1 = await strategy.bumpVersion(metadata1, 'prerelease');
@@ -483,8 +491,8 @@ describe('SemanticVersioning', () => {
           minor: 0,
           patch: 0,
           prerelease: 'alpha.beta',
-          full: '1.0.0-alpha.beta'
-        }
+          full: '1.0.0-alpha.beta',
+        },
       };
 
       const result2 = await strategy.bumpVersion(metadata2, 'prerelease');
@@ -500,13 +508,12 @@ describe('SemanticVersioning', () => {
           major: 1,
           minor: 0,
           patch: 0,
-          full: '1.0.0'
-        }
+          full: '1.0.0',
+        },
       } as any;
 
       // Test with invalid metadata structure
-      await expect(strategy.generateVersion(invalidMetadata))
-        .rejects.toThrow();
+      await expect(strategy.generateVersion(invalidMetadata)).rejects.toThrow();
     });
 
     it('should handle invalid generated version', async () => {
@@ -518,21 +525,22 @@ describe('SemanticVersioning', () => {
           major: 1,
           minor: 0,
           patch: 0,
-          full: '1.0.0'
-        }
+          full: '1.0.0',
+        },
       };
 
       // Mock isValidVersion to return false
       jest.spyOn(strategy, 'isValidVersion').mockReturnValue(false);
 
-      await expect(strategy.generateVersion(metadata))
-        .rejects.toThrow('Generated version is not valid');
+      await expect(strategy.generateVersion(metadata)).rejects.toThrow(
+        'Generated version is not valid'
+      );
     });
 
     it('should handle complex prerelease parsing', async () => {
       const complexVersion = '1.0.0-alpha.1.beta.2';
       const parsed = await strategy.parseVersion(complexVersion);
-      
+
       expect(parsed.semantic).toBeDefined();
       expect(parsed.semantic!.major).toBe(1);
       expect(parsed.semantic!.minor).toBe(0);
@@ -543,7 +551,7 @@ describe('SemanticVersioning', () => {
     it('should handle build identifier parsing', async () => {
       const versionWithBuild = '1.0.0+build.123';
       const parsed = await strategy.parseVersion(versionWithBuild);
-      
+
       expect(parsed.semantic).toBeDefined();
       expect(parsed.semantic!.major).toBe(1);
       expect(parsed.semantic!.minor).toBe(0);
@@ -555,14 +563,14 @@ describe('SemanticVersioning', () => {
       // Test prerelease vs release
       const prerelease = '1.0.0-alpha';
       const release = '1.0.0';
-      
+
       const comparison = await strategy.compareVersions(prerelease, release);
       expect(comparison.result).toBe('less');
-      
+
       // Test different prerelease identifiers
       const alpha = '1.0.0-alpha';
       const beta = '1.0.0-beta';
-      
+
       const prereleaseComparison = await strategy.compareVersions(alpha, beta);
       expect(prereleaseComparison.result).toBe('less');
     });
@@ -577,8 +585,8 @@ describe('SemanticVersioning', () => {
           minor: 0,
           patch: 0,
           build: 'build.123',
-          full: '1.0.0'
-        }
+          full: '1.0.0',
+        },
       };
 
       const version = await strategy.generateVersion(metadata);
@@ -587,14 +595,15 @@ describe('SemanticVersioning', () => {
 
     it('should handle parseVersion with invalid regex match', async () => {
       // Test with a version that doesn't match the regex
-      await expect(strategy.parseVersion('invalid-version'))
-        .rejects.toThrow('Invalid semantic version');
+      await expect(strategy.parseVersion('invalid-version')).rejects.toThrow(
+        'Invalid semantic version'
+      );
     });
 
     it('should handle compareVersions with invalid prerelease comparison', async () => {
       const version1 = '1.0.0-alpha.1';
       const version2 = '1.0.0-alpha.1.beta';
-      
+
       const comparison = await strategy.compareVersions(version1, version2);
       expect(comparison.result).toBe('less');
     });
@@ -609,8 +618,8 @@ describe('SemanticVersioning', () => {
           minor: 0,
           patch: 0,
           build: 'build.123',
-          full: '1.0.0'
-        }
+          full: '1.0.0',
+        },
       };
 
       const bumped = await strategy.bumpVersion(metadata, 'patch');
@@ -671,8 +680,8 @@ describe('SemanticVersioning', () => {
           major: 1,
           minor: 0,
           patch: 0,
-          full: '1.0.0'
-        }
+          full: '1.0.0',
+        },
       };
 
       const bumped = await strategy.bumpVersion(metadata, 'prerelease');

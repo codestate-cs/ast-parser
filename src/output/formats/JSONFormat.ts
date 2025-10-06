@@ -25,7 +25,7 @@ export class JSONFormat extends BaseFormat {
   protected async serializeData(data: ProjectInfo, options?: OutputOptions): Promise<string> {
     try {
       const prettyPrint = options?.prettyPrint ?? this.getDefaultOptions().prettyPrint;
-      
+
       if (prettyPrint) {
         return JSON.stringify(data, null, 2);
       } else {
@@ -84,7 +84,7 @@ export class JSONFormat extends BaseFormat {
 
       // Try to serialize to check for circular references
       JSON.stringify(data);
-      
+
       return true;
     } catch (error) {
       return false;
@@ -100,7 +100,7 @@ export class JSONFormat extends BaseFormat {
       encoding: 'utf8',
       strategy: 'file',
       compression: 'none',
-      format: 'json'
+      format: 'json',
     };
   }
 }

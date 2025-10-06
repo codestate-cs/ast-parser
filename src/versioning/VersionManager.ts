@@ -101,6 +101,8 @@ export class VersionManager {
         createdAt: new Date().toISOString(),
         tags: [],
         strategy: strategyName,
+        projectName: projectAnalysis.project.name,
+        projectPath: projectAnalysis.project.rootPath,
         ...options.metadata,
       };
 

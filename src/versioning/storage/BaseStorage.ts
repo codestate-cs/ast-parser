@@ -15,12 +15,18 @@ export abstract class BaseStorage {
   /**
    * Store version information
    */
-  abstract store(versionInfo: VersionInfo, config?: Partial<StorageConfig>): Promise<VersionStorage>;
+  abstract store(
+    versionInfo: VersionInfo,
+    config?: Partial<StorageConfig>
+  ): Promise<VersionStorage>;
 
   /**
    * Retrieve version information
    */
-  abstract retrieve(versionId: string, config?: Partial<StorageConfig>): Promise<VersionInfo | null>;
+  abstract retrieve(
+    versionId: string,
+    config?: Partial<StorageConfig>
+  ): Promise<VersionInfo | null>;
 
   /**
    * Delete version information
@@ -45,7 +51,11 @@ export abstract class BaseStorage {
   /**
    * Update version metadata
    */
-  abstract updateMetadata(versionId: string, metadata: any, config?: Partial<StorageConfig>): Promise<boolean>;
+  abstract updateMetadata(
+    versionId: string,
+    metadata: any,
+    config?: Partial<StorageConfig>
+  ): Promise<boolean>;
 
   /**
    * Cleanup storage
@@ -74,7 +84,7 @@ export abstract class BaseStorage {
     return {
       type: 'local',
       path: './versions',
-      options: {}
+      options: {},
     };
   }
 
@@ -86,7 +96,7 @@ export abstract class BaseStorage {
     return {
       type: config.type || defaultConfig.type,
       path: config.path || defaultConfig.path,
-      options: { ...defaultConfig.options, ...config.options }
+      options: { ...defaultConfig.options, ...config.options },
     };
   }
 
@@ -175,7 +185,7 @@ export abstract class BaseStorage {
       message: error.message,
       code: (error as any).code || 'UNKNOWN_ERROR',
       context,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
 
     // Log error (in real implementation, this would use proper logging)
@@ -219,7 +229,7 @@ export abstract class BaseStorage {
       let hash = 0;
       for (let i = 0; i < dataString.length; i++) {
         const char = dataString.charCodeAt(i);
-        hash = ((hash << 5) - hash) + char;
+        hash = (hash << 5) - hash + char;
         hash = hash & hash; // Convert to 32-bit integer
       }
       return Math.abs(hash).toString(16);
@@ -238,7 +248,7 @@ export abstract class BaseStorage {
       checksum: this.generateChecksum(versionInfo.data),
       version: versionInfo.version,
       strategy: versionInfo.metadata.strategy,
-      ...additionalMetadata
+      ...additionalMetadata,
     };
   }
 
@@ -278,17 +288,23 @@ export abstract class BaseStorage {
   public async getStatistics(config?: Partial<StorageConfig>): Promise<any> {
     try {
       const versions = await this.list(config);
-      
+
       return {
         totalVersions: versions.length,
         totalSize: versions.reduce((sum, v) => sum + (v.metadata.size || 0), 0),
-        averageSize: versions.length > 0 ? 
-          versions.reduce((sum, v) => sum + (v.metadata.size || 0), 0) / versions.length : 0,
-        oldestVersion: versions.length > 0 ? 
-          Math.min(...versions.map(v => new Date(v.metadata.storedAt).getTime())) : null,
-        newestVersion: versions.length > 0 ? 
-          Math.max(...versions.map(v => new Date(v.metadata.storedAt).getTime())) : null,
-        lastUpdated: new Date().toISOString()
+        averageSize:
+          versions.length > 0
+            ? versions.reduce((sum, v) => sum + (v.metadata.size || 0), 0) / versions.length
+            : 0,
+        oldestVersion:
+          versions.length > 0
+            ? Math.min(...versions.map(v => new Date(v.metadata.storedAt).getTime()))
+            : null,
+        newestVersion:
+          versions.length > 0
+            ? Math.max(...versions.map(v => new Date(v.metadata.storedAt).getTime()))
+            : null,
+        lastUpdated: new Date().toISOString(),
       };
     } catch (error) {
       this.handleError(error as Error, 'getStatistics');
@@ -299,9 +315,12 @@ export abstract class BaseStorage {
   /**
    * Batch operations
    */
-  public async batchStore(versions: VersionInfo[], config?: Partial<StorageConfig>): Promise<VersionStorage[]> {
+  public async batchStore(
+    versions: VersionInfo[],
+    config?: Partial<StorageConfig>
+  ): Promise<VersionStorage[]> {
     const results: VersionStorage[] = [];
-    
+
     for (const version of versions) {
       try {
         const result = await this.store(version, config);
@@ -311,16 +330,19 @@ export abstract class BaseStorage {
         throw error;
       }
     }
-    
+
     return results;
   }
 
   /**
    * Batch delete operations
    */
-  public async batchDelete(versionIds: string[], config?: Partial<StorageConfig>): Promise<boolean[]> {
+  public async batchDelete(
+    versionIds: string[],
+    config?: Partial<StorageConfig>
+  ): Promise<boolean[]> {
     const results: boolean[] = [];
-    
+
     for (const versionId of versionIds) {
       try {
         const result = await this.delete(versionId, config);
@@ -330,17 +352,20 @@ export abstract class BaseStorage {
         results.push(false);
       }
     }
-    
+
     return results;
   }
 
   /**
    * Search versions by metadata
    */
-  public async searchVersions(query: any, config?: Partial<StorageConfig>): Promise<VersionStorage[]> {
+  public async searchVersions(
+    query: any,
+    config?: Partial<StorageConfig>
+  ): Promise<VersionStorage[]> {
     try {
       const allVersions = await this.list(config);
-      
+
       return allVersions.filter(version => {
         return this.matchesQuery(version, query);
       });
@@ -401,20 +426,20 @@ export abstract class BaseStorage {
     try {
       const versions = await this.list(config);
       const statistics = await this.getStatistics(config);
-      
+
       return {
         metadata: {
           exportedAt: new Date().toISOString(),
           storageType: this.config.type,
-          version: '1.0.0'
+          version: '1.0.0',
         },
         statistics,
         versions: versions.map(v => ({
           id: v.id,
           versionId: v.versionId,
           path: v.path,
-          metadata: v.metadata
-        }))
+          metadata: v.metadata,
+        })),
       };
     } catch (error) {
       this.handleError(error as Error, 'exportData');
@@ -427,7 +452,7 @@ export abstract class BaseStorage {
    */
   public async importData(data: any, _config?: Partial<StorageConfig>): Promise<void> {
     try {
-      if (!data || !data.versions || !Array.isArray(data.versions)) {
+      if (!data?.versions || !Array.isArray(data.versions)) {
         throw this.createError('Invalid import data format', 'INVALID_IMPORT_DATA');
       }
 

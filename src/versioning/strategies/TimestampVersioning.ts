@@ -3,7 +3,7 @@ import {
   VersionMetadata,
   VersionComparison,
   TimestampInfo,
-  VersioningConfig
+  VersioningConfig,
 } from '../../types/versioning';
 
 /**
@@ -24,7 +24,7 @@ export interface TimestampVersioningConfig {
 
 /**
  * Timestamp-based versioning strategy
- * 
+ *
  * Generates versions based on timestamps, providing chronological ordering
  * and human-readable time-based versioning.
  */
@@ -87,7 +87,7 @@ export class TimestampVersioning extends BaseVersioningStrategy {
         return {
           version,
           createdAt: new Date().toISOString(),
-          tags: []
+          tags: [],
         };
       }
 
@@ -97,7 +97,7 @@ export class TimestampVersioning extends BaseVersioningStrategy {
         return {
           version,
           createdAt: new Date().toISOString(),
-          tags: []
+          tags: [],
         };
       }
 
@@ -107,7 +107,7 @@ export class TimestampVersioning extends BaseVersioningStrategy {
         return {
           version,
           createdAt: new Date().toISOString(),
-          tags: []
+          tags: [],
         };
       }
 
@@ -115,22 +115,25 @@ export class TimestampVersioning extends BaseVersioningStrategy {
       const timestampInfo: TimestampInfo = {
         iso: parsedTimestamp.toISOString(),
         unix: Math.floor(parsedTimestamp.getTime() / 1000),
-        readable: this.timestampConfig.format === 'readable' ? timestamp : this.formatTimestamp(parsedTimestamp, 'second', 'readable', 'UTC'),
-        timezone: this.timestampConfig.timezone
+        readable:
+          this.timestampConfig.format === 'readable'
+            ? timestamp
+            : this.formatTimestamp(parsedTimestamp, 'second', 'readable', 'UTC'),
+        timezone: this.timestampConfig.timezone,
       };
 
       return {
         version,
         createdAt: parsedTimestamp.toISOString(),
         tags: [],
-        timestamp: timestampInfo
+        timestamp: timestampInfo,
       };
     } catch (error) {
       this.handleError(error as Error, 'parseVersion');
       return {
         version,
         createdAt: new Date().toISOString(),
-        tags: []
+        tags: [],
       };
     }
   }
@@ -146,16 +149,16 @@ export class TimestampVersioning extends BaseVersioningStrategy {
 
       // Check if both versions have valid timestamps
       if (!metadata1.timestamp || !metadata2.timestamp) {
-      return {
-        result: 'incompatible',
-        details: {
-          compatible: false,
-          breakingChanges: false,
-          newFeatures: false,
-          bugFixes: false,
-          information: `Cannot compare versions: ${version1} and ${version2}`
-        }
-      };
+        return {
+          result: 'incompatible',
+          details: {
+            compatible: false,
+            breakingChanges: false,
+            newFeatures: false,
+            bugFixes: false,
+            information: `Cannot compare versions: ${version1} and ${version2}`,
+          },
+        };
       }
 
       // Compare timestamps
@@ -184,8 +187,8 @@ export class TimestampVersioning extends BaseVersioningStrategy {
           breakingChanges: false,
           newFeatures: result === 'greater',
           bugFixes: false,
-          information: this.generateComparisonInformation(version1, version2, result)
-        }
+          information: this.generateComparisonInformation(version1, version2, result),
+        },
       };
     } catch (error) {
       this.handleError(error as Error, 'compareVersions');
@@ -196,8 +199,8 @@ export class TimestampVersioning extends BaseVersioningStrategy {
           breakingChanges: false,
           newFeatures: false,
           bugFixes: false,
-          information: `Error comparing versions: ${version1} and ${version2}`
-        }
+          information: `Error comparing versions: ${version1} and ${version2}`,
+        },
       };
     }
   }
@@ -238,20 +241,20 @@ export class TimestampVersioning extends BaseVersioningStrategy {
       storage: {
         type: 'local',
         path: './versions',
-        options: {}
+        options: {},
       },
       retention: {
         maxVersions: 10,
         keepForever: [],
         autoCleanup: true,
-        cleanupInterval: 24
+        cleanupInterval: 24,
       },
       comparison: {
         enableDiff: true,
         diffFormat: 'json',
         includeMetrics: true,
-        includeBreakingChanges: true
-      }
+        includeBreakingChanges: true,
+      },
     };
   }
 
@@ -305,7 +308,7 @@ export class TimestampVersioning extends BaseVersioningStrategy {
     if (!timestamp) {
       return null;
     }
-    
+
     try {
       switch (format) {
         case 'iso':
@@ -332,22 +335,22 @@ export class TimestampVersioning extends BaseVersioningStrategy {
     _timezone: string
   ): string {
     const isoString = date.toISOString();
-    
+
     switch (precision) {
       case 'microsecond':
         return isoString;
       case 'millisecond':
         return isoString;
       case 'second':
-        return isoString.substring(0, 19) + 'Z';
+        return `${isoString.substring(0, 19)}Z`;
       case 'minute':
-        return isoString.substring(0, 16) + 'Z';
+        return `${isoString.substring(0, 16)}Z`;
       case 'hour':
-        return isoString.substring(0, 13) + 'Z';
+        return `${isoString.substring(0, 13)}Z`;
       case 'day':
-        return isoString.substring(0, 10) + 'Z';
+        return `${isoString.substring(0, 10)}Z`;
       default:
-        return isoString.substring(0, 19) + 'Z';
+        return `${isoString.substring(0, 19)}Z`;
     }
   }
 
@@ -359,7 +362,7 @@ export class TimestampVersioning extends BaseVersioningStrategy {
     precision: TimestampVersioningConfig['precision']
   ): string {
     const timestamp = date.getTime();
-    
+
     switch (precision) {
       case 'microsecond':
         return (timestamp * 1000).toString();
@@ -459,7 +462,9 @@ export class TimestampVersioning extends BaseVersioningStrategy {
   private parseReadableTimestamp(timestamp: string): Date | null {
     try {
       // Handle formats like "2024-01-15 10:30:45" or "2024-01-15 10:30:45.123"
-      const match = timestamp.match(/^(\d{4})-(\d{2})-(\d{2})\s+(\d{2}):(\d{2}):(\d{2})(?:\.(\d{1,6}))?$/);
+      const match = timestamp.match(
+        /^(\d{4})-(\d{2})-(\d{2})\s+(\d{2}):(\d{2}):(\d{2})(?:\.(\d{1,6}))?$/
+      );
       if (!match) {
         return null;
       }
@@ -495,7 +500,10 @@ export class TimestampVersioning extends BaseVersioningStrategy {
 
       // Remove suffix
       if (this.timestampConfig.suffix && timestamp.endsWith(`-${this.timestampConfig.suffix}`)) {
-        timestamp = timestamp.substring(0, timestamp.length - this.timestampConfig.suffix.length - 1);
+        timestamp = timestamp.substring(
+          0,
+          timestamp.length - this.timestampConfig.suffix.length - 1
+        );
       }
 
       return timestamp;
@@ -519,13 +527,15 @@ export class TimestampVersioning extends BaseVersioningStrategy {
   /**
    * Merge configuration with defaults
    */
-  private mergeTimestampDefaults(config: Partial<TimestampVersioningConfig>): TimestampVersioningConfig {
+  private mergeTimestampDefaults(
+    config: Partial<TimestampVersioningConfig>
+  ): TimestampVersioningConfig {
     return {
       format: config.format || 'iso',
       precision: config.precision || 'second',
       timezone: config.timezone || 'UTC',
       prefix: config.prefix || '',
-      suffix: config.suffix || ''
+      suffix: config.suffix || '',
     };
   }
 }

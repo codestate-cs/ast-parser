@@ -1,6 +1,6 @@
 /**
  * Type Extractor for extracting and analyzing TypeScript type information
- * 
+ *
  * This module provides comprehensive type extraction capabilities including:
  * - TypeScript type information extraction from AST nodes
  * - Complex type parsing (generics, unions, intersections, etc.)
@@ -13,7 +13,7 @@ import { ASTNode } from '../../types/core';
 /**
  * TypeScript type kinds
  */
-export type TypeKind = 
+export type TypeKind =
   | 'string'
   | 'number'
   | 'boolean'
@@ -43,8 +43,7 @@ export type TypeKind =
   | 'import'
   | 'export'
   | 'namespace'
-  | 'module'
-  | 'unknown';
+  | 'module';
 
 /**
  * Type parameter information
@@ -189,7 +188,7 @@ export interface TypeExtractionOptions {
 
 /**
  * Type Extractor class
- * 
+ *
  * Provides comprehensive type extraction and analysis capabilities
  */
 export class TypeExtractor {
@@ -205,13 +204,13 @@ export class TypeExtractor {
       extractDependencies: true,
       includeBuiltIn: false,
       customTypeKinds: [],
-      ...options
+      ...options,
     };
   }
 
   /**
    * Extract type information from AST nodes
-   * 
+   *
    * @param nodes - AST nodes to extract types from
    * @returns Type extraction result
    */
@@ -224,7 +223,7 @@ export class TypeExtractor {
     for (const node of nodes) {
       const nodeTypes = this.extractFromNode(node);
       types.push(...nodeTypes);
-      
+
       if (node.filePath) {
         filesProcessed++;
         totalLines += this.getNodeLineCount(node);
@@ -246,14 +245,14 @@ export class TypeExtractor {
       metadata: {
         filesProcessed,
         totalLines,
-        extractionTime: Math.max(1, Date.now() - startTime)
-      }
+        extractionTime: Math.max(1, Date.now() - startTime),
+      },
     };
   }
 
   /**
    * Extract type information from a single AST node
-   * 
+   *
    * @param node - AST node to extract types from
    * @returns Array of type information
    */
@@ -261,7 +260,7 @@ export class TypeExtractor {
     const types: TypeInfo[] = [];
 
     // Extract type information from node properties
-    if (node.properties && node.properties['typeInfo']) {
+    if (node.properties?.['typeInfo']) {
       const typeInfo = node.properties['typeInfo'] as any;
       const extractedType = this.parseTypeInfo(typeInfo, node);
       if (extractedType && this.shouldIncludeType(extractedType)) {
@@ -280,7 +279,7 @@ export class TypeExtractor {
 
   /**
    * Parse type information from node properties
-   * 
+   *
    * @param typeInfo - Raw type information
    * @param node - AST node
    * @returns Parsed type information
@@ -315,13 +314,13 @@ export class TypeExtractor {
       lineNumber: this.calculateLineNumber(node.start),
       exported: this.isTypeExported(typeInfo, node),
       public: this.isTypePublic(typeInfo, node),
-      dependencies
+      dependencies,
     };
   }
 
   /**
    * Determine the type kind from type information
-   * 
+   *
    * @param typeInfo - Type information
    * @param node - AST node
    * @returns Type kind
@@ -355,7 +354,7 @@ export class TypeExtractor {
 
   /**
    * Extract type definition string
-   * 
+   *
    * @param typeInfo - Type information
    * @returns Type definition string
    */
@@ -377,7 +376,7 @@ export class TypeExtractor {
 
   /**
    * Extract type parameters
-   * 
+   *
    * @param typeInfo - Type information
    * @returns Array of type parameters
    */
@@ -390,13 +389,13 @@ export class TypeExtractor {
       name: param.name || 'unknown',
       constraint: param.constraint,
       defaultType: param.defaultType,
-      documentation: param.documentation
+      documentation: param.documentation,
     }));
   }
 
   /**
    * Extract type properties
-   * 
+   *
    * @param typeInfo - Type information
    * @returns Array of type properties
    */
@@ -411,13 +410,13 @@ export class TypeExtractor {
       optional: prop.optional || false,
       readonly: prop.readonly || false,
       documentation: prop.documentation,
-      metadata: prop.metadata || {}
+      metadata: prop.metadata || {},
     }));
   }
 
   /**
    * Extract type methods
-   * 
+   *
    * @param typeInfo - Type information
    * @returns Array of type methods
    */
@@ -435,13 +434,13 @@ export class TypeExtractor {
       static: method.static || false,
       abstract: method.abstract || false,
       documentation: method.documentation,
-      metadata: method.metadata || {}
+      metadata: method.metadata || {},
     }));
   }
 
   /**
    * Extract type documentation
-   * 
+   *
    * @param typeInfo - Type information
    * @returns Type documentation
    */
@@ -463,7 +462,7 @@ export class TypeExtractor {
 
   /**
    * Extract type metadata
-   * 
+   *
    * @param typeInfo - Type information
    * @returns Type metadata
    */
@@ -489,7 +488,7 @@ export class TypeExtractor {
 
   /**
    * Extract type dependencies
-   * 
+   *
    * @param typeInfo - Type information
    * @returns Array of dependency names
    */
@@ -521,7 +520,7 @@ export class TypeExtractor {
 
   /**
    * Check if type is exported
-   * 
+   *
    * @param typeInfo - Type information
    * @param node - AST node
    * @returns Whether type is exported
@@ -531,7 +530,7 @@ export class TypeExtractor {
       return typeInfo.isExported;
     }
 
-    if (node.properties && node.properties['exported']) {
+    if (node.properties?.['exported']) {
       return node.properties['exported'] as boolean;
     }
 
@@ -540,7 +539,7 @@ export class TypeExtractor {
 
   /**
    * Check if type is public
-   * 
+   *
    * @param typeInfo - Type information
    * @param node - AST node
    * @returns Whether type is public
@@ -563,7 +562,7 @@ export class TypeExtractor {
 
   /**
    * Check if type should be included based on options
-   * 
+   *
    * @param typeInfo - Type information
    * @returns Whether type should be included
    */
@@ -593,15 +592,32 @@ export class TypeExtractor {
 
   /**
    * Check if type is a built-in type
-   * 
+   *
    * @param typeName - Type name
    * @returns Whether type is built-in
    */
   private isBuiltInType(typeName: string): boolean {
     const builtInTypes = [
-      'string', 'number', 'boolean', 'any', 'unknown', 'never', 'void',
-      'null', 'undefined', 'object', 'Array', 'Function', 'Date', 'RegExp',
-      'Error', 'Promise', 'Map', 'Set', 'WeakMap', 'WeakSet'
+      'string',
+      'number',
+      'boolean',
+      'any',
+      'unknown',
+      'never',
+      'void',
+      'null',
+      'undefined',
+      'object',
+      'Array',
+      'Function',
+      'Date',
+      'RegExp',
+      'Error',
+      'Promise',
+      'Map',
+      'Set',
+      'WeakMap',
+      'WeakSet',
     ];
 
     return builtInTypes.includes(typeName);
@@ -609,7 +625,7 @@ export class TypeExtractor {
 
   /**
    * Calculate line number from position
-   * 
+   *
    * @param position - Character position
    * @returns Line number
    */
@@ -619,7 +635,7 @@ export class TypeExtractor {
 
   /**
    * Get line count for a node
-   * 
+   *
    * @param node - AST node
    * @returns Number of lines
    */
@@ -629,7 +645,7 @@ export class TypeExtractor {
 
   /**
    * Update extraction options
-   * 
+   *
    * @param options - New options to merge
    */
   public updateOptions(options: Partial<TypeExtractionOptions>): void {
@@ -638,7 +654,7 @@ export class TypeExtractor {
 
   /**
    * Get current extraction options
-   * 
+   *
    * @returns Current options
    */
   public getOptions(): TypeExtractionOptions {

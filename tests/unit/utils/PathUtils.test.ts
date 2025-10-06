@@ -10,7 +10,7 @@ jest.mock('../../../src/utils/file/FileUtils');
 describe('PathUtils', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    
+
     // Mock FileUtils methods
     (FileUtils.getExtension as jest.Mock).mockImplementation((path: string) => {
       const lowerPath = path.toLowerCase();
@@ -49,19 +49,19 @@ describe('PathUtils', () => {
     (FileUtils.relative as jest.Mock).mockImplementation((from: string, to: string) => {
       // Simple relative path calculation for tests
       if (from === to) return '';
-      if (to.startsWith(from + '/')) {
+      if (to.startsWith(`${from}/`)) {
         return to.substring(from.length + 1);
       }
-      
+
       // Special case: if from is root and to is a file in root
       if (from === '/' && to.startsWith('/') && !to.substring(1).includes('/')) {
         return to.substring(1);
       }
-      
+
       // Handle cases where we need to go up directories
       const fromParts = from.split('/');
       const toParts = to.split('/');
-      
+
       // Find common prefix
       let commonLength = 0;
       for (let i = 0; i < Math.min(fromParts.length, toParts.length); i++) {
@@ -71,11 +71,11 @@ describe('PathUtils', () => {
           break;
         }
       }
-      
+
       // Calculate relative path
       const upLevels = fromParts.length - commonLength;
       const relativeParts = toParts.slice(commonLength);
-      
+
       if (upLevels === 0) {
         return relativeParts.join('/');
       } else {
@@ -92,7 +92,6 @@ describe('PathUtils', () => {
   });
 
   describe('file type detection', () => {
-
     describe('isTypeScriptFile', () => {
       it('should detect TypeScript files', () => {
         expect(PathUtils.isTypeScriptFile('test.ts')).toBe(true);
@@ -363,35 +362,59 @@ describe('PathUtils', () => {
 
     describe('getImportPath', () => {
       it('should get import path between files', () => {
-        const importPath = PathUtils.getImportPath('/path/to/file1.ts', '/path/to/file2.ts', '/path');
+        const importPath = PathUtils.getImportPath(
+          '/path/to/file1.ts',
+          '/path/to/file2.ts',
+          '/path'
+        );
         expect(importPath).toBe('./file2');
       });
 
       it('should handle relative imports', () => {
-        const importPath = PathUtils.getImportPath('/path/to/file1.ts', '/path/other/file2.ts', '/path');
+        const importPath = PathUtils.getImportPath(
+          '/path/to/file1.ts',
+          '/path/other/file2.ts',
+          '/path'
+        );
         expect(importPath).toBe('../other/file2');
       });
 
       it('should handle same directory imports', () => {
-        const importPath = PathUtils.getImportPath('/path/to/file1.ts', '/path/to/file2.ts', '/path');
+        const importPath = PathUtils.getImportPath(
+          '/path/to/file1.ts',
+          '/path/to/file2.ts',
+          '/path'
+        );
         expect(importPath).toBe('./file2');
       });
 
       it('should handle nested imports', () => {
-        const importPath = PathUtils.getImportPath('/path/to/file1.ts', '/path/to/nested/file2.ts', '/path');
+        const importPath = PathUtils.getImportPath(
+          '/path/to/file1.ts',
+          '/path/to/nested/file2.ts',
+          '/path'
+        );
         expect(importPath).toBe('./nested/file2');
       });
 
       it('should handle paths that do not start with ../ or ./ (else branch)', () => {
         // Test case where the path doesn't start with ../ or ./
         // This should trigger the else branch: return `./${withoutExt}`;
-        const importPath = PathUtils.getImportPath('/path/to/file1.ts', '/path/to/file2.ts', '/path');
+        const importPath = PathUtils.getImportPath(
+          '/path/to/file1.ts',
+          '/path/to/file2.ts',
+          '/path'
+        );
         expect(importPath).toBe('./file2');
       });
 
       it('should handle absolute paths (else branch)', () => {
         // Test case with absolute paths that don't start with ../ or ./
-        const importPath = PathUtils.getImportPath('/absolute/path/to/file1.ts', '/absolute/path/to/file2.ts', '/absolute');
+        const importPath = PathUtils.getImportPath(
+          '/absolute/path/to/file1.ts',
+          '/absolute/path/to/file2.ts',
+          '/absolute'
+        );
         expect(importPath).toBe('./file2');
       });
     });
@@ -489,9 +512,15 @@ describe('PathUtils', () => {
       });
 
       it('should handle complex pattern combinations', () => {
-        expect(PathUtils.shouldInclude('/path/to/test.ts', ['**/*.ts'], ['**/test/**'])).toBe(false);
-        expect(PathUtils.shouldInclude('/path/to/src/file.ts', ['**/*.ts'], ['**/test/**'])).toBe(true);
-        expect(PathUtils.shouldInclude('/path/to/lib/file.js', ['**/*.ts'], ['**/test/**'])).toBe(false);
+        expect(PathUtils.shouldInclude('/path/to/test.ts', ['**/*.ts'], ['**/test/**'])).toBe(
+          false
+        );
+        expect(PathUtils.shouldInclude('/path/to/src/file.ts', ['**/*.ts'], ['**/test/**'])).toBe(
+          true
+        );
+        expect(PathUtils.shouldInclude('/path/to/lib/file.js', ['**/*.ts'], ['**/test/**'])).toBe(
+          false
+        );
       });
     });
   });
@@ -540,18 +569,33 @@ describe('PathUtils', () => {
       it('should handle very long paths', () => {
         const longPath1 = '/very/long/path/with/many/directories/and/subdirectories/file1.ts';
         const longPath2 = '/very/long/path/with/many/directories/and/subdirectories/file2.ts';
-        expect(PathUtils.getCommonPrefix([longPath1, longPath2])).toBe('/very/long/path/with/many/directories/and/subdirectories');
+        expect(PathUtils.getCommonPrefix([longPath1, longPath2])).toBe(
+          '/very/long/path/with/many/directories/and/subdirectories'
+        );
       });
 
       it('should handle special characters in paths', () => {
-        expect(PathUtils.getCommonPrefix(['/path with spaces/file1.ts', '/path with spaces/file2.ts'])).toBe('/path with spaces');
-        expect(PathUtils.getCommonPrefix(['/path-with-dashes/file1.ts', '/path-with-dashes/file2.ts'])).toBe('/path-with-dashes');
-        expect(PathUtils.getCommonPrefix(['/path_with_underscores/file1.ts', '/path_with_underscores/file2.ts'])).toBe('/path_with_underscores');
+        expect(
+          PathUtils.getCommonPrefix(['/path with spaces/file1.ts', '/path with spaces/file2.ts'])
+        ).toBe('/path with spaces');
+        expect(
+          PathUtils.getCommonPrefix(['/path-with-dashes/file1.ts', '/path-with-dashes/file2.ts'])
+        ).toBe('/path-with-dashes');
+        expect(
+          PathUtils.getCommonPrefix([
+            '/path_with_underscores/file1.ts',
+            '/path_with_underscores/file2.ts',
+          ])
+        ).toBe('/path_with_underscores');
       });
 
       it('should handle unicode characters in paths', () => {
-        expect(PathUtils.getCommonPrefix(['/path/你好/file1.ts', '/path/你好/file2.ts'])).toBe('/path/你好');
-        expect(PathUtils.getCommonPrefix(['/path/🌍/file1.ts', '/path/🌍/file2.ts'])).toBe('/path/🌍');
+        expect(PathUtils.getCommonPrefix(['/path/你好/file1.ts', '/path/你好/file2.ts'])).toBe(
+          '/path/你好'
+        );
+        expect(PathUtils.getCommonPrefix(['/path/🌍/file1.ts', '/path/🌍/file2.ts'])).toBe(
+          '/path/🌍'
+        );
       });
     });
 
@@ -580,13 +624,19 @@ describe('PathUtils', () => {
 
     describe('import path generation edge cases', () => {
       it('should handle files with special characters', () => {
-        expect(PathUtils.getImportPath('/path/to/file-name.ts', '/path/to/file_name.ts', '/path')).toBe('./file_name');
-        expect(PathUtils.getImportPath('/path/to/file.name.ts', '/path/to/file-name.ts', '/path')).toBe('./file-name');
+        expect(
+          PathUtils.getImportPath('/path/to/file-name.ts', '/path/to/file_name.ts', '/path')
+        ).toBe('./file_name');
+        expect(
+          PathUtils.getImportPath('/path/to/file.name.ts', '/path/to/file-name.ts', '/path')
+        ).toBe('./file-name');
       });
 
       it('should handle files with unicode characters', () => {
         expect(PathUtils.getImportPath('/path/to/你好.ts', '/path/to/🌍.ts', '/path')).toBe('./🌍');
-        expect(PathUtils.getImportPath('/path/to/🌍.ts', '/path/to/你好.ts', '/path')).toBe('./你好');
+        expect(PathUtils.getImportPath('/path/to/🌍.ts', '/path/to/你好.ts', '/path')).toBe(
+          './你好'
+        );
       });
 
       it('should handle very deep directory structures', () => {
@@ -604,7 +654,7 @@ describe('PathUtils', () => {
       });
 
       it('should handle very long patterns', () => {
-        const longPattern = 'a'.repeat(100) + '*';
+        const longPattern = `${'a'.repeat(100)}*`;
         expect(PathUtils.matchesPatterns('/path/to/file.ts', [longPattern])).toBe(false);
       });
 
@@ -648,8 +698,12 @@ describe('PathUtils', () => {
       });
 
       it('should handle getImportPath with relative paths starting with ./ (line 289)', () => {
-        expect(PathUtils.getImportPath('/path/to/file1.ts', '/path/to/file2.ts', '/path')).toBe('./file2');
-        expect(PathUtils.getImportPath('/path/to/file1.ts', '/path/to/subdir/file2.ts', '/path')).toBe('./subdir/file2');
+        expect(PathUtils.getImportPath('/path/to/file1.ts', '/path/to/file2.ts', '/path')).toBe(
+          './file2'
+        );
+        expect(
+          PathUtils.getImportPath('/path/to/file1.ts', '/path/to/subdir/file2.ts', '/path')
+        ).toBe('./subdir/file2');
       });
 
       it('should handle isWithinDepth method (line 191)', () => {
@@ -671,7 +725,7 @@ describe('PathUtils', () => {
         (FileUtils.relative as jest.Mock).mockImplementationOnce((_from: string, _to: string) => {
           return './file2';
         });
-        
+
         const result = PathUtils.getImportPath('/path/to/file1.ts', '/path/to/file2.ts', '/path');
         expect(result).toBe('./file2');
       });

@@ -24,7 +24,7 @@ export class ProjectNaming extends NamingStrategy {
       separator: '-',
       maxLength: 255,
       format: '{prefix}{name}{version}{timestamp}{suffix}',
-      ...options
+      ...options,
     });
   }
 
@@ -53,7 +53,7 @@ export class ProjectNaming extends NamingStrategy {
     } = {
       prefix: mergedOptions.prefix || '',
       name: projectName,
-      suffix: mergedOptions.suffix || ''
+      suffix: mergedOptions.suffix || '',
     };
 
     // Add version if enabled
@@ -109,7 +109,7 @@ export class ProjectNaming extends NamingStrategy {
     } = {
       prefix: mergedOptions.prefix || '',
       name: projectName,
-      suffix: '-output'
+      suffix: '-output',
     };
 
     // Add version if enabled
@@ -163,7 +163,30 @@ export class ProjectNaming extends NamingStrategy {
     }
 
     // Check for reserved names (Windows)
-    const reservedNames = ['CON', 'PRN', 'AUX', 'NUL', 'COM1', 'COM2', 'COM3', 'COM4', 'COM5', 'COM6', 'COM7', 'COM8', 'COM9', 'LPT1', 'LPT2', 'LPT3', 'LPT4', 'LPT5', 'LPT6', 'LPT7', 'LPT8', 'LPT9'];
+    const reservedNames = [
+      'CON',
+      'PRN',
+      'AUX',
+      'NUL',
+      'COM1',
+      'COM2',
+      'COM3',
+      'COM4',
+      'COM5',
+      'COM6',
+      'COM7',
+      'COM8',
+      'COM9',
+      'LPT1',
+      'LPT2',
+      'LPT3',
+      'LPT4',
+      'LPT5',
+      'LPT6',
+      'LPT7',
+      'LPT8',
+      'LPT9',
+    ];
     if (reservedNames.includes(name.toUpperCase())) {
       return false;
     }
@@ -218,9 +241,9 @@ export class ProjectNaming extends NamingStrategy {
     suffix?: string;
   }): string {
     const format = this.options.format || '{prefix}{name}{version}{timestamp}{suffix}';
-    
+
     let formatted = format;
-    
+
     // Replace placeholders with actual values
     formatted = formatted.replace('{prefix}', parts.prefix || '');
     formatted = formatted.replace('{name}', parts.name || '');

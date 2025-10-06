@@ -20,7 +20,7 @@ describe('EnhancedTypeScriptParser', () => {
       size: 1024,
       lines: 50,
       lastModified: new Date(),
-      hash: 'test-hash'
+      hash: 'test-hash',
     };
 
     mockOptions = {
@@ -29,13 +29,13 @@ describe('EnhancedTypeScriptParser', () => {
         excludePatterns: ['**/*.test.ts', '**/*.spec.ts'],
         maxDepth: 10,
         includeTestFiles: false,
-        includeDocFiles: false
+        includeDocFiles: false,
       },
       mode: 'standard' as any,
       output: {} as any,
       documentation: {} as any,
       performance: {} as any,
-      cache: {} as any
+      cache: {} as any,
     };
 
     parser = new EnhancedTypeScriptParser(mockOptions);
@@ -65,7 +65,7 @@ describe('EnhancedTypeScriptParser', () => {
       expect(result).toBeDefined();
       expect(result.nodes.length).toBeGreaterThan(0);
       expect(result.relations.length).toBeGreaterThan(0);
-      
+
       // Should have the class node
       const classNode = result.nodes.find(n => n.name === 'TestClass');
       expect(classNode).toBeDefined();
@@ -88,7 +88,7 @@ describe('EnhancedTypeScriptParser', () => {
       // Then: Should parse successfully
       expect(result).toBeDefined();
       expect(result.nodes.length).toBeGreaterThan(0);
-      
+
       // Should have the interface node
       const interfaceNode = result.nodes.find(n => n.name === 'TestInterface');
       expect(interfaceNode).toBeDefined();
@@ -108,12 +108,11 @@ describe('EnhancedTypeScriptParser', () => {
       // Then: Should parse successfully
       expect(result).toBeDefined();
       expect(result.nodes.length).toBeGreaterThan(0);
-      
+
       // Should have the generic interface node
       const genericNode = result.nodes.find(n => n.name === 'GenericInterface');
       expect(genericNode).toBeDefined();
     });
-
 
     it('should parse generic types from file content', async () => {
       // Given: A generic interface content
@@ -122,16 +121,20 @@ describe('EnhancedTypeScriptParser', () => {
           value: T;
         }
       `;
-      
-      const mockFileInfoCopy = {...mockFileInfo, name: 'testfile.ts', path: '/Users/karthik/codestate/ast-parser/tests/unit/parsers/testfile.ts'};
-      
+
+      const mockFileInfoCopy = {
+        ...mockFileInfo,
+        name: 'testfile.ts',
+        path: '/Users/karthik/codestate/ast-parser/tests/unit/parsers/testfile.ts',
+      };
+
       // When: Parsing the file with content
       const result = await parser.parseFile(mockFileInfoCopy, content);
 
       // Then: Should parse successfully
       expect(result).toBeDefined();
       expect(result.nodes.length).toBeGreaterThan(0);
-      
+
       // Should have the generic interface node
       const genericNode = result.nodes.find(n => n.name === 'GenericInterface');
       expect(genericNode).toBeDefined();
@@ -155,7 +158,7 @@ describe('EnhancedTypeScriptParser', () => {
       // Then: Should parse successfully
       expect(result).toBeDefined();
       expect(result.nodes.length).toBeGreaterThan(0);
-      
+
       // Should have both class nodes
       const baseClass = result.nodes.find(n => n.name === 'BaseClass');
       const derivedClass = result.nodes.find(n => n.name === 'DerivedClass');
@@ -183,7 +186,7 @@ describe('EnhancedTypeScriptParser', () => {
       // Then: Should parse successfully
       expect(result).toBeDefined();
       expect(result.nodes.length).toBeGreaterThan(0);
-      
+
       // Should have the function node with JSDoc
       const functionNode = result.nodes.find(n => n.name === 'add') as TypeScriptASTNode;
       expect(functionNode).toBeDefined();
@@ -231,13 +234,13 @@ describe('EnhancedTypeScriptParser', () => {
           excludePatterns: ['**/*.test.ts'],
           maxDepth: 5,
           includeTestFiles: false,
-          includeDocFiles: true
+          includeDocFiles: true,
         },
         mode: 'standard' as any,
         output: {} as any,
         documentation: {} as any,
         performance: {} as any,
-        cache: {} as any
+        cache: {} as any,
       };
 
       const customParser = new EnhancedTypeScriptParser(customOptions);
@@ -249,7 +252,7 @@ describe('EnhancedTypeScriptParser', () => {
       // Then: Should respect options
       expect(result).toBeDefined();
       expect(result.nodes.length).toBeGreaterThan(0);
-      
+
       // Should have the class node
       const classNode = result.nodes.find(n => n.name === 'TestClass');
       expect(classNode).toBeDefined();
@@ -263,7 +266,7 @@ describe('EnhancedTypeScriptParser', () => {
         output: {} as any,
         documentation: {} as any,
         performance: {} as any,
-        cache: {} as any
+        cache: {} as any,
       };
 
       const emptyParser = new EnhancedTypeScriptParser(emptyOptions);
@@ -275,7 +278,7 @@ describe('EnhancedTypeScriptParser', () => {
       // Then: Should use defaults
       expect(result).toBeDefined();
       expect(result.nodes.length).toBeGreaterThan(0);
-      
+
       // Should have the class node
       const classNode = result.nodes.find(n => n.name === 'TestClass');
       expect(classNode).toBeDefined();
@@ -337,10 +340,12 @@ describe('EnhancedTypeScriptParser', () => {
       // Then: Should extract detailed type information
       expect(result).toBeDefined();
       expect(result.nodes.length).toBeGreaterThan(0);
-      
-      const interfaceNode = result.nodes.find(n => n.name === 'ComplexInterface') as TypeScriptASTNode;
+
+      const interfaceNode = result.nodes.find(
+        n => n.name === 'ComplexInterface'
+      ) as TypeScriptASTNode;
       const classNode = result.nodes.find(n => n.name === 'ComplexClass') as TypeScriptASTNode;
-      
+
       expect(interfaceNode).toBeDefined();
       expect(classNode).toBeDefined();
       expect(interfaceNode?.typeInfo).toBeDefined();
@@ -362,7 +367,7 @@ describe('EnhancedTypeScriptParser', () => {
       // Then: Should handle generic constraints
       expect(result).toBeDefined();
       expect(result.nodes.length).toBeGreaterThan(0);
-      
+
       const classNode = result.nodes.find(n => n.name === 'GenericClass') as TypeScriptASTNode;
       expect(classNode).toBeDefined();
     });
@@ -391,7 +396,7 @@ describe('EnhancedTypeScriptParser', () => {
       // Then: Should extract detailed method and property information
       expect(result).toBeDefined();
       expect(result.nodes.length).toBeGreaterThan(0);
-      
+
       const classNode = result.nodes.find(n => n.name === 'DetailedClass') as TypeScriptASTNode;
       expect(classNode).toBeDefined();
       expect(classNode?.typeInfo?.properties).toBeDefined();
@@ -416,7 +421,7 @@ describe('EnhancedTypeScriptParser', () => {
       // Then: Should detect inheritance relationships
       expect(result).toBeDefined();
       expect(result.nodes.length).toBeGreaterThan(0);
-      
+
       const derivedClass = result.nodes.find(n => n.name === 'DerivedClass') as TypeScriptASTNode;
       expect(derivedClass).toBeDefined();
       // Note: Inheritance detection may not be fully implemented yet
@@ -441,7 +446,7 @@ describe('EnhancedTypeScriptParser', () => {
       // Then: Should detect interface implementation
       expect(result).toBeDefined();
       expect(result.nodes.length).toBeGreaterThan(0);
-      
+
       const circle = result.nodes.find(n => n.name === 'Circle') as TypeScriptASTNode;
       expect(circle).toBeDefined();
       // Note: Interface implementation detection may not be fully implemented yet
@@ -475,7 +480,7 @@ describe('EnhancedTypeScriptParser', () => {
       // Then: Should extract comprehensive JSDoc
       expect(result).toBeDefined();
       expect(result.nodes.length).toBeGreaterThan(0);
-      
+
       const functionNode = result.nodes.find(n => n.name === 'add') as TypeScriptASTNode;
       expect(functionNode).toBeDefined();
       expect(functionNode?.jsdoc).toBeDefined();
@@ -506,7 +511,7 @@ describe('EnhancedTypeScriptParser', () => {
       // Then: Should extract JSDoc for class
       expect(result).toBeDefined();
       expect(result.nodes.length).toBeGreaterThan(0);
-      
+
       const classNode = result.nodes.find(n => n.name === 'User') as TypeScriptASTNode;
       expect(classNode).toBeDefined();
       expect(classNode?.jsdoc).toBeDefined();
@@ -571,7 +576,7 @@ describe('EnhancedTypeScriptParser', () => {
       // Then: Should handle decorators
       expect(result).toBeDefined();
       expect(result.nodes.length).toBeGreaterThan(0);
-      
+
       const classNode = result.nodes.find(n => n.name === 'TestComponent') as TypeScriptASTNode;
       expect(classNode).toBeDefined();
       expect(classNode?.decorators).toBeDefined();
@@ -580,7 +585,7 @@ describe('EnhancedTypeScriptParser', () => {
     it('should handle source file creation failure', async () => {
       // Given: Invalid TypeScript content that causes source file creation to fail
       const content = 'invalid syntax that will cause parsing to fail';
-      
+
       // Mock the createProgram method to simulate failure
       const originalCreateProgram = parser['createProgram'];
       parser['createProgram'] = jest.fn().mockImplementation(() => {
@@ -597,13 +602,13 @@ describe('EnhancedTypeScriptParser', () => {
     it('should handle type checker initialization failure', async () => {
       // Given: Valid TypeScript content
       const content = 'class TestClass { method(): void {} }';
-      
+
       // Mock the program to return null source file
       const originalCreateProgram = parser['createProgram'];
       parser['createProgram'] = jest.fn().mockImplementation(() => {
         parser['program'] = {
           getSourceFile: () => null,
-          getTypeChecker: () => null
+          getTypeChecker: () => null,
         } as any;
       });
 
@@ -739,7 +744,7 @@ describe('EnhancedTypeScriptParser', () => {
       // Then: Should extract names correctly
       expect(result).toBeDefined();
       expect(result.nodes.length).toBeGreaterThan(0);
-      
+
       const classNode = result.nodes.find(n => n.name === 'NamedClass');
       const interfaceNode = result.nodes.find(n => n.name === 'NamedInterface');
       const functionNode = result.nodes.find(n => n.name === 'namedFunction');
@@ -748,7 +753,7 @@ describe('EnhancedTypeScriptParser', () => {
       const enumNode = result.nodes.find(n => n.name === 'NamedEnum');
       const namespaceNode = result.nodes.find(n => n.name === 'NamedNamespace');
       const moduleNode = result.nodes.find(n => n.name === 'NamedModule');
-      
+
       expect(classNode).toBeDefined();
       expect(interfaceNode).toBeDefined();
       expect(functionNode).toBeDefined();
@@ -781,7 +786,7 @@ describe('EnhancedTypeScriptParser', () => {
       // Then: Should extract decorators
       expect(result).toBeDefined();
       expect(result.nodes.length).toBeGreaterThan(0);
-      
+
       const classNode = result.nodes.find(n => n.name === 'TestComponent') as TypeScriptASTNode;
       expect(classNode).toBeDefined();
       expect(classNode?.decorators).toBeDefined();
@@ -818,11 +823,11 @@ describe('EnhancedTypeScriptParser', () => {
       // Then: Should extract JSDoc information
       expect(result).toBeDefined();
       expect(result.nodes.length).toBeGreaterThan(0);
-      
+
       const functionNode = result.nodes.find(n => n.name === 'testFunction') as TypeScriptASTNode;
       expect(functionNode).toBeDefined();
       expect(functionNode?.jsdoc).toBeDefined();
-      
+
       if (functionNode?.jsdoc) {
         expect(functionNode.jsdoc.summary).toBeDefined();
         expect(functionNode.jsdoc.parameters).toBeDefined();
@@ -1011,7 +1016,7 @@ describe('EnhancedTypeScriptParser', () => {
       // Then: Should handle JSDoc edge cases
       expect(result).toBeDefined();
       expect(result.nodes.length).toBeGreaterThan(0);
-      
+
       const functionNode = result.nodes.find(n => n.name === 'testFunction') as TypeScriptASTNode;
       expect(functionNode).toBeDefined();
       expect(functionNode?.jsdoc).toBeDefined();
@@ -1154,7 +1159,7 @@ describe('EnhancedTypeScriptParser', () => {
       // Then: Should handle decorator edge cases
       expect(result).toBeDefined();
       expect(result.nodes.length).toBeGreaterThan(0);
-      
+
       const classNode = result.nodes.find(n => n.name === 'TestClass') as TypeScriptASTNode;
       expect(classNode).toBeDefined();
       expect(classNode?.decorators).toBeDefined();
@@ -1284,14 +1289,14 @@ describe('EnhancedTypeScriptParser', () => {
       // Then: Should handle all edge cases
       expect(result).toBeDefined();
       expect(result.nodes.length).toBeGreaterThan(0);
-      
+
       // Verify specific nodes exist
       const testClass = result.nodes.find(n => n.name === 'TestClass');
       const implementsClass = result.nodes.find(n => n.name === 'ImplementsClass');
       const testFunction = result.nodes.find(n => n.name === 'testFunction');
       const computedClass = result.nodes.find(n => n.name === 'ComputedClass');
       const multiDecoratedClass = result.nodes.find(n => n.name === 'MultiDecoratedClass');
-      
+
       expect(testClass).toBeDefined();
       expect(implementsClass).toBeDefined();
       expect(testFunction).toBeDefined();
@@ -1310,7 +1315,7 @@ describe('EnhancedTypeScriptParser', () => {
       // Mock specific methods to trigger error paths
       const originalCreateProgram = parser['createProgram'];
       const originalParseASTNodes = parser['parseASTNodes'];
-      
+
       // Test error handling in createProgram
       parser['createProgram'] = jest.fn().mockImplementation(() => {
         // Simulate error in compiler host
@@ -1322,7 +1327,7 @@ describe('EnhancedTypeScriptParser', () => {
 
       // Restore and test other error paths
       parser['createProgram'] = originalCreateProgram;
-      
+
       // Test error handling in parseASTNodes
       parser['parseASTNodes'] = jest.fn().mockImplementation(() => {
         throw new Error('AST parsing error');
@@ -1387,10 +1392,12 @@ describe('EnhancedTypeScriptParser', () => {
       // Then: Should handle JSDoc edge cases
       expect(result).toBeDefined();
       expect(result.nodes.length).toBeGreaterThan(0);
-      
+
       const testFunction = result.nodes.find(n => n.name === 'testFunction') as TypeScriptASTNode;
-      const simpleFunction = result.nodes.find(n => n.name === 'simpleFunction') as TypeScriptASTNode;
-      
+      const simpleFunction = result.nodes.find(
+        n => n.name === 'simpleFunction'
+      ) as TypeScriptASTNode;
+
       expect(testFunction).toBeDefined();
       expect(simpleFunction).toBeDefined();
     });
@@ -1448,7 +1455,7 @@ describe('EnhancedTypeScriptParser', () => {
       // Then: Should handle all node naming scenarios
       expect(result).toBeDefined();
       expect(result.nodes.length).toBeGreaterThan(0);
-      
+
       // Verify specific nodes exist
       const namedClass = result.nodes.find(n => n.name === 'NamedClass');
       const namedInterface = result.nodes.find(n => n.name === 'NamedInterface');
@@ -1458,7 +1465,7 @@ describe('EnhancedTypeScriptParser', () => {
       const namedVariable = result.nodes.find(n => n.name === 'namedVariable');
       const namedType = result.nodes.find(n => n.name === 'NamedType');
       const namedEnum = result.nodes.find(n => n.name === 'NamedEnum');
-      
+
       expect(namedClass).toBeDefined();
       expect(namedInterface).toBeDefined();
       expect(namedFunction).toBeDefined();
@@ -1501,18 +1508,20 @@ describe('EnhancedTypeScriptParser', () => {
       // Then: Should handle decorator edge cases
       expect(result).toBeDefined();
       expect(result.nodes.length).toBeGreaterThan(0);
-      
+
       const testComponent = result.nodes.find(n => n.name === 'TestComponent') as TypeScriptASTNode;
       const plainClass = result.nodes.find(n => n.name === 'PlainClass') as TypeScriptASTNode;
-      const decoratedFunction = result.nodes.find(n => n.name === 'decoratedFunction') as TypeScriptASTNode;
-      
+      const decoratedFunction = result.nodes.find(
+        n => n.name === 'decoratedFunction'
+      ) as TypeScriptASTNode;
+
       expect(testComponent).toBeDefined();
       expect(plainClass).toBeDefined();
       expect(decoratedFunction).toBeDefined();
-      
+
       // TestComponent should have decorators
       expect(testComponent?.decorators).toBeDefined();
-      
+
       // PlainClass should not have decorators
       expect(plainClass?.decorators).toBeDefined();
     });
@@ -1698,10 +1707,12 @@ describe('EnhancedTypeScriptParser', () => {
       // Then: Should handle JSDoc scenarios
       expect(result).toBeDefined();
       expect(result.nodes.length).toBeGreaterThan(0);
-      
+
       const testFunction = result.nodes.find(n => n.name === 'testFunction') as TypeScriptASTNode;
-      const simpleFunction = result.nodes.find(n => n.name === 'simpleFunction') as TypeScriptASTNode;
-      
+      const simpleFunction = result.nodes.find(
+        n => n.name === 'simpleFunction'
+      ) as TypeScriptASTNode;
+
       expect(testFunction).toBeDefined();
       expect(simpleFunction).toBeDefined();
     });
@@ -1759,7 +1770,7 @@ describe('EnhancedTypeScriptParser', () => {
       // Then: Should handle all node naming scenarios
       expect(result).toBeDefined();
       expect(result.nodes.length).toBeGreaterThan(0);
-      
+
       // Verify specific nodes exist
       const namedClass = result.nodes.find(n => n.name === 'NamedClass');
       const namedInterface = result.nodes.find(n => n.name === 'NamedInterface');
@@ -1769,7 +1780,7 @@ describe('EnhancedTypeScriptParser', () => {
       const namedVariable = result.nodes.find(n => n.name === 'namedVariable');
       const namedType = result.nodes.find(n => n.name === 'NamedType');
       const namedEnum = result.nodes.find(n => n.name === 'NamedEnum');
-      
+
       expect(namedClass).toBeDefined();
       expect(namedInterface).toBeDefined();
       expect(namedFunction).toBeDefined();
@@ -1812,18 +1823,20 @@ describe('EnhancedTypeScriptParser', () => {
       // Then: Should handle decorator scenarios
       expect(result).toBeDefined();
       expect(result.nodes.length).toBeGreaterThan(0);
-      
+
       const testComponent = result.nodes.find(n => n.name === 'TestComponent') as TypeScriptASTNode;
       const plainClass = result.nodes.find(n => n.name === 'PlainClass') as TypeScriptASTNode;
-      const decoratedFunction = result.nodes.find(n => n.name === 'decoratedFunction') as TypeScriptASTNode;
-      
+      const decoratedFunction = result.nodes.find(
+        n => n.name === 'decoratedFunction'
+      ) as TypeScriptASTNode;
+
       expect(testComponent).toBeDefined();
       expect(plainClass).toBeDefined();
       expect(decoratedFunction).toBeDefined();
-      
+
       // TestComponent should have decorators
       expect(testComponent?.decorators).toBeDefined();
-      
+
       // PlainClass should not have decorators
       expect(plainClass?.decorators).toBeDefined();
     });
@@ -1916,7 +1929,7 @@ describe('EnhancedTypeScriptParser', () => {
       // Then: Should handle all edge cases
       expect(result).toBeDefined();
       expect(result.nodes.length).toBeGreaterThan(0);
-      
+
       // Verify specific nodes exist
       const testClass = result.nodes.find(n => n.name === 'TestClass');
       const testFunction = result.nodes.find(n => n.name === 'testFunction');
@@ -1932,7 +1945,7 @@ describe('EnhancedTypeScriptParser', () => {
       const decoratedComponent = result.nodes.find(n => n.name === 'DecoratedComponent');
       const plainClass = result.nodes.find(n => n.name === 'PlainClass');
       const decoratedFunction = result.nodes.find(n => n.name === 'decoratedFunction');
-      
+
       expect(testClass).toBeDefined();
       expect(testFunction).toBeDefined();
       expect(jsdocFunction).toBeDefined();
@@ -2111,7 +2124,7 @@ describe('EnhancedTypeScriptParser', () => {
       // Then: Should handle all edge cases
       expect(result).toBeDefined();
       expect(result.nodes.length).toBeGreaterThan(0);
-      
+
       // Verify specific nodes exist
       const testClass = result.nodes.find(n => n.name === 'TestClass');
       const testFunction = result.nodes.find(n => n.name === 'testFunction');
@@ -2135,7 +2148,7 @@ describe('EnhancedTypeScriptParser', () => {
       const additionalVariable = result.nodes.find(n => n.name === 'additionalVariable');
       const additionalLet = result.nodes.find(n => n.name === 'additionalLet');
       const additionalVar = result.nodes.find(n => n.name === 'additionalVar');
-      
+
       expect(testClass).toBeDefined();
       expect(testFunction).toBeDefined();
       expect(jsdocFunction).toBeDefined();
@@ -2334,7 +2347,7 @@ describe('EnhancedTypeScriptParser', () => {
       // Then: Should handle all edge cases
       expect(result).toBeDefined();
       expect(result.nodes.length).toBeGreaterThan(0);
-      
+
       // Verify specific nodes exist
       const testClass = result.nodes.find(n => n.name === 'TestClass');
       const testFunction = result.nodes.find(n => n.name === 'testFunction');
@@ -2359,7 +2372,7 @@ describe('EnhancedTypeScriptParser', () => {
       const additionalLet = result.nodes.find(n => n.name === 'additionalLet');
       const additionalVar = result.nodes.find(n => n.name === 'additionalVar');
       const errorTestClass = result.nodes.find(n => n.name === 'ErrorTestClass');
-      
+
       expect(testClass).toBeDefined();
       expect(testFunction).toBeDefined();
       expect(jsdocFunction).toBeDefined();

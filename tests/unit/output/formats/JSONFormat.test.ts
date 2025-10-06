@@ -24,7 +24,7 @@ describe('JSONFormat', () => {
         directories: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       },
       ast: [],
       relations: [],
@@ -36,15 +36,15 @@ describe('JSONFormat', () => {
         linesOfCode: 0,
         functionCount: 0,
         classCount: 0,
-        interfaceCount: 0
+        interfaceCount: 0,
       },
       quality: {
         score: 85,
         maintainabilityIndex: 80,
         technicalDebtRatio: 0.1,
         duplicationPercentage: 5,
-        testCoveragePercentage: 90
-      }
+        testCoveragePercentage: 90,
+      },
     };
   });
 
@@ -70,7 +70,7 @@ describe('JSONFormat', () => {
       const result = await jsonFormat.serialize(mockProjectData);
       expect(result).toBeDefined();
       expect(typeof result).toBe('string');
-      
+
       // Should be valid JSON
       const parsed = JSON.parse(result);
       expect(parsed.name).toBe('test-project');
@@ -83,9 +83,9 @@ describe('JSONFormat', () => {
         encoding: 'utf8',
         strategy: 'file',
         compression: 'none',
-        format: 'json'
+        format: 'json',
       };
-      
+
       const result = await jsonFormat.format(mockProjectData, options);
       expect(result).toBeDefined();
       expect(typeof result).toBe('string');
@@ -97,20 +97,20 @@ describe('JSONFormat', () => {
       // Create data with circular reference
       const circularData = { ...mockProjectData };
       circularData.ast = [circularData as any]; // Create circular reference
-      
+
       await expect(jsonFormat.serialize(circularData)).rejects.toThrow();
     });
 
     it('should handle validation errors gracefully', async () => {
       const invalidData = undefined as any;
-      
+
       const isValid = await jsonFormat.validate(invalidData);
       expect(isValid).toBe(false);
     });
 
     it('should handle null or undefined data', async () => {
       await expect(jsonFormat.serialize(null as any)).rejects.toThrow();
-      
+
       await expect(jsonFormat.serialize(undefined as any)).rejects.toThrow();
     });
 
@@ -118,7 +118,7 @@ describe('JSONFormat', () => {
       const emptyData = { ...mockProjectData };
       emptyData.name = '';
       emptyData.ast = [];
-      
+
       const result = await jsonFormat.serialize(emptyData);
       expect(result).toBeDefined();
       expect(typeof result).toBe('string');
@@ -132,9 +132,9 @@ describe('JSONFormat', () => {
         encoding: 'utf8',
         strategy: 'file',
         compression: 'none',
-        format: 'json'
+        format: 'json',
       };
-      
+
       const result = await jsonFormat.format(mockProjectData, options);
       expect(result).toBeDefined();
     });
@@ -142,9 +142,9 @@ describe('JSONFormat', () => {
     it('should merge options with defaults', async () => {
       const partialOptions: Partial<OutputOptions> = {
         prettyPrint: false,
-        format: 'json'
+        format: 'json',
       };
-      
+
       const result = await jsonFormat.format(mockProjectData, partialOptions);
       expect(result).toBeDefined();
     });
@@ -195,9 +195,9 @@ describe('JSONFormat', () => {
         nodeType: 'function' as const,
         children: [],
         properties: {},
-        metadata: {}
+        metadata: {},
       }));
-      
+
       const result = await jsonFormat.serialize(largeData);
       expect(result).toBeDefined();
       expect(typeof result).toBe('string');
@@ -213,14 +213,14 @@ describe('JSONFormat', () => {
             path: '/test/path/level1',
             fileCount: 0,
             subdirectoryCount: 1,
-            totalSize: 0
-          }
+            totalSize: 0,
+          },
         ],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
-      
+
       const result = await jsonFormat.serialize(nestedData);
       expect(result).toBeDefined();
     });
@@ -229,7 +229,7 @@ describe('JSONFormat', () => {
       const specialData = { ...mockProjectData };
       specialData.name = 'test-project-with-special-chars-!@#$%^&*()';
       specialData.rootPath = '/test/path/with spaces and special chars';
-      
+
       const result = await jsonFormat.serialize(specialData);
       expect(result).toBeDefined();
       expect(typeof result).toBe('string');
@@ -238,15 +238,15 @@ describe('JSONFormat', () => {
     it('should handle circular references in data', async () => {
       const circularData = { ...mockProjectData };
       circularData.ast = [circularData as any]; // Create circular reference
-      
+
       await expect(jsonFormat.serialize(circularData)).rejects.toThrow();
     });
 
     it('should handle concurrent formatting requests', async () => {
-      const promises = Array.from({ length: 10 }, () => 
+      const promises = Array.from({ length: 10 }, () =>
         Promise.resolve(jsonFormat.format(mockProjectData))
       );
-      
+
       const results = await Promise.all(promises);
       expect(results).toHaveLength(10);
       results.forEach(result => {
@@ -259,7 +259,7 @@ describe('JSONFormat', () => {
   describe('Performance and Memory', () => {
     it('should not leak memory with repeated operations', async () => {
       const iterations = 100;
-      
+
       for (let i = 0; i < iterations; i++) {
         const result = await jsonFormat.serialize(mockProjectData);
         expect(result).toBeDefined();
@@ -278,9 +278,9 @@ describe('JSONFormat', () => {
         nodeType: 'function' as const,
         children: [],
         properties: {},
-        metadata: {}
+        metadata: {},
       }));
-      
+
       const result = await jsonFormat.serialize(largeData);
       expect(result).toBeDefined();
     });
@@ -298,8 +298,8 @@ describe('JSONFormat', () => {
             path: '/real/path/src/index.ts',
             type: 'main',
             description: 'Main entry point',
-            metadata: {}
-          }
+            metadata: {},
+          },
         ],
         dependencies: [
           {
@@ -307,8 +307,8 @@ describe('JSONFormat', () => {
             version: '^18.0.0',
             type: 'production',
             source: 'npm',
-            metadata: {}
-          }
+            metadata: {},
+          },
         ],
         devDependencies: [
           {
@@ -316,8 +316,8 @@ describe('JSONFormat', () => {
             version: '^4.9.0',
             type: 'development',
             source: 'npm',
-            metadata: {}
-          }
+            metadata: {},
+          },
         ],
         structure: {
           files: [
@@ -328,8 +328,8 @@ describe('JSONFormat', () => {
               lines: 50,
               lastModified: new Date(),
               hash: 'abc123',
-              extension: '.ts'
-            }
+              extension: '.ts',
+            },
           ],
           directories: [
             {
@@ -337,12 +337,12 @@ describe('JSONFormat', () => {
               path: '/real/path/src',
               fileCount: 1,
               subdirectoryCount: 0,
-              totalSize: 1024
-            }
+              totalSize: 1024,
+            },
           ],
           totalFiles: 1,
           totalLines: 50,
-          totalSize: 1024
+          totalSize: 1024,
         },
         ast: [
           {
@@ -355,8 +355,8 @@ describe('JSONFormat', () => {
             nodeType: 'class',
             children: [],
             properties: {},
-            metadata: {}
-          }
+            metadata: {},
+          },
         ],
         relations: [
           {
@@ -364,8 +364,8 @@ describe('JSONFormat', () => {
             from: 'node-1',
             to: 'node-2',
             type: 'import',
-            metadata: {}
-          }
+            metadata: {},
+          },
         ],
         publicExports: [
           {
@@ -373,8 +373,8 @@ describe('JSONFormat', () => {
             type: 'class',
             file: '/real/path/src/index.ts',
             isDefault: false,
-            metadata: {}
-          }
+            metadata: {},
+          },
         ],
         privateExports: [],
         complexity: {
@@ -383,21 +383,21 @@ describe('JSONFormat', () => {
           linesOfCode: 50,
           functionCount: 3,
           classCount: 1,
-          interfaceCount: 0
+          interfaceCount: 0,
         },
         quality: {
           score: 92,
           maintainabilityIndex: 85,
           technicalDebtRatio: 0.05,
           duplicationPercentage: 2,
-          testCoveragePercentage: 95
-        }
+          testCoveragePercentage: 95,
+        },
       };
-      
+
       const result = await jsonFormat.format(realData);
       expect(result).toBeDefined();
       expect(typeof result).toBe('string');
-      
+
       const parsed = JSON.parse(result);
       expect(parsed.name).toBe('real-project');
       expect(parsed.entryPoints).toHaveLength(1);
@@ -406,16 +406,16 @@ describe('JSONFormat', () => {
 
     it('should handle different output strategies', async () => {
       const strategies: Array<OutputOptions['strategy']> = ['file', 'stream', 'memory'];
-      
+
       for (const strategy of strategies) {
         const options: OutputOptions = {
           prettyPrint: true,
           encoding: 'utf8',
           strategy: strategy as 'file' | 'stream' | 'memory',
           compression: 'none',
-          format: 'json'
+          format: 'json',
         };
-        
+
         const result = await jsonFormat.format(mockProjectData, options);
         expect(result).toBeDefined();
         expect(typeof result).toBe('string');
@@ -430,9 +430,9 @@ describe('JSONFormat', () => {
         encoding: 'utf8',
         strategy: 'file',
         compression: 'none',
-        format: 'json'
+        format: 'json',
       };
-      
+
       const result = await jsonFormat.format(mockProjectData, options);
       expect(result).toBeDefined();
       expect(result).toContain('\n'); // Should have newlines for pretty printing
@@ -444,9 +444,9 @@ describe('JSONFormat', () => {
         encoding: 'utf8',
         strategy: 'file',
         compression: 'none',
-        format: 'json'
+        format: 'json',
       };
-      
+
       const result = await jsonFormat.format(mockProjectData, options);
       expect(result).toBeDefined();
       // Should be compact JSON without extra whitespace
@@ -455,16 +455,16 @@ describe('JSONFormat', () => {
 
     it('should handle different encoding options', async () => {
       const encodings: Array<OutputOptions['encoding']> = ['utf8', 'utf16', 'ascii'];
-      
+
       for (const encoding of encodings) {
         const options: OutputOptions = {
           prettyPrint: true,
           encoding: encoding as string,
           strategy: 'file',
           compression: 'none',
-          format: 'json'
+          format: 'json',
         };
-        
+
         const result = await jsonFormat.format(mockProjectData, options);
         expect(result).toBeDefined();
         expect(typeof result).toBe('string');
@@ -487,11 +487,11 @@ describe('JSONFormat', () => {
             nodeType: 'function' as const,
             children: [], // Fixed: use valid children array
             properties: {}, // Fixed: use valid properties object
-            metadata: {} // Fixed: use valid metadata object
-          }
-        ]
+            metadata: {}, // Fixed: use valid metadata object
+          },
+        ],
       };
-      
+
       const result = await jsonFormat.serialize(malformedData);
       expect(result).toBeDefined();
       expect(typeof result).toBe('string');
@@ -511,7 +511,7 @@ describe('JSONFormat', () => {
           directories: [],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: [],
         relations: [],
@@ -523,17 +523,17 @@ describe('JSONFormat', () => {
           linesOfCode: 0,
           functionCount: 0,
           classCount: 0,
-          interfaceCount: 0
+          interfaceCount: 0,
         },
         quality: {
           score: 0,
           maintainabilityIndex: 0,
           technicalDebtRatio: 0,
           duplicationPercentage: 0,
-          testCoveragePercentage: 0
-        }
+          testCoveragePercentage: 0,
+        },
       };
-      
+
       const result = await jsonFormat.serialize(minimalData);
       expect(result).toBeDefined();
       expect(typeof result).toBe('string');
@@ -549,7 +549,9 @@ describe('JSONFormat', () => {
       });
 
       try {
-        await expect(jsonFormat.serialize(mockProjectData)).rejects.toThrow('JSON serialization failed: Unknown error');
+        await expect(jsonFormat.serialize(mockProjectData)).rejects.toThrow(
+          'JSON serialization failed: Unknown error'
+        );
       } finally {
         JSON.stringify = originalStringify;
       }
@@ -564,7 +566,7 @@ describe('JSONFormat', () => {
     it('should validate data with invalid name (line 55)', async () => {
       const invalidData = {
         ...mockProjectData,
-        name: null // Invalid name
+        name: null, // Invalid name
       } as any;
       const isValid = await jsonFormat.validate(invalidData);
       expect(isValid).toBe(false);
@@ -573,7 +575,7 @@ describe('JSONFormat', () => {
     it('should validate data with invalid version (line 59)', async () => {
       const invalidData = {
         ...mockProjectData,
-        version: 123 // Invalid version (not string)
+        version: 123, // Invalid version (not string)
       } as any;
       const isValid = await jsonFormat.validate(invalidData);
       expect(isValid).toBe(false);
@@ -582,7 +584,7 @@ describe('JSONFormat', () => {
     it('should validate data with invalid type (line 63)', async () => {
       const invalidData = {
         ...mockProjectData,
-        type: undefined // Invalid type
+        type: undefined, // Invalid type
       } as any;
       const isValid = await jsonFormat.validate(invalidData);
       expect(isValid).toBe(false);
@@ -591,7 +593,7 @@ describe('JSONFormat', () => {
     it('should validate data with invalid rootPath (line 67)', async () => {
       const invalidData = {
         ...mockProjectData,
-        rootPath: false // Invalid rootPath
+        rootPath: false, // Invalid rootPath
       } as any;
       const isValid = await jsonFormat.validate(invalidData);
       expect(isValid).toBe(false);
@@ -600,7 +602,7 @@ describe('JSONFormat', () => {
     it('should validate data with invalid structure (line 72)', async () => {
       const invalidData = {
         ...mockProjectData,
-        structure: 'not an object' // Invalid structure
+        structure: 'not an object', // Invalid structure
       } as any;
       const isValid = await jsonFormat.validate(invalidData);
       expect(isValid).toBe(false);
@@ -609,7 +611,7 @@ describe('JSONFormat', () => {
     it('should validate data with invalid complexity (line 77)', async () => {
       const invalidData = {
         ...mockProjectData,
-        complexity: null // Invalid complexity
+        complexity: null, // Invalid complexity
       } as any;
       const isValid = await jsonFormat.validate(invalidData);
       expect(isValid).toBe(false);
@@ -618,7 +620,7 @@ describe('JSONFormat', () => {
     it('should validate data with invalid quality (line 82)', async () => {
       const invalidData = {
         ...mockProjectData,
-        quality: 'not an object' // Invalid quality (string instead of object)
+        quality: 'not an object', // Invalid quality (string instead of object)
       } as any;
       const isValid = await jsonFormat.validate(invalidData);
       expect(isValid).toBe(false);
@@ -645,9 +647,9 @@ describe('JSONFormat', () => {
         encoding: 'utf8',
         strategy: 'file',
         compression: 'none',
-        format: 'json'
+        format: 'json',
       };
-      
+
       const result = await jsonFormat.serialize(mockProjectData, options);
       expect(result).toBeDefined();
       expect(typeof result).toBe('string');
@@ -669,9 +671,9 @@ describe('JSONFormat', () => {
         encoding: 'utf8',
         strategy: 'file',
         compression: 'none',
-        format: 'json'
+        format: 'json',
       } as any;
-      
+
       const result = await jsonFormat.serialize(mockProjectData, options);
       expect(result).toBeDefined();
       expect(typeof result).toBe('string');

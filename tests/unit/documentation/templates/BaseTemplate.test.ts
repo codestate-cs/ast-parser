@@ -17,7 +17,7 @@ describe('BaseTemplate', () => {
       const customTemplate = new BaseTemplate({
         format: 'html',
         encoding: 'utf-8',
-        validateTemplate: true
+        validateTemplate: true,
       });
 
       expect(customTemplate).toBeDefined();
@@ -30,7 +30,7 @@ describe('BaseTemplate', () => {
       const templateContent = 'Hello {{name}}, welcome to {{project}}!';
       const variables = {
         name: 'John',
-        project: 'Codestate AST'
+        project: 'Codestate AST',
       };
 
       const result = template.processTemplate(templateContent, variables);
@@ -41,7 +41,7 @@ describe('BaseTemplate', () => {
     it('should handle missing variables gracefully', () => {
       const templateContent = 'Hello {{name}}, welcome to {{project}}!';
       const variables = {
-        name: 'John'
+        name: 'John',
         // project is missing
       };
 
@@ -72,8 +72,8 @@ describe('BaseTemplate', () => {
       const variables = {
         user: {
           name: 'John',
-          role: 'Developer'
-        }
+          role: 'Developer',
+        },
       };
 
       const result = template.processTemplate(templateContent, variables);
@@ -97,8 +97,8 @@ describe('BaseTemplate', () => {
         title: 'Test Document',
         sections: [
           { name: 'Introduction', content: 'This is the intro' },
-          { name: 'Conclusion', content: 'This is the conclusion' }
-        ]
+          { name: 'Conclusion', content: 'This is the conclusion' },
+        ],
       };
 
       const result = template.generateContent(data);
@@ -123,7 +123,7 @@ describe('BaseTemplate', () => {
 
     it('should generate content with different formats', () => {
       const data = { title: 'Test' };
-      
+
       const htmlTemplate = new BaseTemplate({ format: 'html' });
       const markdownTemplate = new BaseTemplate({ format: 'markdown' });
 
@@ -189,7 +189,7 @@ describe('BaseTemplate', () => {
     it('should get template metadata', () => {
       const templateContent = 'Hello {{name}}!';
       template.loadTemplate(templateContent);
-      
+
       const metadata = template.getTemplateMetadata();
 
       expect(metadata).toBeDefined();
@@ -199,7 +199,7 @@ describe('BaseTemplate', () => {
     it('should support template inheritance', () => {
       const baseTemplate = 'Base: {{content}}';
       const childTemplate = 'Child: {{childContent}}';
-      
+
       template.loadTemplate(baseTemplate);
       const result = template.extendTemplate(childTemplate);
 
@@ -211,7 +211,7 @@ describe('BaseTemplate', () => {
     it('should update options', () => {
       const newOptions = {
         format: 'markdown' as const,
-        encoding: 'utf-8'
+        encoding: 'utf-8',
       };
 
       template.updateOptions(newOptions);
@@ -224,7 +224,7 @@ describe('BaseTemplate', () => {
     it('should validate configuration', () => {
       const invalidOptions = {
         format: 'invalid-format' as any,
-        encoding: 'invalid-encoding' as any
+        encoding: 'invalid-encoding' as any,
       };
 
       const result = template.validateConfiguration(invalidOptions);
@@ -255,7 +255,7 @@ describe('BaseTemplate', () => {
 
     it('should handle content generation errors', () => {
       const invalidData = {
-        circular: {} as any
+        circular: {} as any,
       };
       invalidData.circular = invalidData; // Create circular reference
 
@@ -267,7 +267,7 @@ describe('BaseTemplate', () => {
 
     it('should handle configuration errors', () => {
       const invalidConfig = null as any;
-      
+
       expect(() => {
         template.updateOptions(invalidConfig);
       }).not.toThrow();
@@ -289,7 +289,7 @@ describe('BaseTemplate', () => {
       const templateContent = 'Hello {{name}}! Special chars: {{@#$%^&*()}}';
       const variables = {
         name: 'John',
-        '@#$%^&*()': 'Special'
+        '@#$%^&*()': 'Special',
       };
 
       const result = template.processTemplate(templateContent, variables);
@@ -301,7 +301,7 @@ describe('BaseTemplate', () => {
       const templateContent = 'Hello {{name}}! Unicode: {{unicode}}';
       const variables = {
         name: 'Jöhn',
-        unicode: '🚀🌟'
+        unicode: '🚀🌟',
       };
 
       const result = template.processTemplate(templateContent, variables);
@@ -313,7 +313,7 @@ describe('BaseTemplate', () => {
 
     it('should handle concurrent template processing', async () => {
       const templateContent = 'Hello {{name}}!';
-      const promises = Array.from({ length: 10 }, (_, i) => 
+      const promises = Array.from({ length: 10 }, (_, i) =>
         template.processTemplate(templateContent, { name: `User${i}` })
       );
 
@@ -522,8 +522,8 @@ describe('BaseTemplate', () => {
 
     describe('extendTemplate branches', () => {
       it('should handle extendTemplate with inheritance disabled', () => {
-        const customTemplate = new BaseTemplate({ 
-          inheritance: { enabled: false }
+        const customTemplate = new BaseTemplate({
+          inheritance: { enabled: false },
         });
         const childTemplate = 'Child content';
 
@@ -534,8 +534,8 @@ describe('BaseTemplate', () => {
       });
 
       it('should handle extendTemplate with no base template', () => {
-        const customTemplate = new BaseTemplate({ 
-          inheritance: { enabled: true }
+        const customTemplate = new BaseTemplate({
+          inheritance: { enabled: true },
         });
         const childTemplate = 'Child content';
 
@@ -546,8 +546,8 @@ describe('BaseTemplate', () => {
       });
 
       it('should handle extendTemplate with inheritance enabled and base template', () => {
-        const customTemplate = new BaseTemplate({ 
-          inheritance: { enabled: true }
+        const customTemplate = new BaseTemplate({
+          inheritance: { enabled: true },
         });
         const baseTemplate = 'Base: {{content}}';
         const childTemplate = 'Child content';
@@ -560,8 +560,8 @@ describe('BaseTemplate', () => {
       });
 
       it('should handle extendTemplate with exception', () => {
-        const customTemplate = new BaseTemplate({ 
-          inheritance: { enabled: true }
+        const customTemplate = new BaseTemplate({
+          inheritance: { enabled: true },
         });
         const childTemplate = 'Child content';
 
@@ -825,7 +825,7 @@ describe('BaseTemplate', () => {
       it('should handle getTemplateMetadata with template loaded', () => {
         const templateContent = 'Hello {{name}}!';
         template.loadTemplate(templateContent);
-        
+
         const metadata = template.getTemplateMetadata();
 
         expect(metadata.variables).toContain('name');

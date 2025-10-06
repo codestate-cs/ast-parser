@@ -65,7 +65,12 @@ describe('CodestateAST', () => {
 
       parser.resetOptions();
       const resetOptions = parser.getOptions();
-      expect(resetOptions.filtering.includePatterns).toEqual(['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx']);
+      expect(resetOptions.filtering.includePatterns).toEqual([
+        '**/*.ts',
+        '**/*.tsx',
+        '**/*.js',
+        '**/*.jsx',
+      ]);
     });
   });
 
@@ -101,8 +106,8 @@ describe('CodestateAST', () => {
     it('should parse project with custom options', async () => {
       const customOptions: Partial<ParsingOptions> = {
         filtering: {
-          includePatterns: ['**/*.ts']
-        }
+          includePatterns: ['**/*.ts'],
+        },
       };
 
       const result = await parser.parseProject(__dirname, customOptions);
@@ -142,31 +147,31 @@ describe('CodestateAST', () => {
         filtering: {
           includePatterns: ['**/*.ts'],
           excludePatterns: ['**/*.test.ts'],
-          maxDepth: 10
+          maxDepth: 10,
         },
         mode: 'full' as const,
         output: {
           format: 'json' as const,
-          compression: 'none' as const
+          compression: 'none' as const,
         },
         documentation: {
-          includeDocumentation: true
+          includeDocumentation: true,
         },
         performance: {
-          maxConcurrentFiles: 5
+          maxConcurrentFiles: 5,
         },
         cache: {
-          enableCache: false
-        }
+          enableCache: false,
+        },
       };
 
       const options = {
         filtering: {
-          maxDepth: 5
+          maxDepth: 5,
         },
         performance: {
-          maxConcurrentFiles: 10
-        }
+          maxConcurrentFiles: 10,
+        },
       };
 
       const mergedOptions = (parser as any).mergeOptions(defaults, options);
@@ -181,22 +186,22 @@ describe('CodestateAST', () => {
         filtering: {
           includePatterns: ['**/*.ts'],
           excludePatterns: ['**/*.test.ts'],
-          maxDepth: 10
+          maxDepth: 10,
         },
         mode: 'full' as const,
         output: {
           format: 'json' as const,
-          compression: 'none' as const
+          compression: 'none' as const,
         },
         documentation: {
-          includeDocumentation: true
+          includeDocumentation: true,
         },
         performance: {
-          maxConcurrentFiles: 5
+          maxConcurrentFiles: 5,
         },
         cache: {
-          enableCache: false
-        }
+          enableCache: false,
+        },
       };
 
       const mergedOptions = (parser as any).mergeOptions(defaults, {});
@@ -221,7 +226,7 @@ describe('CodestateAST', () => {
     });
 
     it('should handle very long project path', async () => {
-      const longPath = '/very/long/path/' + 'a'.repeat(1000);
+      const longPath = `/very/long/path/${'a'.repeat(1000)}`;
       const result = await parser.isValidProject(longPath);
       expect(typeof result).toBe('boolean');
     });
@@ -248,8 +253,8 @@ describe('CodestateAST', () => {
     it('should handle partial options updates', () => {
       parser.updateOptions({
         filtering: {
-          includePatterns: ['**/*.ts']
-        }
+          includePatterns: ['**/*.ts'],
+        },
       });
 
       const options = parser.getOptions();
@@ -261,8 +266,8 @@ describe('CodestateAST', () => {
       parser.updateOptions({
         output: {
           format: 'json' as const,
-          compression: 'gzip' as const
-        }
+          compression: 'gzip' as const,
+        },
       });
 
       const options = parser.getOptions();

@@ -1,6 +1,6 @@
 /**
  * HTML Generator for documentation generation
- * 
+ *
  * This module provides HTML-specific documentation generation including:
  * - HTML formatting utilities
  * - CSS styling and themes
@@ -13,7 +13,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // @ts-nocheck
 
-import { BaseGenerator, DocumentationGenerationOptions, DocumentationGenerationResult } from './BaseGenerator';
+import {
+  BaseGenerator,
+  DocumentationGenerationOptions,
+  DocumentationGenerationResult,
+} from './BaseGenerator';
 import { ASTNode } from '../../types/core';
 import { JSDocComment } from '../extractors/JSDocExtractor';
 import { TypeInfo } from '../extractors/TypeExtractor';
@@ -59,7 +63,7 @@ export class HTMLGenerator extends BaseGenerator {
       enableAccessibility: true,
       customCSS: undefined,
       customJS: undefined,
-      customTemplate: undefined
+      customTemplate: undefined,
     };
 
     const mergedOptions = { ...defaultOptions, ...options };
@@ -68,7 +72,7 @@ export class HTMLGenerator extends BaseGenerator {
 
   /**
    * Generate documentation from AST nodes
-   * 
+   *
    * @param nodes - AST nodes
    * @returns Documentation generation result
    */
@@ -86,22 +90,22 @@ export class HTMLGenerator extends BaseGenerator {
           metadata: {
             generationTime: Date.now() - startTime,
             filesProcessed: 0,
-            nodesProcessed: 0
+            nodesProcessed: 0,
           },
           errors: validation.errors,
-          success: false
+          success: false,
         };
       }
 
       // Generate HTML content
       const content = this.generateHTMLContentFromNodes(nodes);
-      
+
       // Process template if provided
-      const processedContent = ((this.options as HTMLGeneratorOptions) as HTMLGeneratorOptions).customTemplate 
-        ? this.processTemplate(((this.options as HTMLGeneratorOptions) as HTMLGeneratorOptions).customTemplate, {
+      const processedContent = (this.options as HTMLGeneratorOptions).customTemplate
+        ? this.processTemplate((this.options as HTMLGeneratorOptions).customTemplate, {
             content,
             nodes,
-            ...(this.options as HTMLGeneratorOptions).templateVariables
+            ...(this.options as HTMLGeneratorOptions).templateVariables,
           })
         : content;
 
@@ -115,23 +119,26 @@ export class HTMLGenerator extends BaseGenerator {
           metadata: {
             generationTime: Date.now() - startTime,
             filesProcessed: 0,
-            nodesProcessed: 0
+            nodesProcessed: 0,
           },
           errors: ['Invalid HTML syntax generated'],
-          success: false
+          success: false,
         };
       }
 
       // Write to file
-      const filePath = path.join((this.options as HTMLGeneratorOptions).outputDir, (this.options as HTMLGeneratorOptions).fileName);
-      
+      const filePath = path.join(
+        (this.options as HTMLGeneratorOptions).outputDir,
+        (this.options as HTMLGeneratorOptions).fileName
+      );
+
       // Ensure output directory exists
       try {
         await fs.mkdir((this.options as HTMLGeneratorOptions).outputDir, { recursive: true });
       } catch (error) {
         // Directory might already exist, ignore error
       }
-      
+
       await this.writeToFile(processedContent, filePath);
 
       return {
@@ -141,10 +148,10 @@ export class HTMLGenerator extends BaseGenerator {
         metadata: {
           generationTime: Date.now() - startTime,
           filesProcessed: 1,
-          nodesProcessed: nodes.length
+          nodesProcessed: nodes.length,
         },
         errors: [],
-        success: true
+        success: true,
       };
     } catch (error) {
       return {
@@ -154,17 +161,17 @@ export class HTMLGenerator extends BaseGenerator {
         metadata: {
           generationTime: Date.now() - startTime,
           filesProcessed: 0,
-          nodesProcessed: 0
+          nodesProcessed: 0,
         },
         errors: [error instanceof Error ? error.message : 'Unknown error'],
-        success: false
+        success: false,
       };
     }
   }
 
   /**
    * Generate documentation from extracted data
-   * 
+   *
    * @param jsdocComments - JSDoc comments
    * @param typeInfo - Type information
    * @param examples - Code examples
@@ -188,24 +195,24 @@ export class HTMLGenerator extends BaseGenerator {
           metadata: {
             generationTime: Date.now() - startTime,
             filesProcessed: 0,
-            nodesProcessed: 0
+            nodesProcessed: 0,
           },
           errors: validation.errors,
-          success: false
+          success: false,
         };
       }
 
       // Generate HTML content
       const content = this.generateHTMLContent(jsdocComments, typeInfo, examples);
-      
+
       // Process template if provided
-      const processedContent = (this.options as HTMLGeneratorOptions).customTemplate 
+      const processedContent = (this.options as HTMLGeneratorOptions).customTemplate
         ? this.processTemplate((this.options as HTMLGeneratorOptions).customTemplate, {
             content,
             jsdocComments,
             typeInfo,
             examples,
-            ...(this.options as HTMLGeneratorOptions).templateVariables
+            ...(this.options as HTMLGeneratorOptions).templateVariables,
           })
         : content;
 
@@ -219,23 +226,26 @@ export class HTMLGenerator extends BaseGenerator {
           metadata: {
             generationTime: Date.now() - startTime,
             filesProcessed: 0,
-            nodesProcessed: 0
+            nodesProcessed: 0,
           },
           errors: ['Invalid HTML syntax generated'],
-          success: false
+          success: false,
         };
       }
 
       // Write to file
-      const filePath = path.join((this.options as HTMLGeneratorOptions).outputDir, (this.options as HTMLGeneratorOptions).fileName);
-      
+      const filePath = path.join(
+        (this.options as HTMLGeneratorOptions).outputDir,
+        (this.options as HTMLGeneratorOptions).fileName
+      );
+
       // Ensure output directory exists
       try {
         await fs.mkdir((this.options as HTMLGeneratorOptions).outputDir, { recursive: true });
       } catch (error) {
         // Directory might already exist, ignore error
       }
-      
+
       await this.writeToFile(processedContent, filePath);
 
       return {
@@ -245,10 +255,10 @@ export class HTMLGenerator extends BaseGenerator {
         metadata: {
           generationTime: Date.now() - startTime,
           filesProcessed: 1,
-          nodesProcessed: jsdocComments.length + typeInfo.length + examples.length
+          nodesProcessed: jsdocComments.length + typeInfo.length + examples.length,
         },
         errors: [],
-        success: true
+        success: true,
       };
     } catch (error) {
       return {
@@ -258,17 +268,17 @@ export class HTMLGenerator extends BaseGenerator {
         metadata: {
           generationTime: Date.now() - startTime,
           filesProcessed: 0,
-          nodesProcessed: 0
+          nodesProcessed: 0,
         },
         errors: [error instanceof Error ? error.message : 'Unknown error'],
-        success: false
+        success: false,
       };
     }
   }
 
   /**
    * Generate HTML content from AST nodes
-   * 
+   *
    * @param nodes - AST nodes
    * @returns HTML content
    */
@@ -277,31 +287,31 @@ export class HTMLGenerator extends BaseGenerator {
     let content = '';
 
     // Title
-    content += this.formatHeader('Project Documentation', 1) + '\n';
+    content += `${this.formatHeader('Project Documentation', 1)}\n`;
 
     // Table of Contents
     if ((this.options as HTMLGeneratorOptions).includeTOC) {
       const tocSections = [
         { id: 'overview', title: 'Overview', level: 1 },
-        { id: 'api-reference', title: 'API Reference', level: 1 }
+        { id: 'api-reference', title: 'API Reference', level: 1 },
       ];
-      content += this.generateTableOfContents(tocSections) + '\n';
+      content += `${this.generateTableOfContents(tocSections)}\n`;
     }
 
     // Overview section
-    content += this.formatHeader('Overview', 2) + '\n';
-    content += this.generateOverviewContent(nodes) + '\n';
+    content += `${this.formatHeader('Overview', 2)}\n`;
+    content += `${this.generateOverviewContent(nodes)}\n`;
     sections.push({ id: 'overview', title: 'Overview', level: 2 });
 
     // API Reference section
-    content += this.formatHeader('API Reference', 2) + '\n';
-    content += this.generateAPIReferenceContent(nodes) + '\n';
+    content += `${this.formatHeader('API Reference', 2)}\n`;
+    content += `${this.generateAPIReferenceContent(nodes)}\n`;
     sections.push({ id: 'api-reference', title: 'API Reference', level: 2 });
 
     // Metadata section
     if ((this.options as HTMLGeneratorOptions).includeMetadata) {
-      content += this.formatHeader('Metadata', 2) + '\n';
-      content += this.generateMetadataContentFromNodes(nodes) + '\n';
+      content += `${this.formatHeader('Metadata', 2)}\n`;
+      content += `${this.generateMetadataContentFromNodes(nodes)}\n`;
     }
 
     return this.generateHTMLDocument(content);
@@ -309,7 +319,7 @@ export class HTMLGenerator extends BaseGenerator {
 
   /**
    * Generate HTML content from extracted data
-   * 
+   *
    * @param jsdocComments - JSDoc comments
    * @param typeInfo - Type information
    * @param examples - Code examples
@@ -324,41 +334,41 @@ export class HTMLGenerator extends BaseGenerator {
     let content = '';
 
     // Title
-    content += this.formatHeader('Project Documentation', 1) + '\n';
+    content += `${this.formatHeader('Project Documentation', 1)}\n`;
 
     // Table of Contents
     if ((this.options as HTMLGeneratorOptions).includeTOC) {
       const tocSections = [
         { id: 'overview', title: 'Overview', level: 1 },
         { id: 'api-reference', title: 'API Reference', level: 1 },
-        { id: 'examples', title: 'Examples', level: 1 }
+        { id: 'examples', title: 'Examples', level: 1 },
       ];
-      content += this.generateTableOfContents(tocSections) + '\n';
+      content += `${this.generateTableOfContents(tocSections)}\n`;
     }
 
     // Overview section
-    content += this.formatHeader('Overview', 2) + '\n';
-    content += this.generateOverviewContentFromExtracted(jsdocComments, typeInfo, examples) + '\n';
+    content += `${this.formatHeader('Overview', 2)}\n`;
+    content += `${this.generateOverviewContentFromExtracted(jsdocComments, typeInfo, examples)}\n`;
     sections.push({ id: 'overview', title: 'Overview', level: 2 });
 
     // API Reference section
     if (typeInfo.length > 0) {
-      content += this.formatHeader('API Reference', 2) + '\n';
-      content += this.generateAPIReferenceContentFromExtracted(typeInfo) + '\n';
+      content += `${this.formatHeader('API Reference', 2)}\n`;
+      content += `${this.generateAPIReferenceContentFromExtracted(typeInfo)}\n`;
       sections.push({ id: 'api-reference', title: 'API Reference', level: 2 });
     }
 
     // Examples section
     if (examples.length > 0) {
-      content += this.formatHeader('Examples', 2) + '\n';
-      content += this.generateExamplesContentFromExtracted(examples) + '\n';
+      content += `${this.formatHeader('Examples', 2)}\n`;
+      content += `${this.generateExamplesContentFromExtracted(examples)}\n`;
       sections.push({ id: 'examples', title: 'Examples', level: 2 });
     }
 
     // Metadata section
     if ((this.options as HTMLGeneratorOptions).includeMetadata) {
-      content += this.formatHeader('Metadata', 2) + '\n';
-      content += this.generateMetadataContentFromExtracted(jsdocComments, typeInfo, examples) + '\n';
+      content += `${this.formatHeader('Metadata', 2)}\n`;
+      content += `${this.generateMetadataContentFromExtracted(jsdocComments, typeInfo, examples)}\n`;
     }
 
     return this.generateHTMLDocument(content);
@@ -366,7 +376,7 @@ export class HTMLGenerator extends BaseGenerator {
 
   /**
    * Generate overview content from extracted data
-   * 
+   *
    * @param jsdocComments - JSDoc comments
    * @param typeInfo - Type information
    * @param examples - Code examples
@@ -377,21 +387,22 @@ export class HTMLGenerator extends BaseGenerator {
     typeInfo: TypeInfo[],
     examples: ExampleInfo[]
   ): string {
-    let content = '<p>This documentation provides comprehensive information about the project.</p>\n';
+    let content =
+      '<p>This documentation provides comprehensive information about the project.</p>\n';
 
     // Statistics
     const stats = [
       `**Total JSDoc Comments**: ${jsdocComments.length}`,
       `**Total Types**: ${typeInfo.length}`,
-      `**Total Examples**: ${examples.length}`
+      `**Total Examples**: ${examples.length}`,
     ];
 
-    content += this.formatHeader('Statistics', 3) + '\n';
-    content += this.formatList(stats) + '\n';
+    content += `${this.formatHeader('Statistics', 3)}\n`;
+    content += `${this.formatList(stats)}\n`;
 
     // JSDoc Comments
     if (jsdocComments.length > 0) {
-      content += this.formatHeader('JSDoc Comments', 3) + '\n';
+      content += `${this.formatHeader('JSDoc Comments', 3)}\n`;
       for (const comment of jsdocComments) {
         if (comment.description) {
           content += `<p><strong>${comment.description}</strong></p>\n`;
@@ -407,7 +418,7 @@ export class HTMLGenerator extends BaseGenerator {
 
   /**
    * Generate API reference content from extracted data
-   * 
+   *
    * @param typeInfo - Type information
    * @returns API reference HTML content
    */
@@ -415,36 +426,36 @@ export class HTMLGenerator extends BaseGenerator {
     let content = '';
 
     for (const type of typeInfo) {
-      content += this.formatHeader(type.name, 3) + '\n';
-      
+      content += `${this.formatHeader(type.name, 3)}\n`;
+
       if (type.documentation) {
         content += `<p>${type.documentation}</p>\n`;
       }
 
       // Type definition
-      content += this.formatHeader('Definition', 4) + '\n';
-      content += this.formatCodeBlock(type.definition, 'typescript') + '\n';
+      content += `${this.formatHeader('Definition', 4)}\n`;
+      content += `${this.formatCodeBlock(type.definition, 'typescript')}\n`;
 
       // Properties
       if (type.properties && type.properties.length > 0) {
-        content += this.formatHeader('Properties', 4) + '\n';
+        content += `${this.formatHeader('Properties', 4)}\n`;
         const propertyRows = type.properties.map(prop => [
           prop.name || 'unknown',
           prop.type || 'unknown',
-          prop.documentation || 'No description'
+          prop.documentation || 'No description',
         ]);
-        content += this.formatTable(['Name', 'Type', 'Description'], propertyRows) + '\n';
+        content += `${this.formatTable(['Name', 'Type', 'Description'], propertyRows)}\n`;
       }
 
       // Methods
       if (type.methods && type.methods.length > 0) {
-        content += this.formatHeader('Methods', 4) + '\n';
+        content += `${this.formatHeader('Methods', 4)}\n`;
         const methodRows = type.methods.map(method => [
           method.name || 'unknown',
           method.returnType || 'unknown',
-          method.documentation || 'No description'
+          method.documentation || 'No description',
         ]);
-        content += this.formatTable(['Name', 'Return Type', 'Description'], methodRows) + '\n';
+        content += `${this.formatTable(['Name', 'Return Type', 'Description'], methodRows)}\n`;
       }
     }
 
@@ -453,7 +464,7 @@ export class HTMLGenerator extends BaseGenerator {
 
   /**
    * Generate examples content from extracted data
-   * 
+   *
    * @param examples - Code examples
    * @returns Examples HTML content
    */
@@ -461,15 +472,15 @@ export class HTMLGenerator extends BaseGenerator {
     let content = '';
 
     for (const example of examples) {
-      content += this.formatHeader(example.title || 'Example', 3) + '\n';
-      
+      content += `${this.formatHeader(example.title || 'Example', 3)}\n`;
+
       if (example.description) {
         content += `<p>${example.description}</p>\n`;
       }
 
       // Determine language for syntax highlighting
       const language = this.detectLanguage(example.language || 'typescript');
-      content += this.formatCodeBlock(example.code, language) + '\n';
+      content += `${this.formatCodeBlock(example.code, language)}\n`;
     }
 
     return content;
@@ -477,7 +488,7 @@ export class HTMLGenerator extends BaseGenerator {
 
   /**
    * Generate metadata content from extracted data
-   * 
+   *
    * @param jsdocComments - JSDoc comments
    * @param typeInfo - Type information
    * @param examples - Code examples
@@ -492,7 +503,7 @@ export class HTMLGenerator extends BaseGenerator {
       `**Generated**: ${new Date().toISOString()}`,
       `**HTML Theme**: ${(this.options as HTMLGeneratorOptions).theme}`,
       `**Syntax Highlighting**: ${(this.options as HTMLGeneratorOptions).enableSyntaxHighlighting ? 'Enabled' : 'Disabled'}`,
-      `**Total Items**: ${jsdocComments.length + typeInfo.length + examples.length}`
+      `**Total Items**: ${jsdocComments.length + typeInfo.length + examples.length}`,
     ];
 
     return this.formatList(metadata);
@@ -500,7 +511,7 @@ export class HTMLGenerator extends BaseGenerator {
 
   /**
    * Generate metadata content from AST nodes
-   * 
+   *
    * @param nodes - AST nodes
    * @returns Metadata HTML content
    */
@@ -509,7 +520,7 @@ export class HTMLGenerator extends BaseGenerator {
       `**Generated**: ${new Date().toISOString()}`,
       `**HTML Theme**: ${(this.options as HTMLGeneratorOptions).theme}`,
       `**Syntax Highlighting**: ${(this.options as HTMLGeneratorOptions).enableSyntaxHighlighting ? 'Enabled' : 'Disabled'}`,
-      `**Total Nodes**: ${nodes.length}`
+      `**Total Nodes**: ${nodes.length}`,
     ];
 
     return this.formatList(metadata);
@@ -517,14 +528,14 @@ export class HTMLGenerator extends BaseGenerator {
 
   /**
    * Generate complete HTML document
-   * 
+   *
    * @param content - Main content
    * @returns Complete HTML document
    */
   private generateHTMLDocument(content: string): string {
     const css = this.generateCSS();
     const js = this.generateJavaScript();
-    
+
     return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -553,13 +564,13 @@ export class HTMLGenerator extends BaseGenerator {
 
   /**
    * Generate CSS styles
-   * 
+   *
    * @returns CSS styles
    */
   private generateCSS(): string {
     const theme = (this.options as HTMLGeneratorOptions).theme || 'light';
     const isDark = theme === 'dark';
-    
+
     return `
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -665,7 +676,9 @@ footer {
     text-align: center;
 }
 
-${(this.options as HTMLGeneratorOptions).enableResponsive ? `
+${
+  (this.options as HTMLGeneratorOptions).enableResponsive
+    ? `
 @media (max-width: 768px) {
     body {
         font-size: 14px;
@@ -687,13 +700,15 @@ ${(this.options as HTMLGeneratorOptions).enableResponsive ? `
         padding: 0.5rem;
     }
 }
-` : ''}
+`
+    : ''
+}
 `;
   }
 
   /**
    * Generate JavaScript for interactivity
-   * 
+   *
    * @returns JavaScript code
    */
   private generateJavaScript(): string {
@@ -757,7 +772,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   /**
    * Generate navigation
-   * 
+   *
    * @returns Navigation HTML
    */
   private generateNavigation(): string {
@@ -772,11 +787,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
   /**
    * Generate table of contents
-   * 
+   *
    * @param sections - Document sections
    * @returns Table of contents HTML
    */
-  private generateTableOfContents(sections: Array<{ id: string; title: string; level: number }>): string {
+  private generateTableOfContents(
+    sections: Array<{ id: string; title: string; level: number }>
+  ): string {
     if (!(this.options as HTMLGeneratorOptions).includeTOC || sections.length === 0) {
       return '';
     }
@@ -786,7 +803,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     for (const section of sections) {
       if (!section.title) continue;
-      
+
       const indent = '  '.repeat(Math.max(0, section.level - 1));
       toc += `${indent}<li><a href="#${section.id}">${section.title}</a></li>\n`;
     }
@@ -797,7 +814,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   /**
    * Format header
-   * 
+   *
    * @param text - Header text
    * @param level - Header level (1-6)
    * @returns Formatted header
@@ -809,19 +826,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
   /**
    * Format code block
-   * 
+   *
    * @param code - Code content
    * @param language - Programming language
    * @returns Formatted code block
    */
   private formatCodeBlock(code: string, language?: string): string {
-    const langClass = language && (this.options as HTMLGeneratorOptions).enableSyntaxHighlighting ? ` class="language-${language}"` : '';
+    const langClass =
+      language && (this.options as HTMLGeneratorOptions).enableSyntaxHighlighting
+        ? ` class="language-${language}"`
+        : '';
     return `<pre><code${langClass}>${code || ''}</code></pre>`;
   }
 
   /**
    * Format inline code
-   * 
+   *
    * @param text - Code text
    * @returns Formatted inline code
    */
@@ -831,7 +851,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   /**
    * Format bold text
-   * 
+   *
    * @param text - Text to bold
    * @returns Formatted bold text
    */
@@ -841,7 +861,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   /**
    * Format italic text
-   * 
+   *
    * @param text - Text to italicize
    * @returns Formatted italic text
    */
@@ -851,7 +871,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   /**
    * Format link
-   * 
+   *
    * @param text - Link text
    * @param url - Link URL
    * @returns Formatted link
@@ -862,7 +882,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   /**
    * Format list
-   * 
+   *
    * @param items - List items
    * @returns Formatted list
    */
@@ -874,7 +894,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   /**
    * Format numbered list
-   * 
+   *
    * @param items - List items
    * @returns Formatted numbered list
    */
@@ -886,7 +906,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   /**
    * Format table
-   * 
+   *
    * @param headers - Table headers
    * @param rows - Table rows
    * @returns Formatted table
@@ -897,7 +917,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let table = '<table>\n<thead>\n<tr>\n';
     table += headers.map(header => `<th>${header || ''}</th>`).join('\n');
     table += '\n</tr>\n</thead>\n<tbody>\n';
-    
+
     if (rows && rows.length > 0) {
       for (const row of rows) {
         table += '<tr>\n';
@@ -906,14 +926,14 @@ document.addEventListener('DOMContentLoaded', function() {
         table += '\n</tr>\n';
       }
     }
-    
+
     table += '</tbody>\n</table>';
     return table;
   }
 
   /**
    * Detect language from file extension or language name
-   * 
+   *
    * @param input - File path or language name
    * @returns Detected language
    */
@@ -921,37 +941,37 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!input) return 'text';
 
     const extension = input.split('.').pop()?.toLowerCase();
-    
+
     const languageMap: Record<string, string> = {
-      'ts': 'typescript',
-      'tsx': 'typescript',
-      'js': 'javascript',
-      'jsx': 'javascript',
-      'html': 'html',
-      'htm': 'html',
-      'css': 'css',
-      'scss': 'scss',
-      'sass': 'sass',
-      'json': 'json',
-      'md': 'markdown',
-      'sh': 'bash',
-      'sql': 'sql',
-      'py': 'python',
-      'java': 'java',
-      'cpp': 'cpp',
-      'c': 'c',
-      'cs': 'csharp',
-      'php': 'php',
-      'rb': 'ruby',
-      'go': 'go',
-      'rs': 'rust',
-      'swift': 'swift',
-      'kt': 'kotlin',
-      'scala': 'scala',
-      'typescript': 'typescript',
-      'javascript': 'javascript',
-      'markdown': 'markdown',
-      'bash': 'bash'
+      ts: 'typescript',
+      tsx: 'typescript',
+      js: 'javascript',
+      jsx: 'javascript',
+      html: 'html',
+      htm: 'html',
+      css: 'css',
+      scss: 'scss',
+      sass: 'sass',
+      json: 'json',
+      md: 'markdown',
+      sh: 'bash',
+      sql: 'sql',
+      py: 'python',
+      java: 'java',
+      cpp: 'cpp',
+      c: 'c',
+      cs: 'csharp',
+      php: 'php',
+      rb: 'ruby',
+      go: 'go',
+      rs: 'rust',
+      swift: 'swift',
+      kt: 'kotlin',
+      scala: 'scala',
+      typescript: 'typescript',
+      javascript: 'javascript',
+      markdown: 'markdown',
+      bash: 'bash',
     };
 
     return languageMap[extension || input.toLowerCase()] || 'text';
@@ -959,7 +979,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   /**
    * Process template with variables
-   * 
+   *
    * @param template - Template string
    * @param variables - Template variables
    * @returns Processed template
@@ -974,7 +994,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   /**
    * Validate HTML syntax
-   * 
+   *
    * @param html - HTML content
    * @returns True if valid
    */
@@ -989,12 +1009,13 @@ document.addEventListener('DOMContentLoaded', function() {
     while ((match = tagRegex.exec(html)) !== null) {
       const tagName = match[1].toLowerCase();
       const isClosing = match[0].startsWith('</');
-      
+
       if (isClosing) {
         if (openTags.length === 0 || openTags.pop() !== tagName) {
           return false;
         }
-      } else if (!match[0].endsWith('/>')) { // Not self-closing
+      } else if (!match[0].endsWith('/>')) {
+        // Not self-closing
         openTags.push(tagName);
       }
     }
@@ -1004,13 +1025,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
   /**
    * Count sections in HTML content
-   * 
+   *
    * @param content - HTML content
    * @returns Number of sections
    */
   private countSections(content: string): number {
     if (!content) return 0;
-    
+
     const headerMatches = content.match(/<h[1-6][^>]*>/gi);
     return headerMatches ? headerMatches.length : 0;
   }

@@ -1,6 +1,6 @@
 /**
  * Example Extractor for extracting and analyzing code examples
- * 
+ *
  * This module provides comprehensive example extraction capabilities including:
  * - JSDoc @example tag extraction and parsing
  * - Code example validation and formatting
@@ -13,19 +13,12 @@ import { ASTNode } from '../../types/core';
 /**
  * Example types
  */
-export type ExampleType = 
-  | 'jsdoc'
-  | 'usage'
-  | 'test'
-  | 'demo'
-  | 'snippet'
-  | 'tutorial'
-  | 'unknown';
+export type ExampleType = 'jsdoc' | 'usage' | 'test' | 'demo' | 'snippet' | 'tutorial' | 'unknown';
 
 /**
  * Example language
  */
-export type ExampleLanguage = 
+export type ExampleLanguage =
   | 'typescript'
   | 'javascript'
   | 'json'
@@ -123,7 +116,7 @@ export interface ExampleExtractionOptions {
 
 /**
  * Example Extractor class
- * 
+ *
  * Provides comprehensive example extraction and analysis capabilities
  */
 export class ExampleExtractor {
@@ -139,13 +132,13 @@ export class ExampleExtractor {
       extractOutput: true,
       extractMetadata: true,
       customTypes: [],
-      ...options
+      ...options,
     };
   }
 
   /**
    * Extract examples from AST nodes
-   * 
+   *
    * @param nodes - AST nodes to extract examples from
    * @returns Example extraction result
    */
@@ -158,7 +151,7 @@ export class ExampleExtractor {
     for (const node of nodes) {
       const nodeExamples = this.extractFromNode(node);
       examples.push(...nodeExamples);
-      
+
       if (node.filePath) {
         filesProcessed++;
         totalLines += this.getNodeLineCount(node);
@@ -182,14 +175,14 @@ export class ExampleExtractor {
       metadata: {
         filesProcessed,
         totalLines,
-        extractionTime: Math.max(1, Date.now() - startTime)
-      }
+        extractionTime: Math.max(1, Date.now() - startTime),
+      },
     };
   }
 
   /**
    * Extract examples from a single AST node
-   * 
+   *
    * @param node - AST node to extract examples from
    * @returns Array of example information
    */
@@ -225,19 +218,19 @@ export class ExampleExtractor {
 
   /**
    * Extract JSDoc examples from node
-   * 
+   *
    * @param node - AST node
    * @returns Array of JSDoc examples
    */
   private extractJSDocExamples(node: ASTNode): ExampleInfo[] {
     const examples: ExampleInfo[] = [];
 
-    if (node.properties && node.properties['jsDocComments']) {
+    if (node.properties?.['jsDocComments']) {
       const jsDocComments = node.properties['jsDocComments'] as string[];
-      
+
       for (const comment of jsDocComments) {
         const exampleMatches = this.findExampleTags(comment);
-        
+
         for (const match of exampleMatches) {
           const example = this.parseJSDocExample(match, node);
           if (example && this.shouldIncludeExample(example)) {
@@ -252,7 +245,7 @@ export class ExampleExtractor {
 
   /**
    * Find @example tags in JSDoc comment
-   * 
+   *
    * @param comment - JSDoc comment text
    * @returns Array of example matches
    */
@@ -264,7 +257,7 @@ export class ExampleExtractor {
     while ((match = exampleRegex.exec(comment)) !== null) {
       const language = match[1] || 'typescript';
       let code = match[2]?.trim();
-      
+
       if (code && !code.endsWith('*/')) {
         // Clean up JSDoc comment markers
         code = code.replace(/^\s*\*\s?/gm, '').trim();
@@ -277,7 +270,7 @@ export class ExampleExtractor {
 
   /**
    * Parse JSDoc example
-   * 
+   *
    * @param exampleMatch - Example match string
    * @param node - AST node
    * @returns Parsed example information
@@ -285,7 +278,7 @@ export class ExampleExtractor {
   private parseJSDocExample(exampleMatch: string, node: ASTNode): ExampleInfo | null {
     const [language, ...codeParts] = exampleMatch.split(':');
     const code = codeParts.join(':').trim();
-    
+
     if (!code) {
       return null;
     }
@@ -309,20 +302,20 @@ export class ExampleExtractor {
       metadata: {
         source: 'jsdoc',
         nodeId: node.id,
-        nodeName: node.name
+        nodeName: node.name,
       },
       filePath: node.filePath,
       start: node.start,
       end: node.end,
       lineNumber: this.calculateLineNumber(node.start),
       isValid,
-      errors
+      errors,
     };
   }
 
   /**
    * Extract usage examples from node
-   * 
+   *
    * @param node - AST node
    * @returns Array of usage examples
    */
@@ -330,9 +323,9 @@ export class ExampleExtractor {
     const examples: ExampleInfo[] = [];
 
     // Look for usage patterns in node properties
-    if (node.properties && node.properties['usageExamples']) {
+    if (node.properties?.['usageExamples']) {
       const usageExamples = node.properties['usageExamples'] as any[];
-      
+
       for (const usage of usageExamples) {
         const example = this.parseUsageExample(usage, node);
         if (example && this.shouldIncludeExample(example)) {
@@ -346,13 +339,13 @@ export class ExampleExtractor {
 
   /**
    * Parse usage example
-   * 
+   *
    * @param usage - Usage example data
    * @param node - AST node
    * @returns Parsed example information
    */
   private parseUsageExample(usage: any, node: ASTNode): ExampleInfo | null {
-    if (!usage || !usage.code) {
+    if (!usage?.code) {
       return null;
     }
 
@@ -377,20 +370,20 @@ export class ExampleExtractor {
         source: 'usage',
         nodeId: node.id,
         nodeName: node.name,
-        ...usage.metadata
+        ...usage.metadata,
       },
       filePath: node.filePath,
       start: node.start,
       end: node.end,
       lineNumber: this.calculateLineNumber(node.start),
       isValid,
-      errors
+      errors,
     };
   }
 
   /**
    * Extract test examples from node
-   * 
+   *
    * @param node - AST node
    * @returns Array of test examples
    */
@@ -398,9 +391,9 @@ export class ExampleExtractor {
     const examples: ExampleInfo[] = [];
 
     // Look for test patterns in node properties
-    if (node.properties && node.properties['testExamples']) {
+    if (node.properties?.['testExamples']) {
       const testExamples = node.properties['testExamples'] as any[];
-      
+
       for (const test of testExamples) {
         const example = this.parseTestExample(test, node);
         if (example && this.shouldIncludeExample(example)) {
@@ -414,13 +407,13 @@ export class ExampleExtractor {
 
   /**
    * Parse test example
-   * 
+   *
    * @param test - Test example data
    * @param node - AST node
    * @returns Parsed example information
    */
   private parseTestExample(test: any, node: ASTNode): ExampleInfo | null {
-    if (!test || !test.code) {
+    if (!test?.code) {
       return null;
     }
 
@@ -445,26 +438,26 @@ export class ExampleExtractor {
         source: 'test',
         nodeId: node.id,
         nodeName: node.name,
-        ...test.metadata
+        ...test.metadata,
       },
       filePath: node.filePath,
       start: node.start,
       end: node.end,
       lineNumber: this.calculateLineNumber(node.start),
       isValid,
-      errors
+      errors,
     };
   }
 
   /**
    * Determine example language
-   * 
+   *
    * @param language - Language string
    * @returns Example language enum
    */
   private determineLanguage(language: string): ExampleLanguage {
     const normalizedLang = language.toLowerCase().trim();
-    
+
     switch (normalizedLang) {
       case 'ts':
       case 'typescript':
@@ -494,13 +487,17 @@ export class ExampleExtractor {
 
   /**
    * Validate example syntax
-   * 
+   *
    * @param code - Example code
    * @param language - Example language
    * @param errors - Array to collect validation errors
    * @returns Whether example syntax is valid
    */
-  private validateExampleSyntax(code: string, language: ExampleLanguage, errors: string[]): boolean {
+  private validateExampleSyntax(
+    code: string,
+    language: ExampleLanguage,
+    errors: string[]
+  ): boolean {
     let isValid = true;
 
     // Basic validation based on language
@@ -531,7 +528,7 @@ export class ExampleExtractor {
 
   /**
    * Validate JavaScript/TypeScript syntax
-   * 
+   *
    * @param code - Code to validate
    * @param errors - Array to collect errors
    * @returns Whether syntax is valid
@@ -546,7 +543,7 @@ export class ExampleExtractor {
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
       if (!line) continue;
-      
+
       for (const char of line) {
         switch (char) {
           case '{':
@@ -591,7 +588,7 @@ export class ExampleExtractor {
 
   /**
    * Validate JSON syntax
-   * 
+   *
    * @param code - Code to validate
    * @param errors - Array to collect errors
    * @returns Whether syntax is valid
@@ -608,7 +605,7 @@ export class ExampleExtractor {
 
   /**
    * Validate HTML syntax
-   * 
+   *
    * @param code - Code to validate
    * @param errors - Array to collect errors
    * @returns Whether syntax is valid
@@ -647,7 +644,7 @@ export class ExampleExtractor {
 
   /**
    * Validate CSS syntax
-   * 
+   *
    * @param code - Code to validate
    * @param errors - Array to collect errors
    * @returns Whether syntax is valid
@@ -674,7 +671,7 @@ export class ExampleExtractor {
 
   /**
    * Generate example ID
-   * 
+   *
    * @param nodeId - Node ID
    * @param type - Example type
    * @returns Generated example ID
@@ -685,7 +682,7 @@ export class ExampleExtractor {
 
   /**
    * Check if example should be included based on options
-   * 
+   *
    * @param example - Example information
    * @returns Whether example should be included
    */
@@ -707,7 +704,7 @@ export class ExampleExtractor {
 
   /**
    * Calculate line number from position
-   * 
+   *
    * @param position - Character position
    * @returns Line number
    */
@@ -717,7 +714,7 @@ export class ExampleExtractor {
 
   /**
    * Get line count for a node
-   * 
+   *
    * @param node - AST node
    * @returns Number of lines
    */
@@ -727,7 +724,7 @@ export class ExampleExtractor {
 
   /**
    * Update extraction options
-   * 
+   *
    * @param options - New options to merge
    */
   public updateOptions(options: Partial<ExampleExtractionOptions>): void {
@@ -736,7 +733,7 @@ export class ExampleExtractor {
 
   /**
    * Get current extraction options
-   * 
+   *
    * @returns Current options
    */
   public getOptions(): ExampleExtractionOptions {

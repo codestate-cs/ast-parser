@@ -1,6 +1,6 @@
 /**
  * Documentation Index Tests
- * 
+ *
  * Tests for the documentation module index file to ensure all components
  * are properly exported and accessible.
  */
@@ -32,14 +32,22 @@ describe('Documentation Index', () => {
     });
 
     it('should export all extractors', () => {
-      const { JSDocExtractor, TypeExtractor, ExampleExtractor } = require('../../../src/documentation');
+      const {
+        JSDocExtractor,
+        TypeExtractor,
+        ExampleExtractor,
+      } = require('../../../src/documentation');
       expect(JSDocExtractor).toBeDefined();
       expect(TypeExtractor).toBeDefined();
       expect(ExampleExtractor).toBeDefined();
     });
 
     it('should export all generators', () => {
-      const { BaseGenerator, MarkdownGenerator, HTMLGenerator } = require('../../../src/documentation');
+      const {
+        BaseGenerator,
+        MarkdownGenerator,
+        HTMLGenerator,
+      } = require('../../../src/documentation');
       expect(BaseGenerator).toBeDefined();
       expect(MarkdownGenerator).toBeDefined();
       expect(HTMLGenerator).toBeDefined();
@@ -107,8 +115,13 @@ describe('Documentation Index', () => {
     });
 
     it('should allow instantiation of main components', () => {
-      const { DocumentationGenerator, QualityMetrics, CoverageAnalyzer, SuggestionGenerator } = require('../../../src/documentation');
-      
+      const {
+        DocumentationGenerator,
+        QualityMetrics,
+        CoverageAnalyzer,
+        SuggestionGenerator,
+      } = require('../../../src/documentation');
+
       // Test that we can create instances (with minimal options)
       expect(() => new DocumentationGenerator()).not.toThrow();
       expect(() => new QualityMetrics()).not.toThrow();
@@ -124,9 +137,9 @@ describe('Documentation Index', () => {
     });
 
     it('should support multiple imports', () => {
-      const { 
-        DocumentationGenerator, 
-        QualityMetrics, 
+      const {
+        DocumentationGenerator,
+        QualityMetrics,
         CoverageAnalyzer,
         SuggestionGenerator,
         JSDocExtractor,
@@ -137,9 +150,9 @@ describe('Documentation Index', () => {
         HTMLGenerator,
         BaseTemplate,
         OverviewTemplate,
-        APITemplate
+        APITemplate,
       } = require('../../../src/documentation');
-      
+
       expect(DocumentationGenerator).toBeDefined();
       expect(QualityMetrics).toBeDefined();
       expect(CoverageAnalyzer).toBeDefined();

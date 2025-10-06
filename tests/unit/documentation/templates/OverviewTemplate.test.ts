@@ -13,20 +13,20 @@ describe('OverviewTemplate', () => {
       rootPath: '/test/project',
       files: [
         { name: 'index.ts', path: '/test/project/index.ts', size: 1024 },
-        { name: 'utils.ts', path: '/test/project/utils.ts', size: 2048 }
+        { name: 'utils.ts', path: '/test/project/utils.ts', size: 2048 },
       ],
       statistics: {
         totalFiles: 2,
         totalLines: 150,
         totalFunctions: 10,
         totalClasses: 3,
-        totalInterfaces: 5
+        totalInterfaces: 5,
       },
       complexity: {
         averageComplexity: 2.5,
         maxComplexity: 8,
-        highComplexityFiles: 2
-      }
+        highComplexityFiles: 2,
+      },
     };
   });
 
@@ -39,10 +39,10 @@ describe('OverviewTemplate', () => {
     it('should initialize with custom options', () => {
       const customOptions = {
         templateVariables: { customVar: 'value' },
-        validateTemplate: false
+        validateTemplate: false,
       };
       const customTemplate = new OverviewTemplate(customOptions);
-      
+
       expect(customTemplate.getOptions().templateVariables).toEqual({ customVar: 'value' });
       expect(customTemplate.getOptions().validateTemplate).toBe(false);
     });
@@ -143,13 +143,13 @@ describe('OverviewTemplate', () => {
   describe('customization', () => {
     it('should support custom template variables', () => {
       const customOptions = {
-        templateVariables: { 
+        templateVariables: {
           customTitle: 'Custom Overview',
-          customStyle: 'modern'
-        }
+          customStyle: 'modern',
+        },
       };
       const customTemplate = new OverviewTemplate(customOptions);
-      
+
       const templateContent = '{{customTitle}} - {{customStyle}}';
       const variables = {};
 
@@ -163,7 +163,7 @@ describe('OverviewTemplate', () => {
     it('should allow template inheritance', () => {
       const baseTemplate = 'Base: {{name}}';
       const extendedTemplate = 'Extended: {{name}} - {{version}}';
-      
+
       template.loadTemplate(baseTemplate);
       const result = template.extendTemplate(extendedTemplate);
 
@@ -173,13 +173,13 @@ describe('OverviewTemplate', () => {
 
     it('should support different overview styles', () => {
       const styleOptions = {
-        templateVariables: { 
+        templateVariables: {
           style: 'detailed',
-          format: 'markdown'
-        }
+          format: 'markdown',
+        },
       };
       const styledTemplate = new OverviewTemplate(styleOptions);
-      
+
       const result = styledTemplate.generateContent(mockProjectData);
 
       expect(result).toBeDefined();
@@ -216,7 +216,7 @@ describe('OverviewTemplate', () => {
     it('should update options correctly', () => {
       const newOptions = {
         validateTemplate: false,
-        templateVariables: { newVar: 'value' }
+        templateVariables: { newVar: 'value' },
       };
 
       template.updateOptions(newOptions);
@@ -235,7 +235,7 @@ describe('OverviewTemplate', () => {
 
     it('should handle partial options update', () => {
       const partialOptions = { validateTemplate: false };
-      
+
       template.updateOptions(partialOptions);
       const options = template.getOptions();
 
@@ -268,7 +268,7 @@ describe('OverviewTemplate', () => {
     it('should handle configuration errors', () => {
       const invalidOptions = {
         validateTemplate: 'invalid' as any,
-        templateVariables: 'invalid' as any
+        templateVariables: 'invalid' as any,
       };
 
       template.updateOptions(invalidOptions);
@@ -286,8 +286,8 @@ describe('OverviewTemplate', () => {
         files: Array.from({ length: 1000 }, (_, i) => ({
           name: `file${i}.ts`,
           path: `/test/project/file${i}.ts`,
-          size: 1024
-        }))
+          size: 1024,
+        })),
       };
 
       const result = template.generateContent(largeData);
@@ -300,7 +300,7 @@ describe('OverviewTemplate', () => {
       const specialData = {
         ...mockProjectData,
         name: 'Test Project & Co. (Ltd.)',
-        description: 'A project with "quotes" and <tags>'
+        description: 'A project with "quotes" and <tags>',
       };
 
       const result = template.generateContent(specialData);
@@ -313,7 +313,7 @@ describe('OverviewTemplate', () => {
       const unicodeData = {
         ...mockProjectData,
         name: '测试项目',
-        description: 'Un projet de test 🚀'
+        description: 'Un projet de test 🚀',
       };
 
       const result = template.generateContent(unicodeData);
@@ -325,7 +325,7 @@ describe('OverviewTemplate', () => {
 
     it('should handle concurrent template processing', async () => {
       const templateContent = 'Project: {{name}}';
-      const promises = Array.from({ length: 10 }, (_, i) => 
+      const promises = Array.from({ length: 10 }, (_, i) =>
         template.processTemplate(templateContent, { name: `Project${i}` })
       );
 
@@ -449,12 +449,11 @@ describe('OverviewTemplate', () => {
         expect(result.length).toBeGreaterThan(0);
       });
 
-
       it('should handle options disabled for sections', () => {
         const customTemplate = new OverviewTemplate({
           includeStatistics: false,
           includeComplexity: false,
-          includeFileOverview: false
+          includeFileOverview: false,
         });
 
         const result = customTemplate.generateContent(mockProjectData);
@@ -554,10 +553,10 @@ describe('OverviewTemplate', () => {
       });
 
       it('should handle invalid totalFiles type', () => {
-        const data = { 
-          name: 'Test Project', 
-          version: '1.0.0', 
-          statistics: { totalFiles: 'invalid' }
+        const data = {
+          name: 'Test Project',
+          version: '1.0.0',
+          statistics: { totalFiles: 'invalid' },
         };
         const result = template.validateOverviewData(data);
 
@@ -566,10 +565,10 @@ describe('OverviewTemplate', () => {
       });
 
       it('should handle invalid totalLines type', () => {
-        const data = { 
-          name: 'Test Project', 
-          version: '1.0.0', 
-          statistics: { totalLines: 'invalid' }
+        const data = {
+          name: 'Test Project',
+          version: '1.0.0',
+          statistics: { totalLines: 'invalid' },
         };
         const result = template.validateOverviewData(data);
 
@@ -586,10 +585,10 @@ describe('OverviewTemplate', () => {
       });
 
       it('should handle invalid averageComplexity type', () => {
-        const data = { 
-          name: 'Test Project', 
-          version: '1.0.0', 
-          complexity: { averageComplexity: 'invalid' }
+        const data = {
+          name: 'Test Project',
+          version: '1.0.0',
+          complexity: { averageComplexity: 'invalid' },
         };
         const result = template.validateOverviewData(data);
 
@@ -598,10 +597,10 @@ describe('OverviewTemplate', () => {
       });
 
       it('should handle invalid maxComplexity type', () => {
-        const data = { 
-          name: 'Test Project', 
-          version: '1.0.0', 
-          complexity: { maxComplexity: 'invalid' }
+        const data = {
+          name: 'Test Project',
+          version: '1.0.0',
+          complexity: { maxComplexity: 'invalid' },
         };
         const result = template.validateOverviewData(data);
 
@@ -621,16 +620,16 @@ describe('OverviewTemplate', () => {
       });
 
       it('should handle statistics with undefined values', () => {
-        const data = { 
-          name: 'Test Project', 
+        const data = {
+          name: 'Test Project',
           version: '1.0.0',
           statistics: {
             totalFiles: undefined,
             totalLines: undefined,
             totalFunctions: undefined,
             totalClasses: undefined,
-            totalInterfaces: undefined
-          }
+            totalInterfaces: undefined,
+          },
         };
         const result = template.generateStatisticsSection(data);
 
@@ -651,14 +650,14 @@ describe('OverviewTemplate', () => {
       });
 
       it('should handle complexity with undefined values', () => {
-        const data = { 
-          name: 'Test Project', 
+        const data = {
+          name: 'Test Project',
           version: '1.0.0',
           complexity: {
             averageComplexity: undefined,
             maxComplexity: undefined,
-            highComplexityFiles: undefined
-          }
+            highComplexityFiles: undefined,
+          },
         };
         const result = template.generateComplexitySection(data);
 
@@ -679,14 +678,10 @@ describe('OverviewTemplate', () => {
       });
 
       it('should handle files with missing properties', () => {
-        const data = { 
-          name: 'Test Project', 
+        const data = {
+          name: 'Test Project',
           version: '1.0.0',
-          files: [
-            { name: 'test.ts' },
-            { size: 1024 },
-            { name: 'test2.ts', size: 2048 }
-          ]
+          files: [{ name: 'test.ts' }, { size: 1024 }, { name: 'test2.ts', size: 2048 }],
         };
         const result = template.generateFileOverviewSection(data);
 
@@ -699,15 +694,15 @@ describe('OverviewTemplate', () => {
 
       it('should handle files exceeding maxFilesDisplay', () => {
         const customTemplate = new OverviewTemplate({ maxFilesDisplay: 2 });
-        const data = { 
-          name: 'Test Project', 
+        const data = {
+          name: 'Test Project',
           version: '1.0.0',
           files: [
             { name: 'file1.ts', size: 1024 },
             { name: 'file2.ts', size: 2048 },
             { name: 'file3.ts', size: 3072 },
-            { name: 'file4.ts', size: 4096 }
-          ]
+            { name: 'file4.ts', size: 4096 },
+          ],
         };
         const result = customTemplate.generateFileOverviewSection(data);
 
@@ -748,7 +743,9 @@ describe('OverviewTemplate', () => {
         const validation = customTemplate.validateConfiguration();
 
         expect(validation.isValid).toBe(false);
-        expect(validation.errors).toContain('overviewStyle must be one of: simple, detailed, comprehensive');
+        expect(validation.errors).toContain(
+          'overviewStyle must be one of: simple, detailed, comprehensive'
+        );
       });
 
       it('should handle invalid maxFilesDisplay type', () => {
@@ -769,7 +766,7 @@ describe('OverviewTemplate', () => {
 
       it('should handle valid overviewStyle values', () => {
         const styles = ['simple', 'detailed', 'comprehensive'];
-        
+
         styles.forEach(style => {
           const customTemplate = new OverviewTemplate({ overviewStyle: style as any });
           const validation = customTemplate.validateConfiguration();

@@ -1,6 +1,6 @@
 /**
  * CoverageAnalyzer - Analyzes test coverage for code projects
- * 
+ *
  * This class provides comprehensive analysis of test coverage data,
  * including metrics calculation, report generation, and recommendations.
  */
@@ -112,7 +112,7 @@ export class CoverageAnalyzer {
         if (!validation.isValid) {
           return {
             success: false,
-            error: `Validation failed: ${validation.errors.join(', ')}`
+            error: `Validation failed: ${validation.errors.join(', ')}`,
           };
         }
       }
@@ -126,19 +126,20 @@ export class CoverageAnalyzer {
         coverage: {
           overall,
           lowCoverageFiles,
-          trends
+          trends,
         },
         summary: {
           totalFiles: coverageData.files?.length || 0,
-          coveredFiles: coverageData.files?.filter((f: any) => f.statements?.percentage > 0).length || 0,
+          coveredFiles:
+            coverageData.files?.filter((f: any) => f.statements?.percentage > 0).length || 0,
           averageCoverage: overall.statements,
-          criticalIssues: lowCoverageFiles.length
-        }
+          criticalIssues: lowCoverageFiles.length,
+        },
       };
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown analysis error'
+        error: error instanceof Error ? error.message : 'Unknown analysis error',
       };
     }
   }
@@ -151,7 +152,7 @@ export class CoverageAnalyzer {
       if (!analysis.success) {
         return {
           success: false,
-          error: 'Cannot generate report from failed analysis'
+          error: 'Cannot generate report from failed analysis',
         };
       }
 
@@ -166,20 +167,20 @@ export class CoverageAnalyzer {
           summary: {
             overall: analysis.coverage?.overall?.statements || 0,
             critical: analysis.summary?.criticalIssues || 0,
-            warnings: files.filter(f => f.issues.length > 0).length
-          }
+            warnings: files.filter(f => f.issues.length > 0).length,
+          },
         },
         summary: {
           generated: new Date().toISOString(),
           totalFiles: analysis.summary?.totalFiles || 0,
           criticalIssues: analysis.summary?.criticalIssues || 0,
-          recommendations: recommendations.length
-        }
+          recommendations: recommendations.length,
+        },
       };
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : 'Unknown report generation error'
+        error: error instanceof Error ? error.message : 'Unknown report generation error',
       };
     }
   }
@@ -219,7 +220,7 @@ export class CoverageAnalyzer {
     return {
       isValid: errors.length === 0,
       errors,
-      data
+      data,
     };
   }
 
@@ -246,7 +247,7 @@ export class CoverageAnalyzer {
         statements: 0,
         branches: 0,
         functions: 0,
-        lines: 0
+        lines: 0,
       };
     }
 
@@ -254,7 +255,7 @@ export class CoverageAnalyzer {
       statements: coverage.statements?.percentage || 0,
       branches: coverage.branches?.percentage || 0,
       functions: coverage.functions?.percentage || 0,
-      lines: coverage.lines?.percentage || 0
+      lines: coverage.lines?.percentage || 0,
     };
   }
 
@@ -262,16 +263,18 @@ export class CoverageAnalyzer {
    * Identify files with low coverage
    */
   private identifyLowCoverageFiles(files: any[]): any[] {
-    return files.filter(file => {
-      const coverage = file.statements?.percentage || 0;
-      return coverage < this.options.minCoverageThreshold;
-    }).map(file => ({
-      path: file.path,
-      statements: file.statements?.percentage || 0,
-      branches: file.branches?.percentage || 0,
-      functions: file.functions?.percentage || 0,
-      lines: file.lines?.percentage || 0
-    }));
+    return files
+      .filter(file => {
+        const coverage = file.statements?.percentage || 0;
+        return coverage < this.options.minCoverageThreshold;
+      })
+      .map(file => ({
+        path: file.path,
+        statements: file.statements?.percentage || 0,
+        branches: file.branches?.percentage || 0,
+        functions: file.functions?.percentage || 0,
+        lines: file.lines?.percentage || 0,
+      }));
   }
 
   /**
@@ -285,7 +288,7 @@ export class CoverageAnalyzer {
     return {
       improvement: overall.statements > threshold + 5,
       decline: overall.statements < threshold - 5,
-      stable: Math.abs(overall.statements - threshold) <= 5
+      stable: Math.abs(overall.statements - threshold) <= 5,
     };
   }
 
@@ -299,10 +302,10 @@ export class CoverageAnalyzer {
         statements: file.statements,
         branches: file.branches,
         functions: file.functions,
-        lines: file.lines
+        lines: file.lines,
       },
       issues: this.identifyFileIssues(file),
-      recommendations: this.generateFileRecommendations(file)
+      recommendations: this.generateFileRecommendations(file),
     }));
   }
 
@@ -384,8 +387,8 @@ export class CoverageAnalyzer {
         statements: 0.3,
         branches: 0.3,
         functions: 0.2,
-        lines: 0.2
-      }
+        lines: 0.2,
+      },
     };
   }
 }
