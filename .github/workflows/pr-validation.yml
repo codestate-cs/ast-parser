@@ -138,6 +138,7 @@ jobs:
         name: codecov-pr
         fail_ci_if_error: false
         verbose: true
+      if: false  # Disabled - only upload coverage on main branch updates
 
   build-check:
     runs-on: ubuntu-latest
