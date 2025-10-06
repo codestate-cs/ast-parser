@@ -1,14 +1,14 @@
-import { 
-  PerformanceMetrics, 
-  PerformanceReport, 
-  OperationTiming, 
+import {
+  PerformanceMetrics,
+  PerformanceReport,
+  OperationTiming,
   PerformanceMonitorOptions,
   PerformanceSummary,
   PerformanceRecommendation,
   MemoryUsage,
   CpuUsage,
   CacheStatistics,
-  FileProcessingStatistics
+  FileProcessingStatistics,
 } from '../../types/performance';
 import { logInfo, logWarn, logError } from '../error/ErrorLogger';
 
@@ -20,12 +20,12 @@ export class PerformanceMonitor {
   private operationTimings: Map<string, OperationTiming> = new Map();
   private operationHistory: OperationTiming[] = [];
   private cacheStats: CacheStatistics = { hits: 0, misses: 0, hitRate: 0, totalOperations: 0 };
-  private fileStats: FileProcessingStatistics = { 
-    totalFiles: 0, 
-    totalBytes: 0, 
-    averageFileSize: 0, 
-    processingRate: 0, 
-    bytesPerSecond: 0 
+  private fileStats: FileProcessingStatistics = {
+    totalFiles: 0,
+    totalBytes: 0,
+    averageFileSize: 0,
+    processingRate: 0,
+    bytesPerSecond: 0,
   };
   private startTime: number = Date.now();
   private memoryPeak: number = 0;
@@ -44,13 +44,13 @@ export class PerformanceMonitor {
     try {
       const operationId = this.generateOperationId();
       const startTime = this.getCurrentTime();
-      
+
       const timing: OperationTiming = {
         id: operationId,
         operation: operation || 'unknown',
         file: file || 'unknown',
         startTime,
-        metadata: metadata || {}
+        metadata: metadata || {},
       };
 
       // Track memory usage if enabled
@@ -58,7 +58,9 @@ export class PerformanceMonitor {
         try {
           timing.memoryStart = this.getMemoryUsageInMB();
         } catch (error) {
-          logWarn('Failed to track memory usage at operation start', { error: (error as Error).message });
+          logWarn('Failed to track memory usage at operation start', {
+            error: (error as Error).message,
+          });
         }
       }
 
@@ -67,16 +69,18 @@ export class PerformanceMonitor {
         try {
           timing.cpuStart = this.getCpuUsage();
         } catch (error) {
-          logWarn('Failed to track CPU usage at operation start', { error: (error as Error).message });
+          logWarn('Failed to track CPU usage at operation start', {
+            error: (error as Error).message,
+          });
         }
       }
 
       this.operationTimings.set(operationId, timing);
-      
+
       return operationId;
     } catch (error) {
       logError('Failed to start operation timing', error as Error);
-      return 'error-' + Date.now();
+      return `error-${Date.now()}`;
     }
   }
 
@@ -100,13 +104,15 @@ export class PerformanceMonitor {
         try {
           timing.memoryEnd = this.getMemoryUsageInMB();
           timing.memoryGrowth = timing.memoryEnd - timing.memoryStart;
-          
+
           // Update memory peak
           if (timing.memoryEnd > this.memoryPeak) {
             this.memoryPeak = timing.memoryEnd;
           }
         } catch (error) {
-          logWarn('Failed to track memory usage at operation end', { error: (error as Error).message });
+          logWarn('Failed to track memory usage at operation end', {
+            error: (error as Error).message,
+          });
         }
       }
 
@@ -115,14 +121,16 @@ export class PerformanceMonitor {
         try {
           timing.cpuEnd = this.getCpuUsage();
         } catch (error) {
-          logWarn('Failed to track CPU usage at operation end', { error: (error as Error).message });
+          logWarn('Failed to track CPU usage at operation end', {
+            error: (error as Error).message,
+          });
         }
       }
 
       // Move to history and clean up
       this.operationHistory.push({ ...timing });
       this.operationTimings.delete(operationId);
-      
+
       // Limit history size
       if (this.operationHistory.length > this.options.maxMetricsHistory) {
         this.operationHistory = this.operationHistory.slice(-this.options.maxMetricsHistory);
@@ -169,7 +177,7 @@ export class PerformanceMonitor {
       this.fileStats.totalFiles++;
       this.fileStats.totalBytes += Math.max(0, size);
       this.fileStats.averageFileSize = this.fileStats.totalBytes / this.fileStats.totalFiles;
-      
+
       // Calculate processing rate
       const elapsedTime = (Date.now() - this.startTime) / 1000; // seconds
       if (elapsedTime > 0) {
@@ -189,10 +197,10 @@ export class PerformanceMonitor {
       const totalOperations = this.operationHistory.length;
       const totalDuration = this.operationHistory.reduce((sum, op) => sum + (op.duration || 0), 0);
       const averageDuration = totalOperations > 0 ? totalDuration / totalOperations : 0;
-      
+
       const currentMemory = this.getMemoryUsageInMB();
       const memoryGrowth = currentMemory - this.getInitialMemoryUsage();
-      
+
       const elapsedTime = (Date.now() - this.startTime) / 1000; // seconds
       const operationsPerSecond = elapsedTime > 0 ? totalOperations / elapsedTime : 0;
 
@@ -209,8 +217,8 @@ export class PerformanceMonitor {
         resourceUsage: {
           cpuUsage: this.getCpuUsagePercentage(),
           memoryUsage: this.getMemoryUsagePercentage(),
-          diskIO: this.getDiskIOUsage()
-        }
+          diskIO: this.getDiskIOUsage(),
+        },
       };
     } catch (error) {
       logError('Failed to get performance metrics', error as Error);
@@ -240,7 +248,7 @@ export class PerformanceMonitor {
         metrics,
         recommendations,
         operationHistory: this.getOperationHistory(),
-        report: summary
+        report: summary,
       };
     } catch (error) {
       logError('Failed to generate performance report', error as Error);
@@ -256,12 +264,12 @@ export class PerformanceMonitor {
       this.operationTimings.clear();
       this.operationHistory = [];
       this.cacheStats = { hits: 0, misses: 0, hitRate: 0, totalOperations: 0 };
-      this.fileStats = { 
-        totalFiles: 0, 
-        totalBytes: 0, 
-        averageFileSize: 0, 
-        processingRate: 0, 
-        bytesPerSecond: 0 
+      this.fileStats = {
+        totalFiles: 0,
+        totalBytes: 0,
+        averageFileSize: 0,
+        processingRate: 0,
+        bytesPerSecond: 0,
       };
       this.startTime = Date.now();
       this.memoryPeak = 0;
@@ -284,7 +292,7 @@ export class PerformanceMonitor {
         heapTotal: 0,
         heapUsed: 0,
         external: 0,
-        arrayBuffers: 0
+        arrayBuffers: 0,
       };
     }
   }
@@ -327,8 +335,8 @@ export class PerformanceMonitor {
         maxOperationDuration: 5000, // 5 seconds
         maxMemoryUsage: 1024, // 1GB
         minCacheHitRate: 0.8, // 80%
-        maxMemoryGrowth: 100 // 100MB
-      }
+        maxMemoryGrowth: 100, // 100MB
+      },
     };
   }
 
@@ -390,46 +398,46 @@ export class PerformanceMonitor {
 
   private generateSummary(metrics: PerformanceMetrics): PerformanceSummary {
     const performanceScore = this.calculatePerformanceScore(metrics);
-    
+
     return {
       totalOperations: metrics.totalOperations,
       averageDuration: metrics.averageDuration,
       memoryUsage: {
         current: metrics.memoryCurrent,
         peak: metrics.memoryPeak,
-        growth: metrics.memoryGrowth
+        growth: metrics.memoryGrowth,
       },
       performanceScore,
       cacheEfficiency: metrics.cacheHitRate,
-      fileProcessingEfficiency: metrics.fileProcessingRate
+      fileProcessingEfficiency: metrics.fileProcessingRate,
     };
   }
 
   private calculatePerformanceScore(metrics: PerformanceMetrics): number {
     let score = 100;
-    
+
     // Penalize slow operations
     if (metrics.averageDuration > 1000) score -= 20;
     else if (metrics.averageDuration > 500) score -= 10;
-    
+
     // Penalize high memory usage
     if (metrics.memoryCurrent > 500) score -= 15;
     else if (metrics.memoryCurrent > 200) score -= 10;
-    
+
     // Penalize low cache hit rate
     if (metrics.cacheHitRate < 0.5) score -= 25;
     else if (metrics.cacheHitRate < 0.8) score -= 15;
-    
+
     // Penalize high memory growth
     if (metrics.memoryGrowth > 50) score -= 20;
     else if (metrics.memoryGrowth > 20) score -= 10;
-    
+
     return Math.max(0, Math.min(100, score));
   }
 
   private generateRecommendations(metrics: PerformanceMetrics): PerformanceRecommendation[] {
     const recommendations: PerformanceRecommendation[] = [];
-    
+
     // Memory recommendations
     if (metrics.memoryCurrent > (this.options.thresholds.maxMemoryUsage || 1024)) {
       recommendations.push({
@@ -437,20 +445,20 @@ export class PerformanceMonitor {
         description: 'High memory usage detected',
         impact: 'high',
         action: 'Consider implementing memory cleanup or reducing cache size',
-        context: `Current usage: ${metrics.memoryCurrent.toFixed(2)}MB`
+        context: `Current usage: ${metrics.memoryCurrent.toFixed(2)}MB`,
       });
     }
-    
+
     if (metrics.memoryGrowth > (this.options.thresholds.maxMemoryGrowth || 100)) {
       recommendations.push({
         type: 'memory',
         description: 'Significant memory growth detected',
         impact: 'medium',
         action: 'Check for memory leaks or implement garbage collection',
-        context: `Growth: ${metrics.memoryGrowth.toFixed(2)}MB`
+        context: `Growth: ${metrics.memoryGrowth.toFixed(2)}MB`,
       });
     }
-    
+
     // Performance recommendations
     if (metrics.averageDuration > (this.options.thresholds.maxOperationDuration || 5000)) {
       recommendations.push({
@@ -458,10 +466,10 @@ export class PerformanceMonitor {
         description: 'Slow operation performance detected',
         impact: 'high',
         action: 'Optimize parsing algorithms or implement caching',
-        context: `Average duration: ${metrics.averageDuration.toFixed(2)}ms`
+        context: `Average duration: ${metrics.averageDuration.toFixed(2)}ms`,
       });
     }
-    
+
     // Cache recommendations
     if (metrics.cacheHitRate < (this.options.thresholds.minCacheHitRate || 0.8)) {
       recommendations.push({
@@ -469,10 +477,10 @@ export class PerformanceMonitor {
         description: 'Low cache hit rate detected',
         impact: 'medium',
         action: 'Review cache invalidation strategy or increase cache size',
-        context: `Hit rate: ${(metrics.cacheHitRate * 100).toFixed(1)}%`
+        context: `Hit rate: ${(metrics.cacheHitRate * 100).toFixed(1)}%`,
       });
     }
-    
+
     // General recommendations
     if (metrics.operationsPerSecond < 1) {
       recommendations.push({
@@ -480,10 +488,10 @@ export class PerformanceMonitor {
         description: 'Low operation throughput',
         impact: 'medium',
         action: 'Consider parallel processing or algorithm optimization',
-        context: `Throughput: ${metrics.operationsPerSecond.toFixed(2)} ops/sec`
+        context: `Throughput: ${metrics.operationsPerSecond.toFixed(2)} ops/sec`,
       });
     }
-    
+
     return recommendations;
   }
 
@@ -500,9 +508,9 @@ export class PerformanceMonitor {
       this.reportTimer = setInterval(() => {
         try {
           const report = this.generateReport();
-          logInfo('Performance Report', { 
+          logInfo('Performance Report', {
             summary: report.summary,
-            recommendations: report.recommendations.length 
+            recommendations: report.recommendations.length,
           });
         } catch (error) {
           logError('Failed to generate auto report', error as Error);
@@ -532,8 +540,8 @@ export class PerformanceMonitor {
       resourceUsage: {
         cpuUsage: 0,
         memoryUsage: 0,
-        diskIO: 0
-      }
+        diskIO: 0,
+      },
     };
   }
 
@@ -544,16 +552,16 @@ export class PerformanceMonitor {
       memoryUsage: { current: 0, peak: 0, growth: 0 },
       performanceScore: 100,
       cacheEfficiency: 0,
-      fileProcessingEfficiency: 0
+      fileProcessingEfficiency: 0,
     };
-    
+
     return {
       timestamp: new Date(),
       summary,
       metrics: this.getDefaultMetrics(),
       recommendations: [],
       operationHistory: [],
-      report: summary
+      report: summary,
     };
   }
 }

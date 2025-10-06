@@ -2,18 +2,18 @@
  * Tests for ErrorLogger utilities
  */
 
-import { 
-  ConsoleLogger, 
-  FileLogger, 
-  LogLevel, 
+import {
+  ConsoleLogger,
+  FileLogger,
+  LogLevel,
   LogEntry,
   Logger,
   logDebug,
   logInfo,
   logWarn,
   logError,
-  CodestateASTError, 
-  ErrorCodes
+  CodestateASTError,
+  ErrorCodes,
 } from '../../../src/utils';
 
 describe('ErrorLogger', () => {
@@ -50,38 +50,28 @@ describe('ErrorLogger', () => {
 
     it('should log debug messages', () => {
       logger.debug('Debug message', { key: 'value' });
-      expect(consoleDebugSpy).toHaveBeenCalledWith(
-        expect.stringContaining('Debug message')
-      );
+      expect(consoleDebugSpy).toHaveBeenCalledWith(expect.stringContaining('Debug message'));
     });
 
     it('should log info messages', () => {
       logger.info('Info message', { key: 'value' });
-      expect(consoleInfoSpy).toHaveBeenCalledWith(
-        expect.stringContaining('Info message')
-      );
+      expect(consoleInfoSpy).toHaveBeenCalledWith(expect.stringContaining('Info message'));
     });
 
     it('should log warning messages', () => {
       logger.warn('Warning message', { key: 'value' });
-      expect(consoleWarnSpy).toHaveBeenCalledWith(
-        expect.stringContaining('Warning message')
-      );
+      expect(consoleWarnSpy).toHaveBeenCalledWith(expect.stringContaining('Warning message'));
     });
 
     it('should log warning messages with undefined context', () => {
       logger.warn('Warning message', undefined);
-      expect(consoleWarnSpy).toHaveBeenCalledWith(
-        expect.stringContaining('Warning message')
-      );
+      expect(consoleWarnSpy).toHaveBeenCalledWith(expect.stringContaining('Warning message'));
     });
 
     it('should log error messages', () => {
       const error = new Error('Test error');
       logger.error('Error message', error, { key: 'value' });
-      expect(consoleErrorSpy).toHaveBeenCalledWith(
-        expect.stringContaining('Error message')
-      );
+      expect(consoleErrorSpy).toHaveBeenCalledWith(expect.stringContaining('Error message'));
     });
 
     it('should log entries', () => {
@@ -89,27 +79,21 @@ describe('ErrorLogger', () => {
         timestamp: new Date(),
         level: LogLevel.INFO,
         message: 'Test message',
-        context: { key: 'value' }
+        context: { key: 'value' },
       };
 
       logger.log(entry);
-      expect(consoleInfoSpy).toHaveBeenCalledWith(
-        expect.stringContaining('Test message')
-      );
+      expect(consoleInfoSpy).toHaveBeenCalledWith(expect.stringContaining('Test message'));
     });
 
     it('should handle messages without context', () => {
       logger.info('Simple message');
-      expect(consoleInfoSpy).toHaveBeenCalledWith(
-        expect.stringContaining('Simple message')
-      );
+      expect(consoleInfoSpy).toHaveBeenCalledWith(expect.stringContaining('Simple message'));
     });
 
     it('should handle error messages without error', () => {
       logger.error('Error message');
-      expect(consoleErrorSpy).toHaveBeenCalledWith(
-        expect.stringContaining('Error message')
-      );
+      expect(consoleErrorSpy).toHaveBeenCalledWith(expect.stringContaining('Error message'));
     });
   });
 
@@ -164,7 +148,7 @@ describe('ErrorLogger', () => {
         timestamp: new Date(),
         level: LogLevel.INFO,
         message: 'Test message',
-        context: { key: 'value' }
+        context: { key: 'value' },
       };
 
       await logger.log(entry);
@@ -178,7 +162,7 @@ describe('ErrorLogger', () => {
       mockAppendFileSync.mockImplementation(() => {
         throw new Error('Write failed');
       });
-      
+
       // Should not throw since FileLogger catches errors
       await logger.info('Test message');
       expect(mockAppendFileSync).toHaveBeenCalled();
@@ -241,47 +225,35 @@ describe('ErrorLogger', () => {
 
     it('should log info messages', () => {
       logInfo('Test info message', { key: 'value' });
-      expect(consoleInfoSpy).toHaveBeenCalledWith(
-        expect.stringContaining('Test info message')
-      );
+      expect(consoleInfoSpy).toHaveBeenCalledWith(expect.stringContaining('Test info message'));
     });
 
     it('should log error messages', () => {
       const error = new Error('Test error');
       logError('Test error message', error, { key: 'value' });
-      expect(consoleErrorSpy).toHaveBeenCalledWith(
-        expect.stringContaining('Test error message')
-      );
+      expect(consoleErrorSpy).toHaveBeenCalledWith(expect.stringContaining('Test error message'));
     });
 
     it('should log warning messages', () => {
       logWarn('Test warning message', { key: 'value' });
-      expect(consoleWarnSpy).toHaveBeenCalledWith(
-        expect.stringContaining('Test warning message')
-      );
+      expect(consoleWarnSpy).toHaveBeenCalledWith(expect.stringContaining('Test warning message'));
     });
 
     it('should log debug messages', () => {
       // Create a debug logger that allows debug messages
       const debugLogger = new ConsoleLogger({ minLevel: LogLevel.DEBUG });
       debugLogger.debug('Test debug message', { key: 'value' });
-      expect(consoleDebugSpy).toHaveBeenCalledWith(
-        expect.stringContaining('Test debug message')
-      );
+      expect(consoleDebugSpy).toHaveBeenCalledWith(expect.stringContaining('Test debug message'));
     });
 
     it('should handle messages without context', () => {
       logInfo('Simple message');
-      expect(consoleInfoSpy).toHaveBeenCalledWith(
-        expect.stringContaining('Simple message')
-      );
+      expect(consoleInfoSpy).toHaveBeenCalledWith(expect.stringContaining('Simple message'));
     });
 
     it('should handle error messages without error', () => {
       logError('Error message');
-      expect(consoleErrorSpy).toHaveBeenCalledWith(
-        expect.stringContaining('Error message')
-      );
+      expect(consoleErrorSpy).toHaveBeenCalledWith(expect.stringContaining('Error message'));
     });
   });
 
@@ -292,7 +264,7 @@ describe('ErrorLogger', () => {
         info: jest.fn(),
         warn: jest.fn(),
         error: jest.fn(),
-        log: jest.fn()
+        log: jest.fn(),
       };
 
       expect(logger.debug).toBeDefined();
@@ -310,7 +282,7 @@ describe('ErrorLogger', () => {
         level: LogLevel.INFO,
         message: 'Test message',
         context: { key: 'value' },
-        error: new Error('Test error')
+        error: new Error('Test error'),
       };
 
       expect(entry.timestamp).toBeInstanceOf(Date);
@@ -324,7 +296,7 @@ describe('ErrorLogger', () => {
       const entry: LogEntry = {
         timestamp: new Date(),
         level: LogLevel.DEBUG,
-        message: 'Minimal message'
+        message: 'Minimal message',
       };
 
       expect(entry.timestamp).toBeInstanceOf(Date);
@@ -347,24 +319,18 @@ describe('ErrorLogger', () => {
     });
 
     it('should handle CodestateASTError', () => {
-      const error = new CodestateASTError(
-        'Test error',
-        ErrorCodes.PROJECT_PARSING_ERROR,
-        { filePath: '/test/file.ts' }
-      );
+      const error = new CodestateASTError('Test error', ErrorCodes.PROJECT_PARSING_ERROR, {
+        filePath: '/test/file.ts',
+      });
 
       logError('Parsing failed', error, { context: 'test' });
-      expect(consoleErrorSpy).toHaveBeenCalledWith(
-        expect.stringContaining('Parsing failed')
-      );
+      expect(consoleErrorSpy).toHaveBeenCalledWith(expect.stringContaining('Parsing failed'));
     });
 
     it('should handle standard Error', () => {
       const error = new Error('Standard error');
       logError('Operation failed', error);
-      expect(consoleErrorSpy).toHaveBeenCalledWith(
-        expect.stringContaining('Operation failed')
-      );
+      expect(consoleErrorSpy).toHaveBeenCalledWith(expect.stringContaining('Operation failed'));
     });
   });
 
@@ -381,51 +347,41 @@ describe('ErrorLogger', () => {
 
     it('should handle empty messages', () => {
       logInfo('');
-      expect(consoleInfoSpy).toHaveBeenCalledWith(
-        expect.stringContaining('')
-      );
+      expect(consoleInfoSpy).toHaveBeenCalledWith(expect.stringContaining(''));
     });
 
     it('should handle very long messages', () => {
       const longMessage = 'a'.repeat(10000);
       logInfo(longMessage);
-      expect(consoleInfoSpy).toHaveBeenCalledWith(
-        expect.stringContaining(longMessage)
-      );
+      expect(consoleInfoSpy).toHaveBeenCalledWith(expect.stringContaining(longMessage));
     });
 
     it('should handle special characters in messages', () => {
       const specialMessage = 'Message with special chars: !@#$%^&*()_+-=[]{}|;:,.<>?';
       logInfo(specialMessage);
-      expect(consoleInfoSpy).toHaveBeenCalledWith(
-        expect.stringContaining(specialMessage)
-      );
+      expect(consoleInfoSpy).toHaveBeenCalledWith(expect.stringContaining(specialMessage));
     });
 
     it('should handle unicode characters in messages', () => {
       const unicodeMessage = 'Message with unicode: 你好世界 🌍';
       logInfo(unicodeMessage);
-      expect(consoleInfoSpy).toHaveBeenCalledWith(
-        expect.stringContaining(unicodeMessage)
-      );
+      expect(consoleInfoSpy).toHaveBeenCalledWith(expect.stringContaining(unicodeMessage));
     });
 
     it('should handle complex context objects', () => {
       const complexContext = {
         nested: {
           deep: {
-            value: 'test'
-          }
+            value: 'test',
+          },
         },
         array: [1, 2, 3],
         nullValue: null,
-        undefinedValue: undefined
+        undefinedValue: undefined,
       };
 
       logInfo('Complex context', complexContext);
-      expect(consoleInfoSpy).toHaveBeenCalledWith(
-        expect.stringContaining('Complex context')
-      );
+      expect(consoleInfoSpy).toHaveBeenCalledWith(expect.stringContaining('Complex context'));
     });
 
     it('should call logDebug utility function', () => {

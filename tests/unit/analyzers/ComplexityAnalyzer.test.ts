@@ -1,11 +1,11 @@
 /**
  * ComplexityAnalyzer Test Suite
- * 
+ *
  * This test suite follows BDD (Behavior-Driven Development) principles:
  * - Given-When-Then structure for test descriptions
  * - Behavior-focused test cases
  * - Comprehensive coverage of happy paths, failure scenarios, pathological cases, and edge cases
- * 
+ *
  * Test Categories:
  * - Happy Path Scenarios: Normal operation with expected inputs
  * - Failure Scenarios: Error handling and edge cases
@@ -39,7 +39,7 @@ describe('ComplexityAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       },
       entryPoints: [],
       dependencies: [],
@@ -52,16 +52,16 @@ describe('ComplexityAnalyzer', () => {
         linesOfCode: 0,
         functionCount: 0,
         classCount: 0,
-        interfaceCount: 0
+        interfaceCount: 0,
       },
       quality: {
         score: 0,
         maintainabilityIndex: 0,
         technicalDebtRatio: 0,
         duplicationPercentage: 0,
-        testCoveragePercentage: 0
+        testCoveragePercentage: 0,
       },
-      metadata: {}
+      metadata: {},
     };
   });
 
@@ -79,7 +79,7 @@ describe('ComplexityAnalyzer', () => {
           end: 20,
           children: [],
           properties: { parameters: [], returnType: 'void' },
-          metadata: {}
+          metadata: {},
         },
         {
           id: 'func2',
@@ -100,7 +100,7 @@ describe('ComplexityAnalyzer', () => {
               end: 35,
               children: [],
               properties: {},
-              metadata: {}
+              metadata: {},
             },
             {
               id: 'for1',
@@ -112,12 +112,12 @@ describe('ComplexityAnalyzer', () => {
               end: 45,
               children: [],
               properties: {},
-              metadata: {}
-            }
+              metadata: {},
+            },
           ],
           properties: { parameters: [], returnType: 'void' },
-          metadata: {}
-        }
+          metadata: {},
+        },
       ];
 
       mockProjectInfo.ast = astNodes;
@@ -161,11 +161,11 @@ describe('ComplexityAnalyzer', () => {
                   end: 25,
                   children: [],
                   properties: {},
-                  metadata: {}
-                }
+                  metadata: {},
+                },
               ],
               properties: {},
-              metadata: {}
+              metadata: {},
             },
             {
               id: 'for1',
@@ -186,16 +186,16 @@ describe('ComplexityAnalyzer', () => {
                   end: 45,
                   children: [],
                   properties: {},
-                  metadata: {}
-                }
+                  metadata: {},
+                },
               ],
               properties: {},
-              metadata: {}
-            }
+              metadata: {},
+            },
           ],
           properties: { parameters: [], returnType: 'void' },
-          metadata: {}
-        }
+          metadata: {},
+        },
       ];
 
       mockProjectInfo.ast = astNodes;
@@ -205,7 +205,9 @@ describe('ComplexityAnalyzer', () => {
 
       // Then: Should calculate higher cognitive complexity for nested structures
       expect(result.complexityMetrics.cognitiveComplexity).toBeGreaterThan(0);
-      expect(result.complexityMetrics.cognitiveComplexity).toBeGreaterThan(result.complexityMetrics.cyclomaticComplexity);
+      expect(result.complexityMetrics.cognitiveComplexity).toBeGreaterThan(
+        result.complexityMetrics.cyclomaticComplexity
+      );
     });
 
     it('should count lines of code accurately', () => {
@@ -221,7 +223,7 @@ describe('ComplexityAnalyzer', () => {
           end: 50,
           children: [],
           properties: { lineCount: 50 },
-          metadata: {}
+          metadata: {},
         },
         {
           id: 'file2',
@@ -233,8 +235,8 @@ describe('ComplexityAnalyzer', () => {
           end: 30,
           children: [],
           properties: { lineCount: 30 },
-          metadata: {}
-        }
+          metadata: {},
+        },
       ];
 
       mockProjectInfo.ast = astNodes;
@@ -259,7 +261,7 @@ describe('ComplexityAnalyzer', () => {
           end: 50,
           children: [],
           properties: {},
-          metadata: {}
+          metadata: {},
         },
         {
           id: 'interface1',
@@ -271,7 +273,7 @@ describe('ComplexityAnalyzer', () => {
           end: 15,
           children: [],
           properties: {},
-          metadata: {}
+          metadata: {},
         },
         {
           id: 'func1',
@@ -283,8 +285,8 @@ describe('ComplexityAnalyzer', () => {
           end: 30,
           children: [],
           properties: {},
-          metadata: {}
-        }
+          metadata: {},
+        },
       ];
 
       mockProjectInfo.ast = astNodes;
@@ -361,8 +363,8 @@ describe('ComplexityAnalyzer', () => {
           end: -1,
           children: [],
           properties: {},
-          metadata: {}
-        }
+          metadata: {},
+        },
       ];
 
       mockProjectInfo.ast = malformedNodes;
@@ -377,7 +379,7 @@ describe('ComplexityAnalyzer', () => {
       const incompleteProjectInfo = {
         id: 'test',
         name: 'Test',
-        rootPath: '/test'
+        rootPath: '/test',
       } as any;
 
       // When & Then: Should throw InvalidInputError
@@ -400,7 +402,7 @@ describe('ComplexityAnalyzer', () => {
           end: i * 10 + 5,
           children: [],
           properties: {},
-          metadata: {}
+          metadata: {},
         });
       }
 
@@ -428,7 +430,7 @@ describe('ComplexityAnalyzer', () => {
         end: 1000,
         children: [],
         properties: {},
-        metadata: {}
+        metadata: {},
       };
 
       // Create 100 levels of nesting
@@ -443,7 +445,7 @@ describe('ComplexityAnalyzer', () => {
           end: i * 10 + 5,
           children: [],
           properties: {},
-          metadata: {}
+          metadata: {},
         };
         currentNode.children.push(child);
         currentNode = child;
@@ -468,7 +470,7 @@ describe('ComplexityAnalyzer', () => {
         end: 20,
         children: [],
         properties: {},
-        metadata: {}
+        metadata: {},
       };
 
       const node2: ASTNode = {
@@ -481,7 +483,7 @@ describe('ComplexityAnalyzer', () => {
         end: 35,
         children: [],
         properties: {},
-        metadata: {}
+        metadata: {},
       };
 
       node1.children.push(node2);
@@ -502,7 +504,7 @@ describe('ComplexityAnalyzer', () => {
         files: [],
         totalFiles: 0,
         totalLines: 0,
-        totalSize: 0
+        totalSize: 0,
       };
 
       // When: Analyzing complexity
@@ -532,7 +534,7 @@ describe('ComplexityAnalyzer', () => {
           end: 20,
           children: [],
           properties: {},
-          metadata: {}
+          metadata: {},
         },
         {
           id: 'unnamed2',
@@ -544,8 +546,8 @@ describe('ComplexityAnalyzer', () => {
           end: 35,
           children: [],
           properties: {},
-          metadata: {}
-        }
+          metadata: {},
+        },
       ];
 
       mockProjectInfo.ast = astNodes;
@@ -568,7 +570,7 @@ describe('ComplexityAnalyzer', () => {
           end: 20,
           children: [],
           properties: {},
-          metadata: {}
+          metadata: {},
         },
         {
           id: 'special2',
@@ -580,7 +582,7 @@ describe('ComplexityAnalyzer', () => {
           end: 35,
           children: [],
           properties: {},
-          metadata: {}
+          metadata: {},
         },
         {
           id: 'special3',
@@ -592,8 +594,8 @@ describe('ComplexityAnalyzer', () => {
           end: 50,
           children: [],
           properties: {},
-          metadata: {}
-        }
+          metadata: {},
+        },
       ];
 
       mockProjectInfo.ast = astNodes;
@@ -618,7 +620,7 @@ describe('ComplexityAnalyzer', () => {
           end: 20,
           children: [],
           properties: {},
-          metadata: {}
+          metadata: {},
         },
         {
           id: 'unicode2',
@@ -630,7 +632,7 @@ describe('ComplexityAnalyzer', () => {
           end: 35,
           children: [],
           properties: {},
-          metadata: {}
+          metadata: {},
         },
         {
           id: 'unicode3',
@@ -642,8 +644,8 @@ describe('ComplexityAnalyzer', () => {
           end: 50,
           children: [],
           properties: {},
-          metadata: {}
-        }
+          metadata: {},
+        },
       ];
 
       mockProjectInfo.ast = astNodes;
@@ -669,8 +671,8 @@ describe('ComplexityAnalyzer', () => {
           end: 20,
           children: [],
           properties: {},
-          metadata: {}
-        }
+          metadata: {},
+        },
       ];
 
       mockProjectInfo.ast = astNodes;
@@ -693,7 +695,7 @@ describe('ComplexityAnalyzer', () => {
           end: -5,
           children: [],
           properties: {},
-          metadata: {}
+          metadata: {},
         },
         {
           id: 'invalid2',
@@ -705,8 +707,8 @@ describe('ComplexityAnalyzer', () => {
           end: 0,
           children: [],
           properties: {},
-          metadata: {}
-        }
+          metadata: {},
+        },
       ];
 
       mockProjectInfo.ast = astNodes;
@@ -729,7 +731,7 @@ describe('ComplexityAnalyzer', () => {
           end: 20,
           children: [],
           properties: undefined as any,
-          metadata: {}
+          metadata: {},
         },
         {
           id: 'missing2',
@@ -741,8 +743,8 @@ describe('ComplexityAnalyzer', () => {
           end: 35,
           children: [],
           properties: {},
-          metadata: undefined as any
-        }
+          metadata: undefined as any,
+        },
       ];
 
       mockProjectInfo.ast = astNodes;
@@ -768,7 +770,7 @@ describe('ComplexityAnalyzer', () => {
           end: i * 10 + 5,
           children: [],
           properties: {},
-          metadata: {}
+          metadata: {},
         });
       }
 
@@ -776,7 +778,7 @@ describe('ComplexityAnalyzer', () => {
 
       // When: Running analysis multiple times
       const initialMemory = process.memoryUsage().heapUsed;
-      
+
       for (let i = 0; i < 10; i++) {
         analyzer.analyze(mockProjectInfo);
       }
@@ -802,14 +804,14 @@ describe('ComplexityAnalyzer', () => {
           end: i * 10 + 5,
           children: [],
           properties: {},
-          metadata: {}
+          metadata: {},
         });
       }
 
       mockProjectInfo.ast = astNodes;
 
       // When: Running concurrent analysis calls
-      const promises = Array.from({ length: 5 }, () => 
+      const promises = Array.from({ length: 5 }, () =>
         Promise.resolve(analyzer.analyze(mockProjectInfo))
       );
 
@@ -836,7 +838,7 @@ describe('ComplexityAnalyzer', () => {
           end: 20,
           children: [],
           properties: {},
-          metadata: {}
+          metadata: {},
         },
         {
           id: 'test1',
@@ -848,8 +850,8 @@ describe('ComplexityAnalyzer', () => {
           end: 20,
           children: [],
           properties: {},
-          metadata: {}
-        }
+          metadata: {},
+        },
       ];
 
       mockProjectInfo.ast = astNodes;
@@ -863,7 +865,7 @@ describe('ComplexityAnalyzer', () => {
         countClasses: true,
         countInterfaces: true,
         includeFileMetrics: true,
-        includeAggregatedMetrics: true
+        includeAggregatedMetrics: true,
       };
 
       // When: Analyzing with include patterns
@@ -886,7 +888,7 @@ describe('ComplexityAnalyzer', () => {
           end: 20,
           children: [],
           properties: {},
-          metadata: {}
+          metadata: {},
         },
         {
           id: 'test1',
@@ -898,8 +900,8 @@ describe('ComplexityAnalyzer', () => {
           end: 20,
           children: [],
           properties: {},
-          metadata: {}
-        }
+          metadata: {},
+        },
       ];
 
       mockProjectInfo.ast = astNodes;
@@ -913,7 +915,7 @@ describe('ComplexityAnalyzer', () => {
         countClasses: true,
         countInterfaces: true,
         includeFileMetrics: true,
-        includeAggregatedMetrics: true
+        includeAggregatedMetrics: true,
       };
 
       // When: Analyzing with exclude patterns
@@ -945,7 +947,7 @@ describe('ComplexityAnalyzer', () => {
               end: 25,
               children: [],
               properties: {},
-              metadata: {}
+              metadata: {},
             },
             {
               id: 'if2',
@@ -957,12 +959,12 @@ describe('ComplexityAnalyzer', () => {
               end: 40,
               children: [],
               properties: {},
-              metadata: {}
-            }
+              metadata: {},
+            },
           ],
           properties: {},
-          metadata: {}
-        }
+          metadata: {},
+        },
       ];
 
       mockProjectInfo.ast = astNodes;
@@ -977,14 +979,16 @@ describe('ComplexityAnalyzer', () => {
         countClasses: true,
         countInterfaces: true,
         includeFileMetrics: true,
-        includeAggregatedMetrics: true
+        includeAggregatedMetrics: true,
       };
 
       // When: Analyzing with thresholds
       const result = analyzer.analyze(mockProjectInfo, options);
 
       // Then: Should identify functions exceeding thresholds
-      expect(result.complexityMetrics.cyclomaticComplexity).toBeGreaterThan(options.maxCyclomaticComplexity!);
+      expect(result.complexityMetrics.cyclomaticComplexity).toBeGreaterThan(
+        options.maxCyclomaticComplexity
+      );
     });
 
     it('should disable specific metrics when requested', () => {
@@ -1000,7 +1004,7 @@ describe('ComplexityAnalyzer', () => {
           end: 20,
           children: [],
           properties: {},
-          metadata: {}
+          metadata: {},
         },
         {
           id: 'class1',
@@ -1012,8 +1016,8 @@ describe('ComplexityAnalyzer', () => {
           end: 35,
           children: [],
           properties: {},
-          metadata: {}
-        }
+          metadata: {},
+        },
       ];
 
       mockProjectInfo.ast = astNodes;
@@ -1026,7 +1030,7 @@ describe('ComplexityAnalyzer', () => {
         countClasses: true,
         countInterfaces: true,
         includeFileMetrics: true,
-        includeAggregatedMetrics: true
+        includeAggregatedMetrics: true,
       };
 
       // When: Analyzing with disabled metrics
@@ -1052,8 +1056,8 @@ describe('ComplexityAnalyzer', () => {
           end: 20,
           children: [],
           properties: {},
-          metadata: {}
-        }
+          metadata: {},
+        },
       ];
 
       mockProjectInfo.ast = astNodes;
@@ -1068,9 +1072,9 @@ describe('ComplexityAnalyzer', () => {
     it('should handle include patterns with empty array', () => {
       const analyzer = new ComplexityAnalyzer();
       const result = analyzer.analyze(mockProjectInfo, {
-        includePatterns: []
+        includePatterns: [],
       });
-      
+
       expect(result).toBeDefined();
       expect(result.complexityMetrics).toBeDefined();
     });
@@ -1079,9 +1083,9 @@ describe('ComplexityAnalyzer', () => {
       const analyzer = new ComplexityAnalyzer();
       const result = analyzer.analyze(mockProjectInfo, {
         calculateCognitiveComplexity: true,
-        maxCognitiveComplexity: 1
+        maxCognitiveComplexity: 1,
       });
-      
+
       expect(result).toBeDefined();
       expect(result.complexityMetrics).toBeDefined();
     });
@@ -1090,9 +1094,9 @@ describe('ComplexityAnalyzer', () => {
       const analyzer = new ComplexityAnalyzer();
       const result = analyzer.analyze(mockProjectInfo, {
         countInterfaces: true,
-        includeFileMetrics: true
+        includeFileMetrics: true,
       });
-      
+
       expect(result).toBeDefined();
       expect(result.complexityMetrics).toBeDefined();
     });
@@ -1109,7 +1113,7 @@ describe('ComplexityAnalyzer', () => {
         end: 50,
         children: [],
         metadata: {},
-        properties: { lineCount: 5 }
+        properties: { lineCount: 5 },
       };
 
       const functionNode: ASTNode = {
@@ -1122,16 +1126,16 @@ describe('ComplexityAnalyzer', () => {
         end: 100,
         children: [controlNode],
         metadata: {},
-        properties: { lineCount: 20 }
+        properties: { lineCount: 20 },
       };
 
       controlNode.parent = functionNode;
 
       const result = analyzer.analyze(mockProjectInfo, {
         calculateCognitiveComplexity: true,
-        includeFileMetrics: true
+        includeFileMetrics: true,
       });
-      
+
       expect(result).toBeDefined();
       expect(result.complexityMetrics).toBeDefined();
     });
@@ -1151,7 +1155,7 @@ describe('ComplexityAnalyzer', () => {
           directories: [],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: [],
         relations: [],
@@ -1163,19 +1167,19 @@ describe('ComplexityAnalyzer', () => {
           linesOfCode: 0,
           functionCount: 0,
           classCount: 0,
-          interfaceCount: 0
+          interfaceCount: 0,
         },
         quality: {
           score: 85,
           maintainabilityIndex: 80,
           technicalDebtRatio: 0.1,
           duplicationPercentage: 5,
-          testCoveragePercentage: 90
-        }
+          testCoveragePercentage: 90,
+        },
       };
 
       const options: ComplexityAnalysisOptions = {
-        includePatterns: [] // Empty array to trigger line 116
+        includePatterns: [], // Empty array to trigger line 116
       };
 
       // When: Analyzing complexity
@@ -1200,7 +1204,7 @@ describe('ComplexityAnalyzer', () => {
           directories: [],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: [
           {
@@ -1213,8 +1217,8 @@ describe('ComplexityAnalyzer', () => {
             nodeType: 'function',
             children: [],
             properties: {},
-            metadata: {}
-          }
+            metadata: {},
+          },
         ],
         relations: [],
         publicExports: [],
@@ -1225,21 +1229,21 @@ describe('ComplexityAnalyzer', () => {
           linesOfCode: 0,
           functionCount: 0,
           classCount: 0,
-          interfaceCount: 0
+          interfaceCount: 0,
         },
         quality: {
           score: 85,
           maintainabilityIndex: 80,
           technicalDebtRatio: 0.1,
           duplicationPercentage: 5,
-          testCoveragePercentage: 90
-        }
+          testCoveragePercentage: 90,
+        },
       };
 
       const options: ComplexityAnalysisOptions = {
         calculateCognitiveComplexity: true,
         maxCognitiveComplexity: 1, // Low threshold to trigger high complexity
-        includeFileMetrics: true
+        includeFileMetrics: true,
       };
 
       // When: Analyzing complexity
@@ -1264,7 +1268,7 @@ describe('ComplexityAnalyzer', () => {
           directories: [],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: [
           {
@@ -1277,8 +1281,8 @@ describe('ComplexityAnalyzer', () => {
             nodeType: 'interface',
             children: [],
             properties: {},
-            metadata: {}
-          }
+            metadata: {},
+          },
         ],
         relations: [],
         publicExports: [],
@@ -1289,20 +1293,20 @@ describe('ComplexityAnalyzer', () => {
           linesOfCode: 0,
           functionCount: 0,
           classCount: 0,
-          interfaceCount: 0
+          interfaceCount: 0,
         },
         quality: {
           score: 85,
           maintainabilityIndex: 80,
           technicalDebtRatio: 0.1,
           duplicationPercentage: 5,
-          testCoveragePercentage: 90
-        }
+          testCoveragePercentage: 90,
+        },
       };
 
       const options: ComplexityAnalysisOptions = {
         countInterfaces: true,
-        includeFileMetrics: true
+        includeFileMetrics: true,
       };
 
       // When: Analyzing complexity
@@ -1324,7 +1328,7 @@ describe('ComplexityAnalyzer', () => {
         nodeType: 'unknown',
         children: [],
         properties: {},
-        metadata: {}
+        metadata: {},
       };
 
       const projectInfo: ProjectInfo = {
@@ -1340,7 +1344,7 @@ describe('ComplexityAnalyzer', () => {
           directories: [],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: [
           {
@@ -1354,8 +1358,8 @@ describe('ComplexityAnalyzer', () => {
             children: [],
             properties: {},
             metadata: {},
-            parent: controlStructureNode
-          }
+            parent: controlStructureNode,
+          },
         ],
         relations: [],
         publicExports: [],
@@ -1366,20 +1370,20 @@ describe('ComplexityAnalyzer', () => {
           linesOfCode: 0,
           functionCount: 0,
           classCount: 0,
-          interfaceCount: 0
+          interfaceCount: 0,
         },
         quality: {
           score: 85,
           maintainabilityIndex: 80,
           technicalDebtRatio: 0.1,
           duplicationPercentage: 5,
-          testCoveragePercentage: 90
-        }
+          testCoveragePercentage: 90,
+        },
       };
 
       const options: ComplexityAnalysisOptions = {
         calculateCognitiveComplexity: true,
-        includeFileMetrics: true
+        includeFileMetrics: true,
       };
 
       // When: Analyzing complexity
@@ -1404,7 +1408,7 @@ describe('ComplexityAnalyzer', () => {
           directories: [],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: [
           {
@@ -1417,8 +1421,8 @@ describe('ComplexityAnalyzer', () => {
             nodeType: 'function',
             children: [],
             properties: {},
-            metadata: {}
-          }
+            metadata: {},
+          },
         ],
         relations: [],
         publicExports: [],
@@ -1429,20 +1433,20 @@ describe('ComplexityAnalyzer', () => {
           linesOfCode: 0,
           functionCount: 0,
           classCount: 0,
-          interfaceCount: 0
+          interfaceCount: 0,
         },
         quality: {
           score: 85,
           maintainabilityIndex: 80,
           technicalDebtRatio: 0.1,
           duplicationPercentage: 5,
-          testCoveragePercentage: 90
-        }
+          testCoveragePercentage: 90,
+        },
       };
 
       const options: ComplexityAnalysisOptions = {
         // No includePatterns specified - this should trigger line 116
-        includeFileMetrics: true
+        includeFileMetrics: true,
       };
 
       // When: Analyzing complexity
@@ -1468,7 +1472,7 @@ describe('ComplexityAnalyzer', () => {
           directories: [],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: [
           {
@@ -1490,7 +1494,7 @@ describe('ComplexityAnalyzer', () => {
                 end: 20,
                 children: [],
                 properties: {},
-                metadata: {}
+                metadata: {},
               },
               {
                 id: 'if-2',
@@ -1502,7 +1506,7 @@ describe('ComplexityAnalyzer', () => {
                 end: 40,
                 children: [],
                 properties: {},
-                metadata: {}
+                metadata: {},
               },
               {
                 id: 'if-3',
@@ -1514,12 +1518,12 @@ describe('ComplexityAnalyzer', () => {
                 end: 60,
                 children: [],
                 properties: {},
-                metadata: {}
-              }
+                metadata: {},
+              },
             ],
             properties: {},
-            metadata: {}
-          }
+            metadata: {},
+          },
         ],
         relations: [],
         publicExports: [],
@@ -1530,21 +1534,21 @@ describe('ComplexityAnalyzer', () => {
           linesOfCode: 0,
           functionCount: 0,
           classCount: 0,
-          interfaceCount: 0
+          interfaceCount: 0,
         },
         quality: {
           score: 85,
           maintainabilityIndex: 80,
           technicalDebtRatio: 0.1,
           duplicationPercentage: 5,
-          testCoveragePercentage: 90
-        }
+          testCoveragePercentage: 90,
+        },
       };
 
       const options: ComplexityAnalysisOptions = {
         calculateCognitiveComplexity: true,
         maxCognitiveComplexity: 2, // Low threshold to trigger high complexity
-        includeFileMetrics: true
+        includeFileMetrics: true,
       };
 
       // When: Analyzing complexity
@@ -1567,7 +1571,7 @@ describe('ComplexityAnalyzer', () => {
         nodeType: 'unknown',
         children: [],
         properties: {},
-        metadata: {}
+        metadata: {},
       };
 
       const functionNode: ASTNode = {
@@ -1581,7 +1585,7 @@ describe('ComplexityAnalyzer', () => {
         children: [],
         properties: {},
         metadata: {},
-        parent: controlStructureNode
+        parent: controlStructureNode,
       };
 
       const projectInfo: ProjectInfo = {
@@ -1597,7 +1601,7 @@ describe('ComplexityAnalyzer', () => {
           directories: [],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: [functionNode],
         relations: [],
@@ -1609,20 +1613,20 @@ describe('ComplexityAnalyzer', () => {
           linesOfCode: 0,
           functionCount: 0,
           classCount: 0,
-          interfaceCount: 0
+          interfaceCount: 0,
         },
         quality: {
           score: 85,
           maintainabilityIndex: 80,
           technicalDebtRatio: 0.1,
           duplicationPercentage: 5,
-          testCoveragePercentage: 90
-        }
+          testCoveragePercentage: 90,
+        },
       };
 
       const options: ComplexityAnalysisOptions = {
         calculateCognitiveComplexity: true,
-        includeFileMetrics: true
+        includeFileMetrics: true,
       };
 
       // When: Analyzing complexity
@@ -1648,7 +1652,7 @@ describe('ComplexityAnalyzer', () => {
           directories: [],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: [
           {
@@ -1661,8 +1665,8 @@ describe('ComplexityAnalyzer', () => {
             nodeType: 'interface',
             children: [],
             properties: {},
-            metadata: {}
-          }
+            metadata: {},
+          },
         ],
         relations: [],
         publicExports: [],
@@ -1673,20 +1677,20 @@ describe('ComplexityAnalyzer', () => {
           linesOfCode: 0,
           functionCount: 0,
           classCount: 0,
-          interfaceCount: 0
+          interfaceCount: 0,
         },
         quality: {
           score: 85,
           maintainabilityIndex: 80,
           technicalDebtRatio: 0.1,
           duplicationPercentage: 5,
-          testCoveragePercentage: 90
-        }
+          testCoveragePercentage: 90,
+        },
       };
 
       const options: ComplexityAnalysisOptions = {
         countInterfaces: true,
-        includeFileMetrics: true
+        includeFileMetrics: true,
       };
 
       // When: Analyzing complexity
@@ -1712,7 +1716,7 @@ describe('ComplexityAnalyzer', () => {
           directories: [],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: [
           {
@@ -1725,8 +1729,8 @@ describe('ComplexityAnalyzer', () => {
             nodeType: 'function',
             children: [],
             properties: {},
-            metadata: {}
-          }
+            metadata: {},
+          },
         ],
         relations: [],
         publicExports: [],
@@ -1737,20 +1741,20 @@ describe('ComplexityAnalyzer', () => {
           linesOfCode: 0,
           functionCount: 0,
           classCount: 0,
-          interfaceCount: 0
+          interfaceCount: 0,
         },
         quality: {
           score: 85,
           maintainabilityIndex: 80,
           technicalDebtRatio: 0.1,
           duplicationPercentage: 5,
-          testCoveragePercentage: 90
-        }
+          testCoveragePercentage: 90,
+        },
       };
 
       const options: ComplexityAnalysisOptions = {
         includePatterns: [], // Empty array to trigger line 116
-        includeFileMetrics: true
+        includeFileMetrics: true,
       };
 
       // When: Analyzing complexity
@@ -1773,7 +1777,7 @@ describe('ComplexityAnalyzer', () => {
         nodeType: 'function',
         children: [],
         properties: {},
-        metadata: {}
+        metadata: {},
       };
 
       const outerControlNode: ASTNode = {
@@ -1787,7 +1791,7 @@ describe('ComplexityAnalyzer', () => {
         children: [],
         properties: {},
         metadata: {},
-        parent: rootNode
+        parent: rootNode,
       };
 
       const innerControlNode: ASTNode = {
@@ -1801,7 +1805,7 @@ describe('ComplexityAnalyzer', () => {
         children: [],
         properties: {},
         metadata: {},
-        parent: outerControlNode
+        parent: outerControlNode,
       };
 
       const childNode: ASTNode = {
@@ -1815,7 +1819,7 @@ describe('ComplexityAnalyzer', () => {
         children: [],
         properties: {},
         metadata: {},
-        parent: innerControlNode
+        parent: innerControlNode,
       };
 
       const projectInfo: ProjectInfo = {
@@ -1831,7 +1835,7 @@ describe('ComplexityAnalyzer', () => {
           directories: [],
           totalFiles: 0,
           totalLines: 0,
-          totalSize: 0
+          totalSize: 0,
         },
         ast: [rootNode, outerControlNode, innerControlNode, childNode],
         relations: [],
@@ -1843,20 +1847,20 @@ describe('ComplexityAnalyzer', () => {
           linesOfCode: 0,
           functionCount: 0,
           classCount: 0,
-          interfaceCount: 0
+          interfaceCount: 0,
         },
         quality: {
           score: 85,
           maintainabilityIndex: 80,
           technicalDebtRatio: 0.1,
           duplicationPercentage: 5,
-          testCoveragePercentage: 90
-        }
+          testCoveragePercentage: 90,
+        },
       };
 
       const options: ComplexityAnalysisOptions = {
         calculateCognitiveComplexity: true,
-        includeFileMetrics: true
+        includeFileMetrics: true,
       };
 
       // When: Analyzing complexity

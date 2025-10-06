@@ -81,7 +81,7 @@ export function wait(ms: number): Promise<void> {
  */
 export function mockConsole() {
   const originalConsole = { ...console };
-  
+
   beforeEach(() => {
     console.log = jest.fn();
     console.warn = jest.fn();
@@ -89,7 +89,7 @@ export function mockConsole() {
     console.info = jest.fn();
     console.debug = jest.fn();
   });
-  
+
   afterEach(() => {
     Object.assign(console, originalConsole);
   });

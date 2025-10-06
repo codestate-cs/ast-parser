@@ -81,6 +81,7 @@ jobs:
         fail_ci_if_error: true
         verbose: true
       continue-on-error: true
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
   build-and-publish:
     needs: test-and-coverage

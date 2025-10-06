@@ -1,10 +1,13 @@
 /**
  * Tests for MarkdownGenerator
- * 
+ *
  * Following TDD approach - tests define expected behavior
  */
 
-import { MarkdownGenerator, MarkdownGeneratorOptions } from '../../../../src/documentation/generators/MarkdownGenerator';
+import {
+  MarkdownGenerator,
+  MarkdownGeneratorOptions,
+} from '../../../../src/documentation/generators/MarkdownGenerator';
 import { JSDocComment } from '../../../../src/documentation/extractors/JSDocExtractor';
 import { TypeInfo } from '../../../../src/documentation/extractors/TypeExtractor';
 import { ExampleInfo } from '../../../../src/documentation/extractors/ExampleExtractor';
@@ -20,7 +23,7 @@ describe('MarkdownGenerator', () => {
       includeTOC: true,
       includeNavigation: true,
       includeMetadata: true,
-      templateVariables: {}
+      templateVariables: {},
     });
   });
 
@@ -37,7 +40,7 @@ describe('MarkdownGenerator', () => {
         includeTOC: false,
         includeNavigation: false,
         includeMetadata: false,
-        templateVariables: { customVar: 'value' }
+        templateVariables: { customVar: 'value' },
       };
 
       const customGenerator = new MarkdownGenerator(customOptions);
@@ -57,8 +60,8 @@ describe('MarkdownGenerator', () => {
           start: 0,
           end: 50,
           lineNumber: 1,
-          fullText: '/** Test function documentation */'
-        }
+          fullText: '/** Test function documentation */',
+        },
       ];
 
       const typeInfo: TypeInfo[] = [
@@ -77,8 +80,8 @@ describe('MarkdownGenerator', () => {
           lineNumber: 1,
           exported: true,
           public: true,
-          dependencies: []
-        }
+          dependencies: [],
+        },
       ];
 
       const examples: ExampleInfo[] = [
@@ -95,8 +98,8 @@ describe('MarkdownGenerator', () => {
           start: 0,
           end: 30,
           lineNumber: 1,
-          metadata: {}
-        }
+          metadata: {},
+        },
       ];
 
       const result = await generator.generateFromExtracted(jsdocComments, typeInfo, examples);
@@ -177,10 +180,10 @@ describe('MarkdownGenerator', () => {
       const headers = ['Name', 'Type', 'Description'];
       const rows = [
         ['testFunction', 'function', 'Test function'],
-        ['testVar', 'string', 'Test variable']
+        ['testVar', 'string', 'Test variable'],
       ];
       const table = (generator as any).formatTable(headers, rows);
-      
+
       expect(table).toContain('| Name | Type | Description |');
       expect(table).toContain('| testFunction | function | Test function |');
       expect(table).toContain('| testVar | string | Test variable |');
@@ -192,11 +195,11 @@ describe('MarkdownGenerator', () => {
       const sections = [
         { id: 'overview', title: 'Overview', level: 1 },
         { id: 'api', title: 'API Reference', level: 1 },
-        { id: 'examples', title: 'Examples', level: 2 }
+        { id: 'examples', title: 'Examples', level: 2 },
       ];
 
       const toc = (generator as any).generateTableOfContents(sections);
-      
+
       expect(toc).toContain('# Table of Contents');
       expect(toc).toContain('- [Overview](#overview)');
       expect(toc).toContain('- [API Reference](#api-reference)');
@@ -210,12 +213,10 @@ describe('MarkdownGenerator', () => {
         includeTOC: false,
         includeNavigation: true,
         includeMetadata: true,
-        templateVariables: {}
+        templateVariables: {},
       });
 
-      const sections = [
-        { id: 'overview', title: 'Overview', level: 1 }
-      ];
+      const sections = [{ id: 'overview', title: 'Overview', level: 1 }];
 
       const toc = (disabledGenerator as any).generateTableOfContents(sections);
       expect(toc).toBe('');
@@ -302,7 +303,7 @@ describe('MarkdownGenerator', () => {
     it('should handle sections without titles', () => {
       const sections = [
         { id: 'section1', title: '', level: 1 },
-        { id: 'section2', title: 'Valid Title', level: 1 }
+        { id: 'section2', title: 'Valid Title', level: 1 },
       ];
 
       const toc = (generator as any).generateTableOfContents(sections);
@@ -346,7 +347,7 @@ describe('MarkdownGenerator', () => {
         includeNavigation: true,
         includeMetadata: true,
         templateVariables: {},
-        markdownFlavor: 'github'
+        markdownFlavor: 'github',
       });
 
       expect(githubGenerator).toBeDefined();
@@ -360,7 +361,7 @@ describe('MarkdownGenerator', () => {
         includeNavigation: true,
         includeMetadata: true,
         templateVariables: {},
-        markdownFlavor: 'gitlab'
+        markdownFlavor: 'gitlab',
       });
 
       expect(gitlabGenerator).toBeDefined();
@@ -374,7 +375,7 @@ describe('MarkdownGenerator', () => {
         includeNavigation: true,
         includeMetadata: true,
         templateVariables: {},
-        markdownFlavor: 'commonmark'
+        markdownFlavor: 'commonmark',
       });
 
       expect(commonmarkGenerator).toBeDefined();
@@ -413,8 +414,8 @@ describe('MarkdownGenerator', () => {
           end: 50,
           children: [],
           metadata: {},
-          properties: {}
-        }
+          properties: {},
+        },
       ];
 
       const result = await generator.generate(nodes);
@@ -430,7 +431,7 @@ describe('MarkdownGenerator', () => {
     it('should handle validation errors in generate', async () => {
       const invalidGenerator = new MarkdownGenerator({
         outputDir: '', // Invalid empty output directory
-        fileName: 'test.md'
+        fileName: 'test.md',
       });
 
       const nodes: ASTNode[] = [
@@ -444,8 +445,8 @@ describe('MarkdownGenerator', () => {
           end: 50,
           children: [],
           metadata: {},
-          properties: {}
-        }
+          properties: {},
+        },
       ];
 
       const result = await invalidGenerator.generate(nodes);
@@ -481,8 +482,8 @@ describe('MarkdownGenerator', () => {
           end: 50,
           children: [],
           metadata: {},
-          properties: {}
-        }
+          properties: {},
+        },
       ];
 
       const content = (generator as any).generateMarkdownContentFromNodes(nodes);
@@ -495,7 +496,7 @@ describe('MarkdownGenerator', () => {
       const customGenerator = new MarkdownGenerator({
         outputDir: './docs',
         fileName: 'README.md',
-        customTemplate: 'Custom Template: {{content}}'
+        customTemplate: 'Custom Template: {{content}}',
       });
 
       const nodes: ASTNode[] = [
@@ -509,8 +510,8 @@ describe('MarkdownGenerator', () => {
           end: 50,
           children: [],
           metadata: {},
-          properties: {}
-        }
+          properties: {},
+        },
       ];
 
       const result = await customGenerator.generate(nodes);
@@ -530,11 +531,15 @@ describe('MarkdownGenerator', () => {
           end: 20,
           lineNumber: 1,
           isValid: true,
-          errors: []
-        }
+          errors: [],
+        },
       ];
 
-      const content = (generator as any).generateOverviewContentFromExtracted(jsdocComments, [], []);
+      const content = (generator as any).generateOverviewContentFromExtracted(
+        jsdocComments,
+        [],
+        []
+      );
 
       expect(content).toContain('Total JSDoc Comments');
       expect(content).toContain('1');
@@ -556,8 +561,8 @@ describe('MarkdownGenerator', () => {
           exported: true,
           public: true,
           dependencies: [],
-          metadata: {}
-        }
+          metadata: {},
+        },
       ];
 
       const content = (generator as any).generateAPIReferenceContentFromExtracted(typeInfo);
@@ -581,8 +586,8 @@ describe('MarkdownGenerator', () => {
           end: 20,
           lineNumber: 1,
           isValid: true,
-          errors: []
-        }
+          errors: [],
+        },
       ];
 
       const content = (generator as any).generateExamplesContentFromExtracted(examples);
@@ -603,8 +608,8 @@ describe('MarkdownGenerator', () => {
           end: 50,
           children: [],
           metadata: {},
-          properties: {}
-        }
+          properties: {},
+        },
       ];
 
       const content = (generator as any).generateMetadataContentFromNodes(nodes);
@@ -624,11 +629,15 @@ describe('MarkdownGenerator', () => {
           end: 20,
           lineNumber: 1,
           isValid: true,
-          errors: []
-        }
+          errors: [],
+        },
       ];
 
-      const content = (generator as any).generateMetadataContentFromExtracted(jsdocComments, [], []);
+      const content = (generator as any).generateMetadataContentFromExtracted(
+        jsdocComments,
+        [],
+        []
+      );
 
       expect(content).toContain('Generated');
       expect(content).toContain('Total Items');
@@ -683,7 +692,7 @@ describe('MarkdownGenerator', () => {
     it('should handle markdown validation failure in generate', async () => {
       const invalidGenerator = new MarkdownGenerator({
         outputDir: './docs',
-        fileName: 'test.md'
+        fileName: 'test.md',
       });
 
       // Mock validateMarkdown to return false
@@ -700,8 +709,8 @@ describe('MarkdownGenerator', () => {
           end: 50,
           children: [],
           metadata: {},
-          properties: {}
-        }
+          properties: {},
+        },
       ];
 
       const result = await invalidGenerator.generate(nodes);
@@ -734,12 +743,12 @@ describe('MarkdownGenerator', () => {
               end: 50,
               children: [],
               metadata: {},
-              properties: {}
-            }
+              properties: {},
+            },
           ],
           metadata: {},
-          properties: {}
-        }
+          properties: {},
+        },
       ];
 
       const content = (generator as any).generateMarkdownContentFromNodes(nodes);
@@ -755,7 +764,7 @@ describe('MarkdownGenerator', () => {
         { id: 'api-reference', title: 'API Reference', level: 1 },
         { id: 'examples', title: 'Examples', level: 1 },
         { id: 'sub-section', title: 'Sub Section', level: 2 },
-        { id: 'deep-section', title: 'Deep Section', level: 3 }
+        { id: 'deep-section', title: 'Deep Section', level: 3 },
       ];
 
       const toc = (generator as any).generateTableOfContents(sections);
@@ -807,7 +816,11 @@ describe('MarkdownGenerator', () => {
     });
 
     it('should handle formatLink with title', () => {
-      const link = (generator as any).formatLink('Test Link', 'https://example.com', 'Example Title');
+      const link = (generator as any).formatLink(
+        'Test Link',
+        'https://example.com',
+        'Example Title'
+      );
 
       // The actual implementation might not support titles, so let's check for basic link format
       expect(link).toContain('[Test Link]');
@@ -842,7 +855,7 @@ describe('MarkdownGenerator', () => {
       const headers = ['Name', 'Type', 'Description'];
       const rows = [
         ['testFunction', 'function', 'A test function'],
-        ['testClass', 'class', 'A test class']
+        ['testClass', 'class', 'A test class'],
       ];
       const table = (generator as any).formatTable(headers, rows);
 
@@ -873,8 +886,8 @@ describe('MarkdownGenerator', () => {
           end: 20,
           lineNumber: 1,
           isValid: true,
-          errors: []
-        }
+          errors: [],
+        },
       ];
 
       const typeInfo: TypeInfo[] = [
@@ -892,8 +905,8 @@ describe('MarkdownGenerator', () => {
           exported: true,
           public: true,
           dependencies: [],
-          metadata: {}
-        }
+          metadata: {},
+        },
       ];
 
       const examples: ExampleInfo[] = [
@@ -910,8 +923,8 @@ describe('MarkdownGenerator', () => {
           end: 20,
           lineNumber: 1,
           isValid: true,
-          errors: []
-        }
+          errors: [],
+        },
       ];
 
       const result = await generator.generateFromExtracted(jsdocComments, typeInfo, examples);
@@ -924,7 +937,7 @@ describe('MarkdownGenerator', () => {
     it('should handle generateFromExtracted with validation errors', async () => {
       const invalidGenerator = new MarkdownGenerator({
         outputDir: '', // Invalid empty output directory
-        fileName: 'test.md'
+        fileName: 'test.md',
       });
 
       const result = await invalidGenerator.generateFromExtracted([], [], []);
@@ -975,12 +988,13 @@ describe('MarkdownGenerator', () => {
           end: 50,
           children: [],
           metadata: {},
-          properties: {}
-        }
+          properties: {},
+        },
       ];
 
       // Mock generateMarkdownContentFromNodes to throw an error
-      const originalGenerateMarkdownContentFromNodes = (generator as any).generateMarkdownContentFromNodes;
+      const originalGenerateMarkdownContentFromNodes = (generator as any)
+        .generateMarkdownContentFromNodes;
       (generator as any).generateMarkdownContentFromNodes = jest.fn().mockImplementation(() => {
         throw new Error('Test generate error');
       });
@@ -991,7 +1005,8 @@ describe('MarkdownGenerator', () => {
       expect(result.errors).toContain('Test generate error');
 
       // Restore original method
-      (generator as any).generateMarkdownContentFromNodes = originalGenerateMarkdownContentFromNodes;
+      (generator as any).generateMarkdownContentFromNodes =
+        originalGenerateMarkdownContentFromNodes;
     });
 
     it('should handle generateAPIReferenceContentFromExtracted with properties and methods', () => {
@@ -1008,8 +1023,8 @@ describe('MarkdownGenerator', () => {
               optional: false,
               readonly: false,
               documentation: 'Test property description',
-              metadata: {}
-            }
+              metadata: {},
+            },
           ],
           methods: [
             {
@@ -1021,8 +1036,8 @@ describe('MarkdownGenerator', () => {
               static: false,
               abstract: false,
               documentation: 'Test method description',
-              metadata: {}
-            }
+              metadata: {},
+            },
           ],
           filePath: 'test.ts',
           start: 0,
@@ -1031,8 +1046,8 @@ describe('MarkdownGenerator', () => {
           exported: true,
           public: true,
           dependencies: [],
-          metadata: {}
-        }
+          metadata: {},
+        },
       ];
 
       const content = (generator as any).generateAPIReferenceContentFromExtracted(typeInfo);
@@ -1057,8 +1072,8 @@ describe('MarkdownGenerator', () => {
               optional: false,
               readonly: false,
               documentation: 'Test property description',
-              metadata: {}
-            }
+              metadata: {},
+            },
           ],
           methods: [],
           filePath: 'test.ts',
@@ -1068,8 +1083,8 @@ describe('MarkdownGenerator', () => {
           exported: true,
           public: true,
           dependencies: [],
-          metadata: {}
-        }
+          metadata: {},
+        },
       ];
 
       const content = (generator as any).generateAPIReferenceContentFromExtracted(typeInfo);
@@ -1096,8 +1111,8 @@ describe('MarkdownGenerator', () => {
               static: false,
               abstract: false,
               documentation: 'Test method description',
-              metadata: {}
-            }
+              metadata: {},
+            },
           ],
           filePath: 'test.ts',
           start: 0,
@@ -1106,8 +1121,8 @@ describe('MarkdownGenerator', () => {
           exported: true,
           public: true,
           dependencies: [],
-          metadata: {}
-        }
+          metadata: {},
+        },
       ];
 
       const content = (generator as any).generateAPIReferenceContentFromExtracted(typeInfo);
@@ -1131,8 +1146,8 @@ describe('MarkdownGenerator', () => {
           end: 20,
           lineNumber: 1,
           isValid: true,
-          errors: []
-        }
+          errors: [],
+        },
       ];
 
       const content = (generator as any).generateExamplesContentFromExtracted(examples);
@@ -1156,8 +1171,8 @@ describe('MarkdownGenerator', () => {
           end: 20,
           lineNumber: 1,
           isValid: true,
-          errors: []
-        }
+          errors: [],
+        },
       ];
 
       const content = (generator as any).generateExamplesContentFromExtracted(examples);
@@ -1177,8 +1192,8 @@ describe('MarkdownGenerator', () => {
           end: 20,
           lineNumber: 1,
           isValid: true,
-          errors: []
-        }
+          errors: [],
+        },
       ];
 
       const typeInfo: TypeInfo[] = [
@@ -1196,8 +1211,8 @@ describe('MarkdownGenerator', () => {
           exported: true,
           public: true,
           dependencies: [],
-          metadata: {}
-        }
+          metadata: {},
+        },
       ];
 
       const examples: ExampleInfo[] = [
@@ -1214,11 +1229,15 @@ describe('MarkdownGenerator', () => {
           end: 20,
           lineNumber: 1,
           isValid: true,
-          errors: []
-        }
+          errors: [],
+        },
       ];
 
-      const content = (generator as any).generateMetadataContentFromExtracted(jsdocComments, typeInfo, examples);
+      const content = (generator as any).generateMetadataContentFromExtracted(
+        jsdocComments,
+        typeInfo,
+        examples
+      );
 
       expect(content).toContain('**Generated**:');
       expect(content).toContain('**Markdown Flavor**:');
@@ -1238,8 +1257,8 @@ describe('MarkdownGenerator', () => {
           end: 50,
           children: [],
           metadata: {},
-          properties: {}
-        }
+          properties: {},
+        },
       ];
 
       const content = (generator as any).generateMetadataContentFromNodes(nodes);
@@ -1270,12 +1289,12 @@ describe('MarkdownGenerator', () => {
               end: 50,
               children: [],
               metadata: {},
-              properties: {}
-            }
+              properties: {},
+            },
           ],
           metadata: {},
-          properties: {}
-        }
+          properties: {},
+        },
       ];
 
       const content = (generator as any).generateMarkdownContentFromNodes(nodes);
@@ -1303,10 +1322,10 @@ describe('MarkdownGenerator', () => {
           end: 50,
           children: [],
           metadata: {
-            jsdoc: '/** Test JSDoc comment */'
+            jsdoc: '/** Test JSDoc comment */',
           },
-          properties: {}
-        }
+          properties: {},
+        },
       ];
 
       const content = (generator as any).generateMarkdownContentFromNodes(nodes);
@@ -1391,10 +1410,14 @@ describe('MarkdownGenerator', () => {
       const generatorWithoutHighlighting = new MarkdownGenerator({
         outputDir: './docs',
         fileName: 'README.md',
-        enableSyntaxHighlighting: false
+        enableSyntaxHighlighting: false,
       });
 
-      const content = (generatorWithoutHighlighting as any).generateMetadataContentFromExtracted([], [], []);
+      const content = (generatorWithoutHighlighting as any).generateMetadataContentFromExtracted(
+        [],
+        [],
+        []
+      );
 
       expect(content).toContain('**Syntax Highlighting**: Disabled');
     });
@@ -1403,7 +1426,7 @@ describe('MarkdownGenerator', () => {
       const generatorWithoutHighlighting = new MarkdownGenerator({
         outputDir: './docs',
         fileName: 'README.md',
-        enableSyntaxHighlighting: false
+        enableSyntaxHighlighting: false,
       });
 
       const content = (generatorWithoutHighlighting as any).generateMetadataContentFromNodes([]);
@@ -1439,12 +1462,13 @@ describe('MarkdownGenerator', () => {
           end: 50,
           children: [],
           metadata: {},
-          properties: {}
-        }
+          properties: {},
+        },
       ];
 
       // Mock generateMarkdownContentFromNodes to throw a non-Error object
-      const originalGenerateMarkdownContentFromNodes = (generator as any).generateMarkdownContentFromNodes;
+      const originalGenerateMarkdownContentFromNodes = (generator as any)
+        .generateMarkdownContentFromNodes;
       (generator as any).generateMarkdownContentFromNodes = jest.fn().mockImplementation(() => {
         throw 'String error';
       });
@@ -1455,14 +1479,15 @@ describe('MarkdownGenerator', () => {
       expect(result.errors).toContain('Unknown error');
 
       // Restore original method
-      (generator as any).generateMarkdownContentFromNodes = originalGenerateMarkdownContentFromNodes;
+      (generator as any).generateMarkdownContentFromNodes =
+        originalGenerateMarkdownContentFromNodes;
     });
 
     it('should handle generate method with custom template', async () => {
       const customGenerator = new MarkdownGenerator({
         outputDir: './docs',
         fileName: 'README.md',
-        customTemplate: 'Custom: {{content}}'
+        customTemplate: 'Custom: {{content}}',
       });
 
       const nodes: ASTNode[] = [
@@ -1476,8 +1501,8 @@ describe('MarkdownGenerator', () => {
           end: 50,
           children: [],
           metadata: {},
-          properties: {}
-        }
+          properties: {},
+        },
       ];
 
       const result = await customGenerator.generate(nodes);
@@ -1500,8 +1525,8 @@ describe('MarkdownGenerator', () => {
               optional: false,
               readonly: false,
               documentation: undefined as any,
-              metadata: {}
-            }
+              metadata: {},
+            },
           ],
           methods: [],
           filePath: 'test.ts',
@@ -1511,8 +1536,8 @@ describe('MarkdownGenerator', () => {
           exported: true,
           public: true,
           dependencies: [],
-          metadata: {}
-        }
+          metadata: {},
+        },
       ];
 
       const content = (generator as any).generateAPIReferenceContentFromExtracted(typeInfo);
@@ -1540,8 +1565,8 @@ describe('MarkdownGenerator', () => {
               static: false,
               abstract: false,
               documentation: undefined as any,
-              metadata: {}
-            }
+              metadata: {},
+            },
           ],
           filePath: 'test.ts',
           start: 0,
@@ -1550,8 +1575,8 @@ describe('MarkdownGenerator', () => {
           exported: true,
           public: true,
           dependencies: [],
-          metadata: {}
-        }
+          metadata: {},
+        },
       ];
 
       const content = (generator as any).generateAPIReferenceContentFromExtracted(typeInfo);

@@ -13,7 +13,7 @@ describe('CoverageAnalyzer', () => {
         statements: { total: 100, covered: 85, percentage: 85 },
         branches: { total: 50, covered: 40, percentage: 80 },
         functions: { total: 20, covered: 18, percentage: 90 },
-        lines: { total: 100, covered: 85, percentage: 85 }
+        lines: { total: 100, covered: 85, percentage: 85 },
       },
       files: [
         {
@@ -21,16 +21,16 @@ describe('CoverageAnalyzer', () => {
           statements: { total: 50, covered: 45, percentage: 90 },
           branches: { total: 20, covered: 18, percentage: 90 },
           functions: { total: 10, covered: 9, percentage: 90 },
-          lines: { total: 50, covered: 45, percentage: 90 }
+          lines: { total: 50, covered: 45, percentage: 90 },
         },
         {
           path: 'src/parser.ts',
           statements: { total: 50, covered: 40, percentage: 80 },
           branches: { total: 30, covered: 22, percentage: 73.33 },
           functions: { total: 10, covered: 9, percentage: 90 },
-          lines: { total: 50, covered: 40, percentage: 80 }
-        }
-      ]
+          lines: { total: 50, covered: 40, percentage: 80 },
+        },
+      ],
     };
   });
 
@@ -43,7 +43,7 @@ describe('CoverageAnalyzer', () => {
     it('should initialize with custom options', () => {
       const customOptions = {
         minCoverageThreshold: 90,
-        includeUncoveredFiles: true
+        includeUncoveredFiles: true,
       };
       const customAnalyzer = new CoverageAnalyzer(customOptions);
 
@@ -157,7 +157,7 @@ describe('CoverageAnalyzer', () => {
   describe('customization', () => {
     it('should support custom coverage thresholds', () => {
       const customOptions = {
-        minCoverageThreshold: 95
+        minCoverageThreshold: 95,
       };
       const customAnalyzer = new CoverageAnalyzer(customOptions);
 
@@ -166,7 +166,7 @@ describe('CoverageAnalyzer', () => {
 
     it('should support custom report formats', () => {
       const customOptions = {
-        reportFormat: 'detailed' as const
+        reportFormat: 'detailed' as const,
       };
       const customAnalyzer = new CoverageAnalyzer(customOptions);
 
@@ -175,7 +175,7 @@ describe('CoverageAnalyzer', () => {
 
     it('should support different analysis modes', () => {
       const customOptions = {
-        analysisMode: 'comprehensive' as const
+        analysisMode: 'comprehensive' as const,
       };
       const customAnalyzer = new CoverageAnalyzer(customOptions);
 
@@ -209,7 +209,7 @@ describe('CoverageAnalyzer', () => {
     it('should handle very large coverage data', () => {
       const largeData = {
         ...mockCoverageData,
-        files: Array(1000).fill(mockCoverageData.files[0])
+        files: Array(1000).fill(mockCoverageData.files[0]),
       };
       const result = coverageAnalyzer.analyzeCoverage(largeData);
 
@@ -220,13 +220,15 @@ describe('CoverageAnalyzer', () => {
     it('should handle coverage data with special characters', () => {
       const specialData = {
         ...mockCoverageData,
-        files: [{
-          path: 'src/特殊文件.ts',
-          statements: { total: 10, covered: 8, percentage: 80 },
-          branches: { total: 5, covered: 4, percentage: 80 },
-          functions: { total: 2, covered: 2, percentage: 100 },
-          lines: { total: 10, covered: 8, percentage: 80 }
-        }]
+        files: [
+          {
+            path: 'src/特殊文件.ts',
+            statements: { total: 10, covered: 8, percentage: 80 },
+            branches: { total: 5, covered: 4, percentage: 80 },
+            functions: { total: 2, covered: 2, percentage: 100 },
+            lines: { total: 10, covered: 8, percentage: 80 },
+          },
+        ],
       };
       const result = coverageAnalyzer.analyzeCoverage(specialData);
 
@@ -238,13 +240,15 @@ describe('CoverageAnalyzer', () => {
       const unicodeData = {
         ...mockCoverageData,
         name: '测试项目',
-        files: [{
-          path: 'src/测试文件.ts',
-          statements: { total: 10, covered: 8, percentage: 80 },
-          branches: { total: 5, covered: 4, percentage: 80 },
-          functions: { total: 2, covered: 2, percentage: 100 },
-          lines: { total: 10, covered: 8, percentage: 80 }
-        }]
+        files: [
+          {
+            path: 'src/测试文件.ts',
+            statements: { total: 10, covered: 8, percentage: 80 },
+            branches: { total: 5, covered: 4, percentage: 80 },
+            functions: { total: 2, covered: 2, percentage: 100 },
+            lines: { total: 10, covered: 8, percentage: 80 },
+          },
+        ],
       };
       const result = coverageAnalyzer.analyzeCoverage(unicodeData);
 
@@ -253,9 +257,9 @@ describe('CoverageAnalyzer', () => {
     });
 
     it('should handle concurrent coverage analysis', async () => {
-      const promises = Array(5).fill(null).map(() => 
-        Promise.resolve(coverageAnalyzer.analyzeCoverage(mockCoverageData))
-      );
+      const promises = Array(5)
+        .fill(null)
+        .map(() => Promise.resolve(coverageAnalyzer.analyzeCoverage(mockCoverageData)));
       const results = await Promise.all(promises);
 
       results.forEach(result => {
@@ -294,13 +298,13 @@ describe('CoverageAnalyzer', () => {
 
     describe('generateCoverageReport branches', () => {
       it('should handle empty analysis data', () => {
-        const emptyAnalysis = { 
-          success: true, 
+        const emptyAnalysis = {
+          success: true,
           coverage: {
             overall: { statements: 0, branches: 0, functions: 0, lines: 0 },
             lowCoverageFiles: [],
-            trends: { improvement: false, decline: false, stable: true }
-          }
+            trends: { improvement: false, decline: false, stable: true },
+          },
         };
         const report = coverageAnalyzer.generateCoverageReport(emptyAnalysis);
 
@@ -309,13 +313,13 @@ describe('CoverageAnalyzer', () => {
       });
 
       it('should handle analysis with null coverage', () => {
-        const nullAnalysis = { 
-          success: true, 
+        const nullAnalysis = {
+          success: true,
           coverage: {
             overall: { statements: 0, branches: 0, functions: 0, lines: 0 },
             lowCoverageFiles: [],
-            trends: { improvement: false, decline: false, stable: true }
-          }
+            trends: { improvement: false, decline: false, stable: true },
+          },
         };
         const report = coverageAnalyzer.generateCoverageReport(nullAnalysis);
 
@@ -376,10 +380,10 @@ describe('CoverageAnalyzer', () => {
       });
 
       it('should handle invalid coverage object', () => {
-        const result = coverageAnalyzer.validateCoverageData({ 
-          name: 'Test', 
-          version: '1.0.0', 
-          coverage: 'invalid' 
+        const result = coverageAnalyzer.validateCoverageData({
+          name: 'Test',
+          version: '1.0.0',
+          coverage: 'invalid',
         });
 
         expect(result.isValid).toBe(false);
@@ -387,11 +391,11 @@ describe('CoverageAnalyzer', () => {
       });
 
       it('should handle invalid files array', () => {
-        const result = coverageAnalyzer.validateCoverageData({ 
-          name: 'Test', 
-          version: '1.0.0', 
+        const result = coverageAnalyzer.validateCoverageData({
+          name: 'Test',
+          version: '1.0.0',
           coverage: {},
-          files: 'invalid'
+          files: 'invalid',
         });
 
         expect(result.isValid).toBe(false);
@@ -401,7 +405,9 @@ describe('CoverageAnalyzer', () => {
 
     describe('additional branch coverage', () => {
       it('should handle calculateOverallCoverage', () => {
-        const result = (coverageAnalyzer as any).calculateOverallCoverage(mockCoverageData.coverage);
+        const result = (coverageAnalyzer as any).calculateOverallCoverage(
+          mockCoverageData.coverage
+        );
 
         expect(result).toBeDefined();
         expect(result.statements).toBeDefined();
@@ -484,15 +490,15 @@ describe('CoverageAnalyzer', () => {
             statements: { percentage: 50 },
             branches: { percentage: 60 },
             functions: { percentage: 70 },
-            lines: { percentage: 80 }
+            lines: { percentage: 80 },
           },
           {
             path: 'test2.ts',
             statements: { percentage: 30 },
             branches: { percentage: 40 },
             functions: { percentage: 50 },
-            lines: { percentage: 60 }
-          }
+            lines: { percentage: 60 },
+          },
         ];
 
         const result = (coverageAnalyzer as any).identifyLowCoverageFiles(lowCoverageFiles);
@@ -508,7 +514,7 @@ describe('CoverageAnalyzer', () => {
           statements: 50,
           branches: 60,
           functions: 70,
-          lines: 80
+          lines: 80,
         };
 
         const result = (coverageAnalyzer as any).identifyFileIssues(fileWithLowCoverage);
@@ -524,18 +530,17 @@ describe('CoverageAnalyzer', () => {
             statements: 80,
             branches: 70,
             functions: 90,
-            lines: 85
+            lines: 85,
           },
-          lowCoverageFiles: [
-            { path: 'test1.ts' },
-            { path: 'test2.ts' }
-          ]
+          lowCoverageFiles: [{ path: 'test1.ts' }, { path: 'test2.ts' }],
         };
 
         const result = (coverageAnalyzer as any).generateRecommendations(coverageWithLowFiles);
 
         expect(Array.isArray(result)).toBe(true);
-        expect(result.some((rec: string) => rec.includes('Focus on 2 files with low coverage'))).toBe(true);
+        expect(
+          result.some((rec: string) => rec.includes('Focus on 2 files with low coverage'))
+        ).toBe(true);
       });
     });
   });

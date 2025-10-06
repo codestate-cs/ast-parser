@@ -54,7 +54,7 @@ export class PerformanceUtils {
     this.options = {
       enableCaching: options.enableCaching ?? true,
       maxCacheSize: options.maxCacheSize ?? 1000,
-      enableProfiling: options.enableProfiling ?? true
+      enableProfiling: options.enableProfiling ?? true,
     };
     this.cacheMap = new Map();
     this.metrics = [];
@@ -66,43 +66,43 @@ export class PerformanceUtils {
   async benchmark<T>(name: string, fn: () => T | Promise<T>): Promise<BenchmarkResult> {
     const startTime = process.hrtime.bigint();
     const startMemory = process.memoryUsage();
-    
+
     try {
       await fn();
       const endTime = process.hrtime.bigint();
       const endMemory = process.memoryUsage();
-      
+
       const duration = Number(endTime - startTime) / 1000000; // Convert to milliseconds
       const memoryUsage = endMemory.heapUsed - startMemory.heapUsed;
-      
+
       const benchmarkResult: BenchmarkResult = {
         name,
         duration,
         memoryUsage,
         success: true,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
-      
+
       if (this.options.enableProfiling) {
         this.metrics.push({
           name,
           duration,
-          memoryUsage: Math.abs(memoryUsage)
+          memoryUsage: Math.abs(memoryUsage),
         });
       }
-      
+
       return benchmarkResult;
     } catch (error) {
       const endTime = process.hrtime.bigint();
       const duration = Number(endTime - startTime) / 1000000;
-      
+
       return {
         name,
         duration,
         memoryUsage: 0,
         success: false,
         error: error instanceof Error ? error.message : String(error),
-        timestamp: new Date()
+        timestamp: new Date(),
       };
     }
   }
@@ -116,48 +116,45 @@ export class PerformanceUtils {
     immediate: boolean = false
   ): T & { cancel: () => void } {
     let timeoutId: NodeJS.Timeout | null = null;
-    
+
     const debounced = ((...args: Parameters<T>) => {
       const callNow = immediate && !timeoutId;
-      
+
       if (timeoutId) {
         clearTimeout(timeoutId);
       }
-      
+
       timeoutId = setTimeout(() => {
         timeoutId = null;
         if (!immediate) {
           fn(...args);
         }
       }, delay);
-      
+
       if (callNow) {
         fn(...args);
       }
     }) as T & { cancel: () => void };
-    
+
     debounced.cancel = () => {
       if (timeoutId) {
         clearTimeout(timeoutId);
         timeoutId = null;
       }
     };
-    
+
     return debounced;
   }
 
   /**
    * Throttle function calls
    */
-  throttle<T extends (...args: any[]) => any>(
-    fn: T,
-    delay: number
-  ): T {
+  throttle<T extends (...args: any[]) => any>(fn: T, delay: number): T {
     let lastCall = 0;
-    
+
     return ((...args: Parameters<T>) => {
       const now = Date.now();
-      
+
       if (now - lastCall >= delay) {
         lastCall = now;
         return fn(...args);
@@ -174,21 +171,21 @@ export class PerformanceUtils {
     maxSize: number = this.options.maxCacheSize
   ): T {
     const cache = new Map<string, ReturnType<T>>();
-    
+
     return ((...args: Parameters<T>) => {
       const key = keyGenerator ? keyGenerator(...args) : JSON.stringify(args);
-      
+
       if (cache.has(key)) {
         return cache.get(key)!;
       }
-      
+
       const result = fn(...args);
-      
+
       if (cache.size >= maxSize) {
         const firstKey = cache.keys().next().value;
         cache.delete(firstKey);
       }
-      
+
       cache.set(key, result);
       return result;
     }) as T;
@@ -197,52 +194,45 @@ export class PerformanceUtils {
   /**
    * Retry failed operations
    */
-  async retry<T>(
-    fn: () => Promise<T>,
-    maxRetries: number = 3,
-    delay: number = 1000
-  ): Promise<T> {
+  async retry<T>(fn: () => Promise<T>, maxRetries: number = 3, delay: number = 1000): Promise<T> {
     let lastError: Error;
-    
+
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
       try {
         return await fn();
       } catch (error) {
         lastError = error instanceof Error ? error : new Error(String(error));
-        
+
         if (attempt === maxRetries) {
           throw lastError;
         }
-        
+
         if (delay > 0) {
           await new Promise(resolve => setTimeout(resolve, delay));
         }
       }
     }
-    
+
     throw lastError!;
   }
 
   /**
    * Batch operations for better performance
    */
-  async batch<T>(
-    operations: (() => Promise<T>)[],
-    batchSize: number = 10
-  ): Promise<(T | Error)[]> {
+  async batch<T>(operations: (() => Promise<T>)[], batchSize: number = 10): Promise<(T | Error)[]> {
     const results: (T | Error)[] = [];
-    
+
     for (let i = 0; i < operations.length; i += batchSize) {
       const batch = operations.slice(i, i + batchSize);
-      const batchResults = await Promise.allSettled(
-        batch.map(operation => operation())
+      const batchResults = await Promise.allSettled(batch.map(operation => operation()));
+
+      results.push(
+        ...batchResults.map(result =>
+          result.status === 'fulfilled' ? result.value : result.reason
+        )
       );
-      
-      results.push(...batchResults.map(result => 
-        result.status === 'fulfilled' ? result.value : result.reason
-      ));
     }
-    
+
     return results;
   }
 
@@ -258,10 +248,10 @@ export class PerformanceUtils {
       if (!this.options.enableCaching) {
         return await fn(...args);
       }
-      
+
       const key = keyGenerator ? keyGenerator(...args) : JSON.stringify(args);
       const now = Date.now();
-      
+
       // Check cache
       if (this.cacheMap.has(key)) {
         const cached = this.cacheMap.get(key)!;
@@ -271,21 +261,21 @@ export class PerformanceUtils {
           this.cacheMap.delete(key);
         }
       }
-      
+
       // Execute function and cache result
       const result = await fn(...args);
-      
+
       if (this.cacheMap.size >= this.options.maxCacheSize) {
         const firstKey = this.cacheMap.keys().next().value;
         this.cacheMap.delete(firstKey);
       }
-      
+
       this.cacheMap.set(key, {
         value: result,
         timestamp: now,
-        ttl
+        ttl,
       });
-      
+
       return result;
     }) as T;
   }
@@ -299,23 +289,23 @@ export class PerformanceUtils {
         averageDuration: 0,
         totalDuration: 0,
         averageMemoryUsage: 0,
-        peakMemoryUsage: 0
+        peakMemoryUsage: 0,
       };
     }
-    
+
     const totalDuration = metrics.reduce((sum, m) => sum + m.duration, 0);
     const totalMemoryUsage = metrics.reduce((sum, m) => sum + m.memoryUsage, 0);
-    
-    const slowest = metrics.reduce((max, m) => m.duration > max.duration ? m : max);
-    const fastest = metrics.reduce((min, m) => m.duration < min.duration ? m : min);
-    
+
+    const slowest = metrics.reduce((max, m) => (m.duration > max.duration ? m : max));
+    const fastest = metrics.reduce((min, m) => (m.duration < min.duration ? m : min));
+
     return {
       averageDuration: totalDuration / metrics.length,
       totalDuration,
       averageMemoryUsage: totalMemoryUsage / metrics.length,
       peakMemoryUsage: Math.max(...metrics.map(m => m.memoryUsage)),
       slowestOperation: slowest.name,
-      fastestOperation: fastest.name
+      fastestOperation: fastest.name,
     };
   }
 
@@ -328,27 +318,27 @@ export class PerformanceUtils {
     memoryThreshold: number = 100000000
   ): Bottleneck[] {
     const bottlenecks: Bottleneck[] = [];
-    
+
     for (const metric of metrics) {
       if (metric.duration > durationThreshold) {
         bottlenecks.push({
           name: metric.name,
           type: 'duration',
           value: metric.duration,
-          threshold: durationThreshold
+          threshold: durationThreshold,
         });
       }
-      
+
       if (metric.memoryUsage > memoryThreshold) {
         bottlenecks.push({
           name: metric.name,
           type: 'memory',
           value: metric.memoryUsage,
-          threshold: memoryThreshold
+          threshold: memoryThreshold,
         });
       }
     }
-    
+
     return bottlenecks;
   }
 
@@ -357,53 +347,53 @@ export class PerformanceUtils {
    */
   getOptimizationSuggestions(metrics: PerformanceMetrics[]): OptimizationSuggestion[] {
     const suggestions: OptimizationSuggestion[] = [];
-    
+
     if (metrics.length === 0) {
       return suggestions;
     }
-    
+
     const analysis = this.analyzePerformance(metrics);
-    
+
     // Duration-based suggestions
     if (analysis.averageDuration > 1000) {
       suggestions.push({
         type: 'performance',
         description: 'Consider optimizing slow operations',
         impact: 'high',
-        estimatedImprovement: 30
+        estimatedImprovement: 30,
       });
     }
-    
+
     // Memory-based suggestions
     if (analysis.peakMemoryUsage > 100000000) {
       suggestions.push({
         type: 'memory',
         description: 'Consider implementing memory optimization strategies',
         impact: 'medium',
-        estimatedImprovement: 25
+        estimatedImprovement: 25,
       });
     }
-    
+
     // Cache suggestions
     if (analysis.averageDuration > 500) {
       suggestions.push({
         type: 'caching',
         description: 'Consider implementing caching for frequently accessed data',
         impact: 'high',
-        estimatedImprovement: 50
+        estimatedImprovement: 50,
       });
     }
-    
+
     // Batch processing suggestions
     if (metrics.length > 100) {
       suggestions.push({
         type: 'batching',
         description: 'Consider implementing batch processing for bulk operations',
         impact: 'medium',
-        estimatedImprovement: 20
+        estimatedImprovement: 20,
       });
     }
-    
+
     return suggestions;
   }
 
@@ -428,7 +418,7 @@ export class PerformanceUtils {
     return {
       size: this.cacheMap.size,
       maxSize: this.options.maxCacheSize,
-      hitRate: 0 // TODO: Implement hit rate tracking
+      hitRate: 0, // TODO: Implement hit rate tracking
     };
   }
 

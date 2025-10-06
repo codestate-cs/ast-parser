@@ -1,16 +1,16 @@
 /**
  * Base versioning strategy abstract class
- * 
+ *
  * This abstract class provides the foundation for all versioning strategies,
  * implementing common functionality and ensuring consistent behavior across
  * different versioning approaches.
  */
 
-import { 
+import {
   BaseVersioningStrategy as IBaseVersioningStrategy,
-  VersionMetadata, 
+  VersionMetadata,
   VersionComparison,
-  VersioningConfig 
+  VersioningConfig,
 } from '../../types/versioning';
 import { ErrorHandler, DefaultErrorHandler } from '../../utils/error/ErrorHandler';
 import { ErrorSeverity } from '../../utils/error/CustomErrors';
@@ -157,18 +157,18 @@ export abstract class BaseVersioningStrategy implements IBaseVersioningStrategy 
    * Generate comparison details
    */
   protected generateComparisonDetails(
-    version1: string, 
-    version2: string, 
+    version1: string,
+    version2: string,
     result: 'greater' | 'less' | 'equal' | 'incompatible'
   ): VersionComparison['details'] {
     const compatible = this.areVersionsCompatible(version1, version2);
-    
+
     return {
       compatible,
       breakingChanges: result === 'incompatible',
       newFeatures: result === 'greater',
       bugFixes: result === 'greater' && compatible,
-      information: this.generateComparisonInformation(version1, version2, result)
+      information: this.generateComparisonInformation(version1, version2, result),
     };
   }
 
@@ -176,8 +176,8 @@ export abstract class BaseVersioningStrategy implements IBaseVersioningStrategy 
    * Generate comparison information text
    */
   protected generateComparisonInformation(
-    version1: string, 
-    version2: string, 
+    version1: string,
+    version2: string,
     result: 'greater' | 'less' | 'equal' | 'incompatible'
   ): string {
     switch (result) {
@@ -203,20 +203,20 @@ export abstract class BaseVersioningStrategy implements IBaseVersioningStrategy 
       storage: {
         type: 'local',
         path: './versions',
-        options: {}
+        options: {},
       },
       retention: {
         maxVersions: 10,
         keepForever: [],
         autoCleanup: true,
-        cleanupInterval: 30
+        cleanupInterval: 30,
       },
       comparison: {
         enableDiff: true,
         diffFormat: 'json',
         includeMetrics: true,
-        includeBreakingChanges: true
-      }
+        includeBreakingChanges: true,
+      },
     };
 
     return {
@@ -224,16 +224,16 @@ export abstract class BaseVersioningStrategy implements IBaseVersioningStrategy 
       ...config,
       storage: {
         ...defaults.storage,
-        ...config.storage
+        ...config.storage,
       },
       retention: {
         ...defaults.retention,
-        ...config.retention
+        ...config.retention,
       },
       comparison: {
         ...defaults.comparison,
-        ...config.comparison
-      }
+        ...config.comparison,
+      },
     };
   }
 
@@ -247,8 +247,8 @@ export abstract class BaseVersioningStrategy implements IBaseVersioningStrategy 
       data: {
         context: `BaseVersioningStrategy.${context}`,
         strategy: this.getStrategyName(),
-        config: this.config
-      }
+        config: this.config,
+      },
     });
   }
 
@@ -270,7 +270,7 @@ export abstract class BaseVersioningStrategy implements IBaseVersioningStrategy 
       return false;
     }
 
-    if (!config.storage || !config.storage.type || !config.storage.path) {
+    if (!config.storage?.type || !config.storage.path) {
       return false;
     }
 
@@ -298,7 +298,7 @@ export abstract class BaseVersioningStrategy implements IBaseVersioningStrategy 
   protected setStrategyOptions(options: Record<string, any>): void {
     this.config.storage.options = {
       ...this.config.storage.options,
-      ...options
+      ...options,
     };
   }
 

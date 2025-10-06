@@ -18,6 +18,7 @@ import {
   MethodInfo,
   ParameterInfo,
   JSDocInfo,
+  RelationType,
 } from '../types';
 import { ParsingOptions } from '../types/options';
 import { FileUtils } from '../utils/file/FileUtils';
@@ -918,10 +919,168 @@ export class EnhancedTypeScriptParser extends BaseParser {
 
       // Find import/export relationships
       if (node.tsNodeType === 'ImportDeclaration' || node.tsNodeType === 'ExportDeclaration') {
-        // Enhanced import/export analysis will be implemented here
+        const importExportRelations = this.analyzeImportExportRelations(node);
+        relations.push(...importExportRelations);
       }
     }
 
     return relations;
+  }
+
+  /**
+   * Analyze import/export relationships for a node
+   */
+  private analyzeImportExportRelations(node: TypeScriptASTNode): Relation[] {
+    const relations: Relation[] = [];
+
+    if (!this.sourceFile || !node.tsNode) {
+      return relations;
+    }
+
+    const tsNode = node.tsNode as ts.ImportDeclaration | ts.ExportDeclaration;
+
+    if (ts.isImportDeclaration(tsNode)) {
+      // Handle import declarations
+      const moduleSpecifier = tsNode.moduleSpecifier;
+      if (moduleSpecifier && ts.isStringLiteral(moduleSpecifier)) {
+        const modulePath = moduleSpecifier.text;
+
+        // Create import relationship
+        relations.push(
+          this.createRelation(
+            `import-${node.id}-${modulePath}`,
+            'imports',
+            node.filePath,
+            modulePath,
+            {
+              relationship: 'import',
+              modulePath,
+              importClause: tsNode.importClause?.getText(),
+              isTypeOnly: tsNode.importClause?.isTypeOnly ?? false,
+            }
+          )
+        );
+
+        // Handle named imports
+        if (
+          tsNode.importClause?.namedBindings &&
+          ts.isNamedImports(tsNode.importClause.namedBindings)
+        ) {
+          tsNode.importClause.namedBindings.elements.forEach(element => {
+            relations.push(
+              this.createRelation(
+                `import-named-${node.id}-${element.name.text}`,
+                'imports',
+                node.filePath,
+                `${modulePath}#${element.name.text}`,
+                {
+                  relationship: 'named-import',
+                  modulePath,
+                  importedName: element.name.text,
+                  alias: element.propertyName?.text,
+                }
+              )
+            );
+          });
+        }
+
+        // Handle default import
+        if (tsNode.importClause?.name) {
+          relations.push(
+            this.createRelation(
+              `import-default-${node.id}-${tsNode.importClause.name.text}`,
+              'imports',
+              node.filePath,
+              `${modulePath}#default`,
+              {
+                relationship: 'default-import',
+                modulePath,
+                importedName: tsNode.importClause.name.text,
+              }
+            )
+          );
+        }
+      }
+    } else if (ts.isExportDeclaration(tsNode)) {
+      // Handle export declarations
+      const moduleSpecifier = tsNode.moduleSpecifier;
+      if (moduleSpecifier && ts.isStringLiteral(moduleSpecifier)) {
+        const modulePath = moduleSpecifier.text;
+
+        // Create re-export relationship
+        relations.push(
+          this.createRelation(
+            `export-${node.id}-${modulePath}`,
+            'exports',
+            node.filePath,
+            modulePath,
+            {
+              relationship: 're-export',
+              modulePath,
+              exportClause: tsNode.exportClause?.getText(),
+            }
+          )
+        );
+
+        // Handle named exports
+        if (tsNode.exportClause && ts.isNamedExports(tsNode.exportClause)) {
+          tsNode.exportClause.elements.forEach(element => {
+            relations.push(
+              this.createRelation(
+                `export-named-${node.id}-${element.name.text}`,
+                'exports',
+                node.filePath,
+                `${modulePath}#${element.name.text}`,
+                {
+                  relationship: 'named-export',
+                  modulePath,
+                  exportedName: element.name.text,
+                  alias: element.propertyName?.text,
+                }
+              )
+            );
+          });
+        }
+      } else if (tsNode.exportClause && ts.isNamedExports(tsNode.exportClause)) {
+        // Handle direct named exports
+        tsNode.exportClause.elements.forEach(element => {
+          relations.push(
+            this.createRelation(
+              `export-direct-${node.id}-${element.name.text}`,
+              'exports',
+              node.filePath,
+              element.name.text,
+              {
+                relationship: 'direct-export',
+                exportedName: element.name.text,
+                alias: element.propertyName?.text,
+              }
+            )
+          );
+        });
+      }
+    }
+
+    return relations;
+  }
+
+  /**
+   * Create a relation object
+   */
+  protected override createRelation(
+    id: string,
+    type: string,
+    from: string,
+    to: string,
+    metadata: Record<string, unknown>
+  ): Relation {
+    return {
+      id,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      type: type as RelationType, // Type assertion for RelationType - validated at call site
+      from,
+      to,
+      metadata,
+    };
   }
 }

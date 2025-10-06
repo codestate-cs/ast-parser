@@ -87,7 +87,7 @@ export class PerformanceStrategies {
       totalExecutions: 0,
       successRate: 0,
       averageLatency: 0,
-      strategies: {}
+      strategies: {},
     };
   }
 
@@ -98,26 +98,30 @@ export class PerformanceStrategies {
     let isFastMode = true;
     // Track last switch time for adaptive strategy
     let lastSwitchTime: number = Date.now();
-    
+
     return {
       execute: async <T>(operation: (...args: any[]) => Promise<T>, ...args: any[]): Promise<T> => {
         const startTime = Date.now();
-        
+
         try {
           const result = await operation(...args);
           const duration = Date.now() - startTime;
-          
+
           // Update strategy based on performance
           if (isFastMode && duration > options.slowThreshold) {
             isFastMode = false;
             lastSwitchTime = Date.now();
-            logWarn(`Switched to slow mode due to performance degradation. Last switch: ${lastSwitchTime}`);
+            logWarn(
+              `Switched to slow mode due to performance degradation. Last switch: ${lastSwitchTime}`
+            );
           } else if (!isFastMode && duration < options.fastThreshold) {
             isFastMode = true;
             lastSwitchTime = Date.now();
-            logInfo(`Switched to fast mode due to performance improvement. Last switch: ${lastSwitchTime}`);
+            logInfo(
+              `Switched to fast mode due to performance improvement. Last switch: ${lastSwitchTime}`
+            );
           }
-          
+
           this.updateMetrics('adaptive', duration, true);
           return result;
         } catch (error) {
@@ -125,7 +129,7 @@ export class PerformanceStrategies {
           this.updateMetrics('adaptive', duration, false);
           throw error;
         }
-      }
+      },
     };
   }
 
@@ -134,12 +138,12 @@ export class PerformanceStrategies {
    */
   createCachingStrategy(options: CachingStrategyOptions): PerformanceStrategy {
     const cache = new Map<string, { value: any; timestamp: number }>();
-    
+
     return {
       execute: async <T>(operation: (...args: any[]) => Promise<T>, ...args: any[]): Promise<T> => {
         const key = JSON.stringify(args);
         const now = Date.now();
-        
+
         // Check cache
         if (cache.has(key)) {
           const cached = cache.get(key)!;
@@ -150,24 +154,24 @@ export class PerformanceStrategies {
             cache.delete(key);
           }
         }
-        
+
         const startTime = Date.now();
-        
+
         try {
           const result = await operation(...args);
           const duration = Date.now() - startTime;
-          
+
           // Cache result
           if (cache.size >= options.maxSize) {
             const firstKey = cache.keys().next().value;
-            cache.delete(firstKey!);
+            cache.delete(firstKey);
           }
-          
+
           cache.set(key, {
             value: result,
-            timestamp: now
+            timestamp: now,
           });
-          
+
           this.updateMetrics('caching', duration, true);
           return result;
         } catch (error) {
@@ -175,7 +179,7 @@ export class PerformanceStrategies {
           this.updateMetrics('caching', duration, false);
           throw error;
         }
-      }
+      },
     };
   }
 
@@ -186,16 +190,14 @@ export class PerformanceStrategies {
     return {
       execute: async <T>(operations: (() => Promise<T>)[]): Promise<T[]> => {
         const results: T[] = [];
-        
+
         for (let i = 0; i < operations.length; i += options.batchSize) {
           const batch = operations.slice(i, i + options.batchSize);
           const startTime = Date.now();
-          
+
           try {
-            const batchResults = await Promise.allSettled(
-              batch.map(operation => operation())
-            );
-            
+            const batchResults = await Promise.allSettled(batch.map(operation => operation()));
+
             const allResults = batchResults.map(result => {
               if (result.status === 'fulfilled') {
                 return result.value;
@@ -203,12 +205,12 @@ export class PerformanceStrategies {
                 return result.reason;
               }
             });
-            
+
             results.push(...allResults);
-            
+
             const duration = Date.now() - startTime;
             this.updateMetrics('batch', duration, true);
-            
+
             if (options.delay > 0 && i + options.batchSize < operations.length) {
               await new Promise(resolve => setTimeout(resolve, options.delay));
             }
@@ -218,9 +220,9 @@ export class PerformanceStrategies {
             throw error;
           }
         }
-        
+
         return results;
-      }
+      },
     };
   }
 
@@ -232,10 +234,10 @@ export class PerformanceStrategies {
       execute: async <T>(operation: (...args: any[]) => Promise<T>, ...args: any[]): Promise<T> => {
         let lastError: Error;
         let delay = options.delay;
-        
+
         for (let attempt = 0; attempt <= options.maxRetries; attempt++) {
           const startTime = Date.now();
-          
+
           try {
             const result = await operation(...args);
             const duration = Date.now() - startTime;
@@ -244,29 +246,29 @@ export class PerformanceStrategies {
           } catch (error) {
             lastError = error instanceof Error ? error : new Error(String(error));
             const duration = Date.now() - startTime;
-            
+
             // Check if we should retry
             if (options.retryCondition && !options.retryCondition(lastError)) {
               this.updateMetrics('retry', duration, false);
               throw lastError;
             }
-            
+
             if (attempt === options.maxRetries) {
               this.updateMetrics('retry', duration, false);
               throw lastError;
             }
-            
+
             this.updateMetrics('retry', duration, false);
-            
+
             if (delay > 0) {
               await new Promise(resolve => setTimeout(resolve, delay));
               delay *= options.backoffMultiplier;
             }
           }
         }
-        
+
         throw lastError!;
-      }
+      },
     };
   }
 
@@ -278,55 +280,55 @@ export class PerformanceStrategies {
     let failureCount = 0;
     let lastFailureTime = 0;
     let lastError: Error;
-    
+
     return {
       execute: async <T>(operation: (...args: any[]) => Promise<T>, ...args: any[]): Promise<T> => {
         const now = Date.now();
-        
+
         // Check if circuit should be reset
         if (state === 'open' && now - lastFailureTime > options.resetTimeout) {
           state = 'half-open';
           failureCount = 0;
         }
-        
+
         // Reject if circuit is open
         if (state === 'open') {
           throw new Error('Circuit breaker is open');
         }
-        
+
         const startTime = Date.now();
-        
+
         try {
           const result = await operation(...args);
           const duration = Date.now() - startTime;
-          
+
           // Reset circuit on success
           if (state === 'half-open') {
             state = 'closed';
             failureCount = 0;
           }
-          
+
           this.updateMetrics('circuit-breaker', duration, true);
           return result;
         } catch (error) {
           const duration = Date.now() - startTime;
           lastError = error instanceof Error ? error : new Error(String(error));
-          
+
           // Check if error should be counted as failure
           if (!options.failureCondition || options.failureCondition(lastError)) {
             failureCount++;
             lastFailureTime = now;
-            
+
             if (failureCount >= options.failureThreshold) {
               state = 'open';
               logWarn('Circuit breaker opened due to failures');
             }
           }
-          
+
           this.updateMetrics('circuit-breaker', duration, false);
           throw lastError;
         }
-      }
+      },
     };
   }
 
@@ -335,16 +337,16 @@ export class PerformanceStrategies {
    */
   createThrottleStrategy(options: ThrottleStrategyOptions): PerformanceStrategy {
     const requests: number[] = [];
-    
+
     return {
       execute: async <T>(operation: (...args: any[]) => Promise<T>, ...args: any[]): Promise<T> => {
         const now = Date.now();
-        
+
         // Remove old requests outside the window
         while (requests.length > 0 && (requests[0] ?? 0) <= now - options.windowMs) {
           requests.shift();
         }
-        
+
         // Check if we're within rate limit
         if (requests.length >= options.rateLimit) {
           const waitTime = (requests[0] ?? 0) + options.windowMs - now;
@@ -356,11 +358,11 @@ export class PerformanceStrategies {
             }
           }
         }
-        
+
         requests.push(now);
-        
+
         const startTime = Date.now();
-        
+
         try {
           const result = await operation(...args);
           const duration = Date.now() - startTime;
@@ -371,7 +373,7 @@ export class PerformanceStrategies {
           this.updateMetrics('throttle', duration, false);
           throw error;
         }
-      }
+      },
     };
   }
 
@@ -382,21 +384,21 @@ export class PerformanceStrategies {
     return {
       execute: async <T>(operation: (...args: any[]) => Promise<T>, ...args: any[]): Promise<T> => {
         let currentOperation = operation;
-        
+
         // Apply strategies in reverse order (innermost first)
         for (let i = strategies.length - 1; i >= 0; i--) {
           const strategy = strategies[i];
           if (strategy) {
             const wrappedOperation = currentOperation;
-            
+
             currentOperation = async (...args: any[]) => {
               return await strategy.execute(wrappedOperation, ...args);
             };
           }
         }
-        
+
         return await currentOperation(...args);
-      }
+      },
     };
   }
 
@@ -408,33 +410,33 @@ export class PerformanceStrategies {
       case 'cache':
         return this.createCachingStrategy({
           ttl: 60000,
-          maxSize: 1000
+          maxSize: 1000,
         });
-      
+
       case 'network':
         return this.createRetryStrategy({
           maxRetries: 3,
           delay: 1000,
-          backoffMultiplier: 2
+          backoffMultiplier: 2,
         });
-      
+
       case 'batch':
         return this.createBatchStrategy({
           batchSize: 10,
-          delay: 100
+          delay: 100,
         }) as any;
-      
+
       case 'adaptive':
         return this.createAdaptiveStrategy({
           fastThreshold: 100,
-          slowThreshold: 1000
+          slowThreshold: 1000,
         });
-      
+
       default:
         return this.createRetryStrategy({
           maxRetries: 1,
           delay: 0,
-          backoffMultiplier: 1
+          backoffMultiplier: 1,
         });
     }
   }
@@ -463,7 +465,7 @@ export class PerformanceStrategies {
       totalExecutions: 0,
       successRate: 0,
       averageLatency: 0,
-      strategies: {}
+      strategies: {},
     };
   }
 
@@ -477,15 +479,15 @@ export class PerformanceStrategies {
         successes: 0,
         failures: 0,
         averageLatency: 0,
-        totalLatency: 0
+        totalLatency: 0,
       });
     }
-    
+
     const metrics = this.metrics.get(strategyName)!;
     metrics.executions++;
     metrics.totalLatency += latency;
     metrics.averageLatency = metrics.totalLatency / metrics.executions;
-    
+
     if (success) {
       metrics.successes++;
     } else {
@@ -500,15 +502,15 @@ export class PerformanceStrategies {
     let totalExecutions = 0;
     let totalSuccesses = 0;
     let totalLatency = 0;
-    
+
     for (const [name, metrics] of this.metrics) {
       totalExecutions += metrics.executions;
       totalSuccesses += metrics.successes;
       totalLatency += metrics.totalLatency;
-      
+
       this.usageStats.strategies[name] = { ...metrics };
     }
-    
+
     this.usageStats.totalExecutions = totalExecutions;
     this.usageStats.successRate = totalExecutions > 0 ? totalSuccesses / totalExecutions : 0;
     this.usageStats.averageLatency = totalExecutions > 0 ? totalLatency / totalExecutions : 0;

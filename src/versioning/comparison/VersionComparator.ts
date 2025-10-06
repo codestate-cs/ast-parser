@@ -67,7 +67,10 @@ export class VersionComparator {
     this.config = this.mergeDefaults(config || {});
   }
 
-  async compareVersions(version1: ProjectAnalysisOutput, version2: ProjectAnalysisOutput): Promise<ComparisonResult> {
+  async compareVersions(
+    version1: ProjectAnalysisOutput,
+    version2: ProjectAnalysisOutput
+  ): Promise<ComparisonResult> {
     try {
       if (!version1 || !version2) {
         throw this.createError('Both versions must be provided', 'INVALID_VERSIONS');
@@ -81,27 +84,30 @@ export class VersionComparator {
 
       const breakingChanges = apisChanged.filter(change => change.breaking).length;
       const newFeatures = apisChanged.filter(change => change.type === 'added').length;
-      const bugFixes = apisChanged.filter(change => change.type === 'modified' && !change.breaking).length;
+      const bugFixes = apisChanged.filter(
+        change => change.type === 'modified' && !change.breaking
+      ).length;
 
       return {
         summary: {
-          totalChanges: filesAdded.length + filesModified.length + filesDeleted.length + apisChanged.length,
+          totalChanges:
+            filesAdded.length + filesModified.length + filesDeleted.length + apisChanged.length,
           newFeatures,
           breakingChanges,
-          bugFixes
+          bugFixes,
         },
         details: {
           filesAdded,
           filesModified,
           filesDeleted,
           apisChanged,
-          qualityMetrics
+          qualityMetrics,
         },
         recommendations: {
           migrationGuide: this.generateMigrationGuide(apisChanged),
           testingStrategy: this.generateTestingStrategy(breakingChanges, newFeatures),
-          documentationUpdates: this.generateDocumentationUpdates(apisChanged)
-        }
+          documentationUpdates: this.generateDocumentationUpdates(apisChanged),
+        },
       };
     } catch (error) {
       this.handleError(error as Error, 'compareVersions');
@@ -109,7 +115,11 @@ export class VersionComparator {
     }
   }
 
-  async generateDiffReport(version1: ProjectAnalysisOutput, version2: ProjectAnalysisOutput, format: 'json' | 'markdown' | 'html' = 'json'): Promise<DiffReport> {
+  async generateDiffReport(
+    version1: ProjectAnalysisOutput,
+    version2: ProjectAnalysisOutput,
+    format: 'json' | 'markdown' | 'html' = 'json'
+  ): Promise<DiffReport> {
     try {
       if (!version1 || !version2) {
         throw this.createError('Both versions must be provided', 'INVALID_VERSIONS');
@@ -139,8 +149,8 @@ export class VersionComparator {
           generatedAt: new Date().toISOString(),
           version1: version1.project.version,
           version2: version2.project.version,
-          totalChanges: comparison.summary.totalChanges
-        }
+          totalChanges: comparison.summary.totalChanges,
+        },
       };
     } catch (error) {
       this.handleError(error as Error, 'generateDiffReport');
@@ -148,7 +158,10 @@ export class VersionComparator {
     }
   }
 
-  async detectBreakingChanges(version1: ProjectAnalysisOutput, version2: ProjectAnalysisOutput): Promise<APIChange[]> {
+  async detectBreakingChanges(
+    version1: ProjectAnalysisOutput,
+    version2: ProjectAnalysisOutput
+  ): Promise<APIChange[]> {
     try {
       if (!version1 || !version2) {
         throw this.createError('Both versions must be provided', 'INVALID_VERSIONS');
@@ -162,7 +175,10 @@ export class VersionComparator {
     }
   }
 
-  async compareQualityMetrics(version1: ProjectAnalysisOutput, version2: ProjectAnalysisOutput): Promise<QualityMetricDiff> {
+  async compareQualityMetrics(
+    version1: ProjectAnalysisOutput,
+    version2: ProjectAnalysisOutput
+  ): Promise<QualityMetricDiff> {
     try {
       if (!version1 || !version2) {
         throw this.createError('Both versions must be provided', 'INVALID_VERSIONS');
@@ -178,31 +194,31 @@ export class VersionComparator {
           cyclomatic: {
             old: complexity1.cyclomatic,
             new: complexity2.cyclomatic,
-            difference: complexity2.cyclomatic - complexity1.cyclomatic
+            difference: complexity2.cyclomatic - complexity1.cyclomatic,
           },
           cognitive: {
             old: complexity1.cognitive,
             new: complexity2.cognitive,
-            difference: complexity2.cognitive - complexity1.cognitive
+            difference: complexity2.cognitive - complexity1.cognitive,
           },
           maintainability: {
             old: complexity1.maintainability,
             new: complexity2.maintainability,
-            difference: complexity2.maintainability - complexity1.maintainability
-          }
+            difference: complexity2.maintainability - complexity1.maintainability,
+          },
         },
         quality: {
           score: {
             old: quality1.score,
             new: quality2.score,
-            difference: quality2.score - quality1.score
+            difference: quality2.score - quality1.score,
           },
           issues: {
             added: quality2.issues.length - quality1.issues.length,
             removed: quality1.issues.length - quality2.issues.length,
-            total: quality2.issues.length
-          }
-        }
+            total: quality2.issues.length,
+          },
+        },
       };
     } catch (error) {
       this.handleError(error as Error, 'compareQualityMetrics');
@@ -218,68 +234,80 @@ export class VersionComparator {
     this.config = this.mergeDefaults(config);
   }
 
-  private getFilesAdded(version1: ProjectAnalysisOutput, version2: ProjectAnalysisOutput): string[] {
+  private getFilesAdded(
+    version1: ProjectAnalysisOutput,
+    version2: ProjectAnalysisOutput
+  ): string[] {
     const files1 = new Set(version1.structure.files.map((f: any) => f.path));
     const files2 = new Set(version2.structure.files.map((f: any) => f.path));
-    
+
     return Array.from(files2).filter((file: any) => !files1.has(file)) as string[];
   }
 
-  private getFilesModified(version1: ProjectAnalysisOutput, version2: ProjectAnalysisOutput): string[] {
+  private getFilesModified(
+    version1: ProjectAnalysisOutput,
+    version2: ProjectAnalysisOutput
+  ): string[] {
     const files1 = new Map(version1.structure.files.map((f: any) => [f.path, f.lastModified]));
     const files2 = new Map(version2.structure.files.map((f: any) => [f.path, f.lastModified]));
-    
+
     const modified: string[] = [];
-    
+
     for (const [path, modified2] of files2) {
       const modified1 = files1.get(path);
       if (modified1 && modified1 !== modified2) {
         modified.push(path as string);
       }
     }
-    
+
     return modified;
   }
 
-  private getFilesDeleted(version1: ProjectAnalysisOutput, version2: ProjectAnalysisOutput): string[] {
+  private getFilesDeleted(
+    version1: ProjectAnalysisOutput,
+    version2: ProjectAnalysisOutput
+  ): string[] {
     const files1 = new Set(version1.structure.files.map((f: any) => f.path));
     const files2 = new Set(version2.structure.files.map((f: any) => f.path));
-    
+
     return Array.from(files1).filter((file: any) => !files2.has(file)) as string[];
   }
 
-  private async detectAPIChanges(version1: ProjectAnalysisOutput, version2: ProjectAnalysisOutput): Promise<APIChange[]> {
+  private async detectAPIChanges(
+    version1: ProjectAnalysisOutput,
+    version2: ProjectAnalysisOutput
+  ): Promise<APIChange[]> {
     const changes: APIChange[] = [];
-    
+
     const exports1 = new Map(version1.ast.publicExports.map((e: any) => [e.name, e]));
     const exports2 = new Map(version2.ast.publicExports.map((e: any) => [e.name, e]));
-    
+
     // Check for removed exports
     for (const [name, export1] of exports1) {
       if (!exports2.has(name)) {
         changes.push({
           type: 'removed',
           name: name as string,
-          file: (export1 as any).file,
+          file: export1.file,
           oldValue: export1,
-          breaking: true
+          breaking: true,
         });
       }
     }
-    
+
     // Check for added exports
     for (const [name, export2] of exports2) {
       if (!exports1.has(name)) {
         changes.push({
           type: 'added',
           name: name as string,
-          file: (export2 as any).file,
+          file: export2.file,
           newValue: export2,
-          breaking: false
+          breaking: false,
         });
       }
     }
-    
+
     // Check for modified exports
     for (const [name, export1] of exports1) {
       const export2 = exports2.get(name);
@@ -287,14 +315,14 @@ export class VersionComparator {
         changes.push({
           type: 'signature',
           name: name as string,
-          file: (export1 as any).file,
+          file: export1.file,
           oldValue: export1,
           newValue: export2,
-          breaking: this.isBreakingChange(export1, export2)
+          breaking: this.isBreakingChange(export1, export2),
         });
       }
     }
-    
+
     return changes;
   }
 
@@ -303,10 +331,10 @@ export class VersionComparator {
     if (export1.type !== export2.type) return true;
     if (export1.file !== export2.file) return true;
     if (export1.isDefault !== export2.isDefault) return true;
-    
+
     // Check metadata for changes
     if (JSON.stringify(export1.metadata) !== JSON.stringify(export2.metadata)) return true;
-    
+
     return false;
   }
 
@@ -315,33 +343,37 @@ export class VersionComparator {
     if (export1.type !== export2.type) {
       return true;
     }
-    
+
     // If the file changed, it's breaking
     if (export1.file !== export2.file) {
       return true;
     }
-    
+
     // If isDefault changed, it's breaking
     if (export1.isDefault !== export2.isDefault) {
       return true;
     }
-    
+
     // If it's no longer exported, it's breaking
     if (export1.isExported && !export2.isExported) {
       return true;
     }
-    
+
     // If metadata indicates breaking change
     if (export1.metadata?.signature !== export2.metadata?.signature) {
       return true;
     }
-    
+
     return false;
   }
 
-  private generateMarkdownDiff(version1: ProjectAnalysisOutput, version2: ProjectAnalysisOutput, comparison: ComparisonResult): string {
+  private generateMarkdownDiff(
+    version1: ProjectAnalysisOutput,
+    version2: ProjectAnalysisOutput,
+    comparison: ComparisonResult
+  ): string {
     const lines: string[] = [];
-    
+
     lines.push(`# Version Comparison Report`);
     lines.push(``);
     lines.push(`**Project:** ${version1.project.name}`);
@@ -349,7 +381,7 @@ export class VersionComparator {
     lines.push(`**To:** ${version2.project.version}`);
     lines.push(`**Generated:** ${new Date().toISOString()}`);
     lines.push(``);
-    
+
     lines.push(`## Summary`);
     lines.push(``);
     lines.push(`- **Total Changes:** ${comparison.summary.totalChanges}`);
@@ -357,7 +389,7 @@ export class VersionComparator {
     lines.push(`- **Breaking Changes:** ${comparison.summary.breakingChanges}`);
     lines.push(`- **Bug Fixes:** ${comparison.summary.bugFixes}`);
     lines.push(``);
-    
+
     if (comparison.details.filesAdded.length > 0) {
       lines.push(`## Files Added`);
       lines.push(``);
@@ -366,7 +398,7 @@ export class VersionComparator {
       });
       lines.push(``);
     }
-    
+
     if (comparison.details.filesModified.length > 0) {
       lines.push(`## Files Modified`);
       lines.push(``);
@@ -375,7 +407,7 @@ export class VersionComparator {
       });
       lines.push(``);
     }
-    
+
     if (comparison.details.filesDeleted.length > 0) {
       lines.push(`## Files Deleted`);
       lines.push(``);
@@ -384,7 +416,7 @@ export class VersionComparator {
       });
       lines.push(``);
     }
-    
+
     if (comparison.details.apisChanged.length > 0) {
       lines.push(`## API Changes`);
       lines.push(``);
@@ -394,13 +426,17 @@ export class VersionComparator {
       });
       lines.push(``);
     }
-    
+
     return lines.join('\n');
   }
 
-  private generateHTMLDiff(version1: ProjectAnalysisOutput, version2: ProjectAnalysisOutput, comparison: ComparisonResult): string {
+  private generateHTMLDiff(
+    version1: ProjectAnalysisOutput,
+    version2: ProjectAnalysisOutput,
+    comparison: ComparisonResult
+  ): string {
     const lines: string[] = [];
-    
+
     lines.push(`<!DOCTYPE html>`);
     lines.push(`<html>`);
     lines.push(`<head>`);
@@ -425,41 +461,45 @@ export class VersionComparator {
     lines.push(`  <ul>`);
     lines.push(`    <li><strong>Total Changes:</strong> ${comparison.summary.totalChanges}</li>`);
     lines.push(`    <li><strong>New Features:</strong> ${comparison.summary.newFeatures}</li>`);
-    lines.push(`    <li><strong>Breaking Changes:</strong> ${comparison.summary.breakingChanges}</li>`);
+    lines.push(
+      `    <li><strong>Breaking Changes:</strong> ${comparison.summary.breakingChanges}</li>`
+    );
     lines.push(`    <li><strong>Bug Fixes:</strong> ${comparison.summary.bugFixes}</li>`);
     lines.push(`  </ul>`);
     lines.push(`</body>`);
     lines.push(`</html>`);
-    
+
     return lines.join('\n');
   }
 
   private generateMigrationGuide(apiChanges: APIChange[]): string {
     const breakingChanges = apiChanges.filter(change => change.breaking);
-    
+
     if (breakingChanges.length === 0) {
       return 'No breaking changes detected. This update should be safe to apply.';
     }
-    
+
     const lines: string[] = [];
     lines.push('Migration Guide:');
     lines.push('');
-    
+
     breakingChanges.forEach(change => {
       lines.push(`- ${change.name}: ${change.type} in ${change.file}`);
       if (change.type === 'removed') {
         lines.push(`  - This API has been removed. Please update your code to use an alternative.`);
       } else if (change.type === 'signature') {
-        lines.push(`  - The signature of this API has changed. Please update your code accordingly.`);
+        lines.push(
+          `  - The signature of this API has changed. Please update your code accordingly.`
+        );
       }
     });
-    
+
     return lines.join('\n');
   }
 
   private generateTestingStrategy(breakingChanges: number, newFeatures: number): string {
     const lines: string[] = [];
-    
+
     if (breakingChanges > 0) {
       lines.push('Testing Strategy:');
       lines.push('- Run full regression tests');
@@ -473,13 +513,13 @@ export class VersionComparator {
       lines.push('Testing Strategy:');
       lines.push('- Run existing test suite');
     }
-    
+
     return lines.join('\n');
   }
 
   private generateDocumentationUpdates(apiChanges: APIChange[]): string[] {
     const updates: string[] = [];
-    
+
     apiChanges.forEach(change => {
       if (change.type === 'added') {
         updates.push(`Document new API: ${change.name}`);
@@ -489,7 +529,7 @@ export class VersionComparator {
         updates.push(`Update documentation for: ${change.name}`);
       }
     });
-    
+
     return updates;
   }
 
@@ -498,7 +538,7 @@ export class VersionComparator {
       enableDiff: config.enableDiff ?? true,
       diffFormat: config.diffFormat ?? 'json',
       includeMetrics: config.includeMetrics ?? true,
-      includeBreakingChanges: config.includeBreakingChanges ?? true
+      includeBreakingChanges: config.includeBreakingChanges ?? true,
     };
   }
 

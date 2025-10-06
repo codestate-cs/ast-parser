@@ -21,20 +21,55 @@ describe('ConfigValidator', () => {
     it('should validate valid configuration', () => {
       const validConfig = {
         analyzers: {
-          dependency: { includeExternal: true, includeInternal: true, maxDepth: 10, includeCircular: true },
-          entryPoint: { includeMain: true, includeTypes: true, includePatterns: true, maxEntryPoints: 100 },
-          structure: { includeFiles: true, includeDirectories: true, maxDepth: 20, includeSize: true },
-          complexity: { includeCyclomatic: true, includeCognitive: true, includeLinesOfCode: true, includeFunctionCount: true, includeClassCount: true, includeInterfaceCount: true }
+          dependency: {
+            includeExternal: true,
+            includeInternal: true,
+            maxDepth: 10,
+            includeCircular: true,
+          },
+          entryPoint: {
+            includeMain: true,
+            includeTypes: true,
+            includePatterns: true,
+            maxEntryPoints: 100,
+          },
+          structure: {
+            includeFiles: true,
+            includeDirectories: true,
+            maxDepth: 20,
+            includeSize: true,
+          },
+          complexity: {
+            includeCyclomatic: true,
+            includeCognitive: true,
+            includeLinesOfCode: true,
+            includeFunctionCount: true,
+            includeClassCount: true,
+            includeInterfaceCount: true,
+          },
         },
         parsers: {
-          typescript: { includeTypes: true, includeJSDoc: true, includeDecorators: true, includeGenerics: true, maxDepth: 15 },
-          enhancedTypeScript: { includeAdvancedTypes: true, includeMethodSignatures: true, includeProperties: true, includeParameters: true, includeExports: true, maxDepth: 20 }
+          typescript: {
+            includeTypes: true,
+            includeJSDoc: true,
+            includeDecorators: true,
+            includeGenerics: true,
+            maxDepth: 15,
+          },
+          enhancedTypeScript: {
+            includeAdvancedTypes: true,
+            includeMethodSignatures: true,
+            includeProperties: true,
+            includeParameters: true,
+            includeExports: true,
+            maxDepth: 20,
+          },
         },
         output: {
           formats: { default: 'json', available: ['json', 'xml'], options: {} },
-          naming: { default: 'project', available: ['project', 'timestamp'], options: {} }
+          naming: { default: 'project', available: ['project', 'timestamp'], options: {} },
         },
-        global: { verbose: false, debug: false, maxProcessingTime: 300000, parallel: true }
+        global: { verbose: false, debug: false, maxProcessingTime: 300000, parallel: true },
       };
 
       const result = validator.validate(validConfig);
@@ -94,7 +129,9 @@ describe('ConfigValidator', () => {
     it('should validate analyzer configuration with missing dependency', () => {
       const config = {
         analyzers: { entryPoint: {}, structure: {}, complexity: {} },
-        parsers: {}, output: {}, global: {}
+        parsers: {},
+        output: {},
+        global: {},
       };
       const result = validator.validate(config);
       expect(result.isValid).toBe(false);
@@ -104,7 +141,9 @@ describe('ConfigValidator', () => {
     it('should validate analyzer configuration with missing entryPoint', () => {
       const config = {
         analyzers: { dependency: {}, structure: {}, complexity: {} },
-        parsers: {}, output: {}, global: {}
+        parsers: {},
+        output: {},
+        global: {},
       };
       const result = validator.validate(config);
       expect(result.isValid).toBe(false);
@@ -114,7 +153,9 @@ describe('ConfigValidator', () => {
     it('should validate analyzer configuration with missing structure', () => {
       const config = {
         analyzers: { dependency: {}, entryPoint: {}, complexity: {} },
-        parsers: {}, output: {}, global: {}
+        parsers: {},
+        output: {},
+        global: {},
       };
       const result = validator.validate(config);
       expect(result.isValid).toBe(false);
@@ -124,7 +165,9 @@ describe('ConfigValidator', () => {
     it('should validate analyzer configuration with missing complexity', () => {
       const config = {
         analyzers: { dependency: {}, entryPoint: {}, structure: {} },
-        parsers: {}, output: {}, global: {}
+        parsers: {},
+        output: {},
+        global: {},
       };
       const result = validator.validate(config);
       expect(result.isValid).toBe(false);
@@ -134,7 +177,9 @@ describe('ConfigValidator', () => {
     it('should validate analyzer configuration with non-object config', () => {
       const config = {
         analyzers: { dependency: 'invalid', entryPoint: {}, structure: {}, complexity: {} },
-        parsers: {}, output: {}, global: {}
+        parsers: {},
+        output: {},
+        global: {},
       };
       const result = validator.validate(config);
       expect(result.isValid).toBe(false);
@@ -143,13 +188,15 @@ describe('ConfigValidator', () => {
 
     it('should validate analyzer configuration with invalid maxDepth', () => {
       const config = {
-        analyzers: { 
-          dependency: { maxDepth: -1 }, 
-          entryPoint: {}, 
-          structure: {}, 
-          complexity: {} 
+        analyzers: {
+          dependency: { maxDepth: -1 },
+          entryPoint: {},
+          structure: {},
+          complexity: {},
         },
-        parsers: {}, output: {}, global: {}
+        parsers: {},
+        output: {},
+        global: {},
       };
       const result = validator.validate(config);
       expect(result.isValid).toBe(false);
@@ -158,32 +205,40 @@ describe('ConfigValidator', () => {
 
     it('should validate analyzer configuration with invalid boolean property', () => {
       const config = {
-        analyzers: { 
-          dependency: { includeExternal: 'invalid' }, 
-          entryPoint: {}, 
-          structure: {}, 
-          complexity: {} 
+        analyzers: {
+          dependency: { includeExternal: 'invalid' },
+          entryPoint: {},
+          structure: {},
+          complexity: {},
         },
-        parsers: {}, output: {}, global: {}
+        parsers: {},
+        output: {},
+        global: {},
       };
       const result = validator.validate(config);
       expect(result.isValid).toBe(false);
-      expect(result.errors).toContain("Property 'includeExternal' for 'dependency' must be a boolean");
+      expect(result.errors).toContain(
+        "Property 'includeExternal' for 'dependency' must be a boolean"
+      );
     });
 
     it('should validate analyzer configuration with invalid maxEntryPoints', () => {
       const config = {
-        analyzers: { 
-          dependency: {}, 
-          entryPoint: { maxEntryPoints: -1 }, 
-          structure: {}, 
-          complexity: {} 
+        analyzers: {
+          dependency: {},
+          entryPoint: { maxEntryPoints: -1 },
+          structure: {},
+          complexity: {},
         },
-        parsers: {}, output: {}, global: {}
+        parsers: {},
+        output: {},
+        global: {},
       };
       const result = validator.validate(config);
       expect(result.isValid).toBe(false);
-      expect(result.errors).toContain("Property 'maxEntryPoints' for 'entryPoint' must be a non-negative number");
+      expect(result.errors).toContain(
+        "Property 'maxEntryPoints' for 'entryPoint' must be a non-negative number"
+      );
     });
   });
 
@@ -192,7 +247,8 @@ describe('ConfigValidator', () => {
       const config = {
         analyzers: {},
         parsers: { enhancedTypeScript: {} },
-        output: {}, global: {}
+        output: {},
+        global: {},
       };
       const result = validator.validate(config);
       expect(result.isValid).toBe(false);
@@ -203,7 +259,8 @@ describe('ConfigValidator', () => {
       const config = {
         analyzers: {},
         parsers: { typescript: {} },
-        output: {}, global: {}
+        output: {},
+        global: {},
       };
       const result = validator.validate(config);
       expect(result.isValid).toBe(false);
@@ -214,7 +271,8 @@ describe('ConfigValidator', () => {
       const config = {
         analyzers: {},
         parsers: { typescript: 'invalid', enhancedTypeScript: {} },
-        output: {}, global: {}
+        output: {},
+        global: {},
       };
       const result = validator.validate(config);
       expect(result.isValid).toBe(false);
@@ -225,7 +283,8 @@ describe('ConfigValidator', () => {
       const config = {
         analyzers: {},
         parsers: { typescript: { maxDepth: -1 }, enhancedTypeScript: {} },
-        output: {}, global: {}
+        output: {},
+        global: {},
       };
       const result = validator.validate(config);
       expect(result.isValid).toBe(false);
@@ -236,7 +295,8 @@ describe('ConfigValidator', () => {
       const config = {
         analyzers: {},
         parsers: { typescript: { includeTypes: 'invalid' }, enhancedTypeScript: {} },
-        output: {}, global: {}
+        output: {},
+        global: {},
       };
       const result = validator.validate(config);
       expect(result.isValid).toBe(false);
@@ -250,7 +310,7 @@ describe('ConfigValidator', () => {
         analyzers: {},
         parsers: {},
         output: 'invalid',
-        global: {}
+        global: {},
       };
       const result = validator.validate(config);
       expect(result.isValid).toBe(false);
@@ -262,7 +322,7 @@ describe('ConfigValidator', () => {
         analyzers: {},
         parsers: {},
         output: { naming: {} },
-        global: {}
+        global: {},
       };
       const result = validator.validate(config);
       expect(result.isValid).toBe(false);
@@ -274,7 +334,7 @@ describe('ConfigValidator', () => {
         analyzers: {},
         parsers: {},
         output: { formats: {} },
-        global: {}
+        global: {},
       };
       const result = validator.validate(config);
       expect(result.isValid).toBe(false);
@@ -286,7 +346,7 @@ describe('ConfigValidator', () => {
         analyzers: {},
         parsers: {},
         output: { formats: 'invalid', naming: {} },
-        global: {}
+        global: {},
       };
       const result = validator.validate(config);
       expect(result.isValid).toBe(false);
@@ -298,7 +358,7 @@ describe('ConfigValidator', () => {
         analyzers: {},
         parsers: {},
         output: { formats: { available: [] }, naming: {} },
-        global: {}
+        global: {},
       };
       const result = validator.validate(config);
       expect(result.isValid).toBe(false);
@@ -310,7 +370,7 @@ describe('ConfigValidator', () => {
         analyzers: {},
         parsers: {},
         output: { formats: { default: 'json', available: 'invalid' }, naming: {} },
-        global: {}
+        global: {},
       };
       const result = validator.validate(config);
       expect(result.isValid).toBe(false);
@@ -322,7 +382,7 @@ describe('ConfigValidator', () => {
         analyzers: {},
         parsers: {},
         output: { formats: { default: 'json', available: [], options: 'invalid' }, naming: {} },
-        global: {}
+        global: {},
       };
       const result = validator.validate(config);
       expect(result.isValid).toBe(false);
@@ -334,7 +394,7 @@ describe('ConfigValidator', () => {
         analyzers: {},
         parsers: {},
         output: { formats: {}, naming: 'invalid' },
-        global: {}
+        global: {},
       };
       const result = validator.validate(config);
       expect(result.isValid).toBe(false);
@@ -346,7 +406,7 @@ describe('ConfigValidator', () => {
         analyzers: {},
         parsers: {},
         output: { formats: {}, naming: { available: [] } },
-        global: {}
+        global: {},
       };
       const result = validator.validate(config);
       expect(result.isValid).toBe(false);
@@ -358,7 +418,7 @@ describe('ConfigValidator', () => {
         analyzers: {},
         parsers: {},
         output: { formats: {}, naming: { default: 'project', available: 'invalid' } },
-        global: {}
+        global: {},
       };
       const result = validator.validate(config);
       expect(result.isValid).toBe(false);
@@ -370,7 +430,7 @@ describe('ConfigValidator', () => {
         analyzers: {},
         parsers: {},
         output: { formats: {}, naming: { default: 'project', available: [], options: 'invalid' } },
-        global: {}
+        global: {},
       };
       const result = validator.validate(config);
       expect(result.isValid).toBe(false);
@@ -384,7 +444,7 @@ describe('ConfigValidator', () => {
         analyzers: {},
         parsers: {},
         output: {},
-        global: 'invalid'
+        global: 'invalid',
       };
       const result = validator.validate(config);
       expect(result.isValid).toBe(false);
@@ -396,7 +456,7 @@ describe('ConfigValidator', () => {
         analyzers: {},
         parsers: {},
         output: {},
-        global: { verbose: 'invalid' }
+        global: { verbose: 'invalid' },
       };
       const result = validator.validate(config);
       expect(result.isValid).toBe(false);
@@ -408,7 +468,7 @@ describe('ConfigValidator', () => {
         analyzers: {},
         parsers: {},
         output: {},
-        global: { maxProcessingTime: -1 }
+        global: { maxProcessingTime: -1 },
       };
       const result = validator.validate(config);
       expect(result.isValid).toBe(false);
@@ -440,8 +500,8 @@ describe('ConfigValidator', () => {
         type: 'object',
         required: ['name'],
         properties: {
-          name: { type: 'string' }
-        }
+          name: { type: 'string' },
+        },
       };
       const result = validator.validateSchema({}, schema);
       expect(result.isValid).toBe(false);
@@ -452,8 +512,8 @@ describe('ConfigValidator', () => {
       const schema = {
         type: 'object',
         properties: {
-          name: { type: 'string' }
-        }
+          name: { type: 'string' },
+        },
       };
       const result = validator.validateSchema({ name: 123 }, schema);
       expect(result.isValid).toBe(true); // Schema validation doesn't check primitive types
@@ -463,9 +523,9 @@ describe('ConfigValidator', () => {
       const schema = {
         type: 'object',
         properties: {
-          name: { type: 'string' }
+          name: { type: 'string' },
         },
-        additionalProperties: false
+        additionalProperties: false,
       };
       const result = validator.validateSchema({ name: 'test', unknown: 'value' }, schema);
       expect(result.warnings).toContain("Unknown property 'unknown' at path ''");
@@ -479,10 +539,10 @@ describe('ConfigValidator', () => {
             type: 'object',
             required: ['name'],
             properties: {
-              name: { type: 'string' }
-            }
-          }
-        }
+              name: { type: 'string' },
+            },
+          },
+        },
       };
       const result = validator.validateSchema({ user: {} }, schema);
       expect(result.isValid).toBe(false);
@@ -493,13 +553,15 @@ describe('ConfigValidator', () => {
   describe('Edge Cases and Coverage', () => {
     it('should handle analyzer configuration with undefined maxDepth', () => {
       const config = {
-        analyzers: { 
-          dependency: { maxDepth: undefined }, 
-          entryPoint: {}, 
-          structure: {}, 
-          complexity: {} 
+        analyzers: {
+          dependency: { maxDepth: undefined },
+          entryPoint: {},
+          structure: {},
+          complexity: {},
         },
-        parsers: {}, output: {}, global: {}
+        parsers: {},
+        output: {},
+        global: {},
       };
       const result = validator.validate(config);
       expect(result.isValid).toBe(false); // Missing required analyzer properties
@@ -507,13 +569,15 @@ describe('ConfigValidator', () => {
 
     it('should handle analyzer configuration with undefined boolean properties', () => {
       const config = {
-        analyzers: { 
-          dependency: { includeExternal: undefined }, 
-          entryPoint: {}, 
-          structure: {}, 
-          complexity: {} 
+        analyzers: {
+          dependency: { includeExternal: undefined },
+          entryPoint: {},
+          structure: {},
+          complexity: {},
         },
-        parsers: {}, output: {}, global: {}
+        parsers: {},
+        output: {},
+        global: {},
       };
       const result = validator.validate(config);
       expect(result.isValid).toBe(false); // Missing required analyzer properties
@@ -523,7 +587,8 @@ describe('ConfigValidator', () => {
       const config = {
         analyzers: {},
         parsers: { typescript: { maxDepth: undefined }, enhancedTypeScript: {} },
-        output: {}, global: {}
+        output: {},
+        global: {},
       };
       const result = validator.validate(config);
       expect(result.isValid).toBe(false); // Missing required parser properties
@@ -533,7 +598,8 @@ describe('ConfigValidator', () => {
       const config = {
         analyzers: {},
         parsers: { typescript: { includeTypes: undefined }, enhancedTypeScript: {} },
-        output: {}, global: {}
+        output: {},
+        global: {},
       };
       const result = validator.validate(config);
       expect(result.isValid).toBe(false); // Missing required parser properties
@@ -544,7 +610,7 @@ describe('ConfigValidator', () => {
         analyzers: {},
         parsers: {},
         output: {},
-        global: { verbose: undefined }
+        global: { verbose: undefined },
       };
       const result = validator.validate(config);
       expect(result.isValid).toBe(false); // Missing required output properties
@@ -555,7 +621,7 @@ describe('ConfigValidator', () => {
         analyzers: {},
         parsers: {},
         output: {},
-        global: { maxProcessingTime: undefined }
+        global: { maxProcessingTime: undefined },
       };
       const result = validator.validate(config);
       expect(result.isValid).toBe(false); // Missing required output properties
@@ -565,8 +631,8 @@ describe('ConfigValidator', () => {
       const schema = {
         type: 'object',
         properties: {
-          name: { type: 'string' }
-        }
+          name: { type: 'string' },
+        },
       };
       const result = validator.validateSchema(null, schema);
       expect(result.isValid).toBe(false);
@@ -583,12 +649,12 @@ describe('ConfigValidator', () => {
               profile: {
                 type: 'object',
                 properties: {
-                  name: { type: 'string' }
-                }
-              }
-            }
-          }
-        }
+                  name: { type: 'string' },
+                },
+              },
+            },
+          },
+        },
       };
       const result = validator.validateSchema({ user: { profile: { name: 123 } } }, schema);
       expect(result.isValid).toBe(true); // Schema validation doesn't check primitive types

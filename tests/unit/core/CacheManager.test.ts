@@ -25,12 +25,12 @@ describe('CacheManager', () => {
     nodeType: 'class',
     properties: {
       isExported: true,
-      isDefault: false
+      isDefault: false,
     },
     metadata: {
       isExported: true,
-      isDefault: false
-    }
+      isDefault: false,
+    },
   };
 
   const mockRelations: Relation[] = [
@@ -39,8 +39,8 @@ describe('CacheManager', () => {
       type: 'import',
       from: './src/TestClass.ts',
       to: './src/OtherClass.ts',
-      metadata: {}
-    }
+      metadata: {},
+    },
   ];
 
   beforeEach(async () => {
@@ -51,7 +51,7 @@ describe('CacheManager', () => {
       maxCacheSize: 1000,
       compressionEnabled: false,
       autoCleanup: true,
-      cleanupInterval: 60000
+      cleanupInterval: 60000,
     });
   });
 
@@ -77,7 +77,7 @@ describe('CacheManager', () => {
       const options = {
         cacheFile: './custom-cache.json',
         maxCacheSize: 5000,
-        compressionEnabled: true
+        compressionEnabled: true,
       };
       const manager = new CacheManager(options);
       expect(manager).toBeInstanceOf(CacheManager);
@@ -86,17 +86,16 @@ describe('CacheManager', () => {
   });
 
   describe('cache operations', () => {
-
     it('should cache AST data successfully', async () => {
       const filePath = './src/TestClass.ts';
       const fileHash = 'abc123';
-      
+
       await cacheManager.setCache(filePath, {
         hash: fileHash,
         lastModified: new Date().toISOString(),
         ast: mockASTNode,
         relations: mockRelations,
-        dependencies: ['./src/OtherClass.ts']
+        dependencies: ['./src/OtherClass.ts'],
       });
 
       const cached = await cacheManager.getCache(filePath);
@@ -113,13 +112,13 @@ describe('CacheManager', () => {
     it('should invalidate cache entry', async () => {
       const filePath = './src/TestClass.ts';
       const fileHash = 'abc123';
-      
+
       await cacheManager.setCache(filePath, {
         hash: fileHash,
         lastModified: new Date().toISOString(),
         ast: mockASTNode,
         relations: mockRelations,
-        dependencies: ['./src/OtherClass.ts']
+        dependencies: ['./src/OtherClass.ts'],
       });
 
       await cacheManager.invalidateCache(filePath);
@@ -130,15 +129,15 @@ describe('CacheManager', () => {
     it('should check if cache entry exists', async () => {
       const filePath = './src/TestClass.ts';
       const fileHash = 'abc123';
-      
+
       expect(await cacheManager.hasCache(filePath)).toBe(false);
-      
+
       await cacheManager.setCache(filePath, {
         hash: fileHash,
         lastModified: new Date().toISOString(),
         ast: mockASTNode,
         relations: mockRelations,
-        dependencies: ['./src/OtherClass.ts']
+        dependencies: ['./src/OtherClass.ts'],
       });
 
       expect(await cacheManager.hasCache(filePath)).toBe(true);
@@ -149,13 +148,13 @@ describe('CacheManager', () => {
     it('should validate file hash correctly', async () => {
       const filePath = './src/TestClass.ts';
       const fileHash = 'abc123';
-      
+
       await cacheManager.setCache(filePath, {
         hash: fileHash,
         lastModified: new Date().toISOString(),
         ast: mockASTNode,
         relations: [],
-        dependencies: []
+        dependencies: [],
       });
 
       const isValid = await cacheManager.validateFileHash(filePath, fileHash);
@@ -175,17 +174,17 @@ describe('CacheManager', () => {
     it('should persist cache to file', async () => {
       const filePath = './src/TestClass.ts';
       const fileHash = 'abc123';
-      
+
       await cacheManager.setCache(filePath, {
         hash: fileHash,
         lastModified: new Date().toISOString(),
         ast: mockASTNode,
         relations: [],
-        dependencies: []
+        dependencies: [],
       });
 
       await cacheManager.persistCache();
-      
+
       const cacheExists = await FileUtils.exists(cacheFile);
       expect(cacheExists).toBe(true);
     });
@@ -193,14 +192,14 @@ describe('CacheManager', () => {
     it('should load cache from file', async () => {
       const filePath = './src/TestClass.ts';
       const fileHash = 'abc123';
-      
+
       // Set cache and persist
       await cacheManager.setCache(filePath, {
         hash: fileHash,
         lastModified: new Date().toISOString(),
         ast: mockASTNode,
         relations: [],
-        dependencies: []
+        dependencies: [],
       });
       await cacheManager.persistCache();
 
@@ -220,7 +219,7 @@ describe('CacheManager', () => {
 
     it('should handle corrupted cache file gracefully', async () => {
       await fs.writeFile(cacheFile, 'invalid json content');
-      
+
       const newManager = new CacheManager({ cacheFile });
       await expect(newManager.loadCache()).resolves.not.toThrow();
     });
@@ -230,17 +229,17 @@ describe('CacheManager', () => {
     it('should clean up expired cache entries', async () => {
       const filePath = './src/TestClass.ts';
       const oldDate = new Date(Date.now() - 86400000).toISOString(); // 1 day ago
-      
+
       await cacheManager.setCache(filePath, {
         hash: 'abc123',
         lastModified: oldDate,
         ast: mockASTNode,
         relations: [],
-        dependencies: []
+        dependencies: [],
       });
 
       await cacheManager.cleanupExpiredEntries(3600000); // 1 hour TTL
-      
+
       const cached = await cacheManager.getCache(filePath);
       expect(cached).toBeNull();
     });
@@ -248,7 +247,7 @@ describe('CacheManager', () => {
     it('should clean up cache by size limit', async () => {
       const manager = new CacheManager({
         cacheFile,
-        maxCacheSize: 2 // Very small limit
+        maxCacheSize: 2, // Very small limit
       });
 
       // Add multiple cache entries
@@ -258,12 +257,12 @@ describe('CacheManager', () => {
           lastModified: new Date().toISOString(),
           ast: { ...mockASTNode, id: `node-${i}` },
           relations: [],
-          dependencies: []
+          dependencies: [],
         });
       }
 
       await manager.cleanupBySize();
-      
+
       // Should only keep the most recent entries
       const allEntries = await manager.getAllCacheEntries();
       expect(allEntries.size).toBeLessThanOrEqual(2);
@@ -271,13 +270,13 @@ describe('CacheManager', () => {
 
     it('should get cache statistics', async () => {
       const filePath = './src/TestClass.ts';
-      
+
       await cacheManager.setCache(filePath, {
         hash: 'abc123',
         lastModified: new Date().toISOString(),
         ast: mockASTNode,
         relations: [],
-        dependencies: []
+        dependencies: [],
       });
 
       const stats = await cacheManager.getCacheStatistics();
@@ -291,14 +290,14 @@ describe('CacheManager', () => {
     it('should invalidate dependent files when a file changes', async () => {
       const mainFile = './src/Main.ts';
       const dependentFile = './src/Dependent.ts';
-      
+
       // Cache both files
       await cacheManager.setCache(mainFile, {
         hash: 'hash1',
         lastModified: new Date().toISOString(),
         ast: mockASTNode,
         relations: [],
-        dependencies: [dependentFile]
+        dependencies: [dependentFile],
       });
 
       await cacheManager.setCache(dependentFile, {
@@ -306,12 +305,12 @@ describe('CacheManager', () => {
         lastModified: new Date().toISOString(),
         ast: mockASTNode,
         relations: [],
-        dependencies: []
+        dependencies: [],
       });
 
       // Invalidate main file
       await cacheManager.invalidateDependents(mainFile);
-      
+
       // Dependent file should still be cached
       const dependentCached = await cacheManager.getCache(dependentFile);
       expect(dependentCached).toBeDefined();
@@ -320,13 +319,13 @@ describe('CacheManager', () => {
     it('should find files that depend on a given file', async () => {
       const mainFile = './src/Main.ts';
       const dependentFile = './src/Dependent.ts';
-      
+
       await cacheManager.setCache(dependentFile, {
         hash: 'hash2',
         lastModified: new Date().toISOString(),
         ast: mockASTNode,
         relations: [],
-        dependencies: [mainFile]
+        dependencies: [mainFile],
       });
 
       const dependents = await cacheManager.findDependents(mainFile);
@@ -337,7 +336,7 @@ describe('CacheManager', () => {
   describe('error handling', () => {
     it('should handle cache file write errors gracefully', async () => {
       const manager = new CacheManager({
-        cacheFile: '/invalid/path/cache.json'
+        cacheFile: '/invalid/path/cache.json',
       });
 
       await expect(manager.persistCache()).resolves.not.toThrow();
@@ -345,7 +344,7 @@ describe('CacheManager', () => {
 
     it('should handle cache file read errors gracefully', async () => {
       const manager = new CacheManager({
-        cacheFile: '/invalid/path/cache2.json'
+        cacheFile: '/invalid/path/cache2.json',
       });
 
       await expect(manager.loadCache()).resolves.not.toThrow();
@@ -357,7 +356,7 @@ describe('CacheManager', () => {
         lastModified: 'invalid-date',
         ast: null as any,
         relations: null as any,
-        dependencies: null as any
+        dependencies: null as any,
       });
 
       const cached = await cacheManager.getCache('./src/Test.ts');
@@ -368,27 +367,27 @@ describe('CacheManager', () => {
   describe('performance and memory', () => {
     it('should not leak memory with repeated operations', async () => {
       const initialMemory = process.memoryUsage().heapUsed;
-      
+
       for (let i = 0; i < 1000; i++) {
         await cacheManager.setCache(`./src/File${i}.ts`, {
           hash: `hash${i}`,
           lastModified: new Date().toISOString(),
           ast: mockASTNode,
           relations: [],
-          dependencies: []
+          dependencies: [],
         });
       }
 
       const finalMemory = process.memoryUsage().heapUsed;
       const memoryIncrease = finalMemory - initialMemory;
-      
+
       // Memory increase should be reasonable (less than 50MB)
       expect(memoryIncrease).toBeLessThan(50 * 1024 * 1024);
     });
 
     it('should handle concurrent cache operations', async () => {
       const promises = [];
-      
+
       for (let i = 0; i < 100; i++) {
         promises.push(
           cacheManager.setCache(`./src/File${i}.ts`, {
@@ -396,13 +395,13 @@ describe('CacheManager', () => {
             lastModified: new Date().toISOString(),
             ast: mockASTNode,
             relations: [],
-            dependencies: []
+            dependencies: [],
           })
         );
       }
 
       await Promise.all(promises);
-      
+
       const stats = await cacheManager.getCacheStatistics();
       expect(stats.totalEntries).toBe(100);
     });
@@ -410,24 +409,26 @@ describe('CacheManager', () => {
 
   describe('edge cases', () => {
     it('should handle empty file paths', () => {
-      expect(() => cacheManager.setCache('', {
-        hash: 'test',
-        lastModified: new Date().toISOString(),
-        ast: mockASTNode,
-        relations: [],
-        dependencies: []
-      })).not.toThrow();
+      expect(() =>
+        cacheManager.setCache('', {
+          hash: 'test',
+          lastModified: new Date().toISOString(),
+          ast: mockASTNode,
+          relations: [],
+          dependencies: [],
+        })
+      ).not.toThrow();
     });
 
     it('should handle special characters in file paths', async () => {
       const specialPath = './src/file with spaces & symbols!.ts';
-      
+
       await cacheManager.setCache(specialPath, {
         hash: 'test',
         lastModified: new Date().toISOString(),
         ast: mockASTNode,
         relations: [],
-        dependencies: []
+        dependencies: [],
       });
 
       const cached = await cacheManager.getCache(specialPath);
@@ -438,8 +439,8 @@ describe('CacheManager', () => {
       const largeASTNode: ASTNode = {
         ...mockASTNode,
         metadata: {
-          largeData: 'x'.repeat(1000000) // 1MB of data
-        }
+          largeData: 'x'.repeat(1000000), // 1MB of data
+        },
       };
 
       await cacheManager.setCache('./src/Large.ts', {
@@ -447,7 +448,7 @@ describe('CacheManager', () => {
         lastModified: new Date().toISOString(),
         ast: largeASTNode,
         relations: [],
-        dependencies: []
+        dependencies: [],
       });
 
       const cached = await cacheManager.getCache('./src/Large.ts');
@@ -463,13 +464,15 @@ describe('CacheManager', () => {
         throw new Error('Cache set error');
       });
 
-      expect(() => cacheManager.setCache('./src/test.ts', {
-        hash: 'test',
-        lastModified: new Date().toISOString(),
-        ast: mockASTNode,
-        relations: [],
-        dependencies: []
-      })).not.toThrow();
+      expect(() =>
+        cacheManager.setCache('./src/test.ts', {
+          hash: 'test',
+          lastModified: new Date().toISOString(),
+          ast: mockASTNode,
+          relations: [],
+          dependencies: [],
+        })
+      ).not.toThrow();
 
       // Restore original method
       cacheManager['cache'].set = originalSet;
@@ -673,7 +676,7 @@ describe('CacheManager', () => {
       });
 
       const result = await cacheManager['decompressData']('{"test": "data"}');
-      expect(result).toEqual({ test: "data" }); // Should return parsed object
+      expect(result).toEqual({ test: 'data' }); // Should return parsed object
 
       // Restore original method
       require('zlib').gunzip = originalGunzip;
@@ -710,23 +713,27 @@ describe('CacheManager', () => {
     });
 
     it('should handle setCache with empty file path', () => {
-      expect(() => cacheManager.setCache('', {
-        hash: 'test',
-        lastModified: new Date().toISOString(),
-        ast: mockASTNode,
-        relations: [],
-        dependencies: []
-      })).not.toThrow();
+      expect(() =>
+        cacheManager.setCache('', {
+          hash: 'test',
+          lastModified: new Date().toISOString(),
+          ast: mockASTNode,
+          relations: [],
+          dependencies: [],
+        })
+      ).not.toThrow();
     });
 
     it('should handle setCache with null file path', () => {
-      expect(() => cacheManager.setCache(null as any, {
-        hash: 'test',
-        lastModified: new Date().toISOString(),
-        ast: mockASTNode,
-        relations: [],
-        dependencies: []
-      })).not.toThrow();
+      expect(() =>
+        cacheManager.setCache(null as any, {
+          hash: 'test',
+          lastModified: new Date().toISOString(),
+          ast: mockASTNode,
+          relations: [],
+          dependencies: [],
+        })
+      ).not.toThrow();
     });
 
     it('should handle validateFileHash with empty file path', async () => {
@@ -760,18 +767,18 @@ describe('CacheManager', () => {
     it('should handle cache hit and miss counting', async () => {
       // Test cache miss
       await cacheManager.getCache('non-existent-file.ts');
-      
+
       // Test cache hit
       await cacheManager.setCache('test-file.ts', {
         hash: 'test',
         lastModified: new Date().toISOString(),
         ast: mockASTNode,
         relations: [],
-        dependencies: []
+        dependencies: [],
       });
-      
+
       await cacheManager.getCache('test-file.ts');
-      
+
       const stats = await cacheManager.getCacheStatistics();
       expect(stats.totalEntries).toBeGreaterThan(0);
       expect(stats.hitRate).toBeGreaterThanOrEqual(0);
@@ -783,11 +790,11 @@ describe('CacheManager', () => {
         lastModified: new Date().toISOString(),
         ast: mockASTNode,
         relations: [],
-        dependencies: []
+        dependencies: [],
       });
-      
+
       await cacheManager.invalidateCache('test-file.ts');
-      
+
       const hasCache = await cacheManager.hasCache('test-file.ts');
       expect(hasCache).toBe(false);
     });
@@ -795,7 +802,7 @@ describe('CacheManager', () => {
     it('should handle cache deletion failure', async () => {
       // Try to delete non-existent cache
       await cacheManager.invalidateCache('non-existent-file.ts');
-      
+
       // Should not throw error
       expect(true).toBe(true);
     });
@@ -804,7 +811,7 @@ describe('CacheManager', () => {
       const cacheManagerWithCompression = new CacheManager({
         cacheFile: './test-cache.json',
         compressionEnabled: true,
-        autoCleanup: false
+        autoCleanup: false,
       });
 
       await cacheManagerWithCompression.setCache('test-file.ts', {
@@ -812,12 +819,12 @@ describe('CacheManager', () => {
         lastModified: new Date().toISOString(),
         ast: mockASTNode,
         relations: [],
-        dependencies: []
+        dependencies: [],
       });
 
       const cached = await cacheManagerWithCompression.getCache('test-file.ts');
       expect(cached).toBeDefined();
-      
+
       await cacheManagerWithCompression.dispose();
     });
 
@@ -825,7 +832,7 @@ describe('CacheManager', () => {
       const cacheManagerWithoutCompression = new CacheManager({
         cacheFile: './test-cache.json',
         compressionEnabled: false,
-        autoCleanup: false
+        autoCleanup: false,
       });
 
       await cacheManagerWithoutCompression.setCache('test-file.ts', {
@@ -833,12 +840,12 @@ describe('CacheManager', () => {
         lastModified: new Date().toISOString(),
         ast: mockASTNode,
         relations: [],
-        dependencies: []
+        dependencies: [],
       });
 
       const cached = await cacheManagerWithoutCompression.getCache('test-file.ts');
       expect(cached).toBeDefined();
-      
+
       await cacheManagerWithoutCompression.dispose();
     });
 
@@ -847,7 +854,7 @@ describe('CacheManager', () => {
         cacheFile: './test-cache.json',
         compressionEnabled: false,
         autoCleanup: false, // Disable auto-cleanup for test
-        cleanupInterval: 1000
+        cleanupInterval: 1000,
       });
 
       await cacheManagerWithAutoCleanup.setCache('test-file.ts', {
@@ -855,12 +862,12 @@ describe('CacheManager', () => {
         lastModified: new Date().toISOString(),
         ast: mockASTNode,
         relations: [],
-        dependencies: []
+        dependencies: [],
       });
 
       // Wait a bit for auto cleanup to potentially run
       await new Promise(resolve => setTimeout(resolve, 100));
-      
+
       await cacheManagerWithAutoCleanup.dispose();
     });
 
@@ -868,13 +875,13 @@ describe('CacheManager', () => {
       const emptyCacheManager = new CacheManager({
         cacheFile: './test-cache.json',
         compressionEnabled: false,
-        autoCleanup: false
+        autoCleanup: false,
       });
 
       const stats = await emptyCacheManager.getCacheStatistics();
       expect(stats.totalEntries).toBe(0);
       expect(stats.hitRate).toBe(0);
-      
+
       await emptyCacheManager.dispose();
     });
 
@@ -884,7 +891,7 @@ describe('CacheManager', () => {
         lastModified: new Date().toISOString(),
         ast: mockASTNode,
         relations: [],
-        dependencies: []
+        dependencies: [],
       });
 
       await cacheManager.setCache('test-file2.ts', {
@@ -892,7 +899,7 @@ describe('CacheManager', () => {
         lastModified: new Date().toISOString(),
         ast: mockASTNode,
         relations: [],
-        dependencies: []
+        dependencies: [],
       });
 
       const stats = await cacheManager.getCacheStatistics();

@@ -1,4 +1,9 @@
-import { BaseVersioningStrategy, BranchVersioning, TimestampVersioning, CustomVersioning } from '../../../../src/versioning/strategies';
+import {
+  BaseVersioningStrategy,
+  BranchVersioning,
+  TimestampVersioning,
+  CustomVersioning,
+} from '../../../../src/versioning/strategies';
 
 describe('versioning strategies index', () => {
   it('should export BaseVersioningStrategy', () => {
@@ -25,7 +30,7 @@ describe('versioning strategies index', () => {
     const branchStrategy = new BranchVersioning();
     const timestampStrategy = new TimestampVersioning();
     const customStrategy = new CustomVersioning();
-    
+
     expect(branchStrategy).toBeInstanceOf(BaseVersioningStrategy);
     expect(timestampStrategy).toBeInstanceOf(BaseVersioningStrategy);
     expect(customStrategy).toBeInstanceOf(BaseVersioningStrategy);

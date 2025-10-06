@@ -1,6 +1,6 @@
 /**
  * Quality Module Index
- * 
+ *
  * Centralized exports for all quality-related components.
  * This module provides a clean API for importing quality functionality.
  */
@@ -19,25 +19,25 @@ export { SuggestionGenerator } from './SuggestionGenerator';
 export type {
   QualityMetricsOptions,
   QualityMetricsResult,
-  QualityMetrics as QualityMetricsType
+  QualityMetrics as QualityMetricsType,
 } from './QualityMetrics';
 
 export type {
   CoverageAnalyzerOptions,
   CoverageAnalysisResult,
   CoverageReportResult,
-  CoverageValidationResult
+  CoverageValidationResult,
 } from './CoverageAnalyzer';
 
 export type {
   SuggestionGeneratorOptions,
   SuggestionGenerationResult,
-  Suggestion
+  Suggestion,
 } from './SuggestionGenerator';
 
 // Default export for convenience
 export default {
   QualityMetrics,
   CoverageAnalyzer,
-  SuggestionGenerator
+  SuggestionGenerator,
 };

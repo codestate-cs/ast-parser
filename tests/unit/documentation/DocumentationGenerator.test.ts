@@ -5,7 +5,11 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 
-import { DocumentationGenerator, ExtractionResult, QualityAnalysisResult } from '../../../src/documentation/DocumentationGenerator';
+import {
+  DocumentationGenerator,
+  ExtractionResult,
+  QualityAnalysisResult,
+} from '../../../src/documentation/DocumentationGenerator';
 
 describe('DocumentationGenerator', () => {
   let documentationGenerator: DocumentationGenerator;
@@ -16,21 +20,21 @@ describe('DocumentationGenerator', () => {
     const originalJsdocExtractor = (documentationGenerator as any).jsdocExtractor;
     const originalTypeExtractor = (documentationGenerator as any).typeExtractor;
     const originalExampleExtractor = (documentationGenerator as any).exampleExtractor;
-    
+
     (documentationGenerator as any).jsdocExtractor = {
-      extractFromNodes: jest.fn().mockReturnValue({ jsdoc: [] })
+      extractFromNodes: jest.fn().mockReturnValue({ jsdoc: [] }),
     };
     (documentationGenerator as any).typeExtractor = {
-      extractFromNodes: jest.fn().mockReturnValue({ types: [] })
+      extractFromNodes: jest.fn().mockReturnValue({ types: [] }),
     };
     (documentationGenerator as any).exampleExtractor = {
-      extractFromNodes: jest.fn().mockReturnValue({ examples: [] })
+      extractFromNodes: jest.fn().mockReturnValue({ examples: [] }),
     };
-    
+
     return {
       originalJsdocExtractor,
       originalTypeExtractor,
-      originalExampleExtractor
+      originalExampleExtractor,
     };
   };
 
@@ -57,24 +61,24 @@ describe('DocumentationGenerator', () => {
             type: 'FunctionDeclaration',
             documentation: 'Test function',
             complexity: { cyclomatic: 1, cognitive: 1 },
-            coverage: { statements: 100, branches: 100 }
-          }
-        }
+            coverage: { statements: 100, branches: 100 },
+          },
+        },
       ],
       structure: {
         directories: ['src'],
-        files: ['src/utils.ts']
+        files: ['src/utils.ts'],
       },
       complexity: {
         overall: 1,
         average: 1,
-        max: 1
+        max: 1,
       },
       quality: {
         overall: 90,
         maintainability: 95,
-        readability: 85
-      }
+        readability: 85,
+      },
     };
   });
 
@@ -87,7 +91,7 @@ describe('DocumentationGenerator', () => {
     it('should initialize with custom options', () => {
       const customOptions = {
         outputFormat: 'markdown' as const,
-        includeQualityMetrics: true
+        includeQualityMetrics: true,
       };
       const customGenerator = new DocumentationGenerator(customOptions);
 
@@ -115,7 +119,7 @@ describe('DocumentationGenerator', () => {
 
     it('should generate multiple output formats', async () => {
       const result = await documentationGenerator.generateDocumentation(mockProjectData, {
-        outputFormat: 'both'
+        outputFormat: 'both',
       });
 
       expect(result.success).toBe(true);
@@ -183,14 +187,14 @@ describe('DocumentationGenerator', () => {
       (documentationGenerator as any).qualityMetrics = {
         calculateQualityMetrics: jest.fn().mockImplementation(() => {
           throw 'String error';
-        })
+        }),
       };
-      
+
       const result = await documentationGenerator.analyzeQuality(mockProjectData);
-      
+
       expect(result.success).toBe(false);
       expect(result.error).toBe('Unknown quality analysis error');
-      
+
       // Restore original method
       (documentationGenerator as any).qualityMetrics = originalQualityMetrics;
     });
@@ -201,7 +205,11 @@ describe('DocumentationGenerator', () => {
       const extractedData = await documentationGenerator.extractInformation(mockProjectData);
       const qualityData = await documentationGenerator.analyzeQuality(mockProjectData);
 
-      const result = await documentationGenerator.generateOutput(extractedData, qualityData, 'markdown');
+      const result = await documentationGenerator.generateOutput(
+        extractedData,
+        qualityData,
+        'markdown'
+      );
 
       expect(result.success).toBe(true);
       expect(result.outputs).toBeDefined();
@@ -209,9 +217,13 @@ describe('DocumentationGenerator', () => {
     });
 
     it('should generate output in specified format', async () => {
-      const result = await documentationGenerator.generateOutput({
-        success: true,
-      } as ExtractionResult, { } as QualityAnalysisResult, 'both');
+      const result = await documentationGenerator.generateOutput(
+        {
+          success: true,
+        } as ExtractionResult,
+        {} as QualityAnalysisResult,
+        'both'
+      );
 
       expect(result.success).toBe(false);
       expect(result.outputs).not.toBeDefined();
@@ -221,7 +233,10 @@ describe('DocumentationGenerator', () => {
       const extractedData = await documentationGenerator.extractInformation(mockProjectData);
       const qualityData = await documentationGenerator.analyzeQuality(mockProjectData);
 
-      const result = await documentationGenerator.generateOutput(extractedData, qualityData, ['markdown', 'html']);
+      const result = await documentationGenerator.generateOutput(extractedData, qualityData, [
+        'markdown',
+        'html',
+      ]);
 
       expect(result.success).toBe(true);
       expect(result.outputs).toBeDefined();
@@ -235,32 +250,40 @@ describe('DocumentationGenerator', () => {
         success: true,
         jsdoc: [],
         types: [],
-        examples: []
+        examples: [],
       };
 
       // This test will pass if the method handles non-Error exceptions properly
-      const result = await documentationGenerator.generateOutput(extractedData, {
-        success: true,
-        metrics: { overall: 80 },
-        coverage: { overall: 85 },
-        suggestions: []
-      } as any, 'markdown');
+      const result = await documentationGenerator.generateOutput(
+        extractedData,
+        {
+          success: true,
+          metrics: { overall: 80 },
+          coverage: { overall: 85 },
+          suggestions: [],
+        } as any,
+        'markdown'
+      );
       expect(result.success).toBe(true);
     });
 
     it('should handle invalid input data in generateOutput', async () => {
       const invalidExtractedData = {
         success: false,
-        error: 'Extraction failed'
+        error: 'Extraction failed',
       };
 
       const invalidQualityData = {
         success: false,
-        error: 'Quality analysis failed'
+        error: 'Quality analysis failed',
       };
 
-      const result = await documentationGenerator.generateOutput(invalidExtractedData as any, invalidQualityData as any, 'markdown');
-      
+      const result = await documentationGenerator.generateOutput(
+        invalidExtractedData as any,
+        invalidQualityData as any,
+        'markdown'
+      );
+
       expect(result.success).toBe(false);
       expect(result.error).toBe('Invalid input data for output generation');
     });
@@ -269,28 +292,32 @@ describe('DocumentationGenerator', () => {
       // Mock markdownGenerator.generateFromExtracted to throw a non-Error object
       const originalMarkdownGenerator = (documentationGenerator as any).markdownGenerator;
       (documentationGenerator as any).markdownGenerator = {
-        generateFromExtracted: jest.fn().mockRejectedValue('String error')
+        generateFromExtracted: jest.fn().mockRejectedValue('String error'),
       };
-      
+
       const extractedData = {
         success: true,
         jsdoc: [],
         types: [],
-        examples: []
+        examples: [],
       };
 
       const qualityData = {
         success: true,
         metrics: { overall: 80 },
         coverage: { overall: 85 },
-        suggestions: []
+        suggestions: [],
       };
 
-      const result = await documentationGenerator.generateOutput(extractedData as any, qualityData as any, 'markdown');
-      
+      const result = await documentationGenerator.generateOutput(
+        extractedData as any,
+        qualityData as any,
+        'markdown'
+      );
+
       expect(result.success).toBe(false);
       expect(result.error).toBe('Unknown output generation error');
-      
+
       // Restore original method
       (documentationGenerator as any).markdownGenerator = originalMarkdownGenerator;
     });
@@ -325,7 +352,7 @@ describe('DocumentationGenerator', () => {
       it('should support custom output formats', () => {
         const customOptions = {
           outputFormat: 'html' as const,
-          includeQualityMetrics: true
+          includeQualityMetrics: true,
         };
         const customGenerator = new DocumentationGenerator(customOptions);
 
@@ -336,8 +363,8 @@ describe('DocumentationGenerator', () => {
         const customOptions = {
           customTemplates: {
             overview: 'Custom Overview Template',
-            api: 'Custom API Template'
-          }
+            api: 'Custom API Template',
+          },
         };
         const customGenerator = new DocumentationGenerator(customOptions);
 
@@ -349,8 +376,8 @@ describe('DocumentationGenerator', () => {
           extractors: {
             jsdoc: { includePrivate: false },
             types: { includeInterfaces: true },
-            examples: { enabled: true }
-          }
+            examples: { enabled: true },
+          },
         };
         const customGenerator = new DocumentationGenerator(customOptions as any);
 
@@ -384,7 +411,7 @@ describe('DocumentationGenerator', () => {
       it('should handle very large project data', async () => {
         const largeData = {
           ...mockProjectData,
-          files: Array(1000).fill(mockProjectData.files[0])
+          files: Array(1000).fill(mockProjectData.files[0]),
         };
         const result = await documentationGenerator.generateDocumentation(largeData);
 
@@ -396,17 +423,19 @@ describe('DocumentationGenerator', () => {
         const specialData = {
           ...mockProjectData,
           name: '特殊项目',
-          files: [{
-            path: 'src/特殊文件.ts',
-            content: 'export function 特殊函数() { return "特殊"; }',
-            ast: {
-              name: '特殊函数',
-              type: 'FunctionDeclaration',
-              documentation: '特殊函数文档',
-              complexity: { cyclomatic: 1, cognitive: 1 },
-              coverage: { statements: 100, branches: 100 }
-            }
-          }]
+          files: [
+            {
+              path: 'src/特殊文件.ts',
+              content: 'export function 特殊函数() { return "特殊"; }',
+              ast: {
+                name: '特殊函数',
+                type: 'FunctionDeclaration',
+                documentation: '特殊函数文档',
+                complexity: { cyclomatic: 1, cognitive: 1 },
+                coverage: { statements: 100, branches: 100 },
+              },
+            },
+          ],
         };
         const result = await documentationGenerator.generateDocumentation(specialData);
 
@@ -418,17 +447,19 @@ describe('DocumentationGenerator', () => {
         const unicodeData = {
           ...mockProjectData,
           name: '测试项目',
-          files: [{
-            path: 'src/测试文件.ts',
-            content: 'export function 测试函数() { return "测试"; }',
-            ast: {
-              name: '测试函数',
-              type: 'FunctionDeclaration',
-              documentation: '测试函数文档',
-              complexity: { cyclomatic: 1, cognitive: 1 },
-              coverage: { statements: 100, branches: 100 }
-            }
-          }]
+          files: [
+            {
+              path: 'src/测试文件.ts',
+              content: 'export function 测试函数() { return "测试"; }',
+              ast: {
+                name: '测试函数',
+                type: 'FunctionDeclaration',
+                documentation: '测试函数文档',
+                complexity: { cyclomatic: 1, cognitive: 1 },
+                coverage: { statements: 100, branches: 100 },
+              },
+            },
+          ],
         };
         const result = await documentationGenerator.generateDocumentation(unicodeData);
 
@@ -437,9 +468,9 @@ describe('DocumentationGenerator', () => {
       });
 
       it('should handle concurrent documentation generation', async () => {
-        const promises = Array(5).fill(null).map(() =>
-          documentationGenerator.generateDocumentation(mockProjectData)
-        );
+        const promises = Array(5)
+          .fill(null)
+          .map(() => documentationGenerator.generateDocumentation(mockProjectData));
         const results = await Promise.all(promises);
 
         results.forEach(result => {
@@ -467,53 +498,53 @@ describe('DocumentationGenerator', () => {
           expect(result.documentation).toBeDefined();
         });
 
-      it('should handle generation with non-Error exception', async () => {
-        // Mock extractInformation to throw a non-Error object
-        const originalExtractInformation = documentationGenerator.extractInformation;
-        documentationGenerator.extractInformation = jest.fn().mockRejectedValue('String error');
-        
-        const result = await documentationGenerator.generateDocumentation(mockProjectData);
-        
-        expect(result.success).toBe(false);
-        expect(result.error).toBe('Unknown documentation generation error');
-        
-        // Restore original method
-        documentationGenerator.extractInformation = originalExtractInformation;
-      });
+        it('should handle generation with non-Error exception', async () => {
+          // Mock extractInformation to throw a non-Error object
+          const originalExtractInformation = documentationGenerator.extractInformation;
+          documentationGenerator.extractInformation = jest.fn().mockRejectedValue('String error');
 
-      it('should handle extraction failure in generateDocumentation', async () => {
-        // Mock extractInformation to return failure
-        const originalExtractInformation = documentationGenerator.extractInformation;
-        documentationGenerator.extractInformation = jest.fn().mockResolvedValue({
-          success: false,
-          error: 'Extraction failed'
-        });
-        
-        const result = await documentationGenerator.generateDocumentation(mockProjectData);
-        
-        expect(result.success).toBe(false);
-        expect(result.error).toBe('Extraction failed: Extraction failed');
-        
-        // Restore original method
-        documentationGenerator.extractInformation = originalExtractInformation;
-      });
+          const result = await documentationGenerator.generateDocumentation(mockProjectData);
 
-      it('should handle quality analysis failure in generateDocumentation', async () => {
-        // Mock analyzeQuality to return failure
-        const originalAnalyzeQuality = documentationGenerator.analyzeQuality;
-        documentationGenerator.analyzeQuality = jest.fn().mockResolvedValue({
-          success: false,
-          error: 'Quality analysis failed'
+          expect(result.success).toBe(false);
+          expect(result.error).toBe('Unknown documentation generation error');
+
+          // Restore original method
+          documentationGenerator.extractInformation = originalExtractInformation;
         });
-        
-        const result = await documentationGenerator.generateDocumentation(mockProjectData);
-        
-        expect(result.success).toBe(false);
-        expect(result.error).toBe('Quality analysis failed: Quality analysis failed');
-        
-        // Restore original method
-        documentationGenerator.analyzeQuality = originalAnalyzeQuality;
-      });
+
+        it('should handle extraction failure in generateDocumentation', async () => {
+          // Mock extractInformation to return failure
+          const originalExtractInformation = documentationGenerator.extractInformation;
+          documentationGenerator.extractInformation = jest.fn().mockResolvedValue({
+            success: false,
+            error: 'Extraction failed',
+          });
+
+          const result = await documentationGenerator.generateDocumentation(mockProjectData);
+
+          expect(result.success).toBe(false);
+          expect(result.error).toBe('Extraction failed: Extraction failed');
+
+          // Restore original method
+          documentationGenerator.extractInformation = originalExtractInformation;
+        });
+
+        it('should handle quality analysis failure in generateDocumentation', async () => {
+          // Mock analyzeQuality to return failure
+          const originalAnalyzeQuality = documentationGenerator.analyzeQuality;
+          documentationGenerator.analyzeQuality = jest.fn().mockResolvedValue({
+            success: false,
+            error: 'Quality analysis failed',
+          });
+
+          const result = await documentationGenerator.generateDocumentation(mockProjectData);
+
+          expect(result.success).toBe(false);
+          expect(result.error).toBe('Quality analysis failed: Quality analysis failed');
+
+          // Restore original method
+          documentationGenerator.analyzeQuality = originalAnalyzeQuality;
+        });
       });
 
       describe('extractInformation branches', () => {
@@ -531,7 +562,7 @@ describe('DocumentationGenerator', () => {
           const noAstData = {
             name: 'Test',
             version: '1.0.0',
-            files: [{ path: 'src/test.ts', content: 'export function test() {}' }]
+            files: [{ path: 'src/test.ts', content: 'export function test() {}' }],
           };
           const result = await documentationGenerator.extractInformation(noAstData as any);
 
@@ -546,8 +577,8 @@ describe('DocumentationGenerator', () => {
             extractors: {
               jsdoc: { enabled: false },
               types: { enabled: false },
-              examples: { enabled: false }
-            }
+              examples: { enabled: false },
+            },
           } as any);
           const result = await customGenerator.extractInformation(mockProjectData);
 
@@ -574,7 +605,7 @@ describe('DocumentationGenerator', () => {
             name: 'Test',
             version: '1.0.0',
             files: [],
-            quality: { overall: 80 }
+            quality: { overall: 80 },
           };
           const result = await documentationGenerator.analyzeQuality(noCoverageData as any);
 
@@ -608,7 +639,10 @@ describe('DocumentationGenerator', () => {
         });
 
         it('should handle invalid name type validation', () => {
-          const result = documentationGenerator.validateProjectData({ name: 123, version: '1.0.0' } as any);
+          const result = documentationGenerator.validateProjectData({
+            name: 123,
+            version: '1.0.0',
+          } as any);
 
           expect(result.isValid).toBe(false);
           expect(result.errors).toContain('Project name is required and must be a string');
@@ -622,7 +656,10 @@ describe('DocumentationGenerator', () => {
         });
 
         it('should handle invalid version type validation', () => {
-          const result = documentationGenerator.validateProjectData({ name: 'Test', version: 123 } as any);
+          const result = documentationGenerator.validateProjectData({
+            name: 'Test',
+            version: 123,
+          } as any);
 
           expect(result.isValid).toBe(false);
           expect(result.errors).toContain('Project version is required and must be a string');
@@ -632,7 +669,7 @@ describe('DocumentationGenerator', () => {
           const result = documentationGenerator.validateProjectData({
             name: 'Test',
             version: '1.0.0',
-            files: 'invalid'
+            files: 'invalid',
           } as any);
 
           expect(result.isValid).toBe(false);
@@ -674,7 +711,10 @@ describe('DocumentationGenerator', () => {
           const extractedData = await documentationGenerator.extractInformation(mockProjectData);
           const qualityData = await documentationGenerator.analyzeQuality(mockProjectData);
 
-          const result = await (documentationGenerator as any).generateDocumentationSections(extractedData, qualityData);
+          const result = await (documentationGenerator as any).generateDocumentationSections(
+            extractedData,
+            qualityData
+          );
 
           expect(result.success).toBe(true);
           expect(result.sections).toBeDefined();
@@ -686,21 +726,24 @@ describe('DocumentationGenerator', () => {
           (documentationGenerator as any).overviewTemplate = {
             generateContent: jest.fn().mockImplementation(() => {
               throw 'String error';
-            })
+            }),
           };
-          
+
           const extractedData = {
             success: true,
             jsdoc: [],
             types: [],
-            examples: []
+            examples: [],
           };
-          
-          const result = await (documentationGenerator as any).generateDocumentationSections(extractedData, mockProjectData);
-          
+
+          const result = await (documentationGenerator as any).generateDocumentationSections(
+            extractedData,
+            mockProjectData
+          );
+
           expect(result.success).toBe(false);
           expect(result.error).toBe('Unknown section generation error');
-          
+
           // Restore original method
           (documentationGenerator as any).overviewTemplate = originalOverviewTemplate;
         });
@@ -711,12 +754,12 @@ describe('DocumentationGenerator', () => {
           documentationGenerator.extractInformation = jest.fn().mockImplementation(() => {
             throw 'String error';
           });
-          
+
           const result = await documentationGenerator.generateDocumentation(mockProjectData);
-          
+
           expect(result.success).toBe(false);
           expect(result.error).toBe('Unknown documentation generation error');
-          
+
           // Restore original method
           documentationGenerator.extractInformation = originalExtractInformation;
         });
@@ -727,14 +770,14 @@ describe('DocumentationGenerator', () => {
           (documentationGenerator as any).jsdocExtractor = {
             extractFromNodes: jest.fn().mockImplementation(() => {
               throw 'String error';
-            })
+            }),
           };
-          
+
           const result = await documentationGenerator.extractInformation(mockProjectData);
-          
+
           expect(result.success).toBe(false);
           expect(result.error).toBe('Unknown extraction error');
-          
+
           // Restore original method
           (documentationGenerator as any).jsdocExtractor = originalJsdocExtractor;
         });
@@ -745,14 +788,14 @@ describe('DocumentationGenerator', () => {
           (documentationGenerator as any).qualityMetrics = {
             calculateQualityMetrics: jest.fn().mockImplementation(() => {
               throw 'String error';
-            })
+            }),
           };
-          
+
           const result = await documentationGenerator.analyzeQuality(mockProjectData);
-          
+
           expect(result.success).toBe(false);
           expect(result.error).toBe('Unknown quality analysis error');
-          
+
           // Restore original method
           (documentationGenerator as any).qualityMetrics = originalQualityMetrics;
         });
@@ -763,28 +806,32 @@ describe('DocumentationGenerator', () => {
           (documentationGenerator as any).markdownGenerator = {
             generateFromExtracted: jest.fn().mockImplementation(() => {
               throw 'String error';
-            })
+            }),
           };
-          
+
           const extractedData = {
             success: true,
             jsdoc: [],
             types: [],
-            examples: []
+            examples: [],
           };
-          
+
           const qualityData = {
             success: true,
             metrics: { success: true },
             coverage: { success: true },
-            suggestions: { success: true }
+            suggestions: { success: true },
           };
-          
-          const result = await documentationGenerator.generateOutput(extractedData, qualityData, 'markdown');
-          
+
+          const result = await documentationGenerator.generateOutput(
+            extractedData,
+            qualityData,
+            'markdown'
+          );
+
           expect(result.success).toBe(false);
           expect(result.error).toBe('Unknown output generation error');
-          
+
           // Restore original method
           (documentationGenerator as any).markdownGenerator = originalMarkdownGenerator;
         });
@@ -794,18 +841,21 @@ describe('DocumentationGenerator', () => {
             success: true,
             jsdoc: [],
             types: [],
-            examples: []
+            examples: [],
           };
-          
+
           const qualityData = {
             success: true,
             metrics: { success: true },
             coverage: { success: true },
-            suggestions: { success: true }
+            suggestions: { success: true },
           };
-          
-          const result = await documentationGenerator.generateOutput(extractedData, qualityData, ['markdown', 'html']);
-          
+
+          const result = await documentationGenerator.generateOutput(extractedData, qualityData, [
+            'markdown',
+            'html',
+          ]);
+
           expect(result.success).toBe(true);
           expect(result.outputs).toBeDefined();
         });
@@ -815,18 +865,22 @@ describe('DocumentationGenerator', () => {
             success: true,
             jsdoc: [],
             types: [],
-            examples: []
+            examples: [],
           };
-          
+
           const qualityData = {
             success: true,
             metrics: { success: true },
             coverage: { success: true },
-            suggestions: { success: true }
+            suggestions: { success: true },
           };
-          
-          const result = await documentationGenerator.generateOutput(extractedData, qualityData, 'both');
-          
+
+          const result = await documentationGenerator.generateOutput(
+            extractedData,
+            qualityData,
+            'both'
+          );
+
           expect(result.success).toBe(true);
           expect(result.outputs).toBeDefined();
         });
@@ -837,14 +891,14 @@ describe('DocumentationGenerator', () => {
             files: [
               {
                 path: 'src/utils.ts',
-                content: 'export function test() { return "test"; }'
+                content: 'export function test() { return "test"; }',
                 // No ast property
-              }
-            ]
+              },
+            ],
           };
-          
+
           const result = await documentationGenerator.extractInformation(projectDataWithoutAst);
-          
+
           expect(result.success).toBe(true);
           expect(result.jsdoc).toBeDefined();
           expect(result.types).toBeDefined();
@@ -860,15 +914,17 @@ describe('DocumentationGenerator', () => {
                 content: 'export function test() { return "test"; }',
                 ast: {
                   name: 'test',
-                  type: 'FunctionDeclaration'
+                  type: 'FunctionDeclaration',
                   // No children property
-                }
-              }
-            ]
+                },
+              },
+            ],
           };
-          
-          const result = await documentationGenerator.extractInformation(projectDataWithoutChildren);
-          
+
+          const result = await documentationGenerator.extractInformation(
+            projectDataWithoutChildren
+          );
+
           expect(result.success).toBe(true);
           expect(result.jsdoc).toBeDefined();
           expect(result.types).toBeDefined();
@@ -878,7 +934,7 @@ describe('DocumentationGenerator', () => {
         // Comprehensive tests for extractInformation else case scenarios
         it('should handle files with ast that has children property in extractInformation', async () => {
           const originals = mockExtractors();
-          
+
           const projectDataWithChildren = {
             ...mockProjectData,
             files: [
@@ -892,32 +948,32 @@ describe('DocumentationGenerator', () => {
                     {
                       name: 'child1',
                       type: 'VariableDeclaration',
-                      documentation: 'Child node documentation'
+                      documentation: 'Child node documentation',
                     },
                     {
                       name: 'child2',
                       type: 'ExpressionStatement',
-                      documentation: 'Another child node'
-                    }
-                  ]
-                }
-              }
-            ]
+                      documentation: 'Another child node',
+                    },
+                  ],
+                },
+              },
+            ],
           };
-          
+
           const result = await documentationGenerator.extractInformation(projectDataWithChildren);
-          
+
           expect(result.success).toBe(true);
           expect(result.jsdoc).toBeDefined();
           expect(result.types).toBeDefined();
           expect(result.examples).toBeDefined();
-          
+
           restoreExtractors(originals);
         });
 
         it('should handle files with ast that has empty children array in extractInformation', async () => {
           const originals = mockExtractors();
-          
+
           const projectDataWithEmptyChildren = {
             ...mockProjectData,
             files: [
@@ -927,25 +983,27 @@ describe('DocumentationGenerator', () => {
                 ast: {
                   name: 'test',
                   type: 'FunctionDeclaration',
-                  children: []
-                }
-              }
-            ]
+                  children: [],
+                },
+              },
+            ],
           };
-          
-          const result = await documentationGenerator.extractInformation(projectDataWithEmptyChildren);
-          
+
+          const result = await documentationGenerator.extractInformation(
+            projectDataWithEmptyChildren
+          );
+
           expect(result.success).toBe(true);
           expect(result.jsdoc).toBeDefined();
           expect(result.types).toBeDefined();
           expect(result.examples).toBeDefined();
-          
+
           restoreExtractors(originals);
         });
 
         it('should handle files with ast that has null children in extractInformation', async () => {
           const originals = mockExtractors();
-          
+
           const projectDataWithNullChildren = {
             ...mockProjectData,
             files: [
@@ -955,25 +1013,27 @@ describe('DocumentationGenerator', () => {
                 ast: {
                   name: 'test',
                   type: 'FunctionDeclaration',
-                  children: null
-                }
-              }
-            ]
+                  children: null,
+                },
+              },
+            ],
           };
-          
-          const result = await documentationGenerator.extractInformation(projectDataWithNullChildren);
-          
+
+          const result = await documentationGenerator.extractInformation(
+            projectDataWithNullChildren
+          );
+
           expect(result.success).toBe(true);
           expect(result.jsdoc).toBeDefined();
           expect(result.types).toBeDefined();
           expect(result.examples).toBeDefined();
-          
+
           restoreExtractors(originals);
         });
 
         it('should handle files with ast that has undefined children in extractInformation', async () => {
           const originals = mockExtractors();
-          
+
           const projectDataWithUndefinedChildren = {
             ...mockProjectData,
             files: [
@@ -983,25 +1043,27 @@ describe('DocumentationGenerator', () => {
                 ast: {
                   name: 'test',
                   type: 'FunctionDeclaration',
-                  children: undefined
-                }
-              }
-            ]
+                  children: undefined,
+                },
+              },
+            ],
           };
-          
-          const result = await documentationGenerator.extractInformation(projectDataWithUndefinedChildren);
-          
+
+          const result = await documentationGenerator.extractInformation(
+            projectDataWithUndefinedChildren
+          );
+
           expect(result.success).toBe(true);
           expect(result.jsdoc).toBeDefined();
           expect(result.types).toBeDefined();
           expect(result.examples).toBeDefined();
-          
+
           restoreExtractors(originals);
         });
 
         it('should handle files with ast that has non-array children in extractInformation', async () => {
           const originals = mockExtractors();
-          
+
           const projectDataWithNonArrayChildren = {
             ...mockProjectData,
             files: [
@@ -1011,25 +1073,27 @@ describe('DocumentationGenerator', () => {
                 ast: {
                   name: 'test',
                   type: 'FunctionDeclaration',
-                  children: 'not-an-array'
-                }
-              }
-            ]
+                  children: 'not-an-array',
+                },
+              },
+            ],
           };
-          
-          const result = await documentationGenerator.extractInformation(projectDataWithNonArrayChildren);
-          
+
+          const result = await documentationGenerator.extractInformation(
+            projectDataWithNonArrayChildren
+          );
+
           expect(result.success).toBe(true);
           expect(result.jsdoc).toBeDefined();
           expect(result.types).toBeDefined();
           expect(result.examples).toBeDefined();
-          
+
           restoreExtractors(originals);
         });
 
         it('should handle files with ast that has children with complex nested structure in extractInformation', async () => {
           const originals = mockExtractors();
-          
+
           const projectDataWithComplexChildren = {
             ...mockProjectData,
             files: [
@@ -1047,9 +1111,9 @@ describe('DocumentationGenerator', () => {
                         {
                           name: 'deepChild',
                           type: 'ReturnStatement',
-                          documentation: 'Deep nested child'
-                        }
-                      ]
+                          documentation: 'Deep nested child',
+                        },
+                      ],
                     },
                     {
                       name: 'anotherChild',
@@ -1058,29 +1122,31 @@ describe('DocumentationGenerator', () => {
                         {
                           name: 'assignment',
                           type: 'AssignmentExpression',
-                          documentation: 'Assignment expression'
-                        }
-                      ]
-                    }
-                  ]
-                }
-              }
-            ]
+                          documentation: 'Assignment expression',
+                        },
+                      ],
+                    },
+                  ],
+                },
+              },
+            ],
           };
-          
-          const result = await documentationGenerator.extractInformation(projectDataWithComplexChildren);
-          
+
+          const result = await documentationGenerator.extractInformation(
+            projectDataWithComplexChildren
+          );
+
           expect(result.success).toBe(true);
           expect(result.jsdoc).toBeDefined();
           expect(result.types).toBeDefined();
           expect(result.examples).toBeDefined();
-          
+
           restoreExtractors(originals);
         });
 
         it('should handle files with ast that has children with different node types in extractInformation', async () => {
           const originals = mockExtractors();
-          
+
           const projectDataWithDifferentNodeTypes = {
             ...mockProjectData,
             files: [
@@ -1099,9 +1165,9 @@ describe('DocumentationGenerator', () => {
                         {
                           name: 'methodNode',
                           type: 'MethodDeclaration',
-                          documentation: 'Method documentation'
-                        }
-                      ]
+                          documentation: 'Method documentation',
+                        },
+                      ],
                     },
                     {
                       name: 'interfaceNode',
@@ -1111,9 +1177,9 @@ describe('DocumentationGenerator', () => {
                         {
                           name: 'propertyNode',
                           type: 'PropertySignature',
-                          documentation: 'Property documentation'
-                        }
-                      ]
+                          documentation: 'Property documentation',
+                        },
+                      ],
                     },
                     {
                       name: 'enumNode',
@@ -1123,29 +1189,31 @@ describe('DocumentationGenerator', () => {
                         {
                           name: 'enumMember',
                           type: 'EnumMember',
-                          documentation: 'Enum member documentation'
-                        }
-                      ]
-                    }
-                  ]
-                }
-              }
-            ]
+                          documentation: 'Enum member documentation',
+                        },
+                      ],
+                    },
+                  ],
+                },
+              },
+            ],
           };
-          
-          const result = await documentationGenerator.extractInformation(projectDataWithDifferentNodeTypes);
-          
+
+          const result = await documentationGenerator.extractInformation(
+            projectDataWithDifferentNodeTypes
+          );
+
           expect(result.success).toBe(true);
           expect(result.jsdoc).toBeDefined();
           expect(result.types).toBeDefined();
           expect(result.examples).toBeDefined();
-          
+
           restoreExtractors(originals);
         });
 
         it('should handle files with ast that has children with special characters in extractInformation', async () => {
           const originals = mockExtractors();
-          
+
           const projectDataWithSpecialCharacters = {
             ...mockProjectData,
             files: [
@@ -1159,37 +1227,39 @@ describe('DocumentationGenerator', () => {
                     {
                       name: 'special@node#with$chars',
                       type: 'VariableDeclaration',
-                      documentation: 'Special characters in name'
+                      documentation: 'Special characters in name',
                     },
                     {
                       name: 'node-with-dashes',
                       type: 'ExpressionStatement',
-                      documentation: 'Node with dashes'
+                      documentation: 'Node with dashes',
                     },
                     {
                       name: 'node_with_underscores',
                       type: 'ReturnStatement',
-                      documentation: 'Node with underscores'
-                    }
-                  ]
-                }
-              }
-            ]
+                      documentation: 'Node with underscores',
+                    },
+                  ],
+                },
+              },
+            ],
           };
-          
-          const result = await documentationGenerator.extractInformation(projectDataWithSpecialCharacters);
-          
+
+          const result = await documentationGenerator.extractInformation(
+            projectDataWithSpecialCharacters
+          );
+
           expect(result.success).toBe(true);
           expect(result.jsdoc).toBeDefined();
           expect(result.types).toBeDefined();
           expect(result.examples).toBeDefined();
-          
+
           restoreExtractors(originals);
         });
 
         it('should handle files with ast that has children with unicode characters in extractInformation', async () => {
           const originals = mockExtractors();
-          
+
           const projectDataWithUnicodeCharacters = {
             ...mockProjectData,
             files: [
@@ -1203,37 +1273,39 @@ describe('DocumentationGenerator', () => {
                     {
                       name: '测试节点',
                       type: 'VariableDeclaration',
-                      documentation: '测试文档'
+                      documentation: '测试文档',
                     },
                     {
                       name: 'ノード名',
                       type: 'ExpressionStatement',
-                      documentation: '日本語ドキュメント'
+                      documentation: '日本語ドキュメント',
                     },
                     {
                       name: '노드이름',
                       type: 'ReturnStatement',
-                      documentation: '한국어 문서'
-                    }
-                  ]
-                }
-              }
-            ]
+                      documentation: '한국어 문서',
+                    },
+                  ],
+                },
+              },
+            ],
           };
-          
-          const result = await documentationGenerator.extractInformation(projectDataWithUnicodeCharacters);
-          
+
+          const result = await documentationGenerator.extractInformation(
+            projectDataWithUnicodeCharacters
+          );
+
           expect(result.success).toBe(true);
           expect(result.jsdoc).toBeDefined();
           expect(result.types).toBeDefined();
           expect(result.examples).toBeDefined();
-          
+
           restoreExtractors(originals);
         });
 
         it('should handle files with ast that has children with very long names in extractInformation', async () => {
           const originals = mockExtractors();
-          
+
           const longName = 'a'.repeat(1000);
           const projectDataWithLongNames = {
             ...mockProjectData,
@@ -1248,32 +1320,32 @@ describe('DocumentationGenerator', () => {
                     {
                       name: longName,
                       type: 'VariableDeclaration',
-                      documentation: 'Node with very long name'
+                      documentation: 'Node with very long name',
                     },
                     {
                       name: 'normalNode',
                       type: 'ExpressionStatement',
-                      documentation: 'Normal node name'
-                    }
-                  ]
-                }
-              }
-            ]
+                      documentation: 'Normal node name',
+                    },
+                  ],
+                },
+              },
+            ],
           };
-          
+
           const result = await documentationGenerator.extractInformation(projectDataWithLongNames);
-          
+
           expect(result.success).toBe(true);
           expect(result.jsdoc).toBeDefined();
           expect(result.types).toBeDefined();
           expect(result.examples).toBeDefined();
-          
+
           restoreExtractors(originals);
         });
 
         it('should handle files with ast that has children with missing properties in extractInformation', async () => {
           const originals = mockExtractors();
-          
+
           const projectDataWithMissingProperties = {
             ...mockProjectData,
             files: [
@@ -1287,16 +1359,16 @@ describe('DocumentationGenerator', () => {
                     {
                       // Missing name property
                       type: 'VariableDeclaration',
-                      documentation: 'Node without name'
+                      documentation: 'Node without name',
                     },
                     {
                       name: 'nodeWithoutType',
                       // Missing type property
-                      documentation: 'Node without type'
+                      documentation: 'Node without type',
                     },
                     {
                       name: 'nodeWithoutDoc',
-                      type: 'ExpressionStatement'
+                      type: 'ExpressionStatement',
                       // Missing documentation property
                     },
                     {
@@ -1305,29 +1377,31 @@ describe('DocumentationGenerator', () => {
                         {
                           name: 'nestedNode',
                           type: 'ReturnStatement',
-                          documentation: 'Nested node'
-                        }
-                      ]
-                    }
-                  ]
-                }
-              }
-            ]
+                          documentation: 'Nested node',
+                        },
+                      ],
+                    },
+                  ],
+                },
+              },
+            ],
           };
-          
-          const result = await documentationGenerator.extractInformation(projectDataWithMissingProperties);
-          
+
+          const result = await documentationGenerator.extractInformation(
+            projectDataWithMissingProperties
+          );
+
           expect(result.success).toBe(true);
           expect(result.jsdoc).toBeDefined();
           expect(result.types).toBeDefined();
           expect(result.examples).toBeDefined();
-          
+
           restoreExtractors(originals);
         });
 
         it('should handle files with ast that has children with invalid data types in extractInformation', async () => {
           const originals = mockExtractors();
-          
+
           const projectDataWithInvalidTypes = {
             ...mockProjectData,
             files: [
@@ -1341,61 +1415,63 @@ describe('DocumentationGenerator', () => {
                     {
                       name: 123, // Invalid: number instead of string
                       type: 'VariableDeclaration',
-                      documentation: 'Node with numeric name'
+                      documentation: 'Node with numeric name',
                     },
                     {
                       name: 'nodeWithNumericType',
                       type: 456, // Invalid: number instead of string
-                      documentation: 'Node with numeric type'
+                      documentation: 'Node with numeric type',
                     },
                     {
                       name: 'nodeWithNumericDoc',
                       type: 'ExpressionStatement',
-                      documentation: 789 // Invalid: number instead of string
+                      documentation: 789, // Invalid: number instead of string
                     },
                     {
                       name: null, // Invalid: null instead of string
                       type: 'ReturnStatement',
-                      documentation: 'Node with null name'
+                      documentation: 'Node with null name',
                     },
                     {
                       name: 'nodeWithNullType',
                       type: null, // Invalid: null instead of string
-                      documentation: 'Node with null type'
+                      documentation: 'Node with null type',
                     },
                     {
                       name: 'nodeWithNullDoc',
                       type: 'ReturnStatement',
-                      documentation: null // Invalid: null instead of string
-                    }
-                  ]
-                }
-              }
-            ]
+                      documentation: null, // Invalid: null instead of string
+                    },
+                  ],
+                },
+              },
+            ],
           };
-          
-          const result = await documentationGenerator.extractInformation(projectDataWithInvalidTypes);
-          
+
+          const result = await documentationGenerator.extractInformation(
+            projectDataWithInvalidTypes
+          );
+
           expect(result.success).toBe(true);
           expect(result.jsdoc).toBeDefined();
           expect(result.types).toBeDefined();
           expect(result.examples).toBeDefined();
-          
+
           restoreExtractors(originals);
         });
 
         it('should handle files with ast that has children with circular references in extractInformation', async () => {
           const originals = mockExtractors();
-          
+
           const circularNode = {
             name: 'circularNode',
             type: 'VariableDeclaration',
-            documentation: 'Node with circular reference'
+            documentation: 'Node with circular reference',
           };
-          
+
           // Create circular reference
           (circularNode as any).self = circularNode;
-          
+
           const projectDataWithCircularReferences = {
             ...mockProjectData,
             files: [
@@ -1410,27 +1486,29 @@ describe('DocumentationGenerator', () => {
                     {
                       name: 'normalNode',
                       type: 'ExpressionStatement',
-                      documentation: 'Normal node'
-                    }
-                  ]
-                }
-              }
-            ]
+                      documentation: 'Normal node',
+                    },
+                  ],
+                },
+              },
+            ],
           };
-          
-          const result = await documentationGenerator.extractInformation(projectDataWithCircularReferences);
-          
+
+          const result = await documentationGenerator.extractInformation(
+            projectDataWithCircularReferences
+          );
+
           expect(result.success).toBe(true);
           expect(result.jsdoc).toBeDefined();
           expect(result.types).toBeDefined();
           expect(result.examples).toBeDefined();
-          
+
           restoreExtractors(originals);
         });
 
         it('should handle files with ast that has children with function properties in extractInformation', async () => {
           const originals = mockExtractors();
-          
+
           const projectDataWithFunctionProperties = {
             ...mockProjectData,
             files: [
@@ -1445,35 +1523,37 @@ describe('DocumentationGenerator', () => {
                       name: 'nodeWithFunction',
                       type: 'VariableDeclaration',
                       documentation: 'Node with function property',
-                      customFunction: () => 'test function'
+                      customFunction: () => 'test function',
                     },
                     {
                       name: 'nodeWithMethod',
                       type: 'ExpressionStatement',
                       documentation: 'Node with method property',
                       customMethod: {
-                        execute: () => 'executed'
-                      }
-                    }
-                  ]
-                }
-              }
-            ]
+                        execute: () => 'executed',
+                      },
+                    },
+                  ],
+                },
+              },
+            ],
           };
-          
-          const result = await documentationGenerator.extractInformation(projectDataWithFunctionProperties);
-          
+
+          const result = await documentationGenerator.extractInformation(
+            projectDataWithFunctionProperties
+          );
+
           expect(result.success).toBe(true);
           expect(result.jsdoc).toBeDefined();
           expect(result.types).toBeDefined();
           expect(result.examples).toBeDefined();
-          
+
           restoreExtractors(originals);
         });
 
         it('should handle files with ast that has children with array properties in extractInformation', async () => {
           const originals = mockExtractors();
-          
+
           const projectDataWithArrayProperties = {
             ...mockProjectData,
             files: [
@@ -1488,37 +1568,35 @@ describe('DocumentationGenerator', () => {
                       name: 'nodeWithArray',
                       type: 'VariableDeclaration',
                       documentation: 'Node with array property',
-                      tags: ['tag1', 'tag2', 'tag3']
+                      tags: ['tag1', 'tag2', 'tag3'],
                     },
                     {
                       name: 'nodeWithNestedArray',
                       type: 'ExpressionStatement',
                       documentation: 'Node with nested array property',
-                      metadata: [
-                        { key: 'value1' },
-                        { key: 'value2' },
-                        { key: 'value3' }
-                      ]
-                    }
-                  ]
-                }
-              }
-            ]
+                      metadata: [{ key: 'value1' }, { key: 'value2' }, { key: 'value3' }],
+                    },
+                  ],
+                },
+              },
+            ],
           };
-          
-          const result = await documentationGenerator.extractInformation(projectDataWithArrayProperties);
-          
+
+          const result = await documentationGenerator.extractInformation(
+            projectDataWithArrayProperties
+          );
+
           expect(result.success).toBe(true);
           expect(result.jsdoc).toBeDefined();
           expect(result.types).toBeDefined();
           expect(result.examples).toBeDefined();
-          
+
           restoreExtractors(originals);
         });
 
         it('should handle files with ast that has children with object properties in extractInformation', async () => {
           const originals = mockExtractors();
-          
+
           const projectDataWithObjectProperties = {
             ...mockProjectData,
             files: [
@@ -1536,8 +1614,8 @@ describe('DocumentationGenerator', () => {
                       config: {
                         enabled: true,
                         timeout: 5000,
-                        retries: 3
-                      }
+                        retries: 3,
+                      },
                     },
                     {
                       name: 'nodeWithNestedObject',
@@ -1549,35 +1627,37 @@ describe('DocumentationGenerator', () => {
                           port: 5432,
                           credentials: {
                             username: 'user',
-                            password: 'pass'
-                          }
-                        }
-                      }
-                    }
-                  ]
-                }
-              }
-            ]
+                            password: 'pass',
+                          },
+                        },
+                      },
+                    },
+                  ],
+                },
+              },
+            ],
           };
-          
-          const result = await documentationGenerator.extractInformation(projectDataWithObjectProperties);
-          
+
+          const result = await documentationGenerator.extractInformation(
+            projectDataWithObjectProperties
+          );
+
           expect(result.success).toBe(true);
           expect(result.jsdoc).toBeDefined();
           expect(result.types).toBeDefined();
           expect(result.examples).toBeDefined();
-          
+
           restoreExtractors(originals);
         });
 
         it('should handle countTotalNodes with no files', async () => {
           const projectDataWithoutFiles = {
             ...mockProjectData,
-            files: undefined
+            files: undefined,
           };
-          
+
           const result = (documentationGenerator as any).countTotalNodes(projectDataWithoutFiles);
-          
+
           expect(result).toBe(0);
         });
 
@@ -1587,18 +1667,17 @@ describe('DocumentationGenerator', () => {
             files: [
               {
                 path: 'src/utils.ts',
-                content: 'export function test() { return "test"; }'
+                content: 'export function test() { return "test"; }',
                 // No ast property
-              }
-            ]
+              },
+            ],
           };
-          
+
           const result = (documentationGenerator as any).countTotalNodes(projectDataWithoutAst);
-          
+
           expect(result).toBe(0);
         });
       });
     });
   });
 });
-

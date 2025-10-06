@@ -4,7 +4,7 @@ import {
   VersionComparison,
   VersioningConfig,
   CustomVersioningConfig,
-  CustomVersionInfo
+  CustomVersionInfo,
 } from '../../types/versioning';
 
 export class CustomVersioning extends BaseVersioningStrategy {
@@ -45,7 +45,7 @@ export class CustomVersioning extends BaseVersioningStrategy {
         return {
           version: version || '',
           createdAt: new Date().toISOString(),
-          tags: []
+          tags: [],
         };
       }
 
@@ -57,14 +57,14 @@ export class CustomVersioning extends BaseVersioningStrategy {
             version,
             createdAt: new Date().toISOString(),
             tags: [],
-            custom: customData as CustomVersionInfo
+            custom: customData as CustomVersionInfo,
           };
         } catch (error) {
           this.handleError(error as Error, 'parseVersion');
           return {
             version,
             createdAt: new Date().toISOString(),
-            tags: []
+            tags: [],
           };
         }
       }
@@ -73,14 +73,14 @@ export class CustomVersioning extends BaseVersioningStrategy {
       return {
         version,
         createdAt: new Date().toISOString(),
-        tags: []
+        tags: [],
       };
     } catch (error) {
       this.handleError(error as Error, 'parseVersion');
       return {
         version: version || '',
         createdAt: new Date().toISOString(),
-        tags: []
+        tags: [],
       };
     }
   }
@@ -95,8 +95,8 @@ export class CustomVersioning extends BaseVersioningStrategy {
             breakingChanges: false,
             newFeatures: false,
             bugFixes: false,
-            information: `Cannot compare versions: ${version1} and ${version2}`
-          }
+            information: `Cannot compare versions: ${version1} and ${version2}`,
+          },
         };
       }
 
@@ -112,8 +112,12 @@ export class CustomVersioning extends BaseVersioningStrategy {
               breakingChanges: false,
               newFeatures: comparison.result === 'greater',
               bugFixes: false,
-              information: this.generateComparisonInformation(version1, version2, comparison.result)
-            }
+              information: this.generateComparisonInformation(
+                version1,
+                version2,
+                comparison.result
+              ),
+            },
           };
         } catch (error) {
           this.handleError(error as Error, 'compareVersions');
@@ -124,8 +128,8 @@ export class CustomVersioning extends BaseVersioningStrategy {
               breakingChanges: false,
               newFeatures: false,
               bugFixes: false,
-              information: `Error comparing versions: ${version1} and ${version2}`
-            }
+              information: `Error comparing versions: ${version1} and ${version2}`,
+            },
           };
         }
       }
@@ -140,8 +144,8 @@ export class CustomVersioning extends BaseVersioningStrategy {
             breakingChanges: false,
             newFeatures: false,
             bugFixes: false,
-            information: `Versions are identical: ${version1}`
-          }
+            information: `Versions are identical: ${version1}`,
+          },
         };
       }
 
@@ -158,8 +162,8 @@ export class CustomVersioning extends BaseVersioningStrategy {
           breakingChanges: false,
           newFeatures: result === 'greater',
           bugFixes: false,
-          information: this.generateComparisonInformation(version1, version2, result)
-        }
+          information: this.generateComparisonInformation(version1, version2, result),
+        },
       };
     } catch (error) {
       this.handleError(error as Error, 'compareVersions');
@@ -170,8 +174,8 @@ export class CustomVersioning extends BaseVersioningStrategy {
           breakingChanges: false,
           newFeatures: false,
           bugFixes: false,
-          information: `Error comparing versions: ${version1} and ${version2}`
-        }
+          information: `Error comparing versions: ${version1} and ${version2}`,
+        },
       };
     }
   }
@@ -215,20 +219,20 @@ export class CustomVersioning extends BaseVersioningStrategy {
       storage: {
         type: 'local',
         path: './versions',
-        options: {}
+        options: {},
       },
       retention: {
         maxVersions: 10,
         keepForever: [],
         autoCleanup: true,
-        cleanupInterval: 24
+        cleanupInterval: 24,
       },
       comparison: {
         enableDiff: true,
         diffFormat: 'json',
         includeMetrics: true,
-        includeBreakingChanges: true
-      }
+        includeBreakingChanges: true,
+      },
     };
   }
 
@@ -268,9 +272,9 @@ export class CustomVersioning extends BaseVersioningStrategy {
    */
   private mergeCustomDefaults(config: Partial<CustomVersioningConfig>): CustomVersioningConfig {
     const result: CustomVersioningConfig = {
-      pattern: config.pattern || ''
+      pattern: config.pattern || '',
     };
-    
+
     if (config.validation !== undefined) {
       result.validation = config.validation;
     }
@@ -286,7 +290,7 @@ export class CustomVersioning extends BaseVersioningStrategy {
     if (config.validationFunction !== undefined) {
       result.validationFunction = config.validationFunction;
     }
-    
+
     return result;
   }
 }

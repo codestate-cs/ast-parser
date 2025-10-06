@@ -13,7 +13,7 @@ describe('TimestampVersioning', () => {
       const metadata: VersionMetadata = {
         version: '1.0.0',
         createdAt: new Date().toISOString(),
-        tags: ['stable']
+        tags: ['stable'],
       };
 
       const version = await strategy.generateVersion(metadata);
@@ -25,7 +25,7 @@ describe('TimestampVersioning', () => {
       const metadata: VersionMetadata = {
         version: '1.0.0',
         createdAt: new Date().toISOString(),
-        tags: ['stable']
+        tags: ['stable'],
       };
 
       const version = await strategy.generateVersion(metadata);
@@ -37,7 +37,7 @@ describe('TimestampVersioning', () => {
       const metadata: VersionMetadata = {
         version: '1.0.0',
         createdAt: new Date().toISOString(),
-        tags: ['stable']
+        tags: ['stable'],
       };
 
       const version = await strategy.generateVersion(metadata);
@@ -49,7 +49,7 @@ describe('TimestampVersioning', () => {
       const metadata: VersionMetadata = {
         version: '1.0.0',
         createdAt: new Date().toISOString(),
-        tags: ['stable']
+        tags: ['stable'],
       };
 
       const version = await strategy.generateVersion(metadata);
@@ -57,15 +57,15 @@ describe('TimestampVersioning', () => {
     });
 
     it('should generate version with custom prefix and suffix', async () => {
-      const strategy = new TimestampVersioning({ 
-        prefix: 'v', 
+      const strategy = new TimestampVersioning({
+        prefix: 'v',
         suffix: 'build',
-        format: 'iso'
+        format: 'iso',
       });
       const metadata: VersionMetadata = {
         version: '1.0.0',
         createdAt: new Date().toISOString(),
-        tags: ['stable']
+        tags: ['stable'],
       };
 
       const version = await strategy.generateVersion(metadata);
@@ -76,7 +76,7 @@ describe('TimestampVersioning', () => {
       const metadata: VersionMetadata = {
         version: '1.0.0',
         createdAt: '',
-        tags: ['stable']
+        tags: ['stable'],
       };
 
       const version = await strategy.generateVersion(metadata);
@@ -118,10 +118,10 @@ describe('TimestampVersioning', () => {
     });
 
     it('should parse version with prefix and suffix', async () => {
-      const strategy = new TimestampVersioning({ 
-        prefix: 'v', 
+      const strategy = new TimestampVersioning({
+        prefix: 'v',
         suffix: 'build',
-        format: 'iso'
+        format: 'iso',
       });
       const version = 'v2024-01-15T10:30:45.123Z-build';
       const result = await strategy.parseVersion(version);
@@ -170,7 +170,7 @@ describe('TimestampVersioning', () => {
 
     it('should compare Unix timestamp versions', async () => {
       const strategy = new TimestampVersioning({ format: 'unix' });
-      
+
       const result1 = await strategy.compareVersions('1705312245', '1705312246');
       expect(result1.result).toBe('less');
 
@@ -183,17 +183,11 @@ describe('TimestampVersioning', () => {
 
     it('should compare readable timestamp versions', async () => {
       const strategy = new TimestampVersioning({ format: 'readable' });
-      
-      const result1 = await strategy.compareVersions(
-        '2024-01-15 10:30:45',
-        '2024-01-15 10:30:46'
-      );
+
+      const result1 = await strategy.compareVersions('2024-01-15 10:30:45', '2024-01-15 10:30:46');
       expect(result1.result).toBe('less');
 
-      const result2 = await strategy.compareVersions(
-        '2024-01-15 10:30:46',
-        '2024-01-15 10:30:45'
-      );
+      const result2 = await strategy.compareVersions('2024-01-15 10:30:46', '2024-01-15 10:30:45');
       expect(result2.result).toBe('greater');
     });
 
@@ -206,10 +200,7 @@ describe('TimestampVersioning', () => {
     });
 
     it('should handle invalid versions', async () => {
-      const result = await strategy.compareVersions(
-        'invalid-timestamp',
-        'invalid-timestamp'
-      );
+      const result = await strategy.compareVersions('invalid-timestamp', 'invalid-timestamp');
       expect(result.result).toBe('incompatible');
     });
   });
@@ -258,7 +249,7 @@ describe('TimestampVersioning', () => {
   describe('timestamp formatting', () => {
     it('should format timestamps with different precisions', () => {
       const date = new Date('2024-01-15T10:30:45.123Z');
-      
+
       expect(strategy.formatTimestamp(date, 'second')).toBe('2024-01-15T10:30:45Z');
       expect(strategy.formatTimestamp(date, 'minute')).toBe('2024-01-15T10:30Z');
       expect(strategy.formatTimestamp(date, 'hour')).toBe('2024-01-15T10Z');
@@ -267,7 +258,7 @@ describe('TimestampVersioning', () => {
 
     it('should format timestamps with different formats', () => {
       const date = new Date('2024-01-15T10:30:45.123Z');
-      
+
       expect(strategy.formatTimestamp(date, 'second', 'iso')).toBe('2024-01-15T10:30:45Z');
       expect(strategy.formatTimestamp(date, 'second', 'unix')).toBe('1705314645');
       expect(strategy.formatTimestamp(date, 'second', 'readable')).toBe('2024-01-15 10:30:45');
@@ -275,9 +266,11 @@ describe('TimestampVersioning', () => {
 
     it('should handle timezone formatting', () => {
       const date = new Date('2024-01-15T10:30:45.123Z');
-      
+
       expect(strategy.formatTimestamp(date, 'second', 'iso', 'UTC')).toBe('2024-01-15T10:30:45Z');
-      expect(strategy.formatTimestamp(date, 'second', 'iso', 'America/New_York')).toMatch(/2024-01-15T\d{2}:\d{2}:\d{2}/);
+      expect(strategy.formatTimestamp(date, 'second', 'iso', 'America/New_York')).toMatch(
+        /2024-01-15T\d{2}:\d{2}:\d{2}/
+      );
     });
   });
 
@@ -285,7 +278,7 @@ describe('TimestampVersioning', () => {
     it('should parse ISO timestamps', () => {
       const timestamp = '2024-01-15T10:30:45.123Z';
       const parsed = strategy.parseTimestamp(timestamp);
-      
+
       expect(parsed).toBeInstanceOf(Date);
       expect(parsed?.toISOString()).toBe(timestamp);
     });
@@ -293,7 +286,7 @@ describe('TimestampVersioning', () => {
     it('should parse Unix timestamps', () => {
       const timestamp = '1705312245';
       const parsed = strategy.parseTimestamp(timestamp, 'unix');
-      
+
       expect(parsed).toBeInstanceOf(Date);
       expect(parsed?.getTime()).toBe(1705312245000);
     });
@@ -301,7 +294,7 @@ describe('TimestampVersioning', () => {
     it('should parse readable timestamps', () => {
       const timestamp = '2024-01-15 10:30:45';
       const parsed = strategy.parseTimestamp(timestamp, 'readable');
-      
+
       expect(parsed).toBeInstanceOf(Date);
       expect(parsed?.getFullYear()).toBe(2024);
       expect(parsed?.getMonth()).toBe(0); // January
@@ -319,7 +312,7 @@ describe('TimestampVersioning', () => {
     it('should use default configuration', () => {
       const strategy = new TimestampVersioning();
       const config = strategy.getTimestampConfig();
-      
+
       expect(config.format).toBe('iso');
       expect(config.precision).toBe('second');
       expect(config.timezone).toBe('UTC');
@@ -333,12 +326,12 @@ describe('TimestampVersioning', () => {
         precision: 'minute' as const,
         timezone: 'America/New_York',
         prefix: 'v',
-        suffix: 'build'
+        suffix: 'build',
       };
-      
+
       const strategy = new TimestampVersioning(customConfig);
       const config = strategy.getTimestampConfig();
-      
+
       expect(config.format).toBe('unix');
       expect(config.precision).toBe('minute');
       expect(config.timezone).toBe('America/New_York');
@@ -349,12 +342,12 @@ describe('TimestampVersioning', () => {
     it('should merge configuration with defaults', () => {
       const partialConfig = {
         format: 'readable' as const,
-        prefix: 'v'
+        prefix: 'v',
       };
-      
+
       const strategy = new TimestampVersioning(partialConfig);
       const config = strategy.getTimestampConfig();
-      
+
       expect(config.format).toBe('readable');
       expect(config.precision).toBe('second'); // default
       expect(config.timezone).toBe('UTC'); // default
@@ -368,7 +361,7 @@ describe('TimestampVersioning', () => {
       const metadata: VersionMetadata = {
         version: '1.0.0',
         createdAt: '2024-02-29T10:30:45.123Z',
-        tags: ['stable']
+        tags: ['stable'],
       };
 
       const version = await strategy.generateVersion(metadata);
@@ -379,7 +372,7 @@ describe('TimestampVersioning', () => {
       const metadata: VersionMetadata = {
         version: '1.0.0',
         createdAt: '2023-12-31T23:59:59.999Z',
-        tags: ['stable']
+        tags: ['stable'],
       };
 
       const version = await strategy.generateVersion(metadata);
@@ -390,7 +383,7 @@ describe('TimestampVersioning', () => {
       const metadata: VersionMetadata = {
         version: '1.0.0',
         createdAt: '1970-01-01T00:00:00.000Z',
-        tags: ['stable']
+        tags: ['stable'],
       };
 
       const version = await strategy.generateVersion(metadata);
@@ -400,11 +393,11 @@ describe('TimestampVersioning', () => {
     it('should handle future timestamps', async () => {
       const futureDate = new Date();
       futureDate.setFullYear(futureDate.getFullYear() + 10);
-      
+
       const metadata: VersionMetadata = {
         version: '1.0.0',
         createdAt: futureDate.toISOString(),
-        tags: ['stable']
+        tags: ['stable'],
       };
 
       const version = await strategy.generateVersion(metadata);
@@ -416,7 +409,7 @@ describe('TimestampVersioning', () => {
       const metadata: VersionMetadata = {
         version: '1.0.0',
         createdAt: '2024-01-15T10:30:45.123Z',
-        tags: ['stable']
+        tags: ['stable'],
       };
 
       const version = await strategy.generateVersion(metadata);
@@ -428,7 +421,7 @@ describe('TimestampVersioning', () => {
       const metadata: VersionMetadata = {
         version: '1.0.0',
         createdAt: '2024-01-15T10:30:45.123Z',
-        tags: ['stable']
+        tags: ['stable'],
       };
 
       const version = await strategy.generateVersion(metadata);
@@ -440,7 +433,7 @@ describe('TimestampVersioning', () => {
       const metadata: VersionMetadata = {
         version: '1.0.0',
         createdAt: '2024-01-15T10:30:45.123Z',
-        tags: ['stable']
+        tags: ['stable'],
       };
 
       const version = await strategy.generateVersion(metadata);
@@ -452,7 +445,7 @@ describe('TimestampVersioning', () => {
       const metadata: VersionMetadata = {
         version: '1.0.0',
         createdAt: '2024-01-15T10:30:45.123Z',
-        tags: ['stable']
+        tags: ['stable'],
       };
 
       const version = await strategy.generateVersion(metadata);
@@ -464,7 +457,7 @@ describe('TimestampVersioning', () => {
       const metadata: VersionMetadata = {
         version: '1.0.0',
         createdAt: '2024-01-15T10:30:45.123Z',
-        tags: ['stable']
+        tags: ['stable'],
       };
 
       const version = await strategy.generateVersion(metadata);
@@ -476,7 +469,7 @@ describe('TimestampVersioning', () => {
       const metadata: VersionMetadata = {
         version: '1.0.0',
         createdAt: '2024-01-15T10:30:45.123Z',
-        tags: ['stable']
+        tags: ['stable'],
       };
 
       const version = await strategy.generateVersion(metadata);
@@ -488,7 +481,7 @@ describe('TimestampVersioning', () => {
       const metadata: VersionMetadata = {
         version: '1.0.0',
         createdAt: '2024-01-15T10:30:45.123Z',
-        tags: ['stable']
+        tags: ['stable'],
       };
 
       const version = await strategy.generateVersion(metadata);
@@ -500,7 +493,7 @@ describe('TimestampVersioning', () => {
       const metadata: VersionMetadata = {
         version: '1.0.0',
         createdAt: '2024-01-15T10:30:45.123Z',
-        tags: ['stable']
+        tags: ['stable'],
       };
 
       const version = await strategy.generateVersion(metadata);
@@ -512,7 +505,7 @@ describe('TimestampVersioning', () => {
       const metadata: VersionMetadata = {
         version: '1.0.0',
         createdAt: '2024-01-15T10:30:45.123Z',
-        tags: ['stable']
+        tags: ['stable'],
       };
 
       const version = await strategy.generateVersion(metadata);
@@ -524,7 +517,7 @@ describe('TimestampVersioning', () => {
       const metadata: VersionMetadata = {
         version: '1.0.0',
         createdAt: '2024-01-15T10:30:45.123Z',
-        tags: ['stable']
+        tags: ['stable'],
       };
 
       const version = await strategy.generateVersion(metadata);
@@ -536,7 +529,7 @@ describe('TimestampVersioning', () => {
       const metadata: VersionMetadata = {
         version: '1.0.0',
         createdAt: '2024-01-15T10:30:45.123Z',
-        tags: ['stable']
+        tags: ['stable'],
       };
 
       const version = await strategy.generateVersion(metadata);
@@ -544,15 +537,15 @@ describe('TimestampVersioning', () => {
     });
 
     it('should handle versions with complex prefixes and suffixes', async () => {
-      const strategy = new TimestampVersioning({ 
-        prefix: 'v1.0-', 
+      const strategy = new TimestampVersioning({
+        prefix: 'v1.0-',
         suffix: '-build-123',
-        format: 'iso'
+        format: 'iso',
       });
       const metadata: VersionMetadata = {
         version: '1.0.0',
         createdAt: '2024-01-15T10:30:45.123Z',
-        tags: ['stable']
+        tags: ['stable'],
       };
 
       const version = await strategy.generateVersion(metadata);
@@ -560,10 +553,10 @@ describe('TimestampVersioning', () => {
     });
 
     it('should handle parsing versions with complex prefixes and suffixes', async () => {
-      const strategy = new TimestampVersioning({ 
-        prefix: 'v1.0-', 
+      const strategy = new TimestampVersioning({
+        prefix: 'v1.0-',
         suffix: '-build-123',
-        format: 'iso'
+        format: 'iso',
       });
       const version = 'v1.0-2024-01-15T10:30:45Z--build-123';
       const result = await strategy.parseVersion(version);
@@ -574,15 +567,15 @@ describe('TimestampVersioning', () => {
 
     it('should handle Unix timestamp parsing with different lengths', async () => {
       const strategy = new TimestampVersioning({ format: 'unix' });
-      
+
       // Test 10-digit Unix timestamp (seconds)
       const result1 = await strategy.parseVersion('1705314645');
       expect(result1.timestamp?.unix).toBe(1705314645);
-      
+
       // Test 13-digit Unix timestamp (milliseconds)
       const result2 = await strategy.parseVersion('1705314645123');
       expect(result2.timestamp?.unix).toBe(1705314645);
-      
+
       // Test 16-digit Unix timestamp (microseconds)
       const result3 = await strategy.parseVersion('1705314645123000');
       expect(result3.timestamp?.unix).toBe(1705314645);
@@ -590,15 +583,15 @@ describe('TimestampVersioning', () => {
 
     it('should handle readable timestamp parsing with fractions', async () => {
       const strategy = new TimestampVersioning({ format: 'readable' });
-      
+
       // Test with milliseconds
       const result1 = await strategy.parseVersion('2024-01-15 10:30:45.123');
       expect(result1.timestamp?.readable).toBe('2024-01-15 10:30:45.123');
-      
+
       // Test with microseconds
       const result2 = await strategy.parseVersion('2024-01-15 10:30:45.123456');
       expect(result2.timestamp?.readable).toBe('2024-01-15 10:30:45.123456');
-      
+
       // Test without fractions
       const result3 = await strategy.parseVersion('2024-01-15 10:30:45');
       expect(result3.timestamp?.readable).toBe('2024-01-15 10:30:45');
@@ -606,12 +599,18 @@ describe('TimestampVersioning', () => {
 
     it('should handle edge cases in version comparison', async () => {
       // Test equal timestamps
-      const result1 = await strategy.compareVersions('2024-01-15T10:30:45Z', '2024-01-15T10:30:45Z');
+      const result1 = await strategy.compareVersions(
+        '2024-01-15T10:30:45Z',
+        '2024-01-15T10:30:45Z'
+      );
       expect(result1.result).toBe('equal');
       expect(result1.difference).toBe(0);
-      
+
       // Test very close timestamps
-      const result2 = await strategy.compareVersions('2024-01-15T10:30:45Z', '2024-01-15T10:30:46Z');
+      const result2 = await strategy.compareVersions(
+        '2024-01-15T10:30:45Z',
+        '2024-01-15T10:30:46Z'
+      );
       expect(result2.result).toBe('less');
       expect(result2.difference).toBe(1);
     });
@@ -651,7 +650,7 @@ describe('TimestampVersioning', () => {
       const metadata: VersionMetadata = {
         version: '1.0.0',
         createdAt: 'invalid-date',
-        tags: ['stable']
+        tags: ['stable'],
       };
 
       const version = await strategy.generateVersion(metadata);
@@ -753,10 +752,10 @@ describe('TimestampVersioning', () => {
           iso: '2024-01-15T10:30:45Z',
           unix: 1705314645,
           readable: '2024-01-15 10:30:45',
-          timezone: 'UTC'
-        }
+          timezone: 'UTC',
+        },
       };
-      
+
       expect(async () => {
         await strategyWithTimestamp.generateVersion(metadata);
       }).not.toThrow();
@@ -778,11 +777,13 @@ describe('TimestampVersioning', () => {
 
     it('should handle additional edge cases for formatTimestamp coverage', () => {
       const date = new Date('2024-01-15T10:30:45.123Z');
-      
+
       // Test all format types
       expect(strategy.formatTimestamp(date, 'second', 'iso', 'UTC')).toBe('2024-01-15T10:30:45Z');
       expect(strategy.formatTimestamp(date, 'second', 'unix', 'UTC')).toBe('1705314645');
-      expect(strategy.formatTimestamp(date, 'second', 'readable', 'UTC')).toBe('2024-01-15 10:30:45');
+      expect(strategy.formatTimestamp(date, 'second', 'readable', 'UTC')).toBe(
+        '2024-01-15 10:30:45'
+      );
     });
 
     it('should handle additional edge cases for parseTimestamp coverage', () => {
@@ -796,7 +797,9 @@ describe('TimestampVersioning', () => {
       // Test extractTimestamp with different scenarios
       expect(strategy['extractTimestamp']('2024-01-15T10:30:45Z')).toBe('2024-01-15T10:30:45Z');
       expect(strategy['extractTimestamp']('v2024-01-15T10:30:45Z')).toBe('v2024-01-15T10:30:45Z');
-      expect(strategy['extractTimestamp']('2024-01-15T10:30:45Z-build')).toBe('2024-01-15T10:30:45Z-build');
+      expect(strategy['extractTimestamp']('2024-01-15T10:30:45Z-build')).toBe(
+        '2024-01-15T10:30:45Z-build'
+      );
     });
 
     it('should handle additional edge cases for isValidTimestamp coverage', () => {
@@ -829,10 +832,14 @@ describe('TimestampVersioning', () => {
 
     it('should handle additional edge cases for formatISOTimestamp coverage', () => {
       const date = new Date('2024-01-15T10:30:45.123Z');
-      
+
       // Test all precision levels
-      expect(strategy['formatISOTimestamp'](date, 'microsecond', 'UTC')).toBe('2024-01-15T10:30:45.123Z');
-      expect(strategy['formatISOTimestamp'](date, 'millisecond', 'UTC')).toBe('2024-01-15T10:30:45.123Z');
+      expect(strategy['formatISOTimestamp'](date, 'microsecond', 'UTC')).toBe(
+        '2024-01-15T10:30:45.123Z'
+      );
+      expect(strategy['formatISOTimestamp'](date, 'millisecond', 'UTC')).toBe(
+        '2024-01-15T10:30:45.123Z'
+      );
       expect(strategy['formatISOTimestamp'](date, 'second', 'UTC')).toBe('2024-01-15T10:30:45Z');
       expect(strategy['formatISOTimestamp'](date, 'minute', 'UTC')).toBe('2024-01-15T10:30Z');
       expect(strategy['formatISOTimestamp'](date, 'hour', 'UTC')).toBe('2024-01-15T10Z');
@@ -841,7 +848,7 @@ describe('TimestampVersioning', () => {
 
     it('should handle additional edge cases for formatUnixTimestamp coverage', () => {
       const date = new Date('2024-01-15T10:30:45.123Z');
-      
+
       // Test all precision levels
       expect(strategy['formatUnixTimestamp'](date, 'microsecond')).toBe('1705314645123000');
       expect(strategy['formatUnixTimestamp'](date, 'millisecond')).toBe('1705314645123');
@@ -853,11 +860,17 @@ describe('TimestampVersioning', () => {
 
     it('should handle additional edge cases for formatReadableTimestamp coverage', () => {
       const date = new Date('2024-01-15T10:30:45.123Z');
-      
+
       // Test all precision levels
-      expect(strategy['formatReadableTimestamp'](date, 'microsecond', 'UTC')).toBe('2024-01-15 10:30:45.123123');
-      expect(strategy['formatReadableTimestamp'](date, 'millisecond', 'UTC')).toBe('2024-01-15 10:30:45.123');
-      expect(strategy['formatReadableTimestamp'](date, 'second', 'UTC')).toBe('2024-01-15 10:30:45');
+      expect(strategy['formatReadableTimestamp'](date, 'microsecond', 'UTC')).toBe(
+        '2024-01-15 10:30:45.123123'
+      );
+      expect(strategy['formatReadableTimestamp'](date, 'millisecond', 'UTC')).toBe(
+        '2024-01-15 10:30:45.123'
+      );
+      expect(strategy['formatReadableTimestamp'](date, 'second', 'UTC')).toBe(
+        '2024-01-15 10:30:45'
+      );
       expect(strategy['formatReadableTimestamp'](date, 'minute', 'UTC')).toBe('2024-01-15 10:30');
       expect(strategy['formatReadableTimestamp'](date, 'hour', 'UTC')).toBe('2024-01-15 10');
       expect(strategy['formatReadableTimestamp'](date, 'day', 'UTC')).toBe('2024-01-15');
@@ -967,10 +980,10 @@ describe('TimestampVersioning', () => {
       // Test edge case for extractTimestamp with different version formats
       const result1 = strategy['extractTimestamp']('prefix-2024-01-15T10:30:45Z-suffix');
       expect(result1).toBe('prefix-2024-01-15T10:30:45Z-suffix'); // Actual behavior returns the full string
-      
+
       const result2 = strategy['extractTimestamp']('prefix-1705314645-suffix');
       expect(result2).toBe('prefix-1705314645-suffix'); // Actual behavior returns the full string
-      
+
       const result3 = strategy['extractTimestamp']('prefix-2024-01-15 10:30:45-suffix');
       expect(result3).toBe('prefix-2024-01-15 10:30:45-suffix'); // Actual behavior returns the full string
     });
@@ -987,10 +1000,10 @@ describe('TimestampVersioning', () => {
       // Test edge case for parseISOTimestamp with different ISO formats
       const result1 = strategy['parseISOTimestamp']('2024-01-15T10:30:45Z');
       expect(result1).toBeInstanceOf(Date);
-      
+
       const result2 = strategy['parseISOTimestamp']('2024-01-15T10:30:45.123Z');
       expect(result2).toBeInstanceOf(Date);
-      
+
       const result3 = strategy['parseISOTimestamp']('2024-01-15T10:30:45.123456Z');
       expect(result3).toBeInstanceOf(Date);
     });
@@ -999,10 +1012,10 @@ describe('TimestampVersioning', () => {
       // Test edge case for parseUnixTimestamp with different Unix formats
       const result1 = strategy['parseUnixTimestamp']('1705314645');
       expect(result1).toBeInstanceOf(Date);
-      
+
       const result2 = strategy['parseUnixTimestamp']('1705314645123');
       expect(result2).toBeInstanceOf(Date);
-      
+
       const result3 = strategy['parseUnixTimestamp']('1705314645123456');
       expect(result3).toBeInstanceOf(Date);
     });
@@ -1011,10 +1024,10 @@ describe('TimestampVersioning', () => {
       // Test edge case for parseReadableTimestamp with different readable formats
       const result1 = strategy['parseReadableTimestamp']('2024-01-15 10:30:45');
       expect(result1).toBeInstanceOf(Date);
-      
+
       const result2 = strategy['parseReadableTimestamp']('2024-01-15 10:30:45.123');
       expect(result2).toBeInstanceOf(Date);
-      
+
       const result3 = strategy['parseReadableTimestamp']('2024-01-15 10:30:45.123456');
       expect(result3).toBeInstanceOf(Date);
     });
@@ -1022,20 +1035,30 @@ describe('TimestampVersioning', () => {
     it('should handle additional edge cases for coverage - part 11', () => {
       // Test edge case for formatTimestamp with different precision levels
       const date = new Date('2024-01-15T10:30:45.123Z');
-      
+
       // Test all precision levels with different formats
-      expect(strategy['formatTimestamp'](date, 'microsecond', 'iso')).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/); // Microsecond precision only shows 3 digits
-      expect(strategy['formatTimestamp'](date, 'millisecond', 'iso')).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/);
-      expect(strategy['formatTimestamp'](date, 'second', 'iso')).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/);
-      expect(strategy['formatTimestamp'](date, 'minute', 'iso')).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}Z$/);
-      expect(strategy['formatTimestamp'](date, 'hour', 'iso')).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}Z$/);
+      expect(strategy['formatTimestamp'](date, 'microsecond', 'iso')).toMatch(
+        /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/
+      ); // Microsecond precision only shows 3 digits
+      expect(strategy['formatTimestamp'](date, 'millisecond', 'iso')).toMatch(
+        /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/
+      );
+      expect(strategy['formatTimestamp'](date, 'second', 'iso')).toMatch(
+        /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/
+      );
+      expect(strategy['formatTimestamp'](date, 'minute', 'iso')).toMatch(
+        /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}Z$/
+      );
+      expect(strategy['formatTimestamp'](date, 'hour', 'iso')).toMatch(
+        /^\d{4}-\d{2}-\d{2}T\d{2}Z$/
+      );
       expect(strategy['formatTimestamp'](date, 'day', 'iso')).toMatch(/^\d{4}-\d{2}-\d{2}Z$/);
     });
 
     it('should handle additional edge cases for coverage - part 12', () => {
       // Test edge case for formatTimestamp with different precision levels and Unix format
       const date = new Date('2024-01-15T10:30:45.123Z');
-      
+
       // Test all precision levels with Unix format
       expect(strategy['formatTimestamp'](date, 'microsecond', 'unix')).toMatch(/^\d{16}$/);
       expect(strategy['formatTimestamp'](date, 'millisecond', 'unix')).toMatch(/^\d{13}$/);
@@ -1048,13 +1071,23 @@ describe('TimestampVersioning', () => {
     it('should handle additional edge cases for coverage - part 13', () => {
       // Test edge case for formatTimestamp with different precision levels and readable format
       const date = new Date('2024-01-15T10:30:45.123Z');
-      
+
       // Test all precision levels with readable format
-      expect(strategy['formatTimestamp'](date, 'microsecond', 'readable')).toMatch(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{6}$/);
-      expect(strategy['formatTimestamp'](date, 'millisecond', 'readable')).toMatch(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}$/);
-      expect(strategy['formatTimestamp'](date, 'second', 'readable')).toMatch(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/);
-      expect(strategy['formatTimestamp'](date, 'minute', 'readable')).toMatch(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/);
-      expect(strategy['formatTimestamp'](date, 'hour', 'readable')).toMatch(/^\d{4}-\d{2}-\d{2} \d{2}$/);
+      expect(strategy['formatTimestamp'](date, 'microsecond', 'readable')).toMatch(
+        /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{6}$/
+      );
+      expect(strategy['formatTimestamp'](date, 'millisecond', 'readable')).toMatch(
+        /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}$/
+      );
+      expect(strategy['formatTimestamp'](date, 'second', 'readable')).toMatch(
+        /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/
+      );
+      expect(strategy['formatTimestamp'](date, 'minute', 'readable')).toMatch(
+        /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/
+      );
+      expect(strategy['formatTimestamp'](date, 'hour', 'readable')).toMatch(
+        /^\d{4}-\d{2}-\d{2} \d{2}$/
+      );
       expect(strategy['formatTimestamp'](date, 'day', 'readable')).toMatch(/^\d{4}-\d{2}-\d{2}$/);
     });
 
@@ -1062,10 +1095,10 @@ describe('TimestampVersioning', () => {
       // Test edge case for parseTimestamp with different format types
       const result1 = strategy['parseTimestamp']('2024-01-15T10:30:45Z', 'iso');
       expect(result1).toBeInstanceOf(Date);
-      
+
       const result2 = strategy['parseTimestamp']('1705314645', 'unix');
       expect(result2).toBeInstanceOf(Date);
-      
+
       const result3 = strategy['parseTimestamp']('2024-01-15 10:30:45', 'readable');
       expect(result3).toBeInstanceOf(Date);
     });
@@ -1074,10 +1107,10 @@ describe('TimestampVersioning', () => {
       // Test edge case for extractTimestamp with different version formats
       const result1 = strategy['extractTimestamp']('2024-01-15T10:30:45Z');
       expect(result1).toBe('2024-01-15T10:30:45Z');
-      
+
       const result2 = strategy['extractTimestamp']('1705314645');
       expect(result2).toBe('1705314645');
-      
+
       const result3 = strategy['extractTimestamp']('2024-01-15 10:30:45');
       expect(result3).toBe('2024-01-15 10:30:45');
     });
@@ -1085,15 +1118,25 @@ describe('TimestampVersioning', () => {
     it('should handle additional edge cases for coverage - part 16', () => {
       // Test edge case for formatTimestamp with different precision levels and different formats
       const date = new Date('2024-01-15T10:30:45.123Z');
-      
+
       // Test all precision levels with different formats
-      expect(strategy['formatTimestamp'](date, 'microsecond', 'iso')).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/);
-      expect(strategy['formatTimestamp'](date, 'millisecond', 'iso')).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/);
-      expect(strategy['formatTimestamp'](date, 'second', 'iso')).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/);
-      expect(strategy['formatTimestamp'](date, 'minute', 'iso')).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}Z$/);
-      expect(strategy['formatTimestamp'](date, 'hour', 'iso')).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}Z$/);
+      expect(strategy['formatTimestamp'](date, 'microsecond', 'iso')).toMatch(
+        /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/
+      );
+      expect(strategy['formatTimestamp'](date, 'millisecond', 'iso')).toMatch(
+        /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/
+      );
+      expect(strategy['formatTimestamp'](date, 'second', 'iso')).toMatch(
+        /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/
+      );
+      expect(strategy['formatTimestamp'](date, 'minute', 'iso')).toMatch(
+        /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}Z$/
+      );
+      expect(strategy['formatTimestamp'](date, 'hour', 'iso')).toMatch(
+        /^\d{4}-\d{2}-\d{2}T\d{2}Z$/
+      );
       expect(strategy['formatTimestamp'](date, 'day', 'iso')).toMatch(/^\d{4}-\d{2}-\d{2}Z$/);
-      
+
       // Test all precision levels with Unix format
       expect(strategy['formatTimestamp'](date, 'microsecond', 'unix')).toMatch(/^\d{16}$/);
       expect(strategy['formatTimestamp'](date, 'millisecond', 'unix')).toMatch(/^\d{13}$/);
@@ -1101,13 +1144,23 @@ describe('TimestampVersioning', () => {
       expect(strategy['formatTimestamp'](date, 'minute', 'unix')).toMatch(/^\d{8}$/);
       expect(strategy['formatTimestamp'](date, 'hour', 'unix')).toMatch(/^\d{6}$/);
       expect(strategy['formatTimestamp'](date, 'day', 'unix')).toMatch(/^\d{5}$/);
-      
+
       // Test all precision levels with readable format
-      expect(strategy['formatTimestamp'](date, 'microsecond', 'readable')).toMatch(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{6}$/); // Microsecond precision shows 6 digits
-      expect(strategy['formatTimestamp'](date, 'millisecond', 'readable')).toMatch(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}$/);
-      expect(strategy['formatTimestamp'](date, 'second', 'readable')).toMatch(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/);
-      expect(strategy['formatTimestamp'](date, 'minute', 'readable')).toMatch(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/);
-      expect(strategy['formatTimestamp'](date, 'hour', 'readable')).toMatch(/^\d{4}-\d{2}-\d{2} \d{2}$/);
+      expect(strategy['formatTimestamp'](date, 'microsecond', 'readable')).toMatch(
+        /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{6}$/
+      ); // Microsecond precision shows 6 digits
+      expect(strategy['formatTimestamp'](date, 'millisecond', 'readable')).toMatch(
+        /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d{3}$/
+      );
+      expect(strategy['formatTimestamp'](date, 'second', 'readable')).toMatch(
+        /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/
+      );
+      expect(strategy['formatTimestamp'](date, 'minute', 'readable')).toMatch(
+        /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/
+      );
+      expect(strategy['formatTimestamp'](date, 'hour', 'readable')).toMatch(
+        /^\d{4}-\d{2}-\d{2} \d{2}$/
+      );
       expect(strategy['formatTimestamp'](date, 'day', 'readable')).toMatch(/^\d{4}-\d{2}-\d{2}$/);
     });
 
@@ -1115,20 +1168,20 @@ describe('TimestampVersioning', () => {
       // Test edge case for parseTimestamp with different format types
       const result1 = strategy['parseTimestamp']('2024-01-15T10:30:45Z', 'iso');
       expect(result1).toBeInstanceOf(Date);
-      
+
       const result2 = strategy['parseTimestamp']('1705314645', 'unix');
       expect(result2).toBeInstanceOf(Date);
-      
+
       const result3 = strategy['parseTimestamp']('2024-01-15 10:30:45', 'readable');
       expect(result3).toBeInstanceOf(Date);
-      
+
       // Test with invalid formats
       const result4 = strategy['parseTimestamp']('invalid', 'iso');
       expect(result4).toBeNull();
-      
+
       const result5 = strategy['parseTimestamp']('invalid', 'unix');
       expect(result5).toBeNull();
-      
+
       const result6 = strategy['parseTimestamp']('invalid', 'readable');
       expect(result6).toBeNull();
     });
@@ -1137,17 +1190,17 @@ describe('TimestampVersioning', () => {
       // Test edge case for extractTimestamp with different version formats
       const result1 = strategy['extractTimestamp']('2024-01-15T10:30:45Z');
       expect(result1).toBe('2024-01-15T10:30:45Z');
-      
+
       const result2 = strategy['extractTimestamp']('1705314645');
       expect(result2).toBe('1705314645');
-      
+
       const result3 = strategy['extractTimestamp']('2024-01-15 10:30:45');
       expect(result3).toBe('2024-01-15 10:30:45');
-      
+
       // Test with versions that don't match any pattern
       const result4 = strategy['extractTimestamp']('invalid-version');
       expect(result4).toBe('invalid-version');
-      
+
       const result5 = strategy['extractTimestamp']('prefix-2024-01-15T10:30:45Z-suffix');
       expect(result5).toBe('prefix-2024-01-15T10:30:45Z-suffix');
     });
@@ -1158,7 +1211,7 @@ describe('TimestampVersioning', () => {
       expect(strategy['isValidTimestamp']('1705314645')).toBe(false);
       expect(strategy['isValidTimestamp']('2024-01-15 10:30:45')).toBe(true);
       expect(strategy['isValidTimestamp']('invalid')).toBe(false);
-      
+
       // Test with null and undefined
       expect(strategy['isValidTimestamp'](null as any)).toBe(true);
       expect(strategy['isValidTimestamp'](undefined as any)).toBe(false); // Actual behavior is false
@@ -1168,17 +1221,17 @@ describe('TimestampVersioning', () => {
       // Test edge case for parseISOTimestamp with different ISO formats
       const result1 = strategy['parseISOTimestamp']('2024-01-15T10:30:45Z');
       expect(result1).toBeInstanceOf(Date);
-      
+
       const result2 = strategy['parseISOTimestamp']('2024-01-15T10:30:45.123Z');
       expect(result2).toBeInstanceOf(Date);
-      
+
       const result3 = strategy['parseISOTimestamp']('2024-01-15T10:30:45.123456Z');
       expect(result3).toBeInstanceOf(Date);
-      
+
       // Test with invalid formats
       const result4 = strategy['parseISOTimestamp']('invalid-iso');
       expect(result4).toBeNull();
-      
+
       const result5 = strategy['parseISOTimestamp']('2024-01-15T10:30:45');
       expect(result5).toBeInstanceOf(Date); // Actual behavior returns a Date object
     });
@@ -1187,17 +1240,17 @@ describe('TimestampVersioning', () => {
       // Test edge case for parseUnixTimestamp with different Unix formats
       const result1 = strategy['parseUnixTimestamp']('1705314645');
       expect(result1).toBeInstanceOf(Date);
-      
+
       const result2 = strategy['parseUnixTimestamp']('1705314645123');
       expect(result2).toBeInstanceOf(Date);
-      
+
       const result3 = strategy['parseUnixTimestamp']('1705314645123456');
       expect(result3).toBeInstanceOf(Date);
-      
+
       // Test with invalid formats
       const result4 = strategy['parseUnixTimestamp']('invalid-unix');
       expect(result4).toBeNull();
-      
+
       const result5 = strategy['parseUnixTimestamp']('1705314645abc');
       expect(result5).toBeInstanceOf(Date); // Actual behavior returns a Date object
     });
@@ -1206,17 +1259,17 @@ describe('TimestampVersioning', () => {
       // Test edge case for parseReadableTimestamp with different readable formats
       const result1 = strategy['parseReadableTimestamp']('2024-01-15 10:30:45');
       expect(result1).toBeInstanceOf(Date);
-      
+
       const result2 = strategy['parseReadableTimestamp']('2024-01-15 10:30:45.123');
       expect(result2).toBeInstanceOf(Date);
-      
+
       const result3 = strategy['parseReadableTimestamp']('2024-01-15 10:30:45.123456');
       expect(result3).toBeInstanceOf(Date);
-      
+
       // Test with invalid formats
       const result4 = strategy['parseReadableTimestamp']('invalid-readable');
       expect(result4).toBeNull();
-      
+
       const result5 = strategy['parseReadableTimestamp']('2024-01-15T10:30:45');
       expect(result5).toBeNull();
     });

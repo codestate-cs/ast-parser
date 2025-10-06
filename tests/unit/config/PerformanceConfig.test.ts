@@ -13,7 +13,7 @@ describe('Performance Configuration', () => {
         cpuThreshold: 80,
         enableProfiling: true,
         maxOperationHistory: 1000,
-        enableDetailedMetrics: true
+        enableDetailedMetrics: true,
       };
 
       expect(defaultOptions.enablePerformanceMonitoring).toBe(true);
@@ -39,7 +39,7 @@ describe('Performance Configuration', () => {
         cpuThreshold: 80,
         enableProfiling: true,
         maxOperationHistory: 1000,
-        enableDetailedMetrics: true
+        enableDetailedMetrics: true,
       };
 
       expect(validOptions.reportInterval).toBeGreaterThan(0);
@@ -54,7 +54,7 @@ describe('Performance Configuration', () => {
         reportInterval: -1000,
         memoryThreshold: -1,
         cpuThreshold: 150,
-        maxOperationHistory: 0
+        maxOperationHistory: 0,
       };
 
       // These should be handled gracefully by the system
@@ -76,7 +76,7 @@ describe('Performance Configuration', () => {
         monitoringInterval: 5000,
         enableLeakDetection: true,
         maxMemoryHistory: 100,
-        enableOptimization: true
+        enableOptimization: true,
       };
 
       expect(defaultOptions.enableMemoryManagement).toBe(true);
@@ -95,7 +95,7 @@ describe('Performance Configuration', () => {
         memoryThreshold: 100 * 1024 * 1024,
         gcThreshold: 80,
         monitoringInterval: 5000,
-        maxMemoryHistory: 100
+        maxMemoryHistory: 100,
       };
 
       expect(validOptions.memoryThreshold).toBeGreaterThan(0);
@@ -117,7 +117,7 @@ describe('Performance Configuration', () => {
         enableEncryption: false,
         cacheDirectory: './cache',
         enableAutoCleanup: true,
-        cleanupInterval: 600000
+        cleanupInterval: 600000,
       };
 
       expect(defaultOptions.enableCaching).toBe(true);
@@ -135,7 +135,7 @@ describe('Performance Configuration', () => {
       const validOptions = {
         maxCacheSize: 1000,
         ttl: 300000,
-        cleanupInterval: 600000
+        cleanupInterval: 600000,
       };
 
       expect(validOptions.maxCacheSize).toBeGreaterThan(0);
@@ -154,7 +154,7 @@ describe('Performance Configuration', () => {
         enableOptimization: true,
         enableReporting: true,
         enableProfiling: true,
-        enableDebugging: false
+        enableDebugging: false,
       };
 
       expect(defaultOptions.enablePerformanceMonitoring).toBe(true);
@@ -170,7 +170,7 @@ describe('Performance Configuration', () => {
     it('should handle partial configuration', () => {
       const partialOptions = {
         enablePerformanceMonitoring: true,
-        enableCaching: false
+        enableCaching: false,
       };
 
       expect(partialOptions.enablePerformanceMonitoring).toBe(true);
@@ -186,7 +186,7 @@ describe('Performance Configuration', () => {
         enableCpuTracking: true,
         reportInterval: 30000,
         memoryThreshold: 100 * 1024 * 1024,
-        cpuThreshold: 80
+        cpuThreshold: 80,
       };
 
       expect(config.reportInterval).toBeGreaterThan(0);
@@ -199,7 +199,7 @@ describe('Performance Configuration', () => {
       const invalidConfig = {
         reportInterval: -1000,
         memoryThreshold: -1,
-        cpuThreshold: 150
+        cpuThreshold: 150,
       };
 
       // These should be handled gracefully by the system
@@ -215,12 +215,12 @@ describe('Performance Configuration', () => {
         enablePerformanceMonitoring: true,
         enableMemoryTracking: true,
         enableCpuTracking: true,
-        reportInterval: 30000
+        reportInterval: 30000,
       };
 
       const overrideConfig = {
         enableCpuTracking: false,
-        reportInterval: 60000
+        reportInterval: 60000,
       };
 
       const mergedConfig = { ...baseConfig, ...overrideConfig };
@@ -235,7 +235,7 @@ describe('Performance Configuration', () => {
       const config = {
         enablePerformanceMonitoring: true,
         enableMemoryTracking: undefined,
-        enableCpuTracking: true
+        enableCpuTracking: true,
       };
 
       expect(config.enablePerformanceMonitoring).toBe(true);
