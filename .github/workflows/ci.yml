@@ -2,9 +2,7 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, develop ]
-  pull_request:
-    branches: [ main, develop ]
+    branches: [ main ]
 
 jobs:
   test-and-coverage:
@@ -73,13 +71,14 @@ jobs:
         fi
         
     - name: Upload coverage reports to Codecov
-      uses: codecov/codecov-action@v3
+      uses: codecov/codecov-action@v5
       with:
-        file: ./coverage/lcov.info
+        files: ./coverage/lcov.info
         flags: unittests
         name: codecov-umbrella
         fail_ci_if_error: true
         verbose: true
+        token: ${{ secrets.CODECOV_TOKEN }}
       continue-on-error: true
       if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 

@@ -26,5 +26,8 @@ export * from './memory';
 // Versioning system types
 export * from './versioning';
 
+// Indexing system types
+export * from './indexing';
+
 // Performance configuration types
 // export * from './performance-config'; // Commented out due to naming conflicts

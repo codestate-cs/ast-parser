@@ -20,10 +20,22 @@
     "noPropertyAccessFromIndexSignature": true,
     "noUncheckedIndexedAccess": true,
     "allowUnusedLabels": false,
-    "allowUnreachableCode": false
+    "allowUnreachableCode": false,
+    "baseUrl": "../src",
+    "paths": {
+      "@/*": ["*"],
+      "@/types/*": ["types/*"],
+      "@/core/*": ["core/*"],
+      "@/parsers/*": ["parsers/*"],
+      "@/analyzers/*": ["analyzers/*"],
+      "@/utils/*": ["utils/*"],
+      "@/config/*": ["config/*"],
+      "@/indexing/*": ["indexing/*"]
+    }
   },
   "include": [
-    "**/*.ts"
+    "**/*.ts",
+    "../src/**/*.ts"
   ],
   "exclude": [
     "node_modules"
