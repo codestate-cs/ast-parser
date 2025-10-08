@@ -4,7 +4,7 @@ A comprehensive AST parser library for TypeScript/JavaScript projects with docum
 
 [![CI/CD Pipeline](https://github.com/codestate-cs/ast-parser/actions/workflows/ci.yml/badge.svg)](https://github.com/codestate-cs/ast-parser/actions/workflows/ci.yml)
 [![PR Validation](https://github.com/codestate-cs/ast-parser/actions/workflows/pr-validation.yml/badge.svg)](https://github.com/codestate-cs/ast-parser/actions/workflows/pr-validation.yml)
-[![Coverage](https://codecov.io/gh/codestate-cs/ast-parser/branch/main/graph/badge.svg)](https://codecov.io/gh/codestate-cs/ast-parser)
+[![codecov](https://codecov.io/gh/codestate-cs/ast-parser/graph/badge.svg?token=2KBNOCDYI0)](https://codecov.io/gh/codestate-cs/ast-parser)
 [![npm version](https://badge.fury.io/js/codestate-ast.svg)](https://badge.fury.io/js/codestate-ast)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -22,9 +22,9 @@ A comprehensive AST parser library for TypeScript/JavaScript projects with docum
 
 This project maintains high code quality standards with comprehensive testing:
 
-- ✅ **67 test suites** with comprehensive coverage
-- ✅ **3,654 tests passing** across all modules
-- ✅ **90%+ branch coverage** across all modules
+- ✅ **76 test suites** with comprehensive coverage
+- ✅ **4,030 tests passing** across all modules
+- ✅ **91.14% branch coverage** across all modules
 - ✅ **TypeScript strict mode** with full type safety
 - ✅ **ESLint compliance** with zero linting issues
 - ✅ **Pre-push validation** ensuring quality gates
@@ -38,6 +38,7 @@ This project maintains high code quality standards with comprehensive testing:
 - **Documentation**: 74.28% branch coverage (Generators, Templates, Quality Metrics)
 - **Versioning**: Comprehensive coverage (Multiple strategies, Change detection)
 - **Git Integration**: Full test coverage (Repository analysis, Branch detection)
+- **Indexing System**: 91.14% branch coverage (Search, Management, Maintenance)
 
 ## Installation
 
@@ -110,17 +111,47 @@ const cacheManager = new CacheManager({
 - 🔍 **Memory Management**: Advanced memory leak detection and optimization
 - 📈 **Performance Reports**: Detailed performance analysis and insights
 
+## Indexing System
+
+The library now includes a comprehensive indexing system for managing multiple projects:
+
+```typescript
+import { IndexingSystemFactory } from 'codestate-ast';
+
+// Create indexing system components
+const indexManager = IndexingSystemFactory.createIndexManager();
+const searchEngine = IndexingSystemFactory.createSearchEngine();
+
+// Index projects
+await indexManager.indexProject(projectInfo);
+
+// Search across projects
+const results = await searchEngine.search({
+  criteria: { name: 'my-project', type: 'typescript' },
+  options: { limit: 10, caseSensitive: false }
+});
+```
+
+### Indexing Features
+- 🔍 **Global Project Index**: Comprehensive project registry and search
+- 📊 **Project Management**: Individual project indexes with version tracking
+- 🔎 **Advanced Search**: Full-text, fuzzy, and regex search capabilities
+- 🛠️ **Index Maintenance**: Validation, optimization, and cleanup tools
+- 🏭 **Factory Pattern**: Easy component creation with sensible defaults
+- 📡 **Event-Driven**: Comprehensive event system for monitoring
+- ⚡ **Performance**: Caching, parallel processing, and optimization
+
 ## Development Status
 
-🔄 **Phase 6 In Progress** - Indexing System Development
+✅ **Phase 6 Completed** - Indexing System Implementation
 
-This library is being built incrementally following a comprehensive development roadmap. Phase 6 Indexing System is currently in development, building upon the completed phases with comprehensive project discovery and management capabilities.
+This library is being built incrementally following a comprehensive development roadmap. Phase 6 Indexing System has been successfully completed with comprehensive project discovery and management capabilities.
 
 ### 📊 Current Coverage Metrics
-- **Statements**: 95.43% ✅
-- **Branches**: 90.16% ✅  
-- **Functions**: 96.43% ✅
-- **Lines**: 95.84% ✅
+- **Statements**: 97.67% ✅
+- **Branches**: 91.14% ✅  
+- **Functions**: 98.07% ✅
+- **Lines**: 97.70% ✅
 
 ### 🎯 Completed Phases
 - ✅ **Phase 1**: Foundation (MVP) - Basic parsing and analysis
@@ -128,13 +159,16 @@ This library is being built incrementally following a comprehensive development 
 - ✅ **Phase 3**: Documentation Generation - AI-free documentation generation
 - ✅ **Phase 4**: Caching and Performance - Performance monitoring and optimization
 - ✅ **Phase 5**: Versioning System - Multiple versioning strategies with change tracking
-- 🔄 **Phase 6**: Indexing System - Project discovery and management (In Progress)
+- ✅ **Phase 6**: Indexing System - Project discovery and management (Completed)
 
-### 🚀 Phase 6 Goals
-- 🔍 **Global Project Index**: Comprehensive project registry and search
-- 📊 **Project Management**: Individual project indexes and version tracking
-- 🔎 **Search Engine**: Advanced search capabilities across projects
-- 🛠️ **Index Maintenance**: Validation, optimization, and cleanup tools
+### 🚀 Phase 6 Achievements
+- ✅ **Global Project Index**: Comprehensive project registry and search
+- ✅ **Project Management**: Individual project indexes and version tracking
+- ✅ **Search Engine**: Advanced search capabilities across projects
+- ✅ **Index Maintenance**: Validation, optimization, and cleanup tools
+- ✅ **Factory Pattern**: Complete factory system for component creation
+- ✅ **Event-Driven Architecture**: Comprehensive event system
+- ✅ **High Test Coverage**: 91.14% branch coverage with 376 tests
 
 ## Roadmap
 
@@ -143,13 +177,13 @@ This library is being built incrementally following a comprehensive development 
 - [x] **Phase 3**: Documentation Generation - AI-free documentation generation
 - [x] **Phase 4**: Caching and Performance - Performance monitoring and optimization
 - [x] **Phase 5**: Versioning System - Multiple versioning strategies
-- [🔄] **Phase 6**: Indexing System - Project discovery and management (In Progress)
+- [x] **Phase 6**: Indexing System - Project discovery and management (Completed)
 - [ ] **Phase 7**: Advanced Features - Streaming, plugins, advanced analysis
 - [ ] **Phase 8**: Testing and Documentation - Production readiness
 
 ## Contributing
 
-This project is currently in active development. Phase 6 Indexing System is in progress with 67 test suites and 3,654 tests passing. Contributions are welcome for Phase 6 completion and Phase 7+ development!
+This project is currently in active development. Phase 6 Indexing System has been completed with 76 test suites and 4,030 tests passing. Contributions are welcome for Phase 7+ development!
 
 ### Branch Protection
 
